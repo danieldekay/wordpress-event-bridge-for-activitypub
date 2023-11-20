@@ -37,6 +37,17 @@ class Activitypub_Tribe_Transformer extends \Activitypub\Transformer_Base {
 	}
 
 	/**
+	 * Returns the ActivityStreams 2.0 Object-Type for an Event.
+	 *
+	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-event
+	 *
+	 * @return string The Event Object-Type.
+	 */
+	protected function get_object_type() {
+		return 'Event';
+	}
+	
+	/**
 	 * Get supported post types.
 	 *
 	 * Retrieve the list of supported WordPress post types this transformer widget can handle.
