@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Activitypub_Tribe_Transformer extends \Activitypub\Transformer_Base {
+class Tribe extends \Activitypub\Transformer\Base {
 
 	/**
 	 * Get widget name.
@@ -46,7 +46,7 @@ class Activitypub_Tribe_Transformer extends \Activitypub\Transformer_Base {
 	protected function get_object_type() {
 		return 'Event';
 	}
-	
+
 	/**
 	 * Get supported post types.
 	 *

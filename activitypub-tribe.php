@@ -21,14 +21,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Include fransformer file and register transformer class.
  *
  * @since 1.0.0
- * @param \ActivityPUb\Transformers_Manager $transformers_manager ActivtiyPub transformers manager.
+ * @param \Activitypub\Transformer\Transformers_Manager $transformers_manager ActivtiyPub transformers manager.
  * @return void
  */
 function register_tribe_transformer( $transformers_manager ) {
-
-	require_once( __DIR__ . '/transformers/tribe-transformer.php' );
-
-	$transformers_manager->register( new \Activitypub_Tribe_Transformer() );
-
+	require_once( __DIR__ . '/activitypub/transformer/tribe.php' );
+	$transformers_manager->register( new \Tribe() );
 }
-add_action( 'activitypub/transformers/register', 'register_tribe_transformer' );
+
+add_action( 'activitypub_transformers_register', 'register_tribe_transformer' );
