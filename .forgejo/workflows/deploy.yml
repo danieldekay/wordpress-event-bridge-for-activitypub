@@ -16,6 +16,5 @@ jobs:
       - uses: https://code.forgejo.org/actions/checkout@v4
       - run: mkdir ~/.ssh
       - run: apt update && apt install -y openssh-client rsync
-      - run: eval $(ssh-agent -s)
-      - run: echo "${{ secrets.SSH_PRIVATE_KEY }}" | ssh-add -
+      - run: eval $(ssh-agent -s) && echo "${{ secrets.SSH_PRIVATE_KEY }}" | ssh-add -
       - run: rsync -avzr --delete . hosting187597@hosting187597.a2f96.netcup.net ~/wordpress-test.event-federation.eu/wp-content/plugins/activitypub-event-transformers
