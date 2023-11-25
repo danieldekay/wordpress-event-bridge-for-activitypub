@@ -1,5 +1,3 @@
-# .github/workflows/deploy_wordpress_test1.yml
-
 name: Deploy to https://wordpress-test.event-federation.eu/
 
 on:
@@ -10,14 +8,18 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: secrets.SSH_PRIVATE_KEY != '' && secrets.SSH_HOST_KEY != ''
+    if: secrets.SSH_PRIVATE_KEY != ''
 
     steps:
-      - uses: https://code.forgejo.org/actions/checkout@v4
-      - run: mkdir ~/.ssh
-      - run: echo "${{ secrets.SSH_HOST_KEY }}" > ~/.ssh/known_hosts
-      - run: chmod 600 ~/.ssh/known_hosts
-      - run: apt update && apt install -y openssh-client rsync
-      - run: eval $(ssh-agent -s) && echo "${{ secrets.SSH_PRIVATE_KEY }}" | ssh-add -
-      - run: ls -l ~/.ssh
-      - run: rsync -avzr -e "ssh -i /path/to/your/private-key" --delete ${{ github.workspace }}/ hosting187597@hosting187597.a2f96.netcup.net:~/wordpress-test.event-federation.eu/wp-content/plugins/
+      - name: Checkout Repository
+        uses: https://code.forgejo.org/actions/checkout@v4
+
+      - name: Deploy via rsync
+        uses: https://github.com/burnett01/rsync-deployments@6.0.0
+        with:
+          switches: -avzr --delete
+          path: ./
+          remote_path: ~/wordpress-test.event-federation.eu/wp-content/plugins/activitypub-event-transformers
+          remote_host: hosting187597.a2f96.netcup.net
+          remote_user: hosting187597
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
