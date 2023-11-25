@@ -11,4 +11,4 @@ on:
 
 jobs:
   deploy:
-    <<: *deploy-job
+    <<: *deploy
