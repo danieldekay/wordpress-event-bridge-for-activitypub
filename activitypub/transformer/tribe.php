@@ -20,7 +20,7 @@ class Tribe extends \Activitypub\Transformer\Base {
 	 * @return string Widget name.
 	 */
 	public function get_name() {
-		return 'activitypub-tribe/tribe';
+		return 'activitypub-event-transformers/tribe';
 	}
 
 	/**

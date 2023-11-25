@@ -1,4 +1,7 @@
 <?php
+use Activitypub\Activity\Base_Object;
+use function Activitypub\get_rest_url_by_path;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -8,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Tribe extends \Activitypub\Transformer\Base {
+class VS_Event extends \Activitypub\Transformer\Base {
 
 	/**
 	 * Get widget name.
@@ -63,8 +66,75 @@ class Tribe extends \Activitypub\Transformer\Base {
 	/**
 	 * Get the event location
 	 */
-	public function get_event_location() {
+	public function get_event_location( $post_id ) {
+		$object = new Base_Object();
+		$object->set_type( 'Place' );
+		$object->set_name( get_post_meta( $post_id, 'event-location', true ) );
+		$array = $object->to_array();
+		return $array;
+	}
 
+	/**
+	 * Transforms the VS Event WP_Post object to an ActivityPub Event Object
+	 *
+	 * @see \Activitypub\Activity\Base_Object
+	 *
+	 * @return \Activitypub\Activity\Base_Object The ActivityPub Object
+	 */
+	public function to_object() {
+		$wp_post = $this->wp_post;
+		$object  = new Base_Object();
+
+		$object->set_id( $this->get_id() );
+		$object->set_url( $this->get_url() );
+		$object->set_type( $this->get_object_type() );
+
+		$published = \strtotime( $wp_post->post_date_gmt );
+
+		$object->set_published( \gmdate( 'Y-m-d\TH:i:s\Z', $published ) );
+
+		$updated = \strtotime( $wp_post->post_modified_gmt );
+
+		if ( $updated > $published ) {
+			$object->set_updated( \gmdate( 'Y-m-d\TH:i:s\Z', $updated ) );
+		}
+
+		$object->set_attributed_to( $this->get_attributed_to() );
+		$object->set_content( $this->get_content() );
+		$object->set_content_map( $this->get_content_map );
+
+		$summary = get_post_meta( $wp_post->ID, 'event-summary', true );
+		if ( $summary ) {
+			$object->set_summary( $summary );
+		} else {
+			$object->set_summary( $this->content );
+		}
+
+		$start_time = get_post_meta( $wp_post->ID, 'event-start-date', true );
+		$object->set_start_time( \gmdate( 'Y-m-d\TH:i:s\Z', $start_time ) );
+
+		$end_time = get_post_meta( $wp_post->ID, 'event-date', true );
+		$object->set_end_time( \gmdate( 'Y-m-d\TH:i:s\Z', $end_time ) );
+
+		$path = sprintf( 'users/%d/followers', intval( $wp_post->post_author ) );
+
+		$location = get_post_meta( $wp_post->ID, 'event-link', true );
+		$object->set_location( $this->get_event_location( $wp_post->ID ) );
+
+		$object->set_to(
+			array(
+				'https://www.w3.org/ns/activitystreams#Public',
+				get_rest_url_by_path( $path ),
+			)
+		);
+		$object->set_cc( $this->get_cc() );
+
+		$attachments = $this->get_attachments();
+
+		$object->set_attachment( $this->get_attachments() );
+		$object->set_tag( $this->get_tags() );
+
+		return $object;
 	}
 
 }

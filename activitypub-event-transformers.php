@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: ActivityPub Event Transformers for Events
+ * Plugin Name: ActivityPub Transformers for Events
  * Description: Custom ActivityPub Transformers for Events
  * Plugin URI:  https://event-federation.eu/
  * Version:     1.0.0
@@ -25,15 +25,19 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return void
  */
 function register_event_transformers( $transformers_manager ) {
-	if ( is_plugin_active( 'the-events-calendar/the-events-calendar.php' ) ) {
-		require_once __DIR__ . '/activitypub/transformer/tribe.php';
-		$transformers_manager->register( new \Tribe() );
-	}
+	// if ( ! function_exists( 'is_plugin_active' ) ) {
+    //  	require_once __DIR__ . '/wp-admin/includes/plugin.php';
+	// }
 
-	if ( is_plugin_active( 'vsel/vsel.php' ) ) {
+	// if ( is_plugin_active( 'the-events-calendar/the-events-calendar.php' ) ) {
+	// 	require_once __DIR__ . '/activitypub/transformer/tribe.php';
+	// 	$transformers_manager->register( new \Tribe() );
+	// }
+
+	// if ( is_plugin_active( 'vsel/vsel.php' ) ) {
 		require_once __DIR__ . '/activitypub/transformer/vs-event.php';
 		$transformers_manager->register( new \VS_Event() );
-	}
+	// }
 }
 
 add_action( 'activitypub_transformers_register', 'register_event_transformers' );
