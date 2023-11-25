@@ -17,7 +17,7 @@ jobs:
         uses: https://code.forgejo.org/actions/checkout@v4
 
       - name: Install rsync
-        run: apt-update && apt install -y rsync
+        run: apt update && apt install -y rsync
 
       - name: Deploy via rsync
         uses: https://github.com/burnett01/rsync-deployments@6.0.0
