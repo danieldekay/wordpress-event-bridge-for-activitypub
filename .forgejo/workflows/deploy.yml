@@ -15,21 +15,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: https://code.forgejo.org/actions/checkout@v4
-
-      - name: Install rsync
-        run: apt update && apt install -y rsync
-
-      - name: Test rsync
-        run: rsync --help
-
-      - name: Deploy via rsync
-        uses: https://github.com/burnett01/rsync-deployments@6.0.0
-        with:
-          switches: -avzr --delete
-          path: ./
-          remote_path: ~/wordpress-test.event-federation.eu/wp-content/plugins/activitypub-event-transformers
-          remote_host: hosting187597.a2f96.netcup.net
-          remote_user: hosting187597
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-
+        run: |
+          mkdir ~/.ssh
+          apk update && apk add openssh-client rsync
+          eval $(ssh-agent -s)
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | ssh-add -
+          rsync -avzr --delete . hosting187597@hosting187597.a2f96.netcup.net ~/wordpress-test.event-federation.eu/wp-content/plugins/activitypub-event-transformers
