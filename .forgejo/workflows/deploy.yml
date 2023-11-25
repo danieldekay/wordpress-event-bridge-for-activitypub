@@ -15,7 +15,7 @@ jobs:
         uses: https://code.forgejo.org/actions/checkout@v4
 
       - name: Deploy
-        uses: appleboy/scp-action@v0.1.4
+        uses: https://github.com/appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
