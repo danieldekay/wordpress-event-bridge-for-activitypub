@@ -16,8 +16,9 @@ jobs:
       - name: Checkout Repository
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      - name: Install SSH Key
-        run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Deploy via Rsync
         run: rsync -r --delete-after $GITHUB_WORKSPACE/ hosting187597@hosting187597.a2f96.netcup.net:~/wordpress-test.event-federation.eu/wp-content/plugins/activitypub-event-transformers
