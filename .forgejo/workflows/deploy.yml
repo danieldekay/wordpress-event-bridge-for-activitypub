@@ -17,4 +17,4 @@ jobs:
       - run: mkdir ~/.ssh
       - run: apt update && apt install -y openssh-client rsync
       - run: eval $(ssh-agent -s) && echo "${{ secrets.SSH_PRIVATE_KEY }}" | ssh-add -
-      - run: ls -l
+      - run: rsync -avzr --delete ${{ github.workspace }} hosting187597@hosting187597.a2f96.netcup.net ~/wordpress-test.event-federation.eu/wp-content/plugins/
