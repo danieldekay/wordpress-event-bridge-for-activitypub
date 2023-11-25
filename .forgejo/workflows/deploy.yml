@@ -16,9 +16,14 @@ jobs:
       - name: Checkout Repository
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      - uses: https://github.com/webfactory/ssh-agent@v0.8.0
+      - name: Deploy via rsync
+        uses: https://github.com/burnett01/rsync-deployments@6.0.0
         with:
-            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          switches: -avzr --delete
+          path: ./
+          remote_path: ~/wordpress-test.event-federation.eu/wp-content/plugins/activitypub-event-transformers
+          remote_host: hosting187597.a2f96.netcup.net
+          remote_user: hosting187597
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy via Rsync
-        run: rsync -r --delete-after $GITHUB_WORKSPACE/ hosting187597@hosting187597.a2f96.netcup.net:~/wordpress-test.event-federation.eu/wp-content/plugins/activitypub-event-transformers
+
