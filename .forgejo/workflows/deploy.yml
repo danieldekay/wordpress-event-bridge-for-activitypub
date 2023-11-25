@@ -14,14 +14,12 @@ jobs:
       - name: Checkout Repository
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      - run: rsync --help
-
-      - name: Deploy via rsync
-        uses: https://github.com/burnett01/rsync-deployments@6.0.0
+      - name: Deploy
+        uses: appleboy/scp-action@v0.1.4
         with:
-          switches: -avzr --delete
-          path: ./
-          remote_path: ~/wordpress-test.event-federation.eu/wp-content/plugins/activitypub-event-transformers
-          remote_host: hosting187597.a2f96.netcup.net
-          remote_user: hosting187597
-          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "activitypub-event-transformers.php"
+          target: ~/wordpress-test.event-federation.eu/wp-content/plugins/activitypub-event-transformers
