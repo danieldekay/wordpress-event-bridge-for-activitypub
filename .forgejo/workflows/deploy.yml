@@ -1,0 +1,13 @@
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install SSH Key
+        run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy via Rsync
+        run: rsync -r --delete-after $GITHUB_WORKSPACE/ hosting187597@hosting187597.a2f96.netcup.net:~/${{ github.event.inputs.web_root_directory }}/wp-content/plugins/activitypub-event-transformers
