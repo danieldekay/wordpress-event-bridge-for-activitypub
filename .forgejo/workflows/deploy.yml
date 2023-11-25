@@ -10,7 +10,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: secrets.SSH_PRIVATE_KEY != '' and secrets.SSH_HOST_KEY != ''
+    if: secrets.SSH_PRIVATE_KEY != '' && secrets.SSH_HOST_KEY != ''
 
     steps:
       - uses: https://code.forgejo.org/actions/checkout@v4
