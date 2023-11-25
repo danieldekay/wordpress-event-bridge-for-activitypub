@@ -3,17 +3,9 @@
 name: Deploy to https://wordpress-test.event-federation.eu/
 
 on:
-  workflow_dispatch:
-    inputs:
-      wordpress_instance:
-        description: The WordPress instance
-        required: true
-        default: 'wordpress-test.event-federation.eu'
-        type: choice
-        options:
-        - wordpress-test.event-federation.eu
-        - wordpress-test1.event-federation.eu
-        - wordpress-test2.event-federation.eu
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
@@ -27,4 +19,4 @@ jobs:
         run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa && chmod 600 ~/.ssh/id_rsa
 
       - name: Deploy via Rsync
-        run: rsync -r --delete-after $GITHUB_WORKSPACE/ hosting187597@hosting187597.a2f96.netcup.net:~/${{ inputs.wordpress_instance }}/wp-content/plugins/activitypub-event-transformers
+        run: rsync -r --delete-after $GITHUB_WORKSPACE/ hosting187597@hosting187597.a2f96.netcup.net:~/wordpress-test.event-federation.eu/wp-content/plugins/activitypub-event-transformers
