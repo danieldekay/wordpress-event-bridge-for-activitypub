@@ -14,12 +14,8 @@ jobs:
       - name: Checkout Repository
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      - name: Deploy
-        uses: https://github.com/appleboy/scp-action@v0.1.4
+      - uses: https://github.com/ilkka/git-https-push-action@master
+        name: Deploy
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          port: ${{ secrets.SSH_PORT }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "activitypub-event-transformers.php"
-          target: ~/wordpress-test.event-federation.eu/wp-content/plugins/activitypub-event-transformers
+          remoteUrl: ${{ secrets.PUSH_REMOTE }}
+          skipHooks: false
