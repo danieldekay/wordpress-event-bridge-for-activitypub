@@ -1,4 +1,12 @@
 <?php
+/**
+ * ActivityPub Transformer for VS Event.
+ *
+ * @package activity-event-transformers
+ */
+
+require_once __DIR__ . '/../object/class-event.php';
+
 use Activitypub\Activity\Base_Object;
 use function Activitypub\get_rest_url_by_path;
 
@@ -7,12 +15,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * ActivityPub Tribe Transformer
+ * ActivityPub Transformer for VS Event
  *
  * @since 1.0.0
  */
 class VS_Event extends \Activitypub\Transformer\Base {
-
 	/**
 	 * Get widget name.
 	 *
@@ -60,11 +67,14 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	 * @return array Widget categories.
 	 */
 	public function get_supported_post_types() {
-		return [ 'event' ];
+		return array( 'event' );
 	}
 
 	/**
-	 * Get the event location
+	 * Get the event location.
+	 *
+	 * @param int $post_id The WordPress post ID.
+	 * @returns array The Place.
 	 */
 	public function get_event_location( $post_id ) {
 		$object = new Base_Object();
@@ -72,6 +82,17 @@ class VS_Event extends \Activitypub\Transformer\Base {
 		$object->set_name( get_post_meta( $post_id, 'event-location', true ) );
 		$array = $object->to_array();
 		return $array;
+	}
+
+	/**
+	 * Test
+	 *
+	 * @param string $context context.
+	 * @return string $context context.
+	 */
+	private function add_pt_comments_enabled_context( $context ) {
+		$test = $context;
+		return $context;
 	}
 
 	/**
@@ -83,7 +104,7 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	 */
 	public function to_object() {
 		$wp_post = $this->wp_post;
-		$object  = new Base_Object();
+		$object  = new Event();
 
 		$object->set_id( $this->get_id() );
 		$object->set_url( $this->get_url() );
@@ -121,6 +142,9 @@ class VS_Event extends \Activitypub\Transformer\Base {
 		$location = get_post_meta( $wp_post->ID, 'event-link', true );
 		$object->set_location( $this->get_event_location( $wp_post->ID ) );
 
+		$is_open_for_comments = comments_open( $wp_post->ID );
+		$object->set_comments_enabled( $is_open_for_comments );
+
 		$object->set_to(
 			array(
 				'https://www.w3.org/ns/activitystreams#Public',
@@ -136,5 +160,4 @@ class VS_Event extends \Activitypub\Transformer\Base {
 
 		return $object;
 	}
-
 }

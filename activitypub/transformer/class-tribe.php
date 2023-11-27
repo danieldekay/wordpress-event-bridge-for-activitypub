@@ -1,4 +1,10 @@
 <?php
+/**
+ * ActivityPub Tribe Transformer
+ *
+ * @package activity-event-transformers
+ */
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -57,7 +63,6 @@ class Tribe extends \Activitypub\Transformer\Base {
 	 * @return array Widget categories.
 	 */
 	public function get_supported_post_types() {
-		return [ 'tribe_events' ];
+		return array( 'tribe_events' );
 	}
-
 }

@@ -9,6 +9,8 @@
  * Text Domain: activitypub-event-transformers
  *
  * ActivityPub tested up to: 1.2.0
+ *
+ * @package activitypub-event-transformer
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -25,19 +27,24 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return void
  */
 function register_event_transformers( $transformers_manager ) {
-	// if ( ! function_exists( 'is_plugin_active' ) ) {
-    //  	require_once __DIR__ . '/wp-admin/includes/plugin.php';
-	// }
+	require_once __DIR__ . '/activitypub/transformer/class-tribe.php';
+	$transformers_manager->register( new \Tribe() );
 
-	// if ( is_plugin_active( 'the-events-calendar/the-events-calendar.php' ) ) {
-	// 	require_once __DIR__ . '/activitypub/transformer/tribe.php';
-	// 	$transformers_manager->register( new \Tribe() );
-	// }
-
-	// if ( is_plugin_active( 'vsel/vsel.php' ) ) {
-		require_once __DIR__ . '/activitypub/transformer/vs-event.php';
-		$transformers_manager->register( new \VS_Event() );
-	// }
+	require_once __DIR__ . '/activitypub/transformer/class-vs-event.php';
+	$transformers_manager->register( new \VS_Event() );
 }
+
+add_filter(
+	'activitypub_json_context',
+	function ( $context ) {
+		$context[2]['commentsEnabled'] = array(
+			'@id'   => 'pt:commentsEnabled',
+			'@type' => 'sc:Boolean',
+		);
+		return $context;
+	},
+	10,
+	2
+);
 
 add_action( 'activitypub_transformers_register', 'register_event_transformers' );
