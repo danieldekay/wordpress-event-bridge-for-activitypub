@@ -80,8 +80,7 @@ class VS_Event extends \Activitypub\Transformer\Base {
 		$object = new Base_Object();
 		$object->set_type( 'Place' );
 		$object->set_name( get_post_meta( $post_id, 'event-location', true ) );
-		$array = $object->to_array();
-		return $array;
+		return $object;
 	}
 
 	/**
@@ -96,19 +95,50 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	}
 
 	/**
-	 * Transforms the VS Event WP_Post object to an ActivityPub Event Object
+	 * Get the end time from the events metadata.
+	 */
+	private function get_end_time() {
+		$end_time = get_post_meta( $this->wp_post->ID, 'event-date', true );
+		return \gmdate( 'Y-m-d\TH:i:s\Z', $end_time );
+	}
+
+	/**
+	 * Get the event link from the events metadata.
+	 */
+	private function get_event_link() {
+		$event_link = get_post_meta( $this->wp_post->ID, 'event-link', true );
+		if ( $event_link ) {
+			return array(
+				'type' => 'Link',
+				'name' => 'Website',
+				'href' => \esc_url( get_post_meta( $post_id, 'event-location', true ) ),
+				'mediaType' => 'text/html',
+			);
+		}
+	}
+
+	/**
+	 * Extends the get_attachments function to also add the event Link.
+	 */
+	protected function get_attachments() {
+		$attachments = parent::get_attachments();
+		$attachments[] = $this->get_event_link();
+		return $attachments;
+	}
+
+	/**
+	 * Transforms the VS Event WP_Post object to an ActivityPub Event Object.
 	 *
 	 * @see \Activitypub\Activity\Base_Object
 	 *
-	 * @return \Activitypub\Activity\Base_Object The ActivityPub Object
+	 * @return \Activitypub\Activity\Base_Object The ActivityPub Object.
 	 */
-	public function to_object() {
-		$wp_post = $this->wp_post;
+	public function transform() {
 		$object  = new Event();
-
-		$object->set_id( $this->get_id() );
-		$object->set_url( $this->get_url() );
-		$object->set_type( $this->get_object_type() );
+		$object
+			->set_id( $this->get_id() )
+			->set_url( $this->get_url() )
+			->set_type( $this->get_object_type() );
 
 		$published = \strtotime( $wp_post->post_date_gmt );
 
@@ -120,9 +150,10 @@ class VS_Event extends \Activitypub\Transformer\Base {
 			$object->set_updated( \gmdate( 'Y-m-d\TH:i:s\Z', $updated ) );
 		}
 
-		$object->set_attributed_to( $this->get_attributed_to() );
-		$object->set_content( $this->get_content() );
-		$object->set_content_map( $this->get_content_map );
+		$object
+			->set_attributed_to( $this->get_attributed_to() )
+			->set_content( $this->get_content() )
+			->set_content_map( $this->get_content_map );
 
 		$summary = get_post_meta( $wp_post->ID, 'event-summary', true );
 		if ( $summary ) {
@@ -134,29 +165,23 @@ class VS_Event extends \Activitypub\Transformer\Base {
 		$start_time = get_post_meta( $wp_post->ID, 'event-start-date', true );
 		$object->set_start_time( \gmdate( 'Y-m-d\TH:i:s\Z', $start_time ) );
 
-		$end_time = get_post_meta( $wp_post->ID, 'event-date', true );
-		$object->set_end_time( \gmdate( 'Y-m-d\TH:i:s\Z', $end_time ) );
+		$object->set_end_time( $this->get_end_time() );
 
 		$path = sprintf( 'users/%d/followers', intval( $wp_post->post_author ) );
 
-		$location = get_post_meta( $wp_post->ID, 'event-link', true );
-		$object->set_location( $this->get_event_location( $wp_post->ID ) );
-
-		$is_open_for_comments = comments_open( $wp_post->ID );
-		$object->set_comments_enabled( $is_open_for_comments );
-
-		$object->set_to(
-			array(
-				'https://www.w3.org/ns/activitystreams#Public',
-				get_rest_url_by_path( $path ),
+		$object
+			->set_location( $this->get_event_location( $wp_post->ID ) )
+			->set_comments_enabled( comments_open( $wp_post->ID ) )
+			->set_to(
+				array(
+					'https://www.w3.org/ns/activitystreams#Public',
+					get_rest_url_by_path( $path ),
+				)
 			)
-		);
-		$object->set_cc( $this->get_cc() );
-
-		$attachments = $this->get_attachments();
-
-		$object->set_attachment( $this->get_attachments() );
-		$object->set_tag( $this->get_tags() );
+			->set_cc( $this->get_cc() )
+			->set_attachment( $this->get_attachments() )
+			->set_tag( $this->get_tags() )
+			->set_replies_moderation_option( 'allow_all' );
 
 		return $object;
 	}
