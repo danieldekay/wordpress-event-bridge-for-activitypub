@@ -188,7 +188,8 @@ class VS_Event extends \Activitypub\Transformer\Base {
 			->set_tag( $this->get_tags() )
 			->set_replies_moderation_option( 'allow_all' )
 			->set_join_mode( 'external' )
-			->set_external_participation_url( $this->get_url() );
+			->set_external_participation_url( $this->get_url() )
+			->set_ical_status( 'CONFIRMED' );
 
 		return $object;
 	}

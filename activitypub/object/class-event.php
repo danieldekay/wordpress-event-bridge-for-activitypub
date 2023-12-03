@@ -130,6 +130,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 	private function rename_ical_status_key( $array ) {
 		$array[ 'ical:status' ] = $array[ 'icalStatus' ];
 		unset( $array[ 'icalStatus' ] );
+		return $array;
 	}
 
 	/**
@@ -137,7 +138,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 	 */
 	public function rename_array_keys( $array ) {
 		if ( isset( $array[ 'icalStatus' ] ) ) {
-			$array = rename_ical_status_key( $array );
+			$array = $this->rename_ical_status_key( $array );
 		}
 		return $array;
 	}
@@ -170,21 +171,21 @@ class Event extends \Activitypub\Activity\Base_Object {
     }
 
 	public function filter_context( $context ) {
-		if ( isset( $this->replies_moderation_option ) ) {
-			$replies_moderation_option_context = $this->get_property_context( 'replies_moderation_option' );
-		}
+		// if ( isset( $this->replies_moderation_option ) ) {
+		// 	$replies_moderation_option_context = $this->get_property_context( 'replies_moderation_option' );
+		// }
 		return $context;
 	}
 
 	private static function compact_context( $key_context, $namespace, $abbreviation ) {
 		$abbreviation_added = false;
 		foreach ( $key_context as $key => $value ) {
-			// Check if the key starts with "https://joinpeertube.org/"
+			// Check if the key starts with the namespace
 			if ( strpos( $value, $namespace ) === 0 ) {
 				// Replace the key
-				$key_context[ $key ] = $abbreviation . ':' . substr($value, strlen( $namespace ));
+				$key_context[ $key ] = $abbreviation . ':' . substr( $value, strlen( $namespace ) );
 
-				// Add "pt" element only once
+				// Add abbreviation element for the namespace only once
 				if ( ! $abbreviation_added ) {
 					$key_context = [ $abbreviation => $namespace . '/ns#' ] + $key_context;
 					$abbreviation_added = true;
@@ -198,9 +199,9 @@ class Event extends \Activitypub\Activity\Base_Object {
 		$class = self::class;
 		$transient = "activitypub_context_object_{$class}";
 		$context = get_transient($transient);
-		if ( $context ) {
-			return $context;
-		}
+		// if ( $context ) {
+		// 	return $context;
+		// }
 		$reflection_class = new ReflectionClass( self::class );
 		$context = array(
 			'https://www.w3.org/ns/activitystreams',
