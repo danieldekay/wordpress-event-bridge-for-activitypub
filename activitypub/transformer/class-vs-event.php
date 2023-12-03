@@ -134,17 +134,18 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	 * @return \Activitypub\Activity\Base_Object The ActivityPub Object.
 	 */
 	public function transform() {
+		$context = Event::get_context();
 		$object  = new Event();
 		$object
 			->set_id( $this->get_id() )
 			->set_url( $this->get_url() )
 			->set_type( $this->get_object_type() );
 
-		$published = \strtotime( $wp_post->post_date_gmt );
+		$published = \strtotime( $this->wp_post->post_date_gmt );
 
 		$object->set_published( \gmdate( 'Y-m-d\TH:i:s\Z', $published ) );
 
-		$updated = \strtotime( $wp_post->post_modified_gmt );
+		$updated = \strtotime( $this->wp_post->post_modified_gmt );
 
 		if ( $updated > $published ) {
 			$object->set_updated( \gmdate( 'Y-m-d\TH:i:s\Z', $updated ) );
@@ -155,23 +156,27 @@ class VS_Event extends \Activitypub\Transformer\Base {
 			->set_content( $this->get_content() )
 			->set_content_map( $this->get_content_map );
 
-		$summary = get_post_meta( $wp_post->ID, 'event-summary', true );
+		$summary = get_post_meta( $this->wp_post->ID, 'event-summary', true );
 		if ( $summary ) {
 			$object->set_summary( $summary );
 		} else {
 			$object->set_summary( $this->content );
 		}
 
-		$start_time = get_post_meta( $wp_post->ID, 'event-start-date', true );
+		$start_time = get_post_meta( $this->wp_post->ID, 'event-start-date', true );
 		$object->set_start_time( \gmdate( 'Y-m-d\TH:i:s\Z', $start_time ) );
 
-		$object->set_end_time( $this->get_end_time() );
+		$hide_end_time = get_post_meta( $this->wp_post->ID, 'event-hide-end-time', true);
 
-		$path = sprintf( 'users/%d/followers', intval( $wp_post->post_author ) );
+		if ( $hide_end_time != 'yes' ) {
+			$object->set_end_time( $this->get_end_time() );
+		}
+
+		$path = sprintf( 'users/%d/followers', intval( $this->wp_post->post_author ) );
 
 		$object
-			->set_location( $this->get_event_location( $wp_post->ID ) )
-			->set_comments_enabled( comments_open( $wp_post->ID ) )
+			->set_location( $this->get_event_location( $this->wp_post->ID ) )
+			->set_comments_enabled( comments_open( $this->wp_post->ID ) )
 			->set_to(
 				array(
 					'https://www.w3.org/ns/activitystreams#Public',
@@ -181,7 +186,9 @@ class VS_Event extends \Activitypub\Transformer\Base {
 			->set_cc( $this->get_cc() )
 			->set_attachment( $this->get_attachments() )
 			->set_tag( $this->get_tags() )
-			->set_replies_moderation_option( 'allow_all' );
+			->set_replies_moderation_option( 'allow_all' )
+			->set_join_mode( 'external' )
+			->set_external_participation_url( $this->get_url() );
 
 		return $object;
 	}

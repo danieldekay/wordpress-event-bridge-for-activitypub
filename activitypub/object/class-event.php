@@ -7,6 +7,9 @@
  * @package activity-event-transformers
  */
 
+use function Activitypub\snake_to_camel_case;
+
+
 /**
  * Event is an implementation of one of the
  * Activity Streams Event object type
@@ -17,6 +20,9 @@
  * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-event
  */
 class Event extends \Activitypub\Activity\Base_Object {
+	const REPLIES_MODERATION_OPTION_TYPES = [ 'allow_all', 'closed'];
+	const JOIN_MODE_TYPES = [ 'free', 'restricted', 'external'];
+
 	/**
 	 * Event is an implementation of one of the
 	 * Activity Streams
@@ -30,73 +36,93 @@ class Event extends \Activitypub\Activity\Base_Object {
 	 * Mobilizon also implemented this as a fallback to their own
 	 * repliesModerationOption.
 	 *
+	 * @context https://joinpeertube.org/commentsEnabled
 	 * @see https://docs.joinpeertube.org/api/activitypub#video
 	 * @see https://docs.joinmobilizon.org/contribute/activity_pub/
-	 *
 	 * @var bool
 	 */
 	protected $comments_enabled;
 
 	/**
+	 * @context https://joinmobilizon.org/timezone
 	 * @var string
 	 */
 	protected $timezone;
 
 	/**
-	 * @context https://joinmobilizon/repliesModerationOption
-	 * @var enum
+	 * @context https://joinmobilizon.org/repliesModerationOption
+	 * @see https://docs.joinmobilizon.org/contribute/activity_pub/#repliesmoderation
+	 * @var string
 	 */
 	protected $replies_moderation_option;
 
 	/**
+	 * @context https://joinmobilizon/anonymousParticipationEnabled
+     * @see https://docs.joinmobilizon.org/contribute/activity_pub/#anonymousparticipationenabled
 	 * @var bool
 	 */
 	protected $anonymous_participation_enabled;
 
 	/**
+	 * @context https://schema.org/category
 	 * @var enum
 	 */
 	protected $category;
 
 	/**
+	 * @context https://schema.org/inLanguage
 	 * @var
 	 */
 	protected $in_language;
 
 	/**
+	 * @context https://joinmobilizon.org/isOnline
 	 * @var bool
 	 */
 	protected $is_online;
 
 	/**
+	 * @context http://www.w3.org/2002/12/cal/ical#
 	 * @var enum
 	 */
 	protected $ical_status;
 
 	/**
+	 * @context https://joinmobilizon.org/externalParticipationUrl
 	 * @var string
 	 */
 	protected $external_participation_url;
 
 	/**
-	 * @var enum
+	 * @context https://joinmobilizon.org/joinMode
+	 * @see https://docs.joinmobilizon.org/contribute/activity_pub/#joinmode
+	 * @var
 	 */
 	protected $join_mode;
 
 	/**
-	 * @var bool
-	 */
-	protected $draft;
-
-	/**
+	 * @context https://joinmobilizon.org/participantCount
 	 * @var int
 	 */
 	protected $participant_count;
 
 	/**
+	 * @context https://schema.org/maximumAttendeeCapacity
+	 * @see https://docs.joinmobilizon.org/contribute/activity_pub/#maximumattendeecapacity
 	 * @var int
 	 */
 	protected $maximum_attendee_capacity;
+
+	/**
+	 * Setter function that makes sure, we only set valid replies moderation options.
+	 * @param string $value
+	 */
+	public function set_replies_moderation_option( $value ) {
+		if ( in_array( $value, self::REPLIES_MODERATION_OPTION_TYPES, true ) ) {
+			$this->replies_moderation_option = $value;
+		}
+		return $this;
+	}
 
 	/**
 	 * @param array $array The array version of an object of this class.
@@ -148,6 +174,66 @@ class Event extends \Activitypub\Activity\Base_Object {
 			$replies_moderation_option_context = $this->get_property_context( 'replies_moderation_option' );
 		}
 		return $context;
+	}
+
+	private static function compact_context( $key_context, $namespace, $abbreviation ) {
+		$abbreviation_added = false;
+		foreach ( $key_context as $key => $value ) {
+			// Check if the key starts with "https://joinpeertube.org/"
+			if ( strpos( $value, $namespace ) === 0 ) {
+				// Replace the key
+				$key_context[ $key ] = $abbreviation . ':' . substr($value, strlen( $namespace ));
+
+				// Add "pt" element only once
+				if ( ! $abbreviation_added ) {
+					$key_context = [ $abbreviation => $namespace . '/ns#' ] + $key_context;
+					$abbreviation_added = true;
+				}
+			}
+		}
+		return $key_context;
+	}
+
+	public static function get_context() {
+		$class = self::class;
+		$transient = "activitypub_context_object_{$class}";
+		$context = get_transient($transient);
+		if ( $context ) {
+			return $context;
+		}
+		$reflection_class = new ReflectionClass( self::class );
+		$context = array(
+			'https://www.w3.org/ns/activitystreams',
+			'https://w3id.org/security/v1',
+		);
+
+		$key_context = [];
+
+		foreach ( $reflection_class->getProperties() as $property ) {
+			$doc_omment = $property->getDocComment();
+
+			// Extract context information from the doc comment.
+			preg_match( '/@context\s+([^\s]+)/', $doc_omment, $matches );
+
+			if ( !empty( $matches[1] ) ) {
+				$key_context[ snake_to_camel_case( $property->name ) ] = $matches[1];
+			}
+		}
+
+		$namespace_abbreviations = array(
+			'https://joinpeertube.org/' => 'pt',
+			'https://joinmobilizon.org/' => 'mz',
+			'https://schema.org/'        => 'sc'
+		);
+
+		foreach ( $namespace_abbreviations as $namespace => $abbreviation ) {
+			$key_context = self::compact_context( $key_context, $namespace, $abbreviation );
+		}
+
+		$context[] = $key_context;
+
+		set_transient( $transient, $context );
+        return $context;
 	}
 
 
