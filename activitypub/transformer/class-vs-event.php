@@ -68,7 +68,7 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	 * @access public
 	 * @return array Widget categories.
 	 */
-	public function get_supported_post_types() {
+	public static function get_supported_post_types() {
 		return array( 'event' );
 	}
 
