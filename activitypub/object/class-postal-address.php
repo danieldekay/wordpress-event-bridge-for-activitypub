@@ -4,6 +4,7 @@
  * derived from https://schema.org/PostalAddress.
  *
  * @package activity-event-transformers
+ * @license AGPL-3.0-or-later
  */
 
 /**

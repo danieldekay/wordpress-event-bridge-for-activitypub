@@ -3,6 +3,7 @@
  * ActivityPub Transformer for VS Event.
  *
  * @package activity-event-transformers
+ * @license AGPL-3.0-or-later
  */
 
 require_once __DIR__ . '/../object/class-event.php';
@@ -78,23 +79,11 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	 * @returns array The Place.
 	 */
 	public function get_event_location( $post_id ) {
-		$object = new Place();
-		$object->set_type( 'Place' );
 		$address = get_post_meta( $post_id, 'event-location', true );
-		$object->set_name( $address );
-		$object->set_address( $address );
-		return $object;
-	}
-
-	/**
-	 * Test
-	 *
-	 * @param string $context context.
-	 * @return string $context context.
-	 */
-	private function add_pt_comments_enabled_context( $context ) {
-		$test = $context;
-		return $context;
+		return ( new Place() )
+			->set_type( 'Place' )
+			->set_name( $address )
+			->set_address( $address );
 	}
 
 	/**
@@ -111,22 +100,29 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	private function get_event_link() {
 		$event_link = get_post_meta( $this->wp_post->ID, 'event-link', true );
 		if ( $event_link ) {
-			return array(
+			return [
 				'type' => 'Link',
 				'name' => 'Website',
 				'href' => \esc_url( get_post_meta( $post_id, 'event-location', true ) ),
 				'mediaType' => 'text/html',
-			);
+			];
 		}
 	}
 
 	/**
-	 * Extends the get_attachments function to also add the event Link.
+	 * Overrides/extends the get_attachments function to also add the event Link.
 	 */
 	protected function get_attachments() {
 		$attachments = parent::get_attachments();
-		$attachments[] = $this->get_event_link();
+		$event_link = $this->get_event_link();
+		if ( $event_link ) {
+			$attachments[] = $this->get_event_link();
+		}
 		return $attachments;
+	}
+
+	private function get_category() {
+		return 'MEETING';
 	}
 
 	/**
@@ -192,7 +188,8 @@ class VS_Event extends \Activitypub\Transformer\Base {
 			->set_replies_moderation_option( 'allow_all' )
 			->set_join_mode( 'external' )
 			->set_external_participation_url( $this->get_url() )
-			->set_ical_status( 'CONFIRMED' );
+			->set_status( 'CONFIRMED' )
+			->set_category( 'MEETING' );
 
 		return $object;
 	}

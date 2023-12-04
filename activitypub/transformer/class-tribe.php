@@ -3,6 +3,7 @@
  * ActivityPub Tribe Transformer
  *
  * @package activity-event-transformers
+ * @license AGPL-3.0-or-later
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

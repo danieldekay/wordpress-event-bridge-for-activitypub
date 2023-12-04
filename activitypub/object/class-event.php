@@ -3,6 +3,7 @@
  * ActivityPub Object of type Event.
  *
  * @package activity-event-transformers
+ * @license AGPL-3.0-or-later
  */
 
 use function Activitypub\snake_to_camel_case;
@@ -33,7 +34,6 @@ class Event extends \Activitypub\Activity\Base_Object {
 	 * repliesModerationOption.
 	 *
 	 * @context https://joinpeertube.org/ns#commentsEnabled
-	 *
 	 * @see https://docs.joinpeertube.org/api/activitypub#video
 	 * @see https://docs.joinmobilizon.org/contribute/activity_pub/
 	 * @var bool|null
@@ -48,7 +48,6 @@ class Event extends \Activitypub\Activity\Base_Object {
 
 	/**
 	 * @context https://joinmobilizon.org/ns#repliesModerationOption
-	 *
 	 * @see https://docs.joinmobilizon.org/contribute/activity_pub/#repliesmoderation
 	 * @var string
 	 */
@@ -56,7 +55,6 @@ class Event extends \Activitypub\Activity\Base_Object {
 
 	/**
 	 * @context https://joinmobilizon.org/ns#anonymousParticipationEnabled
-	 *
      * @see https://docs.joinmobilizon.org/contribute/activity_pub/#anonymousparticipationenabled
 	 * @var bool
 	 */
