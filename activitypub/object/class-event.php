@@ -1,21 +1,17 @@
 <?php
 /**
- * ActivityPub Transformer for VS Event.
- *
- * This is a file doc comments.
+ * ActivityPub Object of type Event.
  *
  * @package activity-event-transformers
  */
 
 use function Activitypub\snake_to_camel_case;
-
+require_once __DIR__ . '/class-place.php';
 
 /**
- * Event is an implementation of one of the
- * Activity Streams Event object type
+ * Event is an implementation of one of the Activity Streams Event object type.
  *
- * The Object is the primary base type for the Activity Streams
- * vocabulary.
+ * This class contains extra keys as used by Mobilizon to ensure compatibility.
  *
  * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-event
  */
@@ -36,28 +32,31 @@ class Event extends \Activitypub\Activity\Base_Object {
 	 * Mobilizon also implemented this as a fallback to their own
 	 * repliesModerationOption.
 	 *
-	 * @context https://joinpeertube.org/commentsEnabled
+	 * @context https://joinpeertube.org/ns#commentsEnabled
+	 *
 	 * @see https://docs.joinpeertube.org/api/activitypub#video
 	 * @see https://docs.joinmobilizon.org/contribute/activity_pub/
-	 * @var bool
+	 * @var bool|null
 	 */
 	protected $comments_enabled;
 
 	/**
-	 * @context https://joinmobilizon.org/timezone
+	 * @context https://joinmobilizon.org/ns#timezone
 	 * @var string
 	 */
 	protected $timezone;
 
 	/**
-	 * @context https://joinmobilizon.org/repliesModerationOption
+	 * @context https://joinmobilizon.org/ns#repliesModerationOption
+	 *
 	 * @see https://docs.joinmobilizon.org/contribute/activity_pub/#repliesmoderation
 	 * @var string
 	 */
 	protected $replies_moderation_option;
 
 	/**
-	 * @context https://joinmobilizon/anonymousParticipationEnabled
+	 * @context https://joinmobilizon.org/ns#anonymousParticipationEnabled
+	 *
      * @see https://docs.joinmobilizon.org/contribute/activity_pub/#anonymousparticipationenabled
 	 * @var bool
 	 */
@@ -76,32 +75,32 @@ class Event extends \Activitypub\Activity\Base_Object {
 	protected $in_language;
 
 	/**
-	 * @context https://joinmobilizon.org/isOnline
+	 * @context https://joinmobilizon.org/ns#isOnline
 	 * @var bool
 	 */
 	protected $is_online;
 
 	/**
-	 * @context http://www.w3.org/2002/12/cal/ical#
+	 * @context http://www.w3.org/2002/12/cal/ical#status
 	 * @var enum
 	 */
-	protected $ical_status;
+	protected $status;
 
 	/**
-	 * @context https://joinmobilizon.org/externalParticipationUrl
+	 * @context https://joinmobilizon.org/ns#externalParticipationUrl
 	 * @var string
 	 */
 	protected $external_participation_url;
 
 	/**
-	 * @context https://joinmobilizon.org/joinMode
+	 * @context https://joinmobilizon.org/ns#joinMode
 	 * @see https://docs.joinmobilizon.org/contribute/activity_pub/#joinmode
 	 * @var
 	 */
 	protected $join_mode;
 
 	/**
-	 * @context https://joinmobilizon.org/participantCount
+	 * @context https://joinmobilizon.org/ns#participantCount
 	 * @var int
 	 */
 	protected $participant_count;
@@ -113,35 +112,6 @@ class Event extends \Activitypub\Activity\Base_Object {
 	 */
 	protected $maximum_attendee_capacity;
 
-	/**
-	 * Setter function that makes sure, we only set valid replies moderation options.
-	 * @param string $value
-	 */
-	public function set_replies_moderation_option( $value ) {
-		if ( in_array( $value, self::REPLIES_MODERATION_OPTION_TYPES, true ) ) {
-			$this->replies_moderation_option = $value;
-		}
-		return $this;
-	}
-
-	/**
-	 * @param array $array The array version of an object of this class.
-	 */
-	private function rename_ical_status_key( $array ) {
-		$array[ 'ical:status' ] = $array[ 'icalStatus' ];
-		unset( $array[ 'icalStatus' ] );
-		return $array;
-	}
-
-	/**
-	 * @param array $array The array version of an object of this class.
-	 */
-	public function rename_array_keys( $array ) {
-		if ( isset( $array[ 'icalStatus' ] ) ) {
-			$array = $this->rename_ical_status_key( $array );
-		}
-		return $array;
-	}
 
 	 /**
      * Get the context information for a property.
@@ -170,13 +140,6 @@ class Event extends \Activitypub\Activity\Base_Object {
         return null;
     }
 
-	public function filter_context( $context ) {
-		// if ( isset( $this->replies_moderation_option ) ) {
-		// 	$replies_moderation_option_context = $this->get_property_context( 'replies_moderation_option' );
-		// }
-		return $context;
-	}
-
 	private static function compact_context( $key_context, $namespace, $abbreviation ) {
 		$abbreviation_added = false;
 		foreach ( $key_context as $key => $value ) {
@@ -187,7 +150,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 
 				// Add abbreviation element for the namespace only once
 				if ( ! $abbreviation_added ) {
-					$key_context = [ $abbreviation => $namespace . '/ns#' ] + $key_context;
+					$key_context = [ $abbreviation => $namespace ] + $key_context;
 					$abbreviation_added = true;
 				}
 			}
@@ -197,7 +160,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 
 	public static function get_context() {
 		$class = self::class;
-		$transient = "activitypub_context_object_{$class}";
+		$transient = "activitypub_json_context_object_{$class}";
 		$context = get_transient($transient);
 		// if ( $context ) {
 		// 	return $context;
@@ -222,9 +185,10 @@ class Event extends \Activitypub\Activity\Base_Object {
 		}
 
 		$namespace_abbreviations = array(
-			'https://joinpeertube.org/' => 'pt',
-			'https://joinmobilizon.org/' => 'mz',
-			'https://schema.org/'        => 'sc'
+			'https://joinpeertube.org/ns#'        => 'pt',
+			'https://joinmobilizon.org/ns#'       => 'mz',
+			'https://schema.org/'                 => 'sc',
+			'http://www.w3.org/2002/12/cal/ical#' => 'ical',
 		);
 
 		foreach ( $namespace_abbreviations as $namespace => $abbreviation ) {
@@ -242,9 +206,8 @@ class Event extends \Activitypub\Activity\Base_Object {
 	 * When using this class we need to add some filters.
 	 */
 	public function __construct() {
-		$class = get_class( $this );
-		$class = 'event';
-		add_filter( "activitypub_activity_{$class}_object_array", [ $this, 'rename_array_keys' ] );
-		add_filter( 'activitypub_json_context', [ $this, 'filter_context' ] );
+		// $class = strtolower( get_class( $this ) );
+		// add_filter( "activitypub_activity_{$class}_object_array", [ $this, 'filter_object_array' ] );
+		// add_filter( 'activitypub_json_context', [ $this, 'filter_json_context' ] );
 	}
 }

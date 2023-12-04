@@ -8,6 +8,7 @@
 require_once __DIR__ . '/../object/class-event.php';
 
 use Activitypub\Activity\Base_Object;
+use Place;
 use function Activitypub\get_rest_url_by_path;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -77,9 +78,11 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	 * @returns array The Place.
 	 */
 	public function get_event_location( $post_id ) {
-		$object = new Base_Object();
+		$object = new Place();
 		$object->set_type( 'Place' );
-		$object->set_name( get_post_meta( $post_id, 'event-location', true ) );
+		$address = get_post_meta( $post_id, 'event-location', true );
+		$object->set_name( $address );
+		$object->set_address( $address );
 		return $object;
 	}
 
@@ -175,7 +178,7 @@ class VS_Event extends \Activitypub\Transformer\Base {
 		$path = sprintf( 'users/%d/followers', intval( $this->wp_post->post_author ) );
 
 		$object
-			->set_location( $this->get_event_location( $this->wp_post->ID ) )
+			->set_location( $this->get_event_location( $this->wp_post->ID )->to_array() )
 			->set_comments_enabled( comments_open( $this->wp_post->ID ) )
 			->set_to(
 				array(
