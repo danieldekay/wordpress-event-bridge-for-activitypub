@@ -133,6 +133,7 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	 * @return \Activitypub\Activity\Base_Object The ActivityPub Object.
 	 */
 	public function transform() {
+		// todo make tranform nicer
 		$context = Event::get_context();
 		$object  = new Event();
 		$object

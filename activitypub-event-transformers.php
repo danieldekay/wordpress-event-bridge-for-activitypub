@@ -29,8 +29,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @return void
  */
 function register_event_transformers( $transformers_manager ) {
-	// require_once __DIR__ . '/activitypub/transformer/class-tribe.php';
-	// $transformers_manager->register( new \Tribe() );
+	require_once __DIR__ . '/activitypub/transformer/class-tribe.php';
+	$transformers_manager->register( new \Tribe() );
 
 	require_once __DIR__ . '/activitypub/transformer/class-vs-event.php';
 	$transformers_manager->register( new \VS_Event() );
