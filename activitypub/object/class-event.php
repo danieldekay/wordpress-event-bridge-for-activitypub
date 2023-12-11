@@ -16,7 +16,8 @@ require_once __DIR__ . '/class-place.php';
  *
  * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-event
  */
-class Event extends \Activitypub\Activity\Base_Object { // todo maybe rename to mobilizon event?
+class Event extends \Activitypub\Activity\Base_Object {
+	// todo maybe rename to mobilizon event?
 	const REPLIES_MODERATION_OPTION_TYPES = [ 'allow_all', 'closed' ];
 	const JOIN_MODE_TYPES = [ 'free', 'restricted', 'external' ]; // amd 'invite', but not used by mobilizon atm
 
@@ -111,32 +112,32 @@ class Event extends \Activitypub\Activity\Base_Object { // todo maybe rename to 
 	protected $maximum_attendee_capacity;
 
 
-	 /**
-     * Get the context information for a property.
-     *
-     * @param string $property
-     *
-     * @return array|null
-     */
-    private function get_property_context( string $property ) {
-        $reflection_class = new ReflectionClass( $this );
+	/**
+	 * Get the context information for a property.
+	 *
+	 * @param string $property
+	 *
+	 * @return array|null
+	 */
+	private function get_property_context( string $property ) {
+		$reflection_class = new ReflectionClass( $this );
 
-        if ( $reflection_class->hasProperty( $property ) ) {
-            $reflection_property = $reflection_class->getProperty( $property );
-            $doc_omment = $reflection_property->getDocComment();
+		if ( $reflection_class->hasProperty( $property ) ) {
+			$reflection_property = $reflection_class->getProperty( $property );
+			$doc_omment = $reflection_property->getDocComment();
 
-            // Extract context information from the doc comment.
-            preg_match( '/@context\s+([^\s]+)/', $doc_omment, $matches );
+			// Extract context information from the doc comment.
+			preg_match( '/@context\s+([^\s]+)/', $doc_omment, $matches );
 
-            if ( !empty( $matches[1] ) ) {
-                return $matches[1];
-            } else {
+			if ( ! empty( $matches[1] ) ) {
+				return $matches[1];
+			} else {
 				return 'https://www.w3.org/ns/activitystreams';
 			}
-        }
+		}
 
-        return null;
-    }
+		return null;
+	}
 
 	private static function compact_context( $key_context, $namespace, $abbreviation ) {
 		$abbreviation_added = false;
