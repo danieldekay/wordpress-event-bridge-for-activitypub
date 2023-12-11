@@ -16,9 +16,9 @@ require_once __DIR__ . '/class-place.php';
  *
  * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-event
  */
-class Event extends \Activitypub\Activity\Base_Object {
-	const REPLIES_MODERATION_OPTION_TYPES = [ 'allow_all', 'closed'];
-	const JOIN_MODE_TYPES = [ 'free', 'restricted', 'external'];
+class Event extends \Activitypub\Activity\Base_Object { // todo maybe rename to mobilizon event?
+	const REPLIES_MODERATION_OPTION_TYPES = [ 'allow_all', 'closed' ];
+	const JOIN_MODE_TYPES = [ 'free', 'restricted', 'external' ]; // amd 'invite', but not used by mobilizon atm
 
 	/**
 	 * Event is an implementation of one of the
@@ -55,7 +55,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 
 	/**
 	 * @context https://joinmobilizon.org/ns#anonymousParticipationEnabled
-     * @see https://docs.joinmobilizon.org/contribute/activity_pub/#anonymousparticipationenabled
+	 * @see https://docs.joinmobilizon.org/contribute/activity_pub/#anonymousparticipationenabled
 	 * @var bool
 	 */
 	protected $anonymous_participation_enabled;
@@ -159,9 +159,9 @@ class Event extends \Activitypub\Activity\Base_Object {
 	public static function get_context() {
 		$class = self::class;
 		$transient = "activitypub_json_context_object_{$class}";
-		$context = get_transient($transient);
+		$context = get_transient( $transient );
 		// if ( $context ) {
-		// 	return $context;
+		//  return $context;
 		// }
 		$reflection_class = new ReflectionClass( self::class );
 		$context = array(
@@ -177,7 +177,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 			// Extract context information from the doc comment.
 			preg_match( '/@context\s+([^\s]+)/', $doc_omment, $matches );
 
-			if ( !empty( $matches[1] ) ) {
+			if ( ! empty( $matches[1] ) ) {
 				$key_context[ snake_to_camel_case( $property->name ) ] = $matches[1];
 			}
 		}
@@ -196,7 +196,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 		$context[] = $key_context;
 
 		set_transient( $transient, $context );
-        return $context;
+		return $context;
 	}
 
 
