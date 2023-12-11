@@ -20,6 +20,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 	// todo maybe rename to mobilizon event?
 	const REPLIES_MODERATION_OPTION_TYPES = [ 'allow_all', 'closed' ];
 	const JOIN_MODE_TYPES = [ 'free', 'restricted', 'external' ]; // amd 'invite', but not used by mobilizon atm
+	const ICAL_EVENT_STATUS_TYPES = ["TENTATIVE", "CONFIRMED", "CANCELLED"];
 
 	/**
 	 * Event is an implementation of one of the
