@@ -26,26 +26,36 @@ class Place extends \Activitypub\Activity\Base_Object {
 	protected $type = 'Place';
 
 	/**
+	 * Indicates the accuracy of position coordinates on a Place objects.
+	 * Expressed in properties of percentage. e.g. "94.0" means "94.0% accurate".
+	 *
 	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-accuracy
-	 * @var float
+	 * @var float xsd:float [>= 0.0f, <= 100.0f]
 	 */
 	protected $accuracy;
 
 	/**
+	 * Indicates the altitude of a place. The measurement units is indicated using the units property.
+	 * If units is not specified, the default is assumed to be "m" indicating meters.
+	 *
 	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-altitude
-	 * @var float
+	 * @var float xsd:float
 	 */
 	protected $altitude;
 
 	/**
+	 * The latitude of a place.
+	 *
 	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-latitude
-	 * @var float
+	 * @var float xsd:float
 	 */
 	protected $latitude;
 
 	/**
+	 * The longitude of a place.
+	 *
 	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-longitude
-	 * @var float
+	 * @var float xsd:float
 	 */
 	protected $longitude;
 
@@ -73,8 +83,8 @@ class Place extends \Activitypub\Activity\Base_Object {
 	 */
 	protected $comments_enabled;
 
-    /**
-     * @var Postal_Address|string
-     */
-    protected $address;
+	/**
+	 * @var Postal_Address|string
+	 */
+	protected $address;
 }

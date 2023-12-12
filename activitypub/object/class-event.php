@@ -18,9 +18,9 @@ require_once __DIR__ . '/class-place.php';
  */
 class Event extends \Activitypub\Activity\Base_Object {
 	// todo maybe rename to mobilizon event?
-	const REPLIES_MODERATION_OPTION_TYPES = [ 'allow_all', 'closed' ];
-	const JOIN_MODE_TYPES = [ 'free', 'restricted', 'external' ]; // amd 'invite', but not used by mobilizon atm
-	const ICAL_EVENT_STATUS_TYPES = ["TENTATIVE", "CONFIRMED", "CANCELLED"];
+	const REPLIES_MODERATION_OPTION_TYPES = array( 'allow_all', 'closed' );
+	const JOIN_MODE_TYPES = array( 'free', 'restricted', 'external' ); // amd 'invite', but not used by mobilizon atm
+	const ICAL_EVENT_STATUS_TYPES = array( 'TENTATIVE', 'CONFIRMED', 'CANCELLED' );
 
 	/**
 	 * Event is an implementation of one of the
@@ -29,6 +29,10 @@ class Event extends \Activitypub\Activity\Base_Object {
 	 * @var string
 	 */
 	protected $type = 'Event';
+
+	protected $name;
+
+	protected $contacts;
 
 	/**
 	 * Extension invented by PeerTube whether comments/replies are <enabled>
@@ -81,7 +85,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 	protected $is_online;
 
 	/**
-	 * @context http://www.w3.org/2002/12/cal/ical#status
+	 * @context https://www.w3.org/2002/12/cal/ical#status
 	 * @var enum
 	 */
 	protected $status;
@@ -111,6 +115,13 @@ class Event extends \Activitypub\Activity\Base_Object {
 	 * @var int
 	 */
 	protected $maximum_attendee_capacity;
+
+	/**
+	 * @context https://schema.org/remainingAttendeeCapacity
+	 * @see https://docs.joinmobilizon.org/contribute/activity_pub/#remainignattendeecapacity
+	 * @var int
+	 */
+	protected $remaining_attendee_capacity;
 
 
 	/**
@@ -150,7 +161,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 
 				// Add abbreviation element for the namespace only once
 				if ( ! $abbreviation_added ) {
-					$key_context = [ $abbreviation => $namespace ] + $key_context;
+					$key_context = array( $abbreviation => $namespace ) + $key_context;
 					$abbreviation_added = true;
 				}
 			}
@@ -163,7 +174,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 		$transient = "activitypub_json_context_object_{$class}";
 		$context = get_transient( $transient );
 		// if ( $context ) {
-		//  return $context;
+		// return $context;
 		// }
 		$reflection_class = new ReflectionClass( self::class );
 		$context = array(
@@ -171,7 +182,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 			'https://w3id.org/security/v1',
 		);
 
-		$key_context = [];
+		$key_context = array();
 
 		foreach ( $reflection_class->getProperties() as $property ) {
 			$doc_omment = $property->getDocComment();
@@ -188,7 +199,7 @@ class Event extends \Activitypub\Activity\Base_Object {
 			'https://joinpeertube.org/ns#'        => 'pt',
 			'https://joinmobilizon.org/ns#'       => 'mz',
 			'https://schema.org/'                 => 'sc',
-			'http://www.w3.org/2002/12/cal/ical#' => 'ical',
+			'https://www.w3.org/2002/12/cal/ical#' => 'ical',
 		);
 
 		foreach ( $namespace_abbreviations as $namespace => $abbreviation ) {

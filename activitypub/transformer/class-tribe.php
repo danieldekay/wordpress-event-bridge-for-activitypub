@@ -168,9 +168,11 @@ class Tribe extends \Activitypub\Transformer\Base {
 		return ( new Place() )
 			->set_type( 'Place' )
 			->set_name( $venue->post_name )
-			->set_address( $venue->address . "\n" .
-			               $venue->zip . ", " . $venue->city . "\n" .
-			               $venue->country ); // todo add checks that everything exists here (lol)
+			->set_address(
+				$venue->address . "\n" .
+						   $venue->zip . ', ' . $venue->city . "\n" .
+						   $venue->country
+			); // todo add checks that everything exists here (lol)
 	}
 
 	/**
@@ -205,7 +207,7 @@ class Tribe extends \Activitypub\Transformer\Base {
 
 			// set author and location
 			->set_attributed_to( $this->get_attributed_to() )
-			->set_location( $this->get_event_location()->to_array())
+			->set_location( $this->get_event_location()->to_array() )
 
 			// set content
 			->set_name( $this->get_post_property( 'post_title' ) )

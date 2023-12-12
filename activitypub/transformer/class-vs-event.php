@@ -100,12 +100,12 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	private function get_event_link() {
 		$event_link = get_post_meta( $this->wp_post->ID, 'event-link', true );
 		if ( $event_link ) {
-			return [
+			return array(
 				'type' => 'Link',
 				'name' => 'Website',
-				'href' => \esc_url( get_post_meta( $post_id, 'event-location', true ) ),
+				'href' => \esc_url( $event_link ),
 				'mediaType' => 'text/html',
-			];
+			);
 		}
 	}
 
@@ -114,15 +114,13 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	 */
 	protected function get_attachments() {
 		$attachments = parent::get_attachments();
+		$attachments[0]['type'] = 'Document';
+		$attachments[0]['name'] = 'Banner';
 		$event_link = $this->get_event_link();
 		if ( $event_link ) {
 			$attachments[] = $this->get_event_link();
 		}
 		return $attachments;
-	}
-
-	private function get_category() {
-		return 'MEETING';
 	}
 
 	/**
@@ -160,13 +158,13 @@ class VS_Event extends \Activitypub\Transformer\Base {
 		if ( $summary ) {
 			$object->set_summary( $summary );
 		} else {
-			$object->set_summary( $this->content );
+			$object->set_summary( $this->get_content() );
 		}
 
 		$start_time = get_post_meta( $this->wp_post->ID, 'event-start-date', true );
 		$object->set_start_time( \gmdate( 'Y-m-d\TH:i:s\Z', $start_time ) );
 
-		$hide_end_time = get_post_meta( $this->wp_post->ID, 'event-hide-end-time', true);
+		$hide_end_time = get_post_meta( $this->wp_post->ID, 'event-hide-end-time', true );
 
 		if ( $hide_end_time != 'yes' ) {
 			$object->set_end_time( $this->get_end_time() );
@@ -183,14 +181,26 @@ class VS_Event extends \Activitypub\Transformer\Base {
 					get_rest_url_by_path( $path ),
 				)
 			)
-			->set_cc( $this->get_cc() )
+			->set_cc( array( get_rest_url_by_path( $path ) ) )
 			->set_attachment( $this->get_attachments() )
 			->set_tag( $this->get_tags() )
 			->set_replies_moderation_option( 'allow_all' )
 			->set_join_mode( 'external' )
 			->set_external_participation_url( $this->get_url() )
 			->set_status( 'CONFIRMED' )
-			->set_category( 'MEETING' );
+			->set_category( 'MEETING' )
+			->set_contacts( array() )
+			->set_name( get_the_title( $this->wp_post->ID ) )
+			->set_timezone( 'Europe/Vienna' )
+			->set_is_online( false )
+			->set_in_language( 'de ' )
+			->set_actor( $this->get_attributed_to() );
+
+		$object->set_remaining_attendee_capacity( null )
+			->set_anonymous_participation_enabled( null )
+			->set_draft( false );
+		$object->set_participant_count( 2 );
+		$object->set_uuid( '1de96701-bceb-4a78-bc18-6c417f52b314' );
 
 		return $object;
 	}

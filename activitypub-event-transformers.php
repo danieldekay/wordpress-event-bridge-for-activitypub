@@ -37,3 +37,30 @@ function register_event_transformers( $transformers_manager ) {
 }
 
 add_action( 'activitypub_transformers_register', 'register_event_transformers' );
+
+
+
+// TODO Below here is temporary code needed to do local testing atm.
+
+// Add a filter for http_request_host_is_external
+add_filter( 'http_request_host_is_external', 'custom_http_request_host_is_external', 10, 3 );
+
+// Your custom callback function
+function custom_http_request_host_is_external( $is_external, $host, $url ) {
+	$is_external = true;
+
+	return $is_external;
+}
+
+// add_filter( 'rest_request_before_callbacks', 'change_relay_actor_to_blog_actor', 10, 3 );
+
+// function change_relay_actor_to_blog_actor( $response, $handler, $request ) {
+
+// }
+
+// add_filters( 'https_ssl_verify', 'dont_verify_local_dev_https', 10, 3);
+
+
+// function dont_verify_local_dev_https($url) {
+// return false;
+// }
