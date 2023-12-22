@@ -6,11 +6,9 @@
  * @license AGPL-3.0-or-later
  */
 
-require_once __DIR__ . '/../object/class-event.php';
-
-use Activitypub\Activity\Base_Object;
-use Place;
-use function Activitypub\get_rest_url_by_path;
+use Activitypub\Activity\Event;
+use Activitypub\Activity\Place;
+use Activitypub\Transformer\Post;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -21,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class VS_Event extends \Activitypub\Transformer\Base {
+class VS_Event extends Post {
 	/**
 	 * Get widget name.
 	 *
@@ -89,8 +87,16 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	/**
 	 * Get the end time from the events metadata.
 	 */
-	private function get_end_time() {
-		$end_time = get_post_meta( $this->wp_post->ID, 'event-date', true );
+	protected function get_end_time() {
+		$end_time = get_post_meta( $this->object->ID, 'event-date', true );
+		return \gmdate( 'Y-m-d\TH:i:s\Z', $end_time );
+	}
+
+	/**
+	 * Get the end time from the events metadata.
+	 */
+	protected function get_start_time() {
+		$end_time = get_post_meta( $this->object->ID, 'event-start-date', true );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $end_time );
 	}
 
@@ -98,7 +104,7 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	 * Get the event link from the events metadata.
 	 */
 	private function get_event_link() {
-		$event_link = get_post_meta( $this->wp_post->ID, 'event-link', true );
+		$event_link = get_post_meta( $this->object->ID, 'event-link', true );
 		if ( $event_link ) {
 			return array(
 				'type' => 'Link',
@@ -112,8 +118,8 @@ class VS_Event extends \Activitypub\Transformer\Base {
 	/**
 	 * Overrides/extends the get_attachments function to also add the event Link.
 	 */
-	protected function get_attachments() {
-		$attachments = parent::get_attachments();
+	protected function get_attachment() {
+		$attachments = parent::get_attachment();
 		$attachments[0]['type'] = 'Document';
 		$attachments[0]['name'] = 'Banner';
 		$event_link = $this->get_event_link();
@@ -123,85 +129,51 @@ class VS_Event extends \Activitypub\Transformer\Base {
 		return $attachments;
 	}
 
+	protected function get_replies_moderation_option() {
+		return 'allow_all';
+	}
+
+	protected function get_status() {
+		return 'CONFIRMED';
+	}
+
 	/**
-	 * Transforms the VS Event WP_Post object to an ActivityPub Event Object.
+	 * Transform the WordPress Object into an ActivityPub Object.
 	 *
-	 * @see \Activitypub\Activity\Base_Object
-	 *
-	 * @return \Activitypub\Activity\Base_Object The ActivityPub Object.
+	 * @return Activitypub\Activity\Event
 	 */
-	public function transform() {
-		// todo make tranform nicer
-		$context = Event::get_context();
-		$object  = new Event();
-		$object
-			->set_id( $this->get_id() )
-			->set_url( $this->get_url() )
-			->set_type( $this->get_object_type() );
+	public function to_object() {
+		$object = new Event();
 
-		$published = \strtotime( $this->wp_post->post_date_gmt );
+		$vars = $object->get_object_var_keys();
 
-		$object->set_published( \gmdate( 'Y-m-d\TH:i:s\Z', $published ) );
+		foreach ( $vars as $var ) {
+			$getter = 'get_' . $var;
 
-		$updated = \strtotime( $this->wp_post->post_modified_gmt );
+			if ( method_exists( $this, $getter ) ) {
+				$value = call_user_func( array( $this, $getter ) );
 
-		if ( $updated > $published ) {
-			$object->set_updated( \gmdate( 'Y-m-d\TH:i:s\Z', $updated ) );
+				if ( isset( $value ) ) {
+					$setter = 'set_' . $var;
+
+					call_user_func( array( $object, $setter ), $value );
+				}
+			}
 		}
 
-		$object
-			->set_attributed_to( $this->get_attributed_to() )
-			->set_content( $this->get_content() )
-			->set_content_map( $this->get_content_map );
-
-		$summary = get_post_meta( $this->wp_post->ID, 'event-summary', true );
-		if ( $summary ) {
-			$object->set_summary( $summary );
-		} else {
-			$object->set_summary( $this->get_content() );
-		}
-
-		$start_time = get_post_meta( $this->wp_post->ID, 'event-start-date', true );
-		$object->set_start_time( \gmdate( 'Y-m-d\TH:i:s\Z', $start_time ) );
-
-		$hide_end_time = get_post_meta( $this->wp_post->ID, 'event-hide-end-time', true );
-
-		if ( $hide_end_time != 'yes' ) {
-			$object->set_end_time( $this->get_end_time() );
-		}
-
-		$path = sprintf( 'users/%d/followers', intval( $this->wp_post->post_author ) );
-
-		$object
-			->set_location( $this->get_event_location( $this->wp_post->ID )->to_array() )
-			->set_comments_enabled( comments_open( $this->wp_post->ID ) )
-			->set_to(
-				array(
-					'https://www.w3.org/ns/activitystreams#Public',
-					get_rest_url_by_path( $path ),
-				)
-			)
-			->set_cc( array( get_rest_url_by_path( $path ) ) )
-			->set_attachment( $this->get_attachments() )
-			->set_tag( $this->get_tags() )
+		return $object
 			->set_replies_moderation_option( 'allow_all' )
 			->set_join_mode( 'external' )
 			->set_external_participation_url( $this->get_url() )
 			->set_status( 'CONFIRMED' )
 			->set_category( 'MEETING' )
-			->set_contacts( array() )
-			->set_name( get_the_title( $this->wp_post->ID ) )
+			->set_name( get_the_title( $this->object->ID ) )
 			->set_timezone( 'Europe/Vienna' )
 			->set_is_online( false )
 			->set_in_language( 'de ' )
-			->set_actor( $this->get_attributed_to() );
-
-		$object->set_remaining_attendee_capacity( null )
-			->set_anonymous_participation_enabled( null )
-			->set_draft( false );
-		$object->set_participant_count( 2 );
-		$object->set_uuid( '1de96701-bceb-4a78-bc18-6c417f52b314' );
-
-		return $object;
+			->set_actor ('http://wp.lan/@blog')
+			->set_to ( [
+				"https://www.w3.org/ns/activitystreams#Public"
+			]);
 	}
 }

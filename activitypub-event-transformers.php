@@ -25,20 +25,27 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Include fransformer class file and register the transformer class.
  *
  * @since 1.0.0
- * @param \Activitypub\Transformer\Transformer_Factory $transformers_manager ActivtiyPub transformers manager.
+ * @param \Activitypub\Transformer\Factory $factory ActivtiyPub transformers factory.
  * @return void
  */
-function register_event_transformers( $transformers_manager ) {
+function register_event_transformers( $transformers_factory ) {
 	require_once __DIR__ . '/activitypub/transformer/class-tribe.php';
-	$transformers_manager->register( new \Tribe() );
+	$transformers_factory->register( new \Tribe() );
 
 	require_once __DIR__ . '/activitypub/transformer/class-vs-event.php';
-	$transformers_manager->register( new \VS_Event() );
+	$transformers_factory->register( new \VS_Event() );
 }
 
 add_action( 'activitypub_transformers_register', 'register_event_transformers' );
 
-
+// Filter be object class
+add_filter( 'activitypub_transformer', function( $transformer, $object, $object_class ) {
+	if ( $object->post_type === 'event' ) {
+		require_once __DIR__ . '/activitypub/transformer/class-vs-event.php';
+        return new \VS_Event( $object );
+    }
+    return $transformer;
+}, 10, 3 );
 
 // TODO Below here is temporary code needed to do local testing atm.
 
