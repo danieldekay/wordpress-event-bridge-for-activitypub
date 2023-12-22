@@ -1,6 +1,6 @@
 <?php
 /**
- * ActivityPub Transformer for VS Event.
+ * ActivityPub Transformer for the plugin Very Simple Event List.
  *
  * @package activity-event-transformers
  * @license AGPL-3.0-or-later
@@ -53,7 +53,7 @@ class VS_Event extends Post {
 	 * @since 1.0.0
 	 * @return string The Event Object-Type.
 	 */
-	protected function get_object_type() {
+	protected function get_type() {
 		return 'Event';
 	}
 
@@ -171,7 +171,7 @@ class VS_Event extends Post {
 			->set_timezone( 'Europe/Vienna' )
 			->set_is_online( false )
 			->set_in_language( 'de ' )
-			->set_actor ('http://wp.lan/@blog')
+			->set_actor ('http://wp.lan/@blog' )
 			->set_to ( [
 				"https://www.w3.org/ns/activitystreams#Public"
 			]);
