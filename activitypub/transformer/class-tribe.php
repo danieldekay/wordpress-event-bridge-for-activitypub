@@ -34,8 +34,8 @@ class Tribe extends Post {
 	//  * @return void
 	//  */
 	// public function set_wp_post( WP_Post $wp_post ) {
-	// 	parent::set_wp_post( $wp_post );
-	// 	$this->tribe_event = tribe_get_event( $wp_post->ID );
+	//  parent::set_wp_post( $wp_post );
+	//  $this->tribe_event = tribe_get_event( $wp_post->ID );
 	// }
 
 	/**
