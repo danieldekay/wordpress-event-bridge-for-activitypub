@@ -9,6 +9,10 @@
 use Activitypub\Activity\Event;
 use Activitypub\Activity\Place;
 use Activitypub\Transformer\Post;
+use Activitypub\Model\Blog_user;
+
+use function Activitypub\get_rest_url_by_path;
+
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
@@ -21,40 +25,29 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class VS_Event extends Post {
 	/**
-	 * Get widget name.
+	 * Get transformer name.
 	 *
-	 * Retrieve oEmbed widget name.
+	 * Retrieve the transformers name.
 	 *
 	 * @since 1.0.0
 	 * @access public
 	 * @return string Widget name.
 	 */
-	public function get_name() {
+	public function get_transformer_name() {
 		return 'activitypub-event-transformers/vs-event';
 	}
 
 	/**
-	 * Get widget title.
+	 * Get transformer title.
 	 *
-	 * Retrieve Transformer title.
+	 * Retrieve the transformers label.
 	 *
 	 * @since 1.0.0
 	 * @access public
 	 * @return string Widget title.
 	 */
-	public function get_label() {
+	public function get_transformer_label() {
 		return 'VS Event';
-	}
-
-	/**
-	 * Returns the ActivityStreams 2.0 Object-Type for an Event.
-	 *
-	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-event
-	 * @since 1.0.0
-	 * @return string The Event Object-Type.
-	 */
-	protected function get_type() {
-		return 'Event';
 	}
 
 	/**
@@ -71,17 +64,29 @@ class VS_Event extends Post {
 	}
 
 	/**
+	 * Returns the ActivityStreams 2.0 Object-Type for an Event.
+	 *
+	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-event
+	 * @since 1.0.0
+	 * @return string The Event Object-Type.
+	 */
+	protected function get_type() {
+		return 'Event';
+	}
+
+	/**
 	 * Get the event location.
 	 *
 	 * @param int $post_id The WordPress post ID.
-	 * @returns array The Place.
+	 * @return array The Place.
 	 */
-	public function get_event_location( $post_id ) {
-		$address = get_post_meta( $post_id, 'event-location', true );
-		return ( new Place() )
-			->set_type( 'Place' )
-			->set_name( $address )
-			->set_address( $address );
+	public function get_location() {
+		$address = get_post_meta( $this->object->ID, 'event-location', true );
+		$place = new Place();
+		$place->set_type( 'Place' );
+		$place->set_name( $address );
+		$place->set_address( $address );
+		return $place;
 	}
 
 	/**
@@ -96,8 +101,8 @@ class VS_Event extends Post {
 	 * Get the end time from the events metadata.
 	 */
 	protected function get_start_time() {
-		$end_time = get_post_meta( $this->object->ID, 'event-start-date', true );
-		return \gmdate( 'Y-m-d\TH:i:s\Z', $end_time );
+		$start_time = get_post_meta( $this->object->ID, 'event-start-date', true );
+		return \gmdate( 'Y-m-d\TH:i:s\Z', $start_time );
 	}
 
 	/**
@@ -129,12 +134,87 @@ class VS_Event extends Post {
 		return $attachments;
 	}
 
-	protected function get_replies_moderation_option() {
-		return 'allow_all';
+	/**
+	 * This function tries to map VS-Event categories to Mobilizon event categories.
+	 *
+	 * @return string $category
+	 */
+	protected function get_category() {
+		$post_categories = wp_get_post_terms( $this->object->ID, 'event_cat' );
+
+		if ( empty( $post_categories ) ) {
+			return 'MEETING';
+		}
+
+		// Prepare an array to store all category information for comparison.
+		$category_info = array();
+
+		// Extract relevant category information (name, slug, description) from the categories array.
+		foreach ( $post_categories as $category ) {
+			$category_info[] = strtolower( $category->name );
+			$category_info[] = strtolower( $category->slug );
+			$category_info[] = strtolower( $category->description );
+		}
+
+		// Convert mobilizon categories to lowercase for case-insensitive comparison.
+		$mobilizon_categories = array_map( 'strtolower', Event::MOBILIZON_EVENT_CATEGORIES );
+
+		// Initialize variables to track the best match.
+		$best_mobilizon_category_match = '';
+		$best_match_length = 0;
+
+		// Check for the best match.
+		foreach ( $mobilizon_categories as $mobilizon_category ) {
+			foreach ( $category_info as $category ) {
+				if ( stripos( $category, $mobilizon_category ) !== false ) {
+					// Check if the current match is longer than the previous best match.
+					$current_match_legnth = strlen( $mobilizon_category );
+					if ( $current_match_legnth > $best_match_length ) {
+						$best_mobilizon_category_match = $mobilizon_category;
+						$best_match_length = $current_match_legnth;
+					}
+				}
+			}
+		}
+
+		return ( '' != $best_mobilizon_category_match ) ? strtoupper( $best_mobilizon_category_match ) : 'MEETING';
 	}
 
-	protected function get_status() {
-		return 'CONFIRMED';
+	/**
+	 * Returns the User-URL of the Author of the Post.
+		*
+		* If `single_user` mode is enabled, the URL of the Blog-User is returned.
+	 *
+	 * @return string The User-URL.
+	 */
+	protected function get_attributed_to() {
+		$user = new Blog_User();
+		return $user->get_url();
+	}
+
+	/**
+	 * Create a custom summary.
+	 *
+	 * It contains also the most important meta-information. The summary is often used when the
+	 * ActivityPub object type 'Event' is not supported, e.g. in Mastodon.
+	 *
+	 * @return string $summary The custom event summary.
+	 */
+	public function get_summary() {
+		if ( $this->object->excerpt ) {
+			$excerpt = $this->object->post_excerpt;
+		} else if ( get_post_meta( $this->object->ID, 'event-summary', true ) ) {
+			$excerpt = get_post_meta( $this->object->ID, 'event-summary', true );
+		} else {
+			$excerpt = $this->get_content();
+		}
+
+		$address = get_post_meta( $this->object->ID, 'event-location', true );
+		$start_time = get_post_meta( $this->object->ID, 'event-start-date', true );
+		$datetime_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		$start_time_string = wp_date( $datetime_format, $start_time );
+		$summary = "📍 {$address}\n 📅 {$start_time_string}\n\n {$excerpt}";
+		return $summary;
 	}
 
 	/**
@@ -144,36 +224,18 @@ class VS_Event extends Post {
 	 */
 	public function to_object() {
 		$object = new Event();
+		$object = $this->transform_object_properties( $object );
 
-		$vars = $object->get_object_var_keys();
-
-		foreach ( $vars as $var ) {
-			$getter = 'get_' . $var;
-
-			if ( method_exists( $this, $getter ) ) {
-				$value = call_user_func( array( $this, $getter ) );
-
-				if ( isset( $value ) ) {
-					$setter = 'set_' . $var;
-
-					call_user_func( array( $object, $setter ), $value );
-				}
-			}
-		}
-
+		// Set hardcoded values/one-liners that don't have a get(ter) function defined.
 		return $object
-			->set_replies_moderation_option( 'allow_all' )
-			->set_join_mode( 'external' )
+			->set_comments_enabled( true )
 			->set_external_participation_url( $this->get_url() )
 			->set_status( 'CONFIRMED' )
-			->set_category( 'MEETING' )
 			->set_name( get_the_title( $this->object->ID ) )
-			->set_timezone( 'Europe/Vienna' )
+			->set_timezone( $object->get_locale )
 			->set_is_online( false )
-			->set_in_language( 'de ' )
-			->set_actor ('http://wp.lan/@blog' )
-			->set_to ( [
-				"https://www.w3.org/ns/activitystreams#Public"
-			]);
+			->set_in_language( $this->get_locale() )
+			->set_actor( get_rest_url_by_path( 'application' ) )
+			->set_to( array( 'https://www.w3.org/ns/activitystreams#Public' ) );
 	}
 }
