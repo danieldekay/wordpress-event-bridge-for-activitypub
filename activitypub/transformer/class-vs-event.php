@@ -213,7 +213,7 @@ class VS_Event extends Post {
 		$start_time = get_post_meta( $this->object->ID, 'event-start-date', true );
 		$datetime_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 		$start_time_string = wp_date( $datetime_format, $start_time );
-		$summary = "📍 {$address}\n 📅 {$start_time_string}\n\n {$excerpt}";
+		$summary = "📍 {$address}\n📅 {$start_time_string}\n\n{$excerpt}";
 		return $summary;
 	}
 
