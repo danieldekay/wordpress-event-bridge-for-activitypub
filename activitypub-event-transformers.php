@@ -29,7 +29,7 @@ add_filter(
 		 * VS Event List
 		 * @see https://wordpress.org/plugins/very-simple-event-list/
 		 */
-		if ( is_plugin_active( 'very-simple-event-list/vsel.php' ) && $object->post_type === 'event' ) {
+		if ( $object->post_type === 'event' ) {
 			require_once __DIR__ . '/activitypub/transformer/class-vs-event.php';
 			return new \VS_Event( $object );
 		}
@@ -40,31 +40,31 @@ add_filter(
 	3
 );
 
-/**
- * Add a filter for http_request_host_is_external
- *
- * TODO: Remove this.
- *
- * @todo This filter is temporary code needed to do local testing.
- */
-add_filter( 'http_request_host_is_external', 'custom_http_request_host_is_external', 10, 3 );
+// /**
+//  * Add a filter for http_request_host_is_external
+//  *
+//  * TODO: Remove this.
+//  *
+//  * @todo This filter is temporary code needed to do local testing.
+//  */
+// add_filter( 'http_request_host_is_external', 'custom_http_request_host_is_external', 10, 3 );
 
-// Your custom callback function
-function custom_http_request_host_is_external( $is_external, $host, $url ) {
-	$is_external = true;
+// // Your custom callback function
+// function custom_http_request_host_is_external( $is_external, $host, $url ) {
+// 	$is_external = true;
 
-	return $is_external;
-}
+// 	return $is_external;
+// }
 
-/**
- * Don't verify ssl certs for testing.
- *
- * TODO: Remove this.
- *
- * @todo This filter is temporary code needed to do local testing.
- */
-add_filter( 'https_ssl_verify', 'dont_verify_local_dev_https', 10, 3 );
+// /**
+//  * Don't verify ssl certs for testing.
+//  *
+//  * TODO: Remove this.
+//  *
+//  * @todo This filter is temporary code needed to do local testing.
+//  */
+// add_filter( 'https_ssl_verify', 'dont_verify_local_dev_https', 10, 3 );
 
-function dont_verify_local_dev_https( $url ) {
-	return false;
-}
+// function dont_verify_local_dev_https( $url ) {
+// 	return false;
+// }
