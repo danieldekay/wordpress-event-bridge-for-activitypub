@@ -13,7 +13,6 @@ use Activitypub\Model\Blog_user;
 
 use function Activitypub\get_rest_url_by_path;
 
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -81,7 +80,7 @@ class VS_Event extends Post {
 	 * @return array The Place.
 	 */
 	public function get_location() {
-		$address = get_post_meta( $this->object->ID, 'event-location', true );
+		$address = get_post_meta( $this->wp_object->ID, 'event-location', true );
 		$place = new Place();
 		$place->set_type( 'Place' );
 		$place->set_name( $address );
@@ -93,7 +92,7 @@ class VS_Event extends Post {
 	 * Get the end time from the events metadata.
 	 */
 	protected function get_end_time() {
-		$end_time = get_post_meta( $this->object->ID, 'event-date', true );
+		$end_time = get_post_meta( $this->wp_object->ID, 'event-date', true );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $end_time );
 	}
 
@@ -101,7 +100,7 @@ class VS_Event extends Post {
 	 * Get the end time from the events metadata.
 	 */
 	protected function get_start_time() {
-		$start_time = get_post_meta( $this->object->ID, 'event-start-date', true );
+		$start_time = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $start_time );
 	}
 
@@ -109,7 +108,7 @@ class VS_Event extends Post {
 	 * Get the event link from the events metadata.
 	 */
 	private function get_event_link() {
-		$event_link = get_post_meta( $this->object->ID, 'event-link', true );
+		$event_link = get_post_meta( $this->wp_object->ID, 'event-link', true );
 		if ( $event_link ) {
 			return array(
 				'type' => 'Link',
@@ -140,7 +139,7 @@ class VS_Event extends Post {
 	 * @return string $category
 	 */
 	protected function get_category() {
-		$post_categories = wp_get_post_terms( $this->object->ID, 'event_cat' );
+		$post_categories = wp_get_post_terms( $this->wp_object->ID, 'event_cat' );
 
 		if ( empty( $post_categories ) ) {
 			return 'MEETING';
@@ -201,16 +200,16 @@ class VS_Event extends Post {
 	 * @return string $summary The custom event summary.
 	 */
 	public function get_summary() {
-		if ( $this->object->excerpt ) {
-			$excerpt = $this->object->post_excerpt;
-		} else if ( get_post_meta( $this->object->ID, 'event-summary', true ) ) {
-			$excerpt = get_post_meta( $this->object->ID, 'event-summary', true );
+		if ( $this->wp_object->excerpt ) {
+			$excerpt = $this->wp_object->post_excerpt;
+		} else if ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
+			$excerpt = get_post_meta( $this->wp_object->ID, 'event-summary', true );
 		} else {
 			$excerpt = $this->get_content();
 		}
 
-		$address = get_post_meta( $this->object->ID, 'event-location', true );
-		$start_time = get_post_meta( $this->object->ID, 'event-start-date', true );
+		$address = get_post_meta( $this->wp_object->ID, 'event-location', true );
+		$start_time = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
 		$datetime_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 		$start_time_string = wp_date( $datetime_format, $start_time );
 		$summary = "📍 {$address}\n📅 {$start_time_string}\n\n{$excerpt}";
@@ -231,7 +230,7 @@ class VS_Event extends Post {
 			->set_comments_enabled( true )
 			->set_external_participation_url( $this->get_url() )
 			->set_status( 'CONFIRMED' )
-			->set_name( get_the_title( $this->object->ID ) )
+			->set_name( get_the_title( $this->wp_object->ID ) )
 			->set_timezone( $object->get_locale )
 			->set_is_online( false )
 			->set_in_language( $this->get_locale() )

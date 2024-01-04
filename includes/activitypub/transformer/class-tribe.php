@@ -97,7 +97,7 @@ class Tribe extends Post {
 		// todo make it possible that one event can have multiple categories?
 
 		// using cat_slugs isn't 100% nice way to do this, don't know if it's a good idea
-		$categories = tribe_get_event_cat_slugs( $this->object->ID );
+		$categories = tribe_get_event_cat_slugs( $this->wp_object->ID );
 
 		if ( count( $categories ) === 0 ) {
 			return null;

@@ -44,8 +44,8 @@ add_filter(
  * Add admin notices for improved usability.
  */
 function check_some_other_plugin() {
-	if ( is_plugin_active('activitypub/activitypub.php') ) {
-		if ( is_plugin_active('very-simple-event-list/vsel.php') ) {
+	if ( is_plugin_active( 'activitypub/activitypub.php' ) ) {
+		if ( is_plugin_active( 'very-simple-event-list/vsel.php' ) ) {
 			add_action( 'admin_notices', 'vsel_admin_notices' );
 		}
 	}
@@ -54,10 +54,10 @@ function check_some_other_plugin() {
 add_action( 'admin_init', 'check_some_other_plugin' );
 
 function vsel_admin_notices() {
-	$is_vsel_edit_page = isset($_GET['post_type']) && $_GET['post_type'] === 'event';
-	$is_vsel_settings_page = strpos($_SERVER['REQUEST_URI'], '/wp-admin/options-general.php?page=vsel') !== false ;
-	$is_vsel_page =  $is_vsel_edit_page || $is_vsel_settings_page;
-	$vsel_post_type_is_activitypub_enabeld = in_array( 'event', get_option( 'activitypub_support_post_types') );
+	$is_vsel_edit_page = isset( $_GET['post_type'] ) && $_GET['post_type'] === 'event';
+	$is_vsel_settings_page = strpos( $_SERVER['REQUEST_URI'], '/wp-admin/options-general.php?page=vsel' ) !== false;
+	$is_vsel_page = $is_vsel_edit_page || $is_vsel_settings_page;
+	$vsel_post_type_is_activitypub_enabeld = in_array( 'event', get_option( 'activitypub_support_post_types' ) );
 	if ( $is_vsel_page && ! $vsel_post_type_is_activitypub_enabeld ) {
 		$vsel_plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/very-simple-event-list/vsel.php' );
 		$activitypub_plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/activitypub/activitypub.php' );
@@ -69,7 +69,7 @@ function vsel_admin_notices() {
 			),
 			$activitypub_plugin_data['Name'],
 			$vsel_plugin_data['Name'],
-			admin_url('options-general.php?page=activitypub&tab=settings')
+			admin_url( 'options-general.php?page=activitypub&tab=settings' )
 		);
 		wp_admin_notice(
 			$notice,
