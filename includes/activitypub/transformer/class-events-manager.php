@@ -6,11 +6,12 @@
  * @license AGPL-3.0-or-later
  */
 
+use EM_Event;
+
 use Activitypub\Activity\Event;
 use Activitypub\Activity\Place;
 use Activitypub\Transformer\Post;
 use Activitypub\Model\Blog_user;
-
 use function Activitypub\get_rest_url_by_path;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -25,6 +26,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 class Events_Manager extends Post {
+	/**
+	 * Holds the EM_Event object.
+	 * 
+	 * @var EM_Event
+	 */
+	protected $em_event;
+
 	/**
 	 * Get transformer name.
 	 *
@@ -121,7 +129,9 @@ class Events_Manager extends Post {
 	 * @return Activitypub\Activity\Event
 	 */
 	public function to_object() {
+		$this->em_event = new EM_Event( $this->wp_object->ID, 'post_id');
 		$activtiypub_object = new Event();
+
 		return $activtiypub_object;
 	}
 }

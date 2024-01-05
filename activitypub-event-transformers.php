@@ -24,15 +24,29 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 add_filter(
 	'activitypub_transformer',
-	function( $transformer, $object, $object_class ) {
+	function( $transformer, $wp_object, $object_class ) {
+		if ( 'WP_Post' != $object_class) {
+			return $transformer;
+		}
+
 		/**
 		 * VS Event List
 		 * @see https://wordpress.org/plugins/very-simple-event-list/
 		 */
-		if ( $object->post_type === 'event' ) {
-			require_once __DIR__ . '/includes/activitypub/transformer/class-vs-event.php';
-			return new \VS_Event( $object );
+		// if ( $wp_object->post_type === 'event' ) {
+		// 	require_once __DIR__ . '/includes/activitypub/transformer/class-vs-event.php';
+		// 	return new \VS_Event( $object );
+		// }
+
+		/**
+		 * Events manager
+		 * @see https://wordpress.org/plugins/events-manager/
+		 */
+		if ( class_exists( 'EM_Events') && $wp_object->post_type === 'event' ) {
+			require_once __DIR__ . '/includes/activitypub/transformer/class-events-manager.php';
+			return new \Events_Manager( $wp_object );
 		}
+
 		// Return the default transformer.
 		return $transformer;
 	},
