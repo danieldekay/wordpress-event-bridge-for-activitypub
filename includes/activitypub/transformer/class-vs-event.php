@@ -165,12 +165,14 @@ class VS_Event extends Post {
 		// Check for the best match.
 		foreach ( $mobilizon_categories as $mobilizon_category ) {
 			foreach ( $category_info as $category ) {
-				if ( stripos( $category, $mobilizon_category ) !== false ) {
-					// Check if the current match is longer than the previous best match.
-					$current_match_legnth = strlen( $mobilizon_category );
-					if ( $current_match_legnth > $best_match_length ) {
-						$best_mobilizon_category_match = $mobilizon_category;
-						$best_match_length = $current_match_legnth;
+				foreach ( explode( '_', $mobilizon_category ) as $mobilizon_category_slice ) {
+					if ( stripos( $category, $mobilizon_category_slice ) !== false ) {
+						// Check if the current match is longer than the previous best match.
+						$current_match_legnth = strlen( $mobilizon_category_slice );
+						if ( $current_match_legnth > $best_match_length ) {
+							$best_mobilizon_category_match = $mobilizon_category;
+							$best_match_length = $current_match_legnth;
+						}
 					}
 				}
 			}
