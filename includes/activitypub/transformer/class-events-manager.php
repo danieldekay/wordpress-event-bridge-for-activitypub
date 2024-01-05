@@ -90,7 +90,18 @@ class Events_Manager extends Post {
 	 * @return array The Place.
 	 */
 	public function get_location() {
-		return null;
+		$location = new Place();
+		$em_location = $this->em_event->get_location();
+
+		$location->set_name( $em_location->location_name );
+		$location->set_address( array(
+			'type' => 'PostalAddress',
+			'addressCountry' => $em_location->location_country,
+			'addressLocality' => $em_location->location_town,
+			'streetAddress' => $em_location->location_address,
+			'name' => $em_location->location_name,
+		));
+		return $location;
 	}
 
 	/**
@@ -104,7 +115,58 @@ class Events_Manager extends Post {
 	 * Get the end time from the events metadata.
 	 */
 	protected function get_start_time() {
-		return null;
+		$date_string = $this->em_event->event_start_date;
+		$time_string = $this->em_event->event_start_time;
+		$timezone_string = $this->em_event->event_timezone;
+
+		// Create a DateTime object with the given date, time, and timezone
+		$datetime = new DateTime($date_string . ' ' . $time_string, new DateTimeZone($timezone_string));
+
+		// Set the timezone for proper formatting
+		$datetime->setTimezone(new DateTimeZone('UTC'));
+
+		// Format the DateTime object as 'Y-m-d\TH:i:s\Z'
+		$formatted_date = $datetime->format('Y-m-d\TH:i:s\Z');
+		return $formatted_date;
+	}
+
+	protected function get_maximum_attendee_capacity() {
+		return $this->em_event->event_spaces;
+	}
+
+	/**
+	 * @todo decide whether to include pending bookings or not!
+	 */
+	protected function get_remaining_attendee_capacity() {
+		$em_bookings = $this->em_event->get_bookings()->get_bookings();
+		$remaining_attendee_capacity = $this->em_event->event_spaces - count( $em_bookings->bookings );
+		return $remaining_attendee_capacity;
+	}
+
+	protected function get_participant_count() {
+		$em_bookings = $this->em_event->get_bookings()->get_bookings();
+		return count( $em_bookings->bookings );
+	}
+	 
+	protected function get_content() {
+		return $this->wp_object->post_content;
+	}
+
+	protected function get_summary() {
+		if ( $this->em_event->post_excerpt ) {
+			$excerpt = $this->em_event->post_excerpt;
+		} else {
+			$excerpt = $this->get_content();
+		}
+
+		$address = $this->em_event->get_location()->location_name;
+
+		$start_time = $this->get_start_time();
+
+		$datetime_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		$start_time_string = wp_date( $datetime_format, $start_time );
+		$summary = "📍 {$address}\n📅 {$start_time_string}\n\n{$excerpt}";
+		return $summary;
 	}
 
 	/**
@@ -131,6 +193,8 @@ class Events_Manager extends Post {
 	public function to_object() {
 		$this->em_event = new EM_Event( $this->wp_object->ID, 'post_id');
 		$activtiypub_object = new Event();
+
+		$activtiypub_object = $this->transform_object_properties( $activtiypub_object );
 
 		return $activtiypub_object;
 	}
