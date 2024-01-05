@@ -18,11 +18,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * ActivityPub Transformer for VS Event
+ * ActivityPub Transformer for events from the WordPress plugin 'Events Manager'
+ * 
+ * @see https://wordpress.org/plugins/events-manager/
  *
  * @since 1.0.0
  */
-class VS_Event extends Post {
+class Events_Manager extends Post {
 	/**
 	 * Get transformer name.
 	 *
@@ -122,5 +124,4 @@ class VS_Event extends Post {
 		$activtiypub_object = new Event();
 		return $activtiypub_object;
 	}
-
 }
