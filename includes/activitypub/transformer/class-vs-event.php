@@ -206,7 +206,7 @@ class VS_Event extends Post {
 	public function get_summary() {
 		if ( $this->wp_object->excerpt ) {
 			$excerpt = $this->wp_object->post_excerpt;
-		} else if ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
+		} elseif ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
 			$excerpt = get_post_meta( $this->wp_object->ID, 'event-summary', true );
 		} else {
 			$excerpt = $this->get_content();

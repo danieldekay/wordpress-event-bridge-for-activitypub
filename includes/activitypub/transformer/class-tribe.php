@@ -152,21 +152,21 @@ class Tribe extends Post {
 	 */
 	public function get_event_location() {
 		/*
-			   'post_title' => 'testvenue',
-			   'post_name' => 'testvenue',
-			   'guid' => 'http://localhost/venue/testvenue/',
-			   'post_type' => 'tribe_venue',
-			   'address' => 'testaddr',
-			   'country' => 'Austria',
-			   'city' => 'testcity',
-			   'state_province' => 'testprovince',
-			   'state' => '',
-			   'province' => 'testprovince',
-			   'zip' => '8000',
-			   'phone' => '+4312343',
-			   'permalink' => 'http://localhost/venue/testvenue/',
-			   'directions_link' => 'https://maps.google.com/maps?f=q&#038;source=s_q&#038;hl=en&#038;geocode=&#038;q=testaddr+testcity+testprovince+8000+Austria',
-			   'website' => 'https://test.at',
+				'post_title' => 'testvenue',
+				'post_name' => 'testvenue',
+				'guid' => 'http://localhost/venue/testvenue/',
+				'post_type' => 'tribe_venue',
+				'address' => 'testaddr',
+				'country' => 'Austria',
+				'city' => 'testcity',
+				'state_province' => 'testprovince',
+				'state' => '',
+				'province' => 'testprovince',
+				'zip' => '8000',
+				'phone' => '+4312343',
+				'permalink' => 'http://localhost/venue/testvenue/',
+				'directions_link' => 'https://maps.google.com/maps?f=q&#038;source=s_q&#038;hl=en&#038;geocode=&#038;q=testaddr+testcity+testprovince+8000+Austria',
+				'website' => 'https://test.at',
 		 */
 		$venue = $this->tribe_event->venues[0];
 		return ( new Place() )
@@ -174,8 +174,8 @@ class Tribe extends Post {
 			->set_name( $venue->post_name )
 			->set_address(
 				$venue->address . "\n" .
-						   $venue->zip . ', ' . $venue->city . "\n" .
-						   $venue->country
+							$venue->zip . ', ' . $venue->city . "\n" .
+							$venue->country
 			); // todo add checks that everything exists here (lol)
 	}
 }

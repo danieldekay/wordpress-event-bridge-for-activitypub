@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * ActivityPub Transformer for events from the WordPress plugin 'Events Manager'
- * 
+ *
  * @see https://wordpress.org/plugins/events-manager/
  *
  * @since 1.0.0
@@ -30,7 +30,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Events_Manager extends Post {
 	/**
 	 * Holds the EM_Event object.
-	 * 
+	 *
 	 * @var EM_Event
 	 */
 	protected $em_event;
@@ -85,6 +85,10 @@ class Events_Manager extends Post {
 		return 'Event';
 	}
 
+	protected function get_is_online() {
+		return 'url' === $this->em_event->event_location_type;
+	}
+
 	/**
 	 * Get the event location.
 	 *
@@ -92,19 +96,33 @@ class Events_Manager extends Post {
 	 * @return array The Place.
 	 */
 	public function get_location() {
+		if ( 'url' === $this->em_event->event_location_type ) {
+			return null;
+		}
+
 		$location = new Place();
 		$em_location = $this->em_event->get_location();
 
 		$location->set_name( $em_location->location_name );
-		$location->set_address( array(
+
+		$address = array(
 			'type' => 'PostalAddress',
 			'addressCountry' => $em_location->location_country,
 			'addressLocality' => $em_location->location_town,
 			'streetAddress' => $em_location->location_address,
 			'name' => $em_location->location_name,
-		));
+		);
+		if ( $em_location->location_state ) {
+			$address['addressRegion'] = $em_location->location_state;
+		}
+		if ( $em_location->location_postcode ) {
+			$address['postalCode'] = $em_location->location_postcode;
+		}
+
+		$location->set_address( $address );
 		return $location;
 	}
+
 
 	/**
 	 * Get the end time from the events metadata.
@@ -122,13 +140,13 @@ class Events_Manager extends Post {
 		$timezone_string = $this->em_event->event_timezone;
 
 		// Create a DateTime object with the given date, time, and timezone
-		$datetime = new DateTime($date_string . ' ' . $time_string, new DateTimeZone($timezone_string));
+		$datetime = new DateTime( $date_string . ' ' . $time_string, new DateTimeZone( $timezone_string ) );
 
 		// Set the timezone for proper formatting
-		$datetime->setTimezone(new DateTimeZone('UTC'));
+		$datetime->setTimezone( new DateTimeZone( 'UTC' ) );
 
 		// Format the DateTime object as 'Y-m-d\TH:i:s\Z'
-		$formatted_date = $datetime->format('Y-m-d\TH:i:s\Z');
+		$formatted_date = $datetime->format( 'Y-m-d\TH:i:s\Z' );
 		return $formatted_date;
 	}
 
@@ -149,7 +167,7 @@ class Events_Manager extends Post {
 		$em_bookings = $this->em_event->get_bookings()->get_bookings();
 		return count( $em_bookings->bookings );
 	}
-	 
+
 	protected function get_content() {
 		return $this->wp_object->post_content;
 	}
@@ -168,15 +186,39 @@ class Events_Manager extends Post {
 		return $summary;
 	}
 
+	// protected function get_join_mode() {
+	//  return 'free';
+	// }
+
+	private function get_event_link_attachment() {
+		$event_link_url = $this->em_event->event_location->data['url'];
+		$event_link_text = $this->em_event->event_location->data['text'];
+		return array(
+			'type' => 'Link',
+			'name' => 'Website',
+			// 'name' => $event_link_text,
+			'href' => \esc_url( $event_link_url ),
+			'mediaType' => 'text/html',
+		);
+	}
+
 	/**
 	 * Overrides/extends the get_attachments function to also add the event Link.
 	 */
 	protected function get_attachment() {
+		// Get attachments via parent function
 		$attachments = parent::get_attachment();
+
+		// The first attachment is the featured image, make sure it is compatible with Mobilizon.
 		if ( count( $attachments ) ) {
 			$attachments[0]['type'] = 'Document';
 			$attachments[0]['name'] = 'Banner';
 		}
+
+		if ( 'url' === $this->em_event->event_location_type ) {
+			$attachments[] = $this->get_event_link_attachment();
+		}
+		return $attachments;
 
 		return $attachments;
 	}
@@ -258,10 +300,12 @@ class Events_Manager extends Post {
 	 * @return Activitypub\Activity\Event
 	 */
 	public function to_object() {
-		$this->em_event = new EM_Event( $this->wp_object->ID, 'post_id');
+		$this->em_event = new EM_Event( $this->wp_object->ID, 'post_id' );
 		$activtiypub_object = new Event();
 
 		$activtiypub_object = $this->transform_object_properties( $activtiypub_object );
+
+		$activtiypub_object->set_external_participation_url( $this->get_url() );
 
 		return $activtiypub_object;
 	}
