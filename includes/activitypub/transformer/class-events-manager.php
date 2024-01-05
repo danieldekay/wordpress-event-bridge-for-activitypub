@@ -158,11 +158,8 @@ class Events_Manager extends Post {
 		} else {
 			$excerpt = $this->get_content();
 		}
-
 		$address = $this->em_event->get_location()->location_name;
-
-		$start_time = $this->get_start_time();
-
+		$start_time = strtotime( $this->get_start_time() );
 		$datetime_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 		$start_time_string = wp_date( $datetime_format, $start_time );
 		$summary = "📍 {$address}\n📅 {$start_time_string}\n\n{$excerpt}";
