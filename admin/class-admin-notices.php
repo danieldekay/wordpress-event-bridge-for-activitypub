@@ -1,16 +1,19 @@
 <?php
 /**
- * ActivityPub Transformer for the plugin Very Simple Event List.
+ * Admin Notices for guiding to proper configuration of ActivityPub with event plugins.
  *
  * @package activity-event-transformers
  * @license AGPL-3.0-or-later
  */
 
+// TODO: Modularize after we know what we want.
 class Admin_Notices {
 	const VSEL_PLUGIN_FILE = 'very-simple-event-list/vsel.php';
 	const VSEL_POST_TYPE = 'event';
-	const EVENT_MANAGER_PLUGIN_FILE = 'events-manager/events-manager.php';
-	const EVENT_MANAGER_POTS_TYPE = 'event';
+	const EVENTS_MANAGER_PLUGIN_FILE = 'events-manager/events-manager.php';
+	const EVENTS_MANAGER_POTS_TYPE = 'event';
+    const TRIBE_POST_TYPE = 'tribe_events';
+    const TRIBE_PLUGIN_FILE = 'the-events-calendar/the-events-calendar.php';
 	const ACTIVITYPUB_PLUGIN_FILE = 'activitypub/activitypub.php';
 
 	/**
@@ -32,6 +35,14 @@ class Admin_Notices {
 			if ( is_plugin_active( self::VSEL_PLUGIN_FILE ) && self::post_type_is_not_activitypub_enabled( self::VSEL_POST_TYPE ) ) {
 				add_action( 'admin_notices', array( self::class, 'vsel_admin_notices' ) );
 			}
+            // Check for Events Manager
+			if ( is_plugin_active( self::EVENTS_MANAGER_PLUGIN_FILE ) && self::post_type_is_not_activitypub_enabled( self::EVENTS_MANAGER_POTS_TYPE ) ) {
+				add_action( 'admin_notices', array( self::class, 'events_manager_admin_notices' ) );
+			}
+            // Check for The Events Calendar
+            if ( is_plugin_active( self::TRIBE_PLUGIN_FILE ) && self::post_type_is_not_activitypub_enabled( self::TRIBE_POST_TYPE ) ) {
+				add_action( 'admin_notices', array( self::class, 'the_events_calendar_admin_notices' ) );
+			}
 		}
 	}
 
@@ -49,11 +60,31 @@ class Admin_Notices {
 	 * Check whether to do any admin notices for VSEL
 	 */
 	public static function vsel_admin_notices() {
-		$is_vsel_edit_page = isset( $_GET['post_type'] ) && $_GET['post_type'] === 'event';
+		$is_vsel_edit_page = isset( $_GET['post_type'] ) && $_GET['post_type'] === self::VSEL_POST_TYPE;
 		$is_vsel_settings_page = strpos( $_SERVER['REQUEST_URI'], '/wp-admin/options-general.php?page=vsel' ) !== false;
 		$is_vsel_page = $is_vsel_edit_page || $is_vsel_settings_page;
 		if ( $is_vsel_page ) {
 			self::do_admin_notice_post_type_not_activitypub_enabled( self::VSEL_PLUGIN_FILE );
+		}
+	}
+
+    /**
+	 * Check whether to do any admin notices for Events Manager
+	 */
+	public static function events_manager_admin_notices() {
+		$is_events_manager_page = isset( $_GET['post_type'] ) && $_GET['post_type'] === self::EVENTS_MANAGER_POTS_TYPE;
+		if ( $is_events_manager_page ) {
+			self::do_admin_notice_post_type_not_activitypub_enabled( self::EVENTS_MANAGER_PLUGIN_FILE );
+		}
+	}
+
+    /**
+	 * Check whether to do any admin notices for The Events Calendar
+	 */
+	public static function the_events_calendar_admin_notices() {
+		$is_events_manager_page = isset( $_GET['post_type'] ) && $_GET['post_type'] === self::TRIBE_POST_TYPE;
+		if ( $is_events_manager_page ) {
+			self::do_admin_notice_post_type_not_activitypub_enabled( self::TRIBE_PLUGIN_FILE );
 		}
 	}
 
