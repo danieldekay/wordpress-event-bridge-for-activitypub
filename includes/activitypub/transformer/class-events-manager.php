@@ -14,6 +14,8 @@ use Activitypub\Transformer\Post;
 use Activitypub\Model\Blog_user;
 use function Activitypub\get_rest_url_by_path;
 
+use function Activitypub\esc_hashtag;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -170,7 +172,13 @@ class Events_Manager extends Post {
 	 * Overrides/extends the get_attachments function to also add the event Link.
 	 */
 	protected function get_attachment() {
-		return null;
+		$attachments = parent::get_attachment();
+		if ( count( $attachments ) ) {
+			$attachments[0]['type'] = 'Document';
+			$attachments[0]['name'] = 'Banner';
+		}
+
+		return $attachments;
 	}
 
 	/**
@@ -179,7 +187,69 @@ class Events_Manager extends Post {
 	 * @return string $category
 	 */
 	protected function get_category() {
-		return null;
+		$categories = $this->em_event->get_categories()->terms;
+
+		if ( empty( $categories ) ) {
+			return 'MEETING';
+		}
+
+		// Prepare an array to store all category information for comparison.
+		$category_info = array();
+
+		// Extract relevant category information (name, slug, description) from the categories array.
+		foreach ( $categories as $category ) {
+			$category_info[] = strtolower( $category->name );
+			$category_info[] = strtolower( $category->slug );
+			$category_info[] = strtolower( $category->description );
+		}
+
+		// Convert mobilizon categories to lowercase for case-insensitive comparison.
+		$mobilizon_categories = array_map( 'strtolower', Event::MOBILIZON_EVENT_CATEGORIES );
+
+		// Initialize variables to track the best match.
+		$best_mobilizon_category_match = '';
+		$best_match_length = 0;
+
+		// Check for the best match.
+		foreach ( $mobilizon_categories as $mobilizon_category ) {
+			foreach ( $category_info as $category ) {
+				foreach ( explode( '_', $mobilizon_category ) as $mobilizon_category_slice ) {
+					if ( stripos( $category, $mobilizon_category_slice ) !== false ) {
+						// Check if the current match is longer than the previous best match.
+						$current_match_legnth = strlen( $mobilizon_category_slice );
+						if ( $current_match_legnth > $best_match_length ) {
+							$best_mobilizon_category_match = $mobilizon_category;
+							$best_match_length = $current_match_legnth;
+						}
+					}
+				}
+			}
+		}
+
+		return ( '' != $best_mobilizon_category_match ) ? strtoupper( $best_mobilizon_category_match ) : 'MEETING';
+	}
+
+	protected function get_tag() {
+		// The parent tag function also fetches the mentions.
+		$tags = parent::get_tag();
+
+		$post_tags = \wp_get_post_terms( $this->wp_object->ID, 'event-tags' );
+
+		if ( $post_tags ) {
+			foreach ( $post_tags as $post_tag ) {
+				$tag = array(
+					'type' => 'Hashtag',
+					'href' => \esc_url( \get_tag_link( $post_tag->term_id ) ),
+					'name' => esc_hashtag( $post_tag->name ),
+				);
+				$tags[] = $tag;
+			}
+		}
+		return $tags;
+	}
+
+	protected function get_name() {
+		return $this->em_event->event_name;
 	}
 
 	/**

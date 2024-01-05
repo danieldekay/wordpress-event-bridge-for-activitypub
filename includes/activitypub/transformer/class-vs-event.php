@@ -124,8 +124,10 @@ class VS_Event extends Post {
 	 */
 	protected function get_attachment() {
 		$attachments = parent::get_attachment();
-		$attachments[0]['type'] = 'Document';
-		$attachments[0]['name'] = 'Banner';
+		if ( count( $attachments ) ) {
+			$attachments[0]['type'] = 'Document';
+			$attachments[0]['name'] = 'Banner';
+		}
 		$event_link = $this->get_event_link();
 		if ( $event_link ) {
 			$attachments[] = $this->get_event_link();
