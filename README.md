@@ -1,1 +1,7 @@
-This is a WordPress plugin that contains several example custom transformers for the [WordPress ActivityPub plugin](https://wordpress.org/plugins/activitypub/).
+This is a WordPress plugin improves the Fediverse integration of Events via the [WordPress ActivityPub plugin](https://wordpress.org/plugins/activitypub/).
+
+Currently supported Event plugins:
+
+- The Events Calendar
+- VS Event List
+- Events Manager

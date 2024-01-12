@@ -1,4 +1,4 @@
-=== ActivityPub Event Plugin ===
+=== ActivityPub Event Extensions ===
 Contributors: menrath
 Tags: events, fediverse, activitypub, activitystream
 Requires at least: 6.4
@@ -8,7 +8,7 @@ Requires PHP: 5.6
 License: AGPL-3.0-or-later
 License URI: http://opensource.org/licenses/MIT
 
-The ActivityPub Event Plugin is...
+The ActivityPub Event Extensions
 
 == Description ==
 

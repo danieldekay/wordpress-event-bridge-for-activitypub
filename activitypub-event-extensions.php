@@ -1,17 +1,17 @@
 <?php
 /**
- * Plugin Name: ActivityPub Transformers for Events
- * Description: Custom ActivityPub Transformers for Events
+ * Plugin Name: ActivityPub Event Extensions
+ * Description: Custom ActivityPub Transformers and Integretions for common Event Plugins
  * Plugin URI:  https://event-federation.eu/
  * Version:     1.0.0
  * Author:      André Menrath
  * Author URI:  https://graz.social/@linos
- * Text Domain: activitypub-event-transformers
+ * Text Domain: activitypub-event-extensions
  * License:     AGPL-3.0-or-later
  *
- * ActivityPub tested up to: 1.3.0
- *
- * @package activitypub-event-transformer
+ * ActivityPub tested up to: 2.0.1
+ * 
+ * @package activitypub-event-extensions
  * @license AGPL-3.0-or-later
  */
 

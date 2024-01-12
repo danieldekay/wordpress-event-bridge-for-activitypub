@@ -220,22 +220,75 @@ class VS_Event extends Post {
 		return $summary;
 	}
 
+
+	/**
+	 * Generic setter.
+	 *
+	 * @param string $key   The key to set.
+	 * @param string $value The value to set.
+	 *
+	 * @return mixed The value.
+	 */
+	public function set( $key, $value ) {
+		if ( ! $this->ap_object->has( $key ) ) {
+			return new WP_Error( 'invalid_key', __( 'Invalid key', 'activitypub' ), array( 'status' => 404 ) );
+		}
+
+		$setter_function = 'set_' . $key;
+
+		if ( in_array($key, get_class_methods( $this ) )) {	
+			$getter_function = 'get_' . $key;
+			$this->ap_object->$setter_function( $this->$getter_function );
+		} else {
+			$this->ap_object->$setter_function( $value );
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Magic function to implement setter
+	 *
+	 * @param string $method The method name.
+	 * @param string $params The method params.
+	 *
+	 * @return void
+	 */
+	public function __call( $method, $params ) {
+		$var = \strtolower( \substr( $method, 4 ) );
+
+		if ( \strncasecmp( $method, 'set', 3 ) === 0 ) {
+			return $this->set( $var, $params[0] );
+		}
+
+		// when do we need: call_user_func( array( $activitypub_object, $setter ), $value );
+
+		return $this;
+	}
+
 	/**
 	 * Transform the WordPress Object into an ActivityPub Object.
 	 *
 	 * @return Activitypub\Activity\Event
 	 */
 	public function to_object() {
-		$object = new Event();
-		$object = $this->transform_object_properties( $object );
-
-		// Set hardcoded values/one-liners that don't have a get(ter) function defined.
-		return $object
+		$this->ap_object = new Event();
+		
+		$this
+		    ->set_content()
+			->set_content_map()
+			->set_attributed_to()
+			->set_published()
+			->set_start_time()
+			->set_end_time()
+			->set_type()
+			->set_category()
+			->set_attachments()
+			->set_location()
 			->set_comments_enabled( true )
 			->set_external_participation_url( $this->get_url() )
 			->set_status( 'CONFIRMED' )
 			->set_name( get_the_title( $this->wp_object->ID ) )
-			->set_timezone( $object->get_locale )
 			->set_is_online( false )
 			->set_in_language( $this->get_locale() )
 			->set_actor( get_rest_url_by_path( 'application' ) )
