@@ -6,8 +6,8 @@
  * @license AGPL-3.0-or-later
  */
 
-use Activitypub\Activity\Event;
-use Activitypub\Activity\Place;
+use Activitypub\Activity\Objects\Event;
+use Activitypub\Activity\Objects\Place;
 use Activitypub\Transformer\Post;
 use Activitypub\Model\Blog_user;
 
@@ -23,6 +23,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 class VS_Event extends Post {
+	/**
+	 * The target transformet ActivityPub Event object.
+	 * @var Event
+	 */
+	protected $ap_object;
+
 	/**
 	 * Get transformer name.
 	 *
@@ -158,7 +164,7 @@ class VS_Event extends Post {
 		}
 
 		// Convert mobilizon categories to lowercase for case-insensitive comparison.
-		$mobilizon_categories = array_map( 'strtolower', Event::MOBILIZON_EVENT_CATEGORIES );
+		$mobilizon_categories = array_map( 'strtolower', Event::DEFAULT_EVENT_CATEGORIES );
 
 		// Initialize variables to track the best match.
 		$best_mobilizon_category_match = '';

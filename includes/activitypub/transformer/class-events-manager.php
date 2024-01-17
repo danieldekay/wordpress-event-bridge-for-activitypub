@@ -8,11 +8,9 @@
 
 use EM_Event;
 
-use Activitypub\Activity\Event;
-use Activitypub\Activity\Place;
+use Activitypub\Activity\Objects\Event;
+use Activitypub\Activity\Objects\Place;
 use Activitypub\Transformer\Post;
-use Activitypub\Model\Blog_user;
-use function Activitypub\get_rest_url_by_path;
 
 use function Activitypub\esc_hashtag;
 
@@ -246,7 +244,7 @@ class Events_Manager extends Post {
 		}
 
 		// Convert mobilizon categories to lowercase for case-insensitive comparison.
-		$mobilizon_categories = array_map( 'strtolower', Event::MOBILIZON_EVENT_CATEGORIES );
+		$mobilizon_categories = array_map( 'strtolower', Event::DEFAULT_EVENT_CATEGORIES );
 
 		// Initialize variables to track the best match.
 		$best_mobilizon_category_match = '';
@@ -301,12 +299,12 @@ class Events_Manager extends Post {
 	 */
 	public function to_object() {
 		$this->em_event = new EM_Event( $this->wp_object->ID, 'post_id' );
-		$activtiypub_object = new Event();
+		$activitypub_object = new Event();
 
-		$activtiypub_object = $this->transform_object_properties( $activtiypub_object );
+		$activitypub_object = $this->transform_object_properties( $activitypub_object );
 
-		$activtiypub_object->set_external_participation_url( $this->get_url() );
+		$activitypub_object->set_external_participation_url( $this->get_url() );
 
-		return $activtiypub_object;
+		return $activitypub_object;
 	}
 }
