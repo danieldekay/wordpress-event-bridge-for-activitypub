@@ -241,10 +241,10 @@ class VS_Event extends Post {
 		}
 
 		$setter_function = 'set_' . $key;
+		$getter_function = 'get_' . $key;
 
-		if ( in_array($key, get_class_methods( $this ) )) {	
-			$getter_function = 'get_' . $key;
-			$this->ap_object->$setter_function( $this->$getter_function );
+		if ( in_array( $getter_function, get_class_methods( $this ) ) ) {	
+			$this->ap_object->$setter_function( $this->$getter_function() );
 		} else {
 			$this->ap_object->$setter_function( $value );
 		}
@@ -290,14 +290,16 @@ class VS_Event extends Post {
 			->set_type()
 			->set_category()
 			->set_attachments()
-			->set_location()
+		    ->set_location()
 			->set_comments_enabled( true )
 			->set_external_participation_url( $this->get_url() )
-			->set_status( 'CONFIRMED' )
+	        ->set_status( 'CONFIRMED' )
 			->set_name( get_the_title( $this->wp_object->ID ) )
 			->set_is_online( false )
 			->set_in_language( $this->get_locale() )
 			->set_actor( get_rest_url_by_path( 'application' ) )
 			->set_to( array( 'https://www.w3.org/ns/activitystreams#Public' ) );
+			
+		return $this->ap_object;
 	}
 }

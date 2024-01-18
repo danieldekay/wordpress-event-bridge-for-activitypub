@@ -35,7 +35,7 @@ add_filter(
 		 */
 		if ( class_exists( 'vsel_widget' ) && $wp_object->post_type === 'event' ) {
 			require_once __DIR__ . '/includes/activitypub/transformer/class-vs-event.php';
-			return new \VS_Event( $object );
+			return new \VS_Event( $wp_object );
 		}
 
 		/**
