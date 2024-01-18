@@ -216,10 +216,7 @@ class Events_Manager extends Post {
 		if ( 'url' === $this->em_event->event_location_type ) {
 			$attachments[] = $this->get_event_link_attachment();
 		}
-		return $attachments;
-
-		return $attachments;
-	}
+		return $attachments;	}
 
 	/**
 	 * This function tries to map VS-Event categories to Mobilizon event categories.

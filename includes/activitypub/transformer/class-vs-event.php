@@ -289,17 +289,16 @@ class VS_Event extends Post {
 			->set_end_time()
 			->set_type()
 			->set_category()
-			->set_attachments()
-		    ->set_location()
-			->set_comments_enabled( true )
+	        ->set_attachment()
+		    ->set_comments_enabled( true )
 			->set_external_participation_url( $this->get_url() )
 	        ->set_status( 'CONFIRMED' )
 			->set_name( get_the_title( $this->wp_object->ID ) )
 			->set_is_online( false )
 			->set_in_language( $this->get_locale() )
 			->set_actor( get_rest_url_by_path( 'application' ) )
-			->set_to( array( 'https://www.w3.org/ns/activitystreams#Public' ) );
-			
+			->set_to( array( 'https://www.w3.org/ns/activitystreams#Public' ) )
+			->set_location();
 		return $this->ap_object;
 	}
 }
