@@ -11,8 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Activitypub\Transformer\Post;
-use Activitypub\Activity\Event;
-use Activitypub\Activity\Place;
+use Activitypub\Activity\Extended_Object\Event;
+use Activitypub\Activity\Extended_Object\Place;
 
 /**
  * ActivityPub Tribe Transformer

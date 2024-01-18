@@ -8,8 +8,8 @@
 
 use EM_Event;
 
-use Activitypub\Activity\Objects\Event;
-use Activitypub\Activity\Objects\Place;
+use Activitypub\Activity\Extended_Object\Event;
+use Activitypub\Activity\Extended_Object\Place;
 use Activitypub\Transformer\Post;
 
 use function Activitypub\esc_hashtag;

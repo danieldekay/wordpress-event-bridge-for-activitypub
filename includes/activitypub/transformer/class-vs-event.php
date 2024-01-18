@@ -6,10 +6,10 @@
  * @license AGPL-3.0-or-later
  */
 
-use Activitypub\Activity\Objects\Event;
-use Activitypub\Activity\Objects\Place;
 use Activitypub\Transformer\Post;
 use Activitypub\Model\Blog_user;
+use Activitypub\Activity\Extended_Object\Event;
+use Activitypub\Activity\Extended_Object\Place;
 
 use function Activitypub\get_rest_url_by_path;
 
