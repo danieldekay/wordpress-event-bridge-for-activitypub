@@ -55,8 +55,8 @@ add_filter(
 	3
 );
 
-require_once __DIR__ . '/admin/class-admin-notices.php';
-new \Admin_Notices();
+// require_once __DIR__ . '/admin/class-admin-notices.php';
+// new \Admin_Notices();
 
 /**
  * Add a filter for http_request_host_is_external
