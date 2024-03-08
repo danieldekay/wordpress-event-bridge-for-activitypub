@@ -9,7 +9,7 @@
  * Text Domain: activitypub-event-extensions
  * License:     AGPL-3.0-or-later
  *
- * ActivityPub tested up to: 2.0.1
+ * ActivityPub tested up to: 2.2.0
  * 
  * @package activitypub-event-extensions
  * @license AGPL-3.0-or-later
@@ -55,6 +55,22 @@ add_filter(
 	3
 );
 
+
+/**
+ * Activate the plugin.
+ */
+function activitypub_event_extensions_activate() { 
+	// Don't allow plugin activation, when the ActivityPub plugin is not activated yet.
+	if( ! class_exists( 'ActivtiyPub' ) ) {
+        deactivate_plugins( plugin_basename( __FILE__ ) );
+        wp_die( __( 'Please install and Activate ActivityPub.', 'activitypub-event-extensions' ), 'Plugin dependency check', array( 'back_link' => true ) );
+    }
+}
+
+register_activation_hook( __FILE__, 'activitypub_event_extensions_activate' );
+
+
+// TODO:
 // require_once __DIR__ . '/admin/class-admin-notices.php';
 // new \Admin_Notices();
 
