@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-use Activitypub\Activity\Event;
+use Activitypub\Activity\Extended_Object\Event;
 
 /**
  * ActivityPub Tribe Transformer
