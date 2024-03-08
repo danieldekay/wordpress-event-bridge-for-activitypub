@@ -1,0 +1,2 @@
+<?php
+// Handling Event Joins
