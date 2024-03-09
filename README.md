@@ -20,3 +20,6 @@ For more information checkout our website https://event-federation.eu/.
 
 ### Later:
 - [All in One Events Calendar](https://de.wordpress.org/plugins/all-in-one-event-calendar/)
+- TBA 
+
+[Contact us](https://event-federation.eu/contact/), if you want to see your event plugin on the list.
