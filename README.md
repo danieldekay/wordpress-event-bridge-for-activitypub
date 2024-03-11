@@ -15,7 +15,7 @@ For more information checkout our website https://event-federation.eu/.
 
 * [The Events Calendar](https://de.wordpress.org/plugins/the-events-calendar/)
 * [VS Event List](https://de.wordpress.org/plugins/very-simple-event-list/)
-* [Events Manager](https://de.wordpress.org/plugins/the-events-calendar/)
+* [Events Manager](https://de.wordpress.org/plugins/events-manager/)
 * [GatherPress](https://github.com/GatherPress/gatherpress)
 
 ### Later:
