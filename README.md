@@ -2,7 +2,7 @@ This is a WordPress plugin improves the Fediverse integration of Events via the 
 
 > **_NOTE:_** This is still pre-alpha. It is not more than a skeleton/playground. Things change rapidly. Please contact us, instead of trying it out yourself at this time.
 
-For more information checkout our website https://event-federation.eu/.
+For more information checkout our website https://event-federation.eu/. You can follow updates via [RSS](https://event-federation.eu/feed/) or ActivityPub: [@blog@event-federation.eu](https://event-federation.eu/blog/).
 
 ## Goals
 * Proper ActivityPub (JSON-LD) representation of events within WordPress
@@ -22,4 +22,5 @@ For more information checkout our website https://event-federation.eu/.
 - [All in One Events Calendar](https://de.wordpress.org/plugins/all-in-one-event-calendar/)
 - TBA 
 
-[Contact us](https://event-federation.eu/contact/), if you want to see your event plugin on the list.
+### Your event plugin:
+- [**Contact us**](https://event-federation.eu/contact/), if you want to see your event plugin on the list.
