@@ -1,2 +1,6 @@
 <?php
-// Handling Event Joins
+/**
+ * Handling Event Joins.
+ *
+ * @package activitypub-event-extensions
+ */

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ActivityPub Transformer for the plugin Very Simple Event List.
  *
@@ -7,7 +8,6 @@
  */
 
 use EM_Event;
-
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
 use Activitypub\Transformer\Post;
@@ -26,6 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 class Events_Manager extends Post {
+
 	/**
 	 * Holds the EM_Event object.
 	 *
@@ -43,6 +44,7 @@ class Events_Manager extends Post {
 	 * @return string Widget name.
 	 */
 	public function get_transformer_name() {
+
 		return 'activitypub-event-transformers/events-manager';
 	}
 
@@ -56,6 +58,7 @@ class Events_Manager extends Post {
 	 * @return string Widget title.
 	 */
 	public function get_transformer_label() {
+
 		return 'Events Manager';
 	}
 
@@ -69,6 +72,7 @@ class Events_Manager extends Post {
 	 * @return array Widget categories.
 	 */
 	public static function get_supported_post_types() {
+
 		return array();
 	}
 
@@ -80,10 +84,12 @@ class Events_Manager extends Post {
 	 * @return string The Event Object-Type.
 	 */
 	protected function get_type() {
+
 		return 'Event';
 	}
 
 	protected function get_is_online() {
+
 		return 'url' === $this->em_event->event_location_type;
 	}
 
@@ -94,21 +100,22 @@ class Events_Manager extends Post {
 	 * @return array The Place.
 	 */
 	public function get_location() {
+
 		if ( 'url' === $this->em_event->event_location_type ) {
 			return null;
 		}
 
-		$location = new Place();
+		$location    = new Place();
 		$em_location = $this->em_event->get_location();
 
 		$location->set_name( $em_location->location_name );
 
 		$address = array(
-			'type' => 'PostalAddress',
-			'addressCountry' => $em_location->location_country,
+			'type'            => 'PostalAddress',
+			'addressCountry'  => $em_location->location_country,
 			'addressLocality' => $em_location->location_town,
-			'streetAddress' => $em_location->location_address,
-			'name' => $em_location->location_name,
+			'streetAddress'   => $em_location->location_address,
+			'name'            => $em_location->location_name,
 		);
 		if ( $em_location->location_state ) {
 			$address['addressRegion'] = $em_location->location_state;
@@ -121,11 +128,11 @@ class Events_Manager extends Post {
 		return $location;
 	}
 
-
 	/**
 	 * Get the end time from the events metadata.
 	 */
 	protected function get_end_time() {
+
 		return null;
 	}
 
@@ -133,8 +140,9 @@ class Events_Manager extends Post {
 	 * Get the end time from the events metadata.
 	 */
 	protected function get_start_time() {
-		$date_string = $this->em_event->event_start_date;
-		$time_string = $this->em_event->event_start_time;
+
+		$date_string     = $this->em_event->event_start_date;
+		$time_string     = $this->em_event->event_start_time;
 		$timezone_string = $this->em_event->event_timezone;
 
 		// Create a DateTime object with the given date, time, and timezone
@@ -149,6 +157,7 @@ class Events_Manager extends Post {
 	}
 
 	protected function get_maximum_attendee_capacity() {
+
 		return $this->em_event->event_spaces;
 	}
 
@@ -156,46 +165,51 @@ class Events_Manager extends Post {
 	 * @todo decide whether to include pending bookings or not!
 	 */
 	protected function get_remaining_attendee_capacity() {
-		$em_bookings = $this->em_event->get_bookings()->get_bookings();
+
+		$em_bookings                 = $this->em_event->get_bookings()->get_bookings();
 		$remaining_attendee_capacity = $this->em_event->event_spaces - count( $em_bookings->bookings );
 		return $remaining_attendee_capacity;
 	}
 
 	protected function get_participant_count() {
+
 		$em_bookings = $this->em_event->get_bookings()->get_bookings();
 		return count( $em_bookings->bookings );
 	}
 
 	protected function get_content() {
+
 		return $this->wp_object->post_content;
 	}
 
 	protected function get_summary() {
+
 		if ( $this->em_event->post_excerpt ) {
 			$excerpt = $this->em_event->post_excerpt;
 		} else {
 			$excerpt = $this->get_content();
 		}
-		$address = $this->em_event->get_location()->location_name;
-		$start_time = strtotime( $this->get_start_time() );
-		$datetime_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		$address           = $this->em_event->get_location()->location_name;
+		$start_time        = strtotime( $this->get_start_time() );
+		$datetime_format   = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 		$start_time_string = wp_date( $datetime_format, $start_time );
-		$summary = "📍 {$address}\n📅 {$start_time_string}\n\n{$excerpt}";
+		$summary           = "📍 {$address}\n📅 {$start_time_string}\n\n{$excerpt}";
 		return $summary;
 	}
 
 	// protected function get_join_mode() {
-	//  return 'free';
+	// return 'free';
 	// }
 
 	private function get_event_link_attachment() {
-		$event_link_url = $this->em_event->event_location->data['url'];
+
+		$event_link_url  = $this->em_event->event_location->data['url'];
 		$event_link_text = $this->em_event->event_location->data['text'];
 		return array(
-			'type' => 'Link',
-			'name' => 'Website',
+			'type'      => 'Link',
+			'name'      => 'Website',
 			// 'name' => $event_link_text,
-			'href' => \esc_url( $event_link_url ),
+			'href'      => \esc_url( $event_link_url ),
 			'mediaType' => 'text/html',
 		);
 	}
@@ -216,7 +230,8 @@ class Events_Manager extends Post {
 		if ( 'url' === $this->em_event->event_location_type ) {
 			$attachments[] = $this->get_event_link_attachment();
 		}
-		return $attachments;	}
+		return $attachments;
+	}
 
 	/**
 	 * This function tries to map VS-Event categories to Mobilizon event categories.
@@ -224,6 +239,7 @@ class Events_Manager extends Post {
 	 * @return string $category
 	 */
 	protected function get_category() {
+
 		$categories = $this->em_event->get_categories()->terms;
 
 		if ( empty( $categories ) ) {
@@ -245,7 +261,7 @@ class Events_Manager extends Post {
 
 		// Initialize variables to track the best match.
 		$best_mobilizon_category_match = '';
-		$best_match_length = 0;
+		$best_match_length             = 0;
 
 		// Check for the best match.
 		foreach ( $mobilizon_categories as $mobilizon_category ) {
@@ -256,7 +272,7 @@ class Events_Manager extends Post {
 						$current_match_legnth = strlen( $mobilizon_category_slice );
 						if ( $current_match_legnth > $best_match_length ) {
 							$best_mobilizon_category_match = $mobilizon_category;
-							$best_match_length = $current_match_legnth;
+							$best_match_length             = $current_match_legnth;
 						}
 					}
 				}
@@ -274,7 +290,7 @@ class Events_Manager extends Post {
 
 		if ( $post_tags ) {
 			foreach ( $post_tags as $post_tag ) {
-				$tag = array(
+				$tag    = array(
 					'type' => 'Hashtag',
 					'href' => \esc_url( \get_tag_link( $post_tag->term_id ) ),
 					'name' => esc_hashtag( $post_tag->name ),
@@ -286,6 +302,7 @@ class Events_Manager extends Post {
 	}
 
 	protected function get_name() {
+
 		return $this->em_event->event_name;
 	}
 
@@ -295,7 +312,8 @@ class Events_Manager extends Post {
 	 * @return Activitypub\Activity\Event
 	 */
 	public function to_object() {
-		$this->em_event = new EM_Event( $this->wp_object->ID, 'post_id' );
+
+		$this->em_event     = new EM_Event( $this->wp_object->ID, 'post_id' );
 		$activitypub_object = new Event();
 
 		$activitypub_object = $this->transform_object_properties( $activitypub_object );

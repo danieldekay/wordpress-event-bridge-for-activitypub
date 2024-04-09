@@ -47,6 +47,15 @@ add_filter(
 			return new \Events_Manager( $wp_object );
 		}
 
+		/**
+		 * Events manager
+		 * @see https://wordpress.org/plugins/events-manager/
+		 */
+		if ( class_exists( 'GatherPress\Core\Event' ) && $wp_object->post_type === 'gp_event' ) {
+			require_once __DIR__ . '/includes/activitypub/transformer/class-gatherpress.php';
+			return new \GatherPress( $wp_object );
+		}
+
 		// Return the default transformer.
 
 		return $transformer;

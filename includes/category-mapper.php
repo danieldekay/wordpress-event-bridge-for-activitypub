@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Mapping of WordPress Terms(Tags) to known Event Categories
  *
@@ -18,10 +19,12 @@ use Activitypub\Activity\Extended_Object\Event;
  * @since 1.0.0
  */
 class Category_Mapper {
+
 	/**
-     * Static function to do the Mapping
-     **/
-    public static function map( $post_categories ) {        
+	 * Static function to do the Mapping
+	 **/
+	public static function map( $post_categories ) {
+
 		if ( empty( $post_categories ) ) {
 			return 'MEETING';
 		}
@@ -41,7 +44,7 @@ class Category_Mapper {
 
 		// Initialize variables to track the best match.
 		$best_mobilizon_category_match = '';
-		$best_match_length = 0;
+		$best_match_length             = 0;
 
 		// Check for the best match.
 		foreach ( $mobilizon_categories as $mobilizon_category ) {
@@ -52,7 +55,7 @@ class Category_Mapper {
 						$current_match_legnth = strlen( $mobilizon_category_slice );
 						if ( $current_match_legnth > $best_match_length ) {
 							$best_mobilizon_category_match = $mobilizon_category;
-							$best_match_length = $current_match_legnth;
+							$best_match_length             = $current_match_legnth;
 						}
 					}
 				}
@@ -60,5 +63,5 @@ class Category_Mapper {
 		}
 
 		return ( '' != $best_mobilizon_category_match ) ? strtoupper( $best_mobilizon_category_match ) : 'MEETING';
-    }
+	}
 }

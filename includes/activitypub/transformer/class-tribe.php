@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ActivityPub Tribe Transformer
  *
@@ -20,6 +21,7 @@ use Activitypub\Activity\Extended_Object\Place;
  * @since 1.0.0
  */
 class Tribe extends Post {
+
 	/**
 	 * The Tribe Event object.
 	 *
@@ -28,14 +30,14 @@ class Tribe extends Post {
 	protected $tribe_event;
 
 	// /**
-	//  * resolve the tribe metadata in the setter of wp_post.
-	//  *
-	//  * @param WP_Post $wp_post The WP_Post object.
-	//  * @return void
-	//  */
+	// * resolve the tribe metadata in the setter of wp_post.
+	// *
+	// * @param WP_Post $wp_post The WP_Post object.
+	// * @return void
+	// */
 	// public function set_wp_post( WP_Post $wp_post ) {
-	//  parent::set_wp_post( $wp_post );
-	//  $this->tribe_event = tribe_get_event( $wp_post->ID );
+	// parent::set_wp_post( $wp_post );
+	// $this->tribe_event = tribe_get_event( $wp_post->ID );
 	// }
 
 	/**
@@ -48,6 +50,7 @@ class Tribe extends Post {
 	 * @return string Widget name.
 	 */
 	public function get_name() {
+
 		return 'activitypub-event-transformers/tribe';
 	}
 
@@ -61,6 +64,7 @@ class Tribe extends Post {
 	 * @return string Widget title.
 	 */
 	public function get_label() {
+
 		return 'The Events Calendar';
 	}
 
@@ -72,6 +76,7 @@ class Tribe extends Post {
 	 * @return string The Event Object-Type.
 	 */
 	protected function get_object_type() {
+
 		return 'Event';
 	}
 
@@ -85,6 +90,7 @@ class Tribe extends Post {
 	 * @return array Widget categories.
 	 */
 	public static function get_supported_post_types() {
+
 		return array( 'tribe_events' );
 	}
 
@@ -112,6 +118,7 @@ class Tribe extends Post {
 	 * @return string status of the event
 	 */
 	public function get_tribe_status() {
+
 		if ( 'canceled' === $this->tribe_event->event_status ) {
 			return 'CANCELLED';
 		}
@@ -133,6 +140,7 @@ class Tribe extends Post {
 	 * @return string The content.
 	 */
 	protected function get_content() {
+
 		$content = parent::get_content();
 		// todo remove link at the end of the content
 

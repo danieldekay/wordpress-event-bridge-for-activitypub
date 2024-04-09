@@ -1,4 +1,5 @@
 <?php
+
 /**
  * ActivityPub Transformer for the plugin Very Simple Event List.
  *
@@ -23,8 +24,10 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 class VS_Event extends Post {
+
 	/**
 	 * The target transformet ActivityPub Event object.
+	 *
 	 * @var Event
 	 */
 	protected $ap_object;
@@ -39,6 +42,7 @@ class VS_Event extends Post {
 	 * @return string Widget name.
 	 */
 	public function get_transformer_name() {
+
 		return 'activitypub-event-transformers/vs-event';
 	}
 
@@ -52,6 +56,7 @@ class VS_Event extends Post {
 	 * @return string Widget title.
 	 */
 	public function get_transformer_label() {
+
 		return 'VS Event';
 	}
 
@@ -65,6 +70,7 @@ class VS_Event extends Post {
 	 * @return array Widget categories.
 	 */
 	public static function get_supported_post_types() {
+
 		return array( 'event' );
 	}
 
@@ -76,6 +82,7 @@ class VS_Event extends Post {
 	 * @return string The Event Object-Type.
 	 */
 	protected function get_type() {
+
 		return 'Event';
 	}
 
@@ -86,8 +93,9 @@ class VS_Event extends Post {
 	 * @return array The Place.
 	 */
 	public function get_location() {
+
 		$address = get_post_meta( $this->wp_object->ID, 'event-location', true );
-		$place = new Place();
+		$place   = new Place();
 		$place->set_type( 'Place' );
 		$place->set_name( $address );
 		$place->set_address( $address );
@@ -98,6 +106,7 @@ class VS_Event extends Post {
 	 * Get the end time from the events metadata.
 	 */
 	protected function get_end_time() {
+
 		$end_time = get_post_meta( $this->wp_object->ID, 'event-date', true );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $end_time );
 	}
@@ -106,6 +115,7 @@ class VS_Event extends Post {
 	 * Get the end time from the events metadata.
 	 */
 	protected function get_start_time() {
+
 		$start_time = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $start_time );
 	}
@@ -114,12 +124,13 @@ class VS_Event extends Post {
 	 * Get the event link from the events metadata.
 	 */
 	private function get_event_link() {
+
 		$event_link = get_post_meta( $this->wp_object->ID, 'event-link', true );
 		if ( $event_link ) {
 			return array(
-				'type' => 'Link',
-				'name' => 'Website',
-				'href' => \esc_url( $event_link ),
+				'type'      => 'Link',
+				'name'      => 'Website',
+				'href'      => \esc_url( $event_link ),
 				'mediaType' => 'text/html',
 			);
 		}
@@ -129,6 +140,7 @@ class VS_Event extends Post {
 	 * Overrides/extends the get_attachments function to also add the event Link.
 	 */
 	protected function get_attachment() {
+
 		$attachments = parent::get_attachment();
 		if ( count( $attachments ) ) {
 			$attachments[0]['type'] = 'Document';
@@ -147,6 +159,7 @@ class VS_Event extends Post {
 	 * @return string $category
 	 */
 	protected function get_category() {
+
 		$post_categories = wp_get_post_terms( $this->wp_object->ID, 'event_cat' );
 
 		if ( empty( $post_categories ) ) {
@@ -168,7 +181,7 @@ class VS_Event extends Post {
 
 		// Initialize variables to track the best match.
 		$best_mobilizon_category_match = '';
-		$best_match_length = 0;
+		$best_match_length             = 0;
 
 		// Check for the best match.
 		foreach ( $mobilizon_categories as $mobilizon_category ) {
@@ -179,7 +192,7 @@ class VS_Event extends Post {
 						$current_match_legnth = strlen( $mobilizon_category_slice );
 						if ( $current_match_legnth > $best_match_length ) {
 							$best_mobilizon_category_match = $mobilizon_category;
-							$best_match_length = $current_match_legnth;
+							$best_match_length             = $current_match_legnth;
 						}
 					}
 				}
@@ -191,12 +204,13 @@ class VS_Event extends Post {
 
 	/**
 	 * Returns the User-URL of the Author of the Post.
-		*
-		* If `single_user` mode is enabled, the URL of the Blog-User is returned.
+	 *
+	 * If `single_user` mode is enabled, the URL of the Blog-User is returned.
 	 *
 	 * @return string The User-URL.
 	 */
 	protected function get_attributed_to() {
+
 		$user = new Blog_User();
 		return $user->get_url();
 	}
@@ -210,6 +224,7 @@ class VS_Event extends Post {
 	 * @return string $summary The custom event summary.
 	 */
 	public function get_summary() {
+
 		if ( $this->wp_object->excerpt ) {
 			$excerpt = $this->wp_object->post_excerpt;
 		} elseif ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
@@ -218,14 +233,13 @@ class VS_Event extends Post {
 			$excerpt = $this->get_content();
 		}
 
-		$address = get_post_meta( $this->wp_object->ID, 'event-location', true );
-		$start_time = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
-		$datetime_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		$address           = get_post_meta( $this->wp_object->ID, 'event-location', true );
+		$start_time        = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
+		$datetime_format   = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
 		$start_time_string = wp_date( $datetime_format, $start_time );
-		$summary = "📍 {$address}\n📅 {$start_time_string}\n\n{$excerpt}";
+		$summary           = "📍 {$address}\n📅 {$start_time_string}\n\n{$excerpt}";
 		return $summary;
 	}
-
 
 	/**
 	 * Generic setter.
@@ -236,6 +250,7 @@ class VS_Event extends Post {
 	 * @return mixed The value.
 	 */
 	public function set( $key, $value ) {
+
 		if ( ! $this->ap_object->has( $key ) ) {
 			return new WP_Error( 'invalid_key', __( 'Invalid key', 'activitypub' ), array( 'status' => 404 ) );
 		}
@@ -243,7 +258,7 @@ class VS_Event extends Post {
 		$setter_function = 'set_' . $key;
 		$getter_function = 'get_' . $key;
 
-		if ( in_array( $getter_function, get_class_methods( $this ) ) ) {	
+		if ( in_array( $getter_function, get_class_methods( $this ) ) ) {
 			$this->ap_object->$setter_function( $this->$getter_function() );
 		} else {
 			$this->ap_object->$setter_function( $value );
@@ -261,6 +276,7 @@ class VS_Event extends Post {
 	 * @return void
 	 */
 	public function __call( $method, $params ) {
+
 		$var = \strtolower( \substr( $method, 4 ) );
 
 		if ( \strncasecmp( $method, 'set', 3 ) === 0 ) {
@@ -278,10 +294,11 @@ class VS_Event extends Post {
 	 * @return Activitypub\Activity\Event
 	 */
 	public function to_object() {
+
 		$this->ap_object = new Event();
-		
+
 		$this
-		    ->set_content()
+			->set_content()
 			->set_content_map()
 			->set_attributed_to()
 			->set_published()
@@ -289,10 +306,10 @@ class VS_Event extends Post {
 			->set_end_time()
 			->set_type()
 			->set_category()
-	        ->set_attachment()
-		    ->set_comments_enabled( true )
+			->set_attachment()
+			->set_comments_enabled( true )
 			->set_external_participation_url( $this->get_url() )
-	        ->set_status( 'CONFIRMED' )
+			->set_status( 'CONFIRMED' )
 			->set_name( get_the_title( $this->wp_object->ID ) )
 			->set_is_online( false )
 			->set_in_language( $this->get_locale() )
