@@ -7,7 +7,6 @@
  * @license AGPL-3.0-or-later
  */
 
-use Activitypub\Transformer\Post;
 use Activitypub\Model\Blog_user;
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
@@ -23,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class VS_Event extends Post {
+class VS_Event extends BaseEvent {
 
 	/**
 	 * The target transformet ActivityPub Event object.

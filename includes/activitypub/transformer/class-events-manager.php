@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Events_Manager extends Post {
+class Events_Manager extends BaseEvent {
 
 	/**
 	 * Holds the EM_Event object.

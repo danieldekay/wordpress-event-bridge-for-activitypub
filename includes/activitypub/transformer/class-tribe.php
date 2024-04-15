@@ -20,7 +20,7 @@ use Activitypub\Activity\Extended_Object\Place;
  *
  * @since 1.0.0
  */
-class Tribe extends Post {
+class Tribe extends BaseEvent {
 
 	/**
 	 * The Tribe Event object.
