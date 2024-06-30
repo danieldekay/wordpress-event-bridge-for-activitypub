@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class GatherPress extends Post {
 
 	/**
-	 * The target transformet ActivityPub Event object.
+	 * The target ActivityPub Event object of the transformer.
 	 *
 	 * @var Event
 	 */

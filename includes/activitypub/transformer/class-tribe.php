@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-use Activitypub\Transformer\Post;
+use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
 
@@ -20,7 +20,7 @@ use Activitypub\Activity\Extended_Object\Place;
  *
  * @since 1.0.0
  */
-class Tribe extends Post {
+class Tribe extends Event_Transformer {
 
 	/**
 	 * The Tribe Event object.

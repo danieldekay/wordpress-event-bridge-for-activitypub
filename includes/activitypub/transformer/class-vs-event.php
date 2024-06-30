@@ -1,5 +1,4 @@
 <?php
-
 /**
  * ActivityPub Transformer for the plugin Very Simple Event List.
  *
@@ -7,11 +6,14 @@
  * @license AGPL-3.0-or-later
  */
 
-use Activitypub\Transformer\Post;
-use Activitypub\Model\Blog_user;
+namespace Activitypub_Event_Extensions\Activitypub\Transformer;
+
+use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
+use Activitypub\Model\Blog;
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
 
+use WP_Error;
 use function Activitypub\get_rest_url_by_path;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -23,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class VS_Event extends Post {
+class VS_Event extends Event_Transformer {
 
 	/**
 	 * The target transformet ActivityPub Event object.
@@ -89,7 +91,6 @@ class VS_Event extends Post {
 	/**
 	 * Get the event location.
 	 *
-	 * @param int $post_id The WordPress post ID.
 	 * @return array The Place.
 	 */
 	public function get_location() {
@@ -148,7 +149,7 @@ class VS_Event extends Post {
 		}
 		$event_link = $this->get_event_link();
 		if ( $event_link ) {
-			$attachments[] = $this->get_event_link();
+			$attachments[] = $event_link;
 		}
 		return $attachments;
 	}
@@ -159,47 +160,7 @@ class VS_Event extends Post {
 	 * @return string $category
 	 */
 	protected function get_category() {
-
-		$post_categories = wp_get_post_terms( $this->wp_object->ID, 'event_cat' );
-
-		if ( empty( $post_categories ) ) {
-			return 'MEETING';
-		}
-
-		// Prepare an array to store all category information for comparison.
-		$category_info = array();
-
-		// Extract relevant category information (name, slug, description) from the categories array.
-		foreach ( $post_categories as $category ) {
-			$category_info[] = strtolower( $category->name );
-			$category_info[] = strtolower( $category->slug );
-			$category_info[] = strtolower( $category->description );
-		}
-
-		// Convert mobilizon categories to lowercase for case-insensitive comparison.
-		$mobilizon_categories = array_map( 'strtolower', Event::DEFAULT_EVENT_CATEGORIES );
-
-		// Initialize variables to track the best match.
-		$best_mobilizon_category_match = '';
-		$best_match_length             = 0;
-
-		// Check for the best match.
-		foreach ( $mobilizon_categories as $mobilizon_category ) {
-			foreach ( $category_info as $category ) {
-				foreach ( explode( '_', $mobilizon_category ) as $mobilizon_category_slice ) {
-					if ( stripos( $category, $mobilizon_category_slice ) !== false ) {
-						// Check if the current match is longer than the previous best match.
-						$current_match_legnth = strlen( $mobilizon_category_slice );
-						if ( $current_match_legnth > $best_match_length ) {
-							$best_mobilizon_category_match = $mobilizon_category;
-							$best_match_length             = $current_match_legnth;
-						}
-					}
-				}
-			}
-		}
-
-		return ( '' != $best_mobilizon_category_match ) ? strtoupper( $best_mobilizon_category_match ) : 'MEETING';
+		return 'MEETING';
 	}
 
 	/**
@@ -210,8 +171,7 @@ class VS_Event extends Post {
 	 * @return string The User-URL.
 	 */
 	protected function get_attributed_to() {
-
-		$user = new Blog_User();
+		$user = new Blog();
 		return $user->get_url();
 	}
 
@@ -224,7 +184,6 @@ class VS_Event extends Post {
 	 * @return string $summary The custom event summary.
 	 */
 	public function get_summary() {
-
 		if ( $this->wp_object->excerpt ) {
 			$excerpt = $this->wp_object->post_excerpt;
 		} elseif ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
@@ -315,7 +274,8 @@ class VS_Event extends Post {
 			->set_in_language( $this->get_locale() )
 			->set_actor( get_rest_url_by_path( 'application' ) )
 			->set_to( array( 'https://www.w3.org/ns/activitystreams#Public' ) )
-			->set_location();
+			->set_location()
+			->set_id();
 		return $this->ap_object;
 	}
 }

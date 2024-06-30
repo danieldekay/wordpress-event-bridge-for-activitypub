@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: ActivityPub Event Extensions
- * Description: Custom ActivityPub Transformers and Integretions for common Event Plugins
+ * Description: Custom ActivityPub Transformers and Integrations for common Event Plugins
  * Plugin URI:  https://event-federation.eu/
  * Version:     1.0.0
  * Author:      André Menrath
@@ -9,90 +9,52 @@
  * Text Domain: activitypub-event-extensions
  * License:     AGPL-3.0-or-later
  *
- * ActivityPub tested up to: 2.2.0
- * 
+ * ActivityPub tested up to: 2.4.0
+ *
  * @package activitypub-event-extensions
  * @license AGPL-3.0-or-later
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
-}
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-/**
- * Add the custom transformers for the events of several WordPress event plugins.
- */
-add_filter(
-	'activitypub_transformer',
-	function( $transformer, $wp_object, $object_class ) {
-		if ( 'WP_Post' != $object_class ) {
-			return $transformer;
-		}
+define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_VERSION', '1.0.0' );
 
-		/**
-		 * VS Event List
-		 * @see https://wordpress.org/plugins/very-simple-event-list/
-		 */
-		if ( class_exists( 'vsel_widget' ) && $wp_object->post_type === 'event' ) {
-			require_once __DIR__ . '/includes/activitypub/transformer/class-vs-event.php';
-			return new \VS_Event( $wp_object );
-		}
+define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE', plugin_dir_path( __FILE__ ) . '/' . basename( __FILE__ ) );
+define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-		/**
-		 * Events manager
-		 * @see https://wordpress.org/plugins/events-manager/
-		 */
-		if ( class_exists( 'EM_Events' ) && $wp_object->post_type === 'event' ) {
-			require_once __DIR__ . '/includes/activitypub/transformer/class-events-manager.php';
-			return new \Events_Manager( $wp_object );
-		}
+// Include and register the autoloader class for automatic loading of plugin classes.
+require_once ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . '/includes/class-autoloader.php';
+Activitypub_Event_Extensions\Autoloader::register();
 
-		/**
-		 * Events manager
-		 * @see https://wordpress.org/plugins/events-manager/
-		 */
-		if ( class_exists( 'GatherPress\Core\Event' ) && $wp_object->post_type === 'gp_event' ) {
-			require_once __DIR__ . '/includes/activitypub/transformer/class-gatherpress.php';
-			return new \GatherPress( $wp_object );
-		}
-
-		// Return the default transformer.
-
-		return $transformer;
-	},
-	10,
-	3
-);
+// Initialize the plugin.
+Activitypub_Event_Extensions\Setup::get_instance();
 
 
-/**
- * Activate the plugin.
- */
-function activitypub_event_extensions_activate() { 
-	// Don't allow plugin activation, when the ActivityPub plugin is not activated yet.
-	if( ! class_exists( 'ActivtiyPub' ) ) {
-        deactivate_plugins( plugin_basename( __FILE__ ) );
-        wp_die( __( 'Please install and Activate ActivityPub.', 'activitypub-event-extensions' ), 'Plugin dependency check', array( 'back_link' => true ) );
-    }
-}
-
-register_activation_hook( __FILE__, 'activitypub_event_extensions_activate' );
 
 
-// TODO:
-// require_once __DIR__ . '/admin/class-admin-notices.php';
-// new \Admin_Notices();
+
+
+// For local development purposes: TODO. Remove everything after here.
 
 /**
  * Add a filter for http_request_host_is_external
  *
- * TODO: Remove this.
+ * TODO: Remove this for release.
  *
  * @todo This filter is temporary code needed to do local testing.
  */
 add_filter( 'http_request_host_is_external', 'custom_http_request_host_is_external', 10, 3 );
 
-// Your custom callback function
+/**
+ * Add a filter for http_request_host_is_external
+ *
+ * TODO: Remove this for release.
+ *
+ * @todo This filter is temporary code needed to do local testing.
+ */
 function custom_http_request_host_is_external( $is_external, $host, $url ) {
 	$is_external = true;
 
@@ -102,7 +64,7 @@ function custom_http_request_host_is_external( $is_external, $host, $url ) {
 /**
  * Don't verify ssl certs for testing.
  *
- * TODO: Remove this.
+ * TODO: Remove this for release.
  *
  * @todo This filter is temporary code needed to do local testing.
  */
