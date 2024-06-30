@@ -164,18 +164,6 @@ class VS_Event extends Event_Transformer {
 	}
 
 	/**
-	 * Returns the User-URL of the Author of the Post.
-	 *
-	 * If `single_user` mode is enabled, the URL of the Blog-User is returned.
-	 *
-	 * @return string The User-URL.
-	 */
-	protected function get_attributed_to() {
-		$user = new Blog();
-		return $user->get_url();
-	}
-
-	/**
 	 * Create a custom summary.
 	 *
 	 * It contains also the most important meta-information. The summary is often used when the
