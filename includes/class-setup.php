@@ -146,9 +146,9 @@ class Setup {
 	 * @param mixed                        $wp_object    The WordPress object to transform.
 	 * @param string                       $object_class The class of the object to transform.
 	 *
-	 * @returns \Activitypub\Transformer\Base
+	 * @return \Activitypub\Transformer\Base|null
 	 */
-	public function register_activitypub_event_transformer( $transformer, $wp_object, $object_class ): \Activitypub\Transformer\Base {
+	public function register_activitypub_event_transformer( $transformer, $wp_object, $object_class ): \Activitypub\Transformer\Base|null {
 		// If the current WordPress object is not a post (e.g., a WP_Comment), don't change the transformer.
 		if ( 'WP_Post' !== $object_class ) {
 			return $transformer;
