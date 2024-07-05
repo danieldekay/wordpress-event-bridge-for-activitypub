@@ -1,6 +1,6 @@
 <?php
 /**
- * Class responsible for admin notices.
+ * Class responsible for Event Plugin related admin notices.
  *
  * Notices for guiding to proper configuration of ActivityPub with event plugins.
  *
@@ -8,16 +8,16 @@
  * @since 1.0.0
  */
 
-namespace Activitypub_Event_Extensions;
+namespace Activitypub_Event_Extensions\Admin;
 
 /**
- * Class Admin Notices.
+ * Class responsible for Event Plugin related admin notices.
  *
- * This class is responsible for admin notices.
+ * Notices for guiding to proper configuration of ActivityPub with event plugins.
  *
  * @since 1.0.0
  */
-class Admin_Notices {
+class Event_Plugin_Admin_Notices {
 	/**
 	 * Information about the event plugin.
 	 *

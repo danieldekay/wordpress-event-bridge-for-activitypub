@@ -11,6 +11,9 @@
 
 namespace Activitypub_Event_Extensions;
 
+use Activitypub_Event_Extensions\Admin\General_Admin_Notices;
+use Activitypub_Event_Extensions\Admin\Event_Plugin_Admin_Notices;
+
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
@@ -52,6 +55,13 @@ class Setup {
 	);
 
 	/**
+	 * Keep the information whether the ActivityPub plugin is active.
+	 *
+	 * @var boolean
+	 */
+	protected $activitypub_plugin_is_active = false;
+
+	/**
 	 * Holds an array of the currently activated supported event plugins.
 	 *
 	 * @var array
@@ -66,10 +76,8 @@ class Setup {
 	 * @since 1.0.0
 	 */
 	protected function __construct() {
-		$this->active_event_plugins = self::detect_supported_event_plugins();
-		if ( empty( $this->active_event_plugins ) ) {
-			return;
-		}
+		$this->activitypub_plugin_is_active = is_plugin_active( 'activitypub/activitypub.php' );
+		$this->active_event_plugins         = self::detect_supported_event_plugins();
 		$this->setup_hooks();
 	}
 
@@ -127,6 +135,11 @@ class Setup {
 
 		add_action( 'admin_init', array( $this, 'do_admin_notices' ) );
 
+		// If we don't have any active event plugins, or the ActivityPub plugin is not enabled, abort here.
+		if ( empty( $this->active_event_plugins ) || ! $this->activitypub_plugin_is_active ) {
+			return;
+		}
+
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
 	}
 
@@ -135,7 +148,10 @@ class Setup {
 	 */
 	public function do_admin_notices(): void {
 		foreach ( $this->active_event_plugins as $event_plugin ) {
-			new Admin_Notices( $event_plugin );
+			new Event_Plugin_Admin_Notices( $event_plugin );
+		}
+		if ( ! $this->activitypub_plugin_is_active ) {
+			add_action( 'admin_notices', array( new General_Admin_Notices(), 'do_admin_notice_activitypub_plugin_not_enabled' ), 10, 1 );
 		}
 	}
 
@@ -177,13 +193,26 @@ class Setup {
 	 */
 	public function activate() {
 		// Don't allow plugin activation, when the ActivityPub plugin is not activated yet.
-		if ( ! is_plugin_active( 'activitypub/activitypub.php' ) ) {
+		if ( ! $this->activitypub_plugin_is_active ) {
 			deactivate_plugins( plugin_basename( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE ) );
-			wp_die(
-				esc_html_e(
-					'Please install and activate the <a href="https://wordpress.org/plugins/activitypub/">ActivityPub plugin</a> first.',
-					'activitypub-event-extensions',
+			$notice = sprintf(
+				/* translators: 1: the name of the event plugin a admin notice is shown. 2: The name of the ActivityPub plugin. */
+				_x(
+					'To use this plugin install and activate the <a href="%1$s">%2$s</a> plugin first.',
+					'admin notice',
+					'activitypub-event-extensions'
 				),
+				esc_html( 'https://wordpress.org/plugins/activitypub' ),
+				esc_html( 'ActivityPub' )
+			);
+			$allowed_html = array(
+				'a' => array(
+					'href'  => true,
+					'title' => true,
+				),
+			);
+			wp_die(
+				wp_kses( $notice, $allowed_html ),
 				'Plugin dependency check',
 				array( 'back_link' => true ),
 			);
