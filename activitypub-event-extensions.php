@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: ActivityPub Event Extensions
- * Description: Custom ActivityPub Transformers and Integrations for common Event Plugins
+ * Description: Custom ActivityPub Transformers and Integrations for common Event Plugins.
  * Plugin URI:  https://event-federation.eu/
  * Version:     1.0.0
  * Author:      André Menrath
