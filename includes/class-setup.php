@@ -40,7 +40,7 @@ class Setup {
 		'the_events_calendar' => array(
 			'plugin_file'       => 'the-events-calendar/the-events-calendar.php',
 			'post_type'         => 'tribe_events',
-			'transformer_class' => 'Tribe_Events',
+			'transformer_class' => 'Tribe',
 			'settings_page_id'  => 'tribe_general',
 		),
 		'vsel'                => array(

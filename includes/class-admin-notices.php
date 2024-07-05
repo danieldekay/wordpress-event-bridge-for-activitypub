@@ -53,7 +53,7 @@ class Admin_Notices {
 		// Get the current page.
 		$screen = get_current_screen();
 		// Check if we are on a edit page for the event, or on the settings page of the event plugin.
-		$is_event_plugins_edit_page     = 'edit' === $screen->base && $this->event_plugin['post_type'] === $screen->event_post_type;
+		$is_event_plugins_edit_page     = 'edit' === $screen->base && $this->event_plugin['post_type'] === $screen->post_type;
 		$is_event_plugins_settings_page = $this->event_plugin['settings_page_id'] === $screen->id;
 
 		if ( $is_event_plugins_edit_page || $is_event_plugins_settings_page ) {

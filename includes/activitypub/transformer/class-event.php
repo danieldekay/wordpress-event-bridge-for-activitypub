@@ -8,8 +8,11 @@
 
 namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 
+use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Model\Blog;
 use Activitypub\Transformer\Post;
+
+use function Activitypub\get_rest_url_by_path;
 
 /**
  * Base transformer for WordPress event post types to ActivityPub events.
@@ -25,5 +28,52 @@ class Event extends Post {
 	protected function get_attributed_to() {
 		$blog = new Blog();
 		return $blog->get_id();
+	}
+
+	/**
+	 * Returns the ActivityStreams 2.0 Object-Type for an Event.
+	 *
+	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-event
+	 *
+	 * @return string The Event Object-Type.
+	 */
+	protected function get_object_type() {
+		return 'Event';
+	}
+
+	/**
+	 * Generic function that converts an WP-Event object to an ActivityPub-Event object.
+	 *
+	 * @return Event_Object
+	 */
+	public function to_object() {
+		$activitypub_object = new Event_Object();
+		$activitypub_object = $this->transform_object_properties( $activitypub_object );
+
+		$published = \strtotime( $this->wp_object->post_date_gmt );
+
+		$activitypub_object->set_published( \gmdate( 'Y-m-d\TH:i:s\Z', $published ) );
+
+		$updated = \strtotime( $this->wp_object->post_modified_gmt );
+
+		if ( $updated > $published ) {
+			$activitypub_object->set_updated( \gmdate( 'Y-m-d\TH:i:s\Z', $updated ) );
+		}
+
+		$activitypub_object->set_content_map(
+			array(
+				$this->get_locale() => $this->get_content(),
+			)
+		);
+		$path = sprintf( 'actors/%d/followers', intval( $this->wp_object->post_author ) );
+
+		$activitypub_object->set_to(
+			array(
+				'https://www.w3.org/ns/activitystreams#Public',
+				get_rest_url_by_path( $path ),
+			)
+		);
+
+		return $activitypub_object;
 	}
 }
