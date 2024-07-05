@@ -11,8 +11,9 @@
 
 namespace Activitypub_Event_Extensions;
 
-use Activitypub_Event_Extensions\Admin\General_Admin_Notices;
 use Activitypub_Event_Extensions\Admin\Event_Plugin_Admin_Notices;
+use Activitypub_Event_Extensions\Admin\General_Admin_Notices;
+
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -144,17 +145,21 @@ class Setup {
 	}
 
 	/**
-	 * Fires the initialization of admin notices for all active supported event plugins.s
+	 * Fires the initialization of admin notices.
 	 */
 	public function do_admin_notices(): void {
 		foreach ( $this->active_event_plugins as $event_plugin ) {
 			new Event_Plugin_Admin_Notices( $event_plugin );
 		}
+		// Check if any general admin notices are needed and add actions to insert the needed admin notices.
+
 		if ( ! $this->activitypub_plugin_is_active ) {
-			add_action( 'admin_notices', array( new General_Admin_Notices(), 'do_admin_notice_activitypub_plugin_not_enabled' ), 10, 1 );
+			// The ActivityPub plugin is not active.
+			add_action( 'admin_notices', array( 'Activitypub_Event_Extensions\Admin\General_Admin_Notices', 'activitypub_plugin_not_enabled' ), 10, 1 );
 		}
 		if ( empty( $this->active_event_plugins ) ) {
-			add_action( 'admin_notices', array( new General_Admin_Notices(), 'do_admin_notice_no_supported_event_plugin_active' ), 10, 1 );
+			// No supported Event Plugin is active.
+			add_action( 'admin_notices', array( 'Activitypub_Event_Extensions\Admin\General_Admin_Notices', 'no_supported_event_plugin_active' ), 10, 1 );
 		}
 	}
 
@@ -198,29 +203,24 @@ class Setup {
 		// Don't allow plugin activation, when the ActivityPub plugin is not activated yet.
 		if ( ! $this->activitypub_plugin_is_active ) {
 			deactivate_plugins( plugin_basename( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE ) );
-			$notice = sprintf(
-				/* translators: 1: the name of the event plugin a admin notice is shown. 2: The name of the ActivityPub plugin. */
-				_x(
-					'To use this plugin install and activate the <a href="%1$s">%2$s</a> plugin first.',
-					'admin notice',
-					'activitypub-event-extensions'
-				),
-				esc_html( 'https://wordpress.org/plugins/activitypub' ),
-				esc_html( 'ActivityPub' )
-			);
-			$allowed_html = array(
-				'a' => array(
-					'href'  => true,
-					'title' => true,
-				),
-			);
+			$notice = General_Admin_Notices::get_admin_notice_activitypub_plugin_not_enabled();
 			wp_die(
-				wp_kses( $notice, $allowed_html ),
+				wp_kses( $notice, General_Admin_Notices::ALLOWED_HTML ),
 				'Plugin dependency check',
 				array( 'back_link' => true ),
 			);
 		}
-		// If someone installs this plugin, we simply enable ActivityPub support for the event post type, without asking.
+
+		if ( empty( $this->active_event_plugins ) ) {
+			deactivate_plugins( plugin_basename( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE ) );
+			$notice = General_Admin_Notices::get_admin_notice_no_supported_event_plugin_active();
+			wp_die(
+				wp_kses( $notice, General_Admin_Notices::ALLOWED_HTML ),
+				'Plugin dependency check',
+				array( 'back_link' => true ),
+			);
+		}
+		// If someone installs this plugin, we simply enable ActivityPub support for all currently active event post types.
 		$activitypub_supported_post_types = get_option( 'activitypub_support_post_types', array() );
 		foreach ( $this->active_event_plugins as $event_plugin ) {
 			if ( ! in_array( $event_plugin['post_type'], $activitypub_supported_post_types, true ) ) {
