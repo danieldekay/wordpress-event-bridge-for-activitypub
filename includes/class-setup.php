@@ -153,6 +153,9 @@ class Setup {
 		if ( ! $this->activitypub_plugin_is_active ) {
 			add_action( 'admin_notices', array( new General_Admin_Notices(), 'do_admin_notice_activitypub_plugin_not_enabled' ), 10, 1 );
 		}
+		if ( empty( $this->active_event_plugins ) ) {
+			add_action( 'admin_notices', array( new General_Admin_Notices(), 'do_admin_notice_no_supported_event_plugin_active' ), 10, 1 );
+		}
 	}
 
 	/**

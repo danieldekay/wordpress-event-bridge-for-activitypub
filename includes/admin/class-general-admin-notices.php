@@ -42,4 +42,32 @@ class General_Admin_Notices {
 		);
 		echo '<div class="notice notice-warning"><p>' . \wp_kses( $notice, $allowed_html ) . '</p></div>';
 	}
+
+	/**
+	 * Warning that no supported event plugin can be found.
+	 */
+	public static function do_admin_notice_no_supported_event_plugin_active() {
+		$supported_event_plugins_url = 'https://code.event-federation.eu/Event-Federation/wordpress-activitypub-event-extensions#events-plugin-that-will-be-supported-at-first';
+
+		$notice = sprintf(
+			/* translators: 1: the name of the event plugin a admin notice is shown. 2: The name of the ActivityPub plugin. */
+			_x(
+				'The Plugin <i>ActivityPub Event Extensions</i> is of no use, because you do not have installed and activated a supported Event Plugin.
+				<br> For a list of supported Event Plugins see  <a href="%1$s">here</a>.',
+				'admin notice',
+				'activitypub-event-extensions'
+			),
+			esc_html( $supported_event_plugins_url ),
+			admin_url( 'options-general.php?page=activitypub&tab=settings' )
+		);
+		$allowed_html = array(
+			'a' => array(
+				'href'  => true,
+				'title' => true,
+			),
+			'br',
+			'i',
+		);
+		echo '<div class="notice notice-warning"><p>' . \wp_kses( $notice, $allowed_html ) . '</p></div>';
+	}
 }
