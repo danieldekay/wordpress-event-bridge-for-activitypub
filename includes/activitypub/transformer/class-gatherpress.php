@@ -8,7 +8,7 @@
 
 use Activitypub\Transformer\Post;
 use Activitypub\Model\Blog_user;
-use Activitypub\Activity\Extended_Object\Event;
+use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
 use GatherPress\Core\Event as GatherPress_Event;
 
@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class GatherPress extends Post {
 
 	/**
-	 * The target transformet ActivityPub Event object.
+	 * The target ActivityPub Event object of the transformer.
 	 *
 	 * @var Event
 	 */

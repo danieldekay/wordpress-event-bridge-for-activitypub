@@ -7,11 +7,10 @@
  * @license AGPL-3.0-or-later
  */
 
+use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
 use EM_Event;
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
-use Activitypub\Transformer\Post;
-
 use function Activitypub\esc_hashtag;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -25,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Events_Manager extends Post {
+class Events_Manager extends Event_Transformer {
 
 	/**
 	 * Holds the EM_Event object.
@@ -44,7 +43,6 @@ class Events_Manager extends Post {
 	 * @return string Widget name.
 	 */
 	public function get_transformer_name() {
-
 		return 'activitypub-event-transformers/events-manager';
 	}
 
@@ -58,7 +56,6 @@ class Events_Manager extends Post {
 	 * @return string Widget title.
 	 */
 	public function get_transformer_label() {
-
 		return 'Events Manager';
 	}
 
@@ -72,7 +69,6 @@ class Events_Manager extends Post {
 	 * @return array Widget categories.
 	 */
 	public static function get_supported_post_types() {
-
 		return array();
 	}
 
@@ -84,23 +80,19 @@ class Events_Manager extends Post {
 	 * @return string The Event Object-Type.
 	 */
 	protected function get_type() {
-
 		return 'Event';
 	}
 
 	protected function get_is_online() {
-
 		return 'url' === $this->em_event->event_location_type;
 	}
 
 	/**
 	 * Get the event location.
 	 *
-	 * @param int $post_id The WordPress post ID.
 	 * @return array The Place.
 	 */
 	public function get_location() {
-
 		if ( 'url' === $this->em_event->event_location_type ) {
 			return null;
 		}
@@ -132,7 +124,6 @@ class Events_Manager extends Post {
 	 * Get the end time from the events metadata.
 	 */
 	protected function get_end_time() {
-
 		return null;
 	}
 
@@ -140,7 +131,6 @@ class Events_Manager extends Post {
 	 * Get the end time from the events metadata.
 	 */
 	protected function get_start_time() {
-
 		$date_string     = $this->em_event->event_start_date;
 		$time_string     = $this->em_event->event_start_time;
 		$timezone_string = $this->em_event->event_timezone;
@@ -157,7 +147,6 @@ class Events_Manager extends Post {
 	}
 
 	protected function get_maximum_attendee_capacity() {
-
 		return $this->em_event->event_spaces;
 	}
 
@@ -165,25 +154,21 @@ class Events_Manager extends Post {
 	 * @todo decide whether to include pending bookings or not!
 	 */
 	protected function get_remaining_attendee_capacity() {
-
 		$em_bookings                 = $this->em_event->get_bookings()->get_bookings();
 		$remaining_attendee_capacity = $this->em_event->event_spaces - count( $em_bookings->bookings );
 		return $remaining_attendee_capacity;
 	}
 
 	protected function get_participant_count() {
-
 		$em_bookings = $this->em_event->get_bookings()->get_bookings();
 		return count( $em_bookings->bookings );
 	}
 
 	protected function get_content() {
-
 		return $this->wp_object->post_content;
 	}
 
 	protected function get_summary() {
-
 		if ( $this->em_event->post_excerpt ) {
 			$excerpt = $this->em_event->post_excerpt;
 		} else {
@@ -202,7 +187,6 @@ class Events_Manager extends Post {
 	// }
 
 	private function get_event_link_attachment() {
-
 		$event_link_url  = $this->em_event->event_location->data['url'];
 		$event_link_text = $this->em_event->event_location->data['text'];
 		return array(
@@ -218,7 +202,7 @@ class Events_Manager extends Post {
 	 * Overrides/extends the get_attachments function to also add the event Link.
 	 */
 	protected function get_attachment() {
-		// Get attachments via parent function
+		// Get attachments via parent function.
 		$attachments = parent::get_attachment();
 
 		// The first attachment is the featured image, make sure it is compatible with Mobilizon.
