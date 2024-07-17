@@ -13,7 +13,7 @@ namespace Activitypub_Event_Extensions;
 
 use Activitypub_Event_Extensions\Admin\Event_Plugin_Admin_Notices;
 use Activitypub_Event_Extensions\Admin\General_Admin_Notices;
-
+use Activitypub_Event_Extensions\Admin\Settings_Page;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -140,6 +140,9 @@ class Setup {
 		if ( empty( $this->active_event_plugins ) || ! $this->activitypub_plugin_is_active ) {
 			return;
 		}
+
+		add_action( 'admin_menu', array( Settings_Page::static, 'admin_menu' ) );
+		add_filter( 'plugin_action_links_Activitypub_Event_Extensions', array( Settings_Page::static, 'settings_links' ) );
 
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
 	}
