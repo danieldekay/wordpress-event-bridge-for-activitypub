@@ -36,6 +36,7 @@ class Settings_Page {
 	 */
 
 	const static = 'Activitypub_Event_Extensions\Admin\Settings_Page';
+	const settings_slug = 'activitypub-events';
 
 	/**
 	 * Warning if the plugin is Active and the ActivityPub plugin is not.
