@@ -46,13 +46,26 @@ class Settings_Page {
 			'Activitypub Event Extension',
 			'Activitypub Events',
 			'manage_options',
-			'activitypub-events',
+			self::settings_slug,
 			array( self::static, 'settings_page' )
 		);
 	}
 
-
-
+	/**
+	 * Adds Link to the settings page in the plugin page.
+	 * It's called via apply_filter('plugin_action_links_' . PLUGIN_NAME).
+	 *
+	 * @param links already added links
+	 * @return array original links but with link to setting page added
+	 */
+	public static function settings_link( $links ) {
+		return array_merge(
+			$links,
+			array(
+				'<a href="' . admin_url( 'options-general.php?page=' . self::settings_slug ) . '">Settings</a>',
+			)
+		);
+	}
 
 	public static function settings_page() {
 		if ( empty( $_GET['tab'] ) ) {
