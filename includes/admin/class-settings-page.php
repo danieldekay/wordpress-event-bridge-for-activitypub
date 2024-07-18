@@ -108,14 +108,17 @@ class Settings_Page {
 
 		$submenu_options[$tab]['active'] = true;
 
-
+		$args = array(
+			'slug' => settings_slug,
+			'options' => $submenu_options,
+		);
 
 		switch ( $tab ) {
 			case 'general':
-				\load_template( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'templates/settings-general.php' , true, $submenu_options );
+				\load_template( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'templates/settings-general.php' , true, $args );
 				break;
 			default:
-				\load_template( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'templates/settings-extractor.php', true, $submenu_options );
+				\load_template( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'templates/settings-extractor.php', true, $args );
 				break;
 		}
 
