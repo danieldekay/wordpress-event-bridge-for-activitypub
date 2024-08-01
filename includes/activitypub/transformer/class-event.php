@@ -42,6 +42,13 @@ class Event extends Post {
 	}
 
 	/**
+	 * Format a human readable HTML summary.
+	 */
+	protected function format_html_summary($summary_text) {
+		
+	}
+
+	/**
 	 * Generic function that converts an WP-Event object to an ActivityPub-Event object.
 	 *
 	 * @return Event_Object

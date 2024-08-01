@@ -1,5 +1,4 @@
 <?php
-
 /**
  * ActivityPub Transformer for the plugin Very Simple Event List.
  *
@@ -83,6 +82,11 @@ class Events_Manager extends Event_Transformer {
 		return 'Event';
 	}
 
+	/**
+	 * Returns whether the even is online
+	 *
+	 * @return bool
+	 */
 	protected function get_is_online() {
 		return 'url' === $this->em_event->event_location_type;
 	}
@@ -135,22 +139,29 @@ class Events_Manager extends Event_Transformer {
 		$time_string     = $this->em_event->event_start_time;
 		$timezone_string = $this->em_event->event_timezone;
 
-		// Create a DateTime object with the given date, time, and timezone
+		// Create a DateTime object with the given date, time, and timezone.
 		$datetime = new DateTime( $date_string . ' ' . $time_string, new DateTimeZone( $timezone_string ) );
 
-		// Set the timezone for proper formatting
+		// Set the timezone for proper formatting.
 		$datetime->setTimezone( new DateTimeZone( 'UTC' ) );
 
-		// Format the DateTime object as 'Y-m-d\TH:i:s\Z'
+		// Format the DateTime object as 'Y-m-d\TH:i:s\Z'.
 		$formatted_date = $datetime->format( 'Y-m-d\TH:i:s\Z' );
 		return $formatted_date;
 	}
 
+	/**
+	 * Returns the maximum attendee capacity.
+	 *
+	 * @return int
+	 */
 	protected function get_maximum_attendee_capacity() {
 		return $this->em_event->event_spaces;
 	}
 
 	/**
+	 * Return the remaining attendee capacity
+	 *
 	 * @todo decide whether to include pending bookings or not!
 	 */
 	protected function get_remaining_attendee_capacity() {
@@ -159,13 +170,14 @@ class Events_Manager extends Event_Transformer {
 		return $remaining_attendee_capacity;
 	}
 
+	/**
+	 * Returns the current participant count.
+	 *
+	 * @return int
+	 */
 	protected function get_participant_count() {
 		$em_bookings = $this->em_event->get_bookings()->get_bookings();
 		return count( $em_bookings->bookings );
-	}
-
-	protected function get_content() {
-		return $this->wp_object->post_content;
 	}
 
 	protected function get_summary() {
@@ -223,7 +235,6 @@ class Events_Manager extends Event_Transformer {
 	 * @return string $category
 	 */
 	protected function get_category() {
-
 		$categories = $this->em_event->get_categories()->terms;
 
 		if ( empty( $categories ) ) {
@@ -286,7 +297,6 @@ class Events_Manager extends Event_Transformer {
 	}
 
 	protected function get_name() {
-
 		return $this->em_event->event_name;
 	}
 
@@ -296,7 +306,6 @@ class Events_Manager extends Event_Transformer {
 	 * @return Activitypub\Activity\Event
 	 */
 	public function to_object() {
-
 		$this->em_event     = new EM_Event( $this->wp_object->ID, 'post_id' );
 		$activitypub_object = new Event();
 

@@ -16,7 +16,7 @@ For more information checkout our website https://event-federation.eu/. You can 
 * [The Events Calendar](https://de.wordpress.org/plugins/the-events-calendar/)
 * [VS Event List](https://de.wordpress.org/plugins/very-simple-event-list/)
 * [Events Manager](https://de.wordpress.org/plugins/events-manager/)
-* [GatherPress](https://github.com/GatherPress/gatherpress)
+  * [GatherPress](https://github.com/GatherPress/gatherpress)
 
 ### Later:
 - [All in One Events Calendar](https://de.wordpress.org/plugins/all-in-one-event-calendar/)

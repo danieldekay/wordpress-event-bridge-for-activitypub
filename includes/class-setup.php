@@ -7,6 +7,7 @@
  *
  * @package Activitypub_Event_Extensions
  * @since 1.0.0
+ * @license AGPL-3.0-or-later
  */
 
 namespace Activitypub_Event_Extensions;
