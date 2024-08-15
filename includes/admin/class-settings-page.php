@@ -1,8 +1,9 @@
 <?php
 /**
- * Class responsible for Event Plugin related admin notices.
+ * General settings class.
  *
- * Notices for guiding to proper configuration of ActivityPub with event plugins.
+ * This file contains the General class definition, which handles the "General" settings
+ * page for the ActivityPub Event Extension Plugin, providing options for configuring various general settings.
  *
  * @package Activitypub_Event_Extensions
  * @since 1.0.0
@@ -10,7 +11,8 @@
 
 namespace Activitypub_Event_Extensions\Admin;
 
-use Activitypub_Event_Extensions\Setup;
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
  * Class responsible for Event Plugin related admin notices.
@@ -21,9 +23,9 @@ use Activitypub_Event_Extensions\Setup;
  */
 class Settings_Page {
 
-	/*
+	/**
 	 * TODO:
-     *  - [ ] create settings page
+     * 	- [ ] create settings page
 	 *      - [ ] skeleton
 	 *      - [ ] Autoloader
 	 *  - [ ] Common settings?
@@ -35,8 +37,9 @@ class Settings_Page {
 	 *      - [ ] advanced for mapping
 	 */
 
-	const static = 'Activitypub_Event_Extensions\Admin\Settings_Page';
-	const settings_slug = 'activitypub-events';
+	const STATIC = 'Activitypub_Event_Extensions\Admin\Settings_Page';
+
+	const SETTINGS_SLUG = 'activitypub-events';
 
 	/**
 	 * Warning if the plugin is Active and the ActivityPub plugin is not.
@@ -46,8 +49,8 @@ class Settings_Page {
 			'Activitypub Event Extension',
 			'Activitypub Events',
 			'manage_options',
-			self::settings_slug,
-			array( self::static, 'settings_page' )
+			self::SETTINGS_SLUG,
+			array( self::STATIC, 'settings_page' )
 		);
 	}
 
@@ -55,14 +58,14 @@ class Settings_Page {
 	 * Adds Link to the settings page in the plugin page.
 	 * It's called via apply_filter('plugin_action_links_' . PLUGIN_NAME).
 	 *
-	 * @param links already added links
-	 * @return array original links but with link to setting page added
+	 * @param array $links    Already added links.
+	 * @return array          Original links but with link to setting page added.
 	 */
 	public static function settings_link( $links ) {
 		return array_merge(
 			$links,
 			array(
-				'<a href="' . admin_url( 'options-general.php?page=' . self::settings_slug ) . '">Settings</a>',
+				'<a href="' . admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG ) . '">Settings</a>',
 			)
 		);
 	}
@@ -81,47 +84,45 @@ class Settings_Page {
 		}
 		 */
 
-		// todo generate this somehow
-		// maybe with filters, similar as with the settings
+		// TODO: generate this somehow.
+		// Maybe with filters, similar as with the settings!
 		$submenu_options = array(
 			'general'             => array(
-				'name' => 'General',
-				'active' => false
+				'name'   => 'General',
+				'active' => false,
 			),
 			'events_manager'      => array(
-				'name' => 'Events Manager',
+				'name'   => 'Events Manager',
 				'active' => false,
 			),
 			'gatherpress'         => array(
-				'name' => 'Gatherpress',
+				'name'   => 'Gatherpress',
 				'active' => false,
 			),
 			'the_events_calendar' => array(
-				'name' => 'The Events Calendar',
+				'name'   => 'The Events Calendar',
 				'active' => false,
 			),
 			'vsel'                => array(
-				'name' => 'VS Event',
+				'name'   => 'VS Event',
 				'active' => false,
 			),
 		);
 
-		$submenu_options[$tab]['active'] = true;
+		$submenu_options[ $tab ]['active'] = true;
 
 		$args = array(
-			'slug' => settings_slug,
+			'slug'    => self::SETTINGS_SLUG,
 			'options' => $submenu_options,
 		);
 
 		switch ( $tab ) {
 			case 'general':
-				\load_template( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'templates/settings-general.php' , true, $args );
+				\load_template( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'templates/settings-general.php', true, $args );
 				break;
 			default:
 				\load_template( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'templates/settings-extractor.php', true, $args );
 				break;
 		}
-
 	}
-
 }

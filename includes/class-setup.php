@@ -141,10 +141,12 @@ class Setup {
 			return;
 		}
 
-		add_action( 'admin_menu', array( Settings_Page::static, 'admin_menu' ) );
-		add_filter( 'plugin_action_links_' . ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_BASENAME,
-					array( Settings_Page::static, 'settings_link' ) );
+		add_action( 'admin_menu', array( Settings_Page::STATIC, 'admin_menu' ) );
 
+		add_filter(
+			'plugin_action_links_' . ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_BASENAME,
+			array( Settings_Page::STATIC, 'settings_link' )
+		);
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
 	}
 
