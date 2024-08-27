@@ -16,8 +16,19 @@ use function Activitypub\get_rest_url_by_path;
 
 /**
  * Base transformer for WordPress event post types to ActivityPub events.
+ *
+ * Everything that transforming several WordPress post types that represent events
+ * have in common, as well as sane defaults for events should be defined here.
  */
 class Event extends Post {
+
+	/**
+	 * The WordPress event taxonomy.
+	 *
+	 * @var string
+	 */
+	protected $wp_taxonomy;
+
 	/**
 	 * Returns the User-URL of the Author of the Post.
 	 *
@@ -39,6 +50,19 @@ class Event extends Post {
 	 */
 	protected function get_object_type() {
 		return 'Event';
+	}
+
+	/**
+	 * Set the event category, via the mapping setting.
+	 */
+	public function get_category() {
+		$current_category_mapping = \get_option( 'activitypub_event_extensions_event_category_mappings', array() );
+		$terms                    = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
+		if ( ! is_wp_error( $terms ) && $terms ) {
+			return $current_category_mapping[ $terms[0]->slug ];
+		} else {
+			return \get_option( 'activitypub_event_extensions_default_event_category', 'MEETING' );
+		}
 	}
 
 	/**

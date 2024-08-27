@@ -6,8 +6,14 @@
  * @license AGPL-3.0-or-later
  */
 
-use Activitypub\Transformer\Post;
-use Activitypub\Model\Blog_user;
+namespace Activitypub_Event_Extensions\Activitypub\Transformer;
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
+
+use Activitypub_Event_Extensions\Activitypub\Transformer\Event;
+use Activitypub\Model\Blog;
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
 use GatherPress\Core\Event as GatherPress_Event;
@@ -23,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class GatherPress extends Post {
+class GatherPress extends Event {
 
 	/**
 	 * The target ActivityPub Event object of the transformer.
@@ -84,7 +90,6 @@ class GatherPress extends Post {
 	 * @return array Widget categories.
 	 */
 	public static function get_supported_post_types() {
-
 		return array( GatherPress_Event::POST_TYPE );
 	}
 
@@ -96,7 +101,6 @@ class GatherPress extends Post {
 	 * @return string The Event Object-Type.
 	 */
 	protected function get_type() {
-
 		return 'Event';
 	}
 
@@ -119,7 +123,6 @@ class GatherPress extends Post {
 	 * Get the end time from the event object.
 	 */
 	protected function get_end_time() {
-
 		return $this->gp_event->get_datetime_end( 'Y-m-d\TH:i:s\Z' );
 	}
 
@@ -127,7 +130,6 @@ class GatherPress extends Post {
 	 * Get the end time from the event object.
 	 */
 	protected function get_start_time() {
-
 		return $this->gp_event->get_datetime_start( 'Y-m-d\TH:i:s\Z' );
 	}
 
@@ -135,7 +137,6 @@ class GatherPress extends Post {
 	 * Get the event link from the events metadata.
 	 */
 	private function get_event_link() {
-
 		$event_link = get_post_meta( $this->wp_object->ID, 'event-link', true );
 		if ( $event_link ) {
 			return array(
@@ -151,7 +152,6 @@ class GatherPress extends Post {
 	 * Overrides/extends the get_attachments function to also add the event Link.
 	 */
 	protected function get_attachment() {
-
 		$attachments = parent::get_attachment();
 		if ( count( $attachments ) ) {
 			$attachments[0]['type'] = 'Document';
@@ -170,7 +170,6 @@ class GatherPress extends Post {
 	 * @return string $category
 	 */
 	protected function get_category() {
-
 		return 'MEETING';
 	}
 
@@ -182,8 +181,7 @@ class GatherPress extends Post {
 	 * @return string The User-URL.
 	 */
 	protected function get_attributed_to() {
-
-		$user = new Blog_User();
+		$user = new Blog();
 		return $user->get_url();
 	}
 

@@ -9,7 +9,6 @@
 namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 
 use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
-use Activitypub\Model\Blog;
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
 
@@ -25,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class VS_Event extends Event_Transformer {
+class VSEL extends Event_Transformer {
 
 	/**
 	 * The target transformet ActivityPub Event object.
@@ -205,7 +204,7 @@ class VS_Event extends Event_Transformer {
 		$setter_function = 'set_' . $key;
 		$getter_function = 'get_' . $key;
 
-		if ( in_array( $getter_function, get_class_methods( $this ) ) ) {
+		if ( in_array( $getter_function, get_class_methods( $this ), true ) ) {
 			$this->ap_object->$setter_function( $this->$getter_function() );
 		} else {
 			$this->ap_object->$setter_function( $value );
@@ -220,7 +219,7 @@ class VS_Event extends Event_Transformer {
 	 * @param string $method The method name.
 	 * @param string $params The method params.
 	 *
-	 * @return void
+	 * @return function
 	 */
 	public function __call( $method, $params ) {
 
@@ -229,8 +228,6 @@ class VS_Event extends Event_Transformer {
 		if ( \strncasecmp( $method, 'set', 3 ) === 0 ) {
 			return $this->set( $var, $params[0] );
 		}
-
-		// when do we need: call_user_func( array( $activitypub_object, $setter ), $value );
 
 		return $this;
 	}

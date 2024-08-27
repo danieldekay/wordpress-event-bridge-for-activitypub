@@ -11,43 +11,29 @@
 
 namespace Activitypub_Event_Extensions\Admin;
 
+use Activitypub_Event_Extensions\Setup;
+
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
- * Class responsible for Event Plugin related admin notices.
+ * Class responsible for the ActivityPui Event Extension related Settings.
  *
- * Notices for guiding to proper configuration of ActivityPub with event plugins.
+ * Class responsible for the ActivityPui Event Extension related Settings.
  *
  * @since 1.0.0
  */
 class Settings_Page {
-
-	/**
-	 * TODO:
-     * 	- [ ] create settings page
-	 *      - [ ] skeleton
-	 *      - [ ] Autoloader
-	 *  - [ ] Common settings?
-	 *  - [ ] Hook points
-	 *      - [ ] let transformers hook settings into the page
-	 *  - [ ] provide setting-type-classes for hooks
-	 *      - [ ] True/False
-	 *      - [ ] Number
-	 *      - [ ] advanced for mapping
-	 */
-
 	const STATIC = 'Activitypub_Event_Extensions\Admin\Settings_Page';
 
-	const SETTINGS_SLUG = 'activitypub-events';
-
+	const SETTINGS_SLUG = 'activitypub-event-extensions';
 	/**
 	 * Warning if the plugin is Active and the ActivityPub plugin is not.
 	 */
 	public static function admin_menu() {
 		\add_options_page(
 			'Activitypub Event Extension',
-			'Activitypub Events',
+			__( 'ActivityPub Events', 'activitypub_event_extensions' ),
 			'manage_options',
 			self::SETTINGS_SLUG,
 			array( self::STATIC, 'settings_page' )
@@ -70,59 +56,46 @@ class Settings_Page {
 		);
 	}
 
-	public static function settings_page() {
-		if ( empty( $_GET['tab'] ) ) {
-			$tab = 'general';
+	/**
+	 * Receive the event categories (terms) used by the event plugin.
+	 *
+	 * @param array $event_plugin Contains info about a certain event plugin.
+	 *
+	 * @return array An array of Terms.
+	 */
+	private static function get_event_terms( $event_plugin ) {
+		if ( isset( $event_plugin['taxonomy'] ) ) {
+			$event_terms = get_terms(
+				array(
+					'taxonomy'   => $event_plugin['taxonomy'],
+					'hide_empty' => true,
+				)
+			);
+			return $event_terms;
 		} else {
-			$tab = sanitize_key( $_GET['tab'] );
+			return array();
 		}
+	}
 
-		/*
-		submenu_options = {
-			tab => {name => ''
-					active => true|false}
+	/**
+	 * Settings page.
+	 */
+	public static function settings_page() {
+		$plugin_setup = Setup::get_instance();
+
+		$event_plugins = $plugin_setup->get_active_event_plugins();
+
+		$event_terms = array();
+
+		foreach ( $event_plugins as $event_plugin_name => $events_plugin_info ) {
+			$event_terms[ $event_plugin_name ] = self::get_event_terms( $events_plugin_info );
 		}
-		 */
-
-		// TODO: generate this somehow.
-		// Maybe with filters, similar as with the settings!
-		$submenu_options = array(
-			'general'             => array(
-				'name'   => 'General',
-				'active' => false,
-			),
-			'events_manager'      => array(
-				'name'   => 'Events Manager',
-				'active' => false,
-			),
-			'gatherpress'         => array(
-				'name'   => 'Gatherpress',
-				'active' => false,
-			),
-			'the_events_calendar' => array(
-				'name'   => 'The Events Calendar',
-				'active' => false,
-			),
-			'vsel'                => array(
-				'name'   => 'VS Event',
-				'active' => false,
-			),
-		);
-
-		$submenu_options[ $tab ]['active'] = true;
 
 		$args = array(
-			'slug'    => self::SETTINGS_SLUG,
-			'options' => $submenu_options,
+			'slug'        => self::SETTINGS_SLUG,
+			'event_terms' => $event_terms,
 		);
 
-		switch ( $tab ) {
-			case 'general':
-				\load_template( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'templates/settings-general.php', true, $args );
-				break;
-			default:
-				\load_template( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'templates/settings-extractor.php', true, $args );
-				break;
-		}
+		\load_template( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'templates/settings.php', true, $args );
 	}
 }
