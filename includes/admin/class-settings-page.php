@@ -88,7 +88,7 @@ class Settings_Page {
 		$event_terms = array();
 
 		foreach ( $event_plugins as $event_plugin_name => $events_plugin_info ) {
-			$event_terms[ $event_plugin_name ] = self::get_event_terms( $events_plugin_info );
+			$event_terms = array_merge( $event_terms, self::get_event_terms( $events_plugin_info ) );
 		}
 
 		$args = array(

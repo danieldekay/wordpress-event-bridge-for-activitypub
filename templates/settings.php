@@ -23,12 +23,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 	return;
 }
 
-$event_terms = get_terms(
-	array(
-		'taxonomy'   => 'tribe_events_cat',
-		'hide_empty' => true,
-	)
-);
+$event_terms = $args['event_terms'];
 
 $default_event_category_strings = array(
 	'ARTS'                          => __( 'Arts', 'activitypub-event-extensions' ),

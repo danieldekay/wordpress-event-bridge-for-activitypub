@@ -9,7 +9,7 @@
  * @since 1.0.0
  */
 
-namespace Activitypub_Event_Extensions\Admin;
+namespace Activitypub_Event_Extensions;
 
 use Activitypub\Activity\Extended_Object\Event;
 

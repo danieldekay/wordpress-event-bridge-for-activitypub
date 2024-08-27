@@ -52,6 +52,7 @@ class Setup {
 			'post_type'         => 'event',
 			'settings_page_id'  => 'settings_page_vsel',
 			'transformer_class' => 'VS_Event',
+			'taxonomy'        => 'event_cat',
 		),
 	);
 
@@ -121,6 +122,14 @@ class Setup {
 		}
 		return $active_event_plugins;
 	}
+
+	/**
+	 * Getter function for the active event plugins.
+	 */
+	public function get_active_event_plugins() {
+		return $this->active_event_plugins;
+	}
+
 
 	/**
 	 * Set up hooks for various purposes.
