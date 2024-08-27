@@ -9,7 +9,6 @@
 namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 
 use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
-use Activitypub\Model\Blog;
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
 
@@ -21,14 +20,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * ActivityPub Transformer for VS Event
+ * ActivityPub Transformer for VS Event.
+ *
+ * This transformer tries a different principle: The setters are chainable.
  *
  * @since 1.0.0
  */
-class VS_Event extends Event_Transformer {
+class VS_Event_List extends Event_Transformer {
 
 	/**
-	 * The target transformet ActivityPub Event object.
+	 * The target transformer ActivityPub Event object.
 	 *
 	 * @var Event
 	 */
@@ -155,15 +156,6 @@ class VS_Event extends Event_Transformer {
 	}
 
 	/**
-	 * This function tries to map VS-Event categories to Mobilizon event categories.
-	 *
-	 * @return string $category
-	 */
-	protected function get_category() {
-		return 'MEETING';
-	}
-
-	/**
 	 * Create a custom summary.
 	 *
 	 * It contains also the most important meta-information. The summary is often used when the
@@ -205,7 +197,7 @@ class VS_Event extends Event_Transformer {
 		$setter_function = 'set_' . $key;
 		$getter_function = 'get_' . $key;
 
-		if ( in_array( $getter_function, get_class_methods( $this ) ) ) {
+		if ( in_array( $getter_function, get_class_methods( $this ), true ) ) {
 			$this->ap_object->$setter_function( $this->$getter_function() );
 		} else {
 			$this->ap_object->$setter_function( $value );
@@ -220,7 +212,7 @@ class VS_Event extends Event_Transformer {
 	 * @param string $method The method name.
 	 * @param string $params The method params.
 	 *
-	 * @return void
+	 * @return void|this
 	 */
 	public function __call( $method, $params ) {
 
@@ -230,7 +222,7 @@ class VS_Event extends Event_Transformer {
 			return $this->set( $var, $params[0] );
 		}
 
-		// when do we need: call_user_func( array( $activitypub_object, $setter ), $value );
+		// TODO: When do we need: call_user_func( array( $activitypub_object, $setter ), $value ).
 
 		return $this;
 	}

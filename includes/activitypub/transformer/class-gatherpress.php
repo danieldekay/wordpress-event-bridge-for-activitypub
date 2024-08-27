@@ -6,8 +6,8 @@
  * @license AGPL-3.0-or-later
  */
 
-use Activitypub\Transformer\Post;
-use Activitypub\Model\Blog_user;
+use Activitypub_Event_Extensions\Activitypub\Transformer\Event;
+use Activitypub\Model\Blog;
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
 use GatherPress\Core\Event as GatherPress_Event;
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class GatherPress extends Post {
+class GatherPress extends Event {
 
 	/**
 	 * The target ActivityPub Event object of the transformer.
@@ -35,7 +35,7 @@ class GatherPress extends Post {
 	/**
 	 * The current GatherPress Event object.
 	 *
-	 * @var Event
+	 * @var GatherPress_Event
 	 */
 	protected $gp_event;
 
@@ -56,7 +56,6 @@ class GatherPress extends Post {
 	 * @return string Widget name.
 	 */
 	public function get_transformer_name() {
-
 		return 'gatherpress/gp-event';
 	}
 
@@ -70,7 +69,6 @@ class GatherPress extends Post {
 	 * @return string Widget title.
 	 */
 	public function get_transformer_label() {
-
 		return 'GatherPress Event';
 	}
 
@@ -84,7 +82,6 @@ class GatherPress extends Post {
 	 * @return array Widget categories.
 	 */
 	public static function get_supported_post_types() {
-
 		return array( GatherPress_Event::POST_TYPE );
 	}
 
@@ -96,7 +93,6 @@ class GatherPress extends Post {
 	 * @return string The Event Object-Type.
 	 */
 	protected function get_type() {
-
 		return 'Event';
 	}
 
@@ -106,7 +102,6 @@ class GatherPress extends Post {
 	 * @return array The Place.
 	 */
 	public function get_location() {
-
 		$address = $this->gp_venue['full_address'];
 		$place   = new Place();
 		$place->set_type( 'Place' );
@@ -119,7 +114,6 @@ class GatherPress extends Post {
 	 * Get the end time from the event object.
 	 */
 	protected function get_end_time() {
-
 		return $this->gp_event->get_datetime_end( 'Y-m-d\TH:i:s\Z' );
 	}
 
@@ -127,7 +121,6 @@ class GatherPress extends Post {
 	 * Get the end time from the event object.
 	 */
 	protected function get_start_time() {
-
 		return $this->gp_event->get_datetime_start( 'Y-m-d\TH:i:s\Z' );
 	}
 
@@ -151,7 +144,6 @@ class GatherPress extends Post {
 	 * Overrides/extends the get_attachments function to also add the event Link.
 	 */
 	protected function get_attachment() {
-
 		$attachments = parent::get_attachment();
 		if ( count( $attachments ) ) {
 			$attachments[0]['type'] = 'Document';
@@ -165,16 +157,6 @@ class GatherPress extends Post {
 	}
 
 	/**
-	 * TODO:
-	 *
-	 * @return string $category
-	 */
-	protected function get_category() {
-
-		return 'MEETING';
-	}
-
-	/**
 	 * Returns the User-URL of the Author of the Post.
 	 *
 	 * If `single_user` mode is enabled, the URL of the Blog-User is returned.
@@ -182,8 +164,7 @@ class GatherPress extends Post {
 	 * @return string The User-URL.
 	 */
 	protected function get_attributed_to() {
-
-		$user = new Blog_User();
+		$user = new Blog();
 		return $user->get_url();
 	}
 
@@ -196,7 +177,6 @@ class GatherPress extends Post {
 	 * @return string $summary The custom event summary.
 	 */
 	public function get_summary() {
-
 		if ( $this->wp_object->excerpt ) {
 			$excerpt = $this->wp_object->post_excerpt;
 		} elseif ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
@@ -219,8 +199,7 @@ class GatherPress extends Post {
 	 * @return Activitypub\Activity\Event
 	 */
 	public function to_object() {
-
-		$this->ap_object = new Event();
+		$this->ap_object = new Event_Object();
 		$this->gp_event  = new GatherPress_Event( $this->wp_object->ID );
 		$this->gp_venue  = $this->gp_event->get_venue_information();
 

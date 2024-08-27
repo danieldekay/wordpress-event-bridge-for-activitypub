@@ -32,11 +32,6 @@ Activitypub_Event_Extensions\Autoloader::register();
 // Initialize the plugin.
 Activitypub_Event_Extensions\Setup::get_instance();
 
-
-
-
-
-
 // For local development purposes: TODO. Remove everything after here.
 
 /**
@@ -53,9 +48,11 @@ add_filter( 'http_request_host_is_external', 'custom_http_request_host_is_extern
  *
  * TODO: Remove this for release.
  *
+ * @param bool $is_external Whether the request is external.
+ *
  * @todo This filter is temporary code needed to do local testing.
  */
-function custom_http_request_host_is_external( $is_external, $host, $url ) {
+function custom_http_request_host_is_external( $is_external ) {
 	$is_external = true;
 
 	return $is_external;
@@ -70,6 +67,9 @@ function custom_http_request_host_is_external( $is_external, $host, $url ) {
  */
 add_filter( 'https_ssl_verify', 'dont_verify_local_dev_https', 10, 3 );
 
-function dont_verify_local_dev_https( $url ) {
+/**
+ * TODO: remove it.
+ */
+function dont_verify_local_dev_https() {
 	return false;
 }

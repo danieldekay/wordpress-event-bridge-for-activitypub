@@ -43,9 +43,13 @@ class Event extends Post {
 
 	/**
 	 * Format a human readable HTML summary.
+	 *
+	 * @param string $summary_text The base string to be formatted.
+	 *
+	 * @return string
 	 */
-	protected function format_html_summary($summary_text) {
-		
+	protected function format_html_summary( $summary_text ): string {
+		return $summary_text;
 	}
 
 	/**

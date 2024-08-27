@@ -127,14 +127,14 @@ class Events_Manager extends Event_Transformer {
 	/**
 	 * Get the end time from the events metadata.
 	 */
-	protected function get_end_time() {
+	public function get_end_time() {
 		return null;
 	}
 
 	/**
 	 * Get the end time from the events metadata.
 	 */
-	protected function get_start_time() {
+	public function get_start_time() {
 		$date_string     = $this->em_event->event_start_date;
 		$time_string     = $this->em_event->event_start_time;
 		$timezone_string = $this->em_event->event_timezone;
@@ -155,7 +155,7 @@ class Events_Manager extends Event_Transformer {
 	 *
 	 * @return int
 	 */
-	protected function get_maximum_attendee_capacity() {
+	public function get_maximum_attendee_capacity() {
 		return $this->em_event->event_spaces;
 	}
 
@@ -164,7 +164,7 @@ class Events_Manager extends Event_Transformer {
 	 *
 	 * @todo decide whether to include pending bookings or not!
 	 */
-	protected function get_remaining_attendee_capacity() {
+	public function get_remaining_attendee_capacity() {
 		$em_bookings                 = $this->em_event->get_bookings()->get_bookings();
 		$remaining_attendee_capacity = $this->em_event->event_spaces - count( $em_bookings->bookings );
 		return $remaining_attendee_capacity;
@@ -175,12 +175,15 @@ class Events_Manager extends Event_Transformer {
 	 *
 	 * @return int
 	 */
-	protected function get_participant_count() {
+	public function get_participant_count() {
 		$em_bookings = $this->em_event->get_bookings()->get_bookings();
 		return count( $em_bookings->bookings );
 	}
 
-	protected function get_summary() {
+	/**
+	 * Hardcoded function for generating a summary.
+	 */
+	public function get_summary() {
 		if ( $this->em_event->post_excerpt ) {
 			$excerpt = $this->em_event->post_excerpt;
 		} else {
@@ -194,17 +197,17 @@ class Events_Manager extends Event_Transformer {
 		return $summary;
 	}
 
-	// protected function get_join_mode() {
-	// return 'free';
-	// }
-
-	private function get_event_link_attachment() {
+	/**
+	 * Get the event link as an ActivityPub Link object, but as an associative array.
+	 *
+	 * @return array
+	 */
+	private function get_event_link_attachment(): array {
 		$event_link_url  = $this->em_event->event_location->data['url'];
 		$event_link_text = $this->em_event->event_location->data['text'];
 		return array(
 			'type'      => 'Link',
-			'name'      => 'Website',
-			// 'name' => $event_link_text,
+			'name'      => $event_link_text ? $event_link_text : 'Website',
 			'href'      => \esc_url( $event_link_url ),
 			'mediaType' => 'text/html',
 		);
@@ -230,54 +233,9 @@ class Events_Manager extends Event_Transformer {
 	}
 
 	/**
-	 * This function tries to map VS-Event categories to Mobilizon event categories.
-	 *
-	 * @return string $category
+	 * Compose the events tags.
 	 */
-	protected function get_category() {
-		$categories = $this->em_event->get_categories()->terms;
-
-		if ( empty( $categories ) ) {
-			return 'MEETING';
-		}
-
-		// Prepare an array to store all category information for comparison.
-		$category_info = array();
-
-		// Extract relevant category information (name, slug, description) from the categories array.
-		foreach ( $categories as $category ) {
-			$category_info[] = strtolower( $category->name );
-			$category_info[] = strtolower( $category->slug );
-			$category_info[] = strtolower( $category->description );
-		}
-
-		// Convert mobilizon categories to lowercase for case-insensitive comparison.
-		$mobilizon_categories = array_map( 'strtolower', Event::DEFAULT_EVENT_CATEGORIES );
-
-		// Initialize variables to track the best match.
-		$best_mobilizon_category_match = '';
-		$best_match_length             = 0;
-
-		// Check for the best match.
-		foreach ( $mobilizon_categories as $mobilizon_category ) {
-			foreach ( $category_info as $category ) {
-				foreach ( explode( '_', $mobilizon_category ) as $mobilizon_category_slice ) {
-					if ( stripos( $category, $mobilizon_category_slice ) !== false ) {
-						// Check if the current match is longer than the previous best match.
-						$current_match_legnth = strlen( $mobilizon_category_slice );
-						if ( $current_match_legnth > $best_match_length ) {
-							$best_mobilizon_category_match = $mobilizon_category;
-							$best_match_length             = $current_match_legnth;
-						}
-					}
-				}
-			}
-		}
-
-		return ( '' != $best_mobilizon_category_match ) ? strtoupper( $best_mobilizon_category_match ) : 'MEETING';
-	}
-
-	protected function get_tag() {
+	public function get_tag() {
 		// The parent tag function also fetches the mentions.
 		$tags = parent::get_tag();
 
@@ -296,6 +254,9 @@ class Events_Manager extends Event_Transformer {
 		return $tags;
 	}
 
+	/**
+	 * Get the events title/name.
+	 */
 	protected function get_name() {
 		return $this->em_event->event_name;
 	}
