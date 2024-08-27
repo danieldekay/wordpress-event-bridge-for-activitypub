@@ -135,17 +135,18 @@ class Setup {
 		register_activation_hook( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE, array( $this, 'activate' ) );
 
 		add_action( 'admin_init', array( $this, 'do_admin_notices' ) );
+		add_action( 'admin_init', array( Settings::class, 'register_settings' ) );
 
 		// If we don't have any active event plugins, or the ActivityPub plugin is not enabled, abort here.
 		if ( empty( $this->active_event_plugins ) || ! $this->activitypub_plugin_is_active ) {
 			return;
 		}
 
-		add_action( 'admin_menu', array( Settings_Page::STATIC, 'admin_menu' ) );
+		add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
 
 		add_filter(
 			'plugin_action_links_' . ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_BASENAME,
-			array( Settings_Page::STATIC, 'settings_link' )
+			array( Settings_Page::class, 'settings_link' )
 		);
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
 	}
