@@ -16,8 +16,19 @@ use function Activitypub\get_rest_url_by_path;
 
 /**
  * Base transformer for WordPress event post types to ActivityPub events.
+ *
+ * Everything that transforming several WordPress post types that represent events
+ * have in common, as well as sane defaults for events should be defined here.
  */
 class Event extends Post {
+
+	/**
+	 * The WordPress event taxonomy.
+	 *
+	 * @var string
+	 */
+	protected $wp_taxonomy;
+
 	/**
 	 * Returns the User-URL of the Author of the Post.
 	 *
@@ -42,14 +53,30 @@ class Event extends Post {
 	}
 
 	/**
-	 * Format a human readable HTML summary.
+	 * Extend the construction of the Post Transformer to also set the according taxonomy of the event post type.
 	 *
-	 * @param string $summary_text The base string to be formatted.
-	 *
-	 * @return string
+	 * @param WP_Post $wp_object The WordPress post object (event).
+	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	protected function format_html_summary( $summary_text ): string {
-		return $summary_text;
+	public function __construct( $wp_object, $wp_taxonomy ) {
+		parent::__construct( $wp_object );
+		$this->wp_taxonomy = $wp_taxonomy;
+	}
+
+	/**
+	 * Set the event category, via the mapping setting.
+	 */
+	public function get_category() {
+		$current_category_mapping = \get_option( 'activitypub_event_extensions_event_category_mappings', array() );
+		$terms                    = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
+
+		// Check if the event has a category set and if that category has a specific mapping return that one.
+		if ( ! is_wp_error( $terms ) && $terms && array_key_exists( $terms[0]->slug, $current_category_mapping ) ) {
+			return sanitize_text_field( $current_category_mapping[ $terms[0]->slug ] );
+		} else {
+			// Return the default event category.
+			return sanitize_text_field( \get_option( 'activitypub_event_extensions_default_event_category', 'MEETING' ) );
+		}
 	}
 
 	/**

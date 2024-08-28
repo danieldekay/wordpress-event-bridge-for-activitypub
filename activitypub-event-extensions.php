@@ -3,7 +3,7 @@
  * Plugin Name: ActivityPub Event Extensions
  * Description: Custom ActivityPub Transformers and Integrations for common Event Plugins.
  * Plugin URI:  https://event-federation.eu/
- * Version:     1.0.0
+ * Version:     0.1.0
  * Author:      André Menrath
  * Author URI:  https://graz.social/@linos
  * Text Domain: activitypub-event-extensions
@@ -18,12 +18,11 @@
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_VERSION', '1.0.0' );
-
 define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE', plugin_dir_path( __FILE__ ) . '/' . basename( __FILE__ ) );
 define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_VERSION', current( get_file_data( __FILE__, array( 'Version' ), 'plugin' ) ) );
 
 // Include and register the autoloader class for automatic loading of plugin classes.
 require_once ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . '/includes/class-autoloader.php';

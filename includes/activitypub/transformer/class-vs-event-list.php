@@ -45,7 +45,6 @@ class VS_Event_List extends Event_Transformer {
 	 * @return string Widget name.
 	 */
 	public function get_transformer_name() {
-
 		return 'activitypub-event-transformers/vs-event';
 	}
 
@@ -59,7 +58,6 @@ class VS_Event_List extends Event_Transformer {
 	 * @return string Widget title.
 	 */
 	public function get_transformer_label() {
-
 		return 'VS Event';
 	}
 
@@ -73,7 +71,6 @@ class VS_Event_List extends Event_Transformer {
 	 * @return array Widget categories.
 	 */
 	public static function get_supported_post_types() {
-
 		return array( 'event' );
 	}
 
@@ -85,7 +82,6 @@ class VS_Event_List extends Event_Transformer {
 	 * @return string The Event Object-Type.
 	 */
 	protected function get_type() {
-
 		return 'Event';
 	}
 
@@ -95,7 +91,6 @@ class VS_Event_List extends Event_Transformer {
 	 * @return array The Place.
 	 */
 	public function get_location() {
-
 		$address = get_post_meta( $this->wp_object->ID, 'event-location', true );
 		$place   = new Place();
 		$place->set_type( 'Place' );
@@ -108,7 +103,6 @@ class VS_Event_List extends Event_Transformer {
 	 * Get the end time from the events metadata.
 	 */
 	protected function get_end_time() {
-
 		$end_time = get_post_meta( $this->wp_object->ID, 'event-date', true );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $end_time );
 	}
@@ -117,7 +111,6 @@ class VS_Event_List extends Event_Transformer {
 	 * Get the end time from the events metadata.
 	 */
 	protected function get_start_time() {
-
 		$start_time = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $start_time );
 	}
@@ -126,7 +119,6 @@ class VS_Event_List extends Event_Transformer {
 	 * Get the event link from the events metadata.
 	 */
 	private function get_event_link() {
-
 		$event_link = get_post_meta( $this->wp_object->ID, 'event-link', true );
 		if ( $event_link ) {
 			return array(
@@ -142,7 +134,6 @@ class VS_Event_List extends Event_Transformer {
 	 * Overrides/extends the get_attachments function to also add the event Link.
 	 */
 	protected function get_attachment() {
-
 		$attachments = parent::get_attachment();
 		if ( count( $attachments ) ) {
 			$attachments[0]['type'] = 'Document';

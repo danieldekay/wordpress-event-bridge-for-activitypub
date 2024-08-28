@@ -14,7 +14,7 @@ namespace Activitypub_Event_Extensions;
 
 use Activitypub_Event_Extensions\Admin\Event_Plugin_Admin_Notices;
 use Activitypub_Event_Extensions\Admin\General_Admin_Notices;
-
+use Activitypub_Event_Extensions\Admin\Settings_Page;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -53,6 +53,7 @@ class Setup {
 			'post_type'         => 'event',
 			'settings_page_id'  => 'settings_page_vsel',
 			'transformer_class' => 'VS_Event',
+			'taxonomy'          => 'event_cat',
 		),
 	);
 
@@ -124,6 +125,14 @@ class Setup {
 	}
 
 	/**
+	 * Getter function for the active event plugins.
+	 */
+	public function get_active_event_plugins() {
+		return $this->active_event_plugins;
+	}
+
+
+	/**
 	 * Set up hooks for various purposes.
 	 *
 	 * This method adds hooks for different purposes as needed.
@@ -136,13 +145,41 @@ class Setup {
 		register_activation_hook( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE, array( $this, 'activate' ) );
 
 		add_action( 'admin_init', array( $this, 'do_admin_notices' ) );
+		add_action( 'admin_init', array( Settings::class, 'register_settings' ) );
 
 		// If we don't have any active event plugins, or the ActivityPub plugin is not enabled, abort here.
 		if ( empty( $this->active_event_plugins ) || ! $this->activitypub_plugin_is_active ) {
 			return;
 		}
 
+		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_styles' ) );
+
+		add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
+
+		add_filter(
+			'plugin_action_links_' . ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_BASENAME,
+			array( Settings_Page::class, 'settings_link' )
+		);
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
+	}
+
+	/**
+	 * Add the CSS for the admin pages.
+	 *
+	 * @param string $hook_suffix The suffix of the hook.
+	 */
+	public static function enqueue_styles( $hook_suffix ) {
+		if ( false !== strpos( $hook_suffix, 'activitypub-event-extensions' ) ) {
+			wp_enqueue_style(
+				'activitypub-event-extensions-admin-styles',
+				plugins_url(
+					'assets/css/activitypub-event-extensions-admin.css',
+					ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE
+				),
+				array(),
+				ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_VERSION
+			);
+		}
 	}
 
 	/**
@@ -183,7 +220,7 @@ class Setup {
 		foreach ( $this->active_event_plugins as $event_plugin ) {
 			if ( $wp_object->post_type === $event_plugin['post_type'] ) {
 				$transformer_class = 'Activitypub_Event_Extensions\Activitypub\Transformer\\' . $event_plugin['transformer_class'];
-				return new $transformer_class( $wp_object );
+				return new $transformer_class( $wp_object, $event_plugin['taxonomy'] );
 			}
 		}
 
