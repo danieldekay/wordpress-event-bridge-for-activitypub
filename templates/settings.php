@@ -75,11 +75,8 @@ $current_category_mapping        = \get_option( 'activitypub_event_extensions_ev
 		<?php \settings_fields( 'activitypub-event-extensions' ); ?>
 
 		<div class="box">
-
 			<h2> <?php esc_html_e( 'Default ActivityPub Event Category', 'activitypub-event-extensions' ); ?> </h2>
-
-			<p> <?php esc_html_e( 'The community defined an arbitrary set of basic event categories in order to allow events from multiple organizers to be grouped in a useful way. Please specify the category most common for your events.' ); ?> </p>
-
+			<p> <?php esc_html_e( 'To help visitors find events more easily, the community created a set of basic event categories. Please select the category that best matches the majority of the events you organize.' ); ?> </p>
 			<table class="form-table">
 				<tr>
 					<th scope="row"> <?php esc_html_e( 'Default Category', 'activitypub-event-extensions' ); ?> </th>
@@ -94,11 +91,11 @@ $current_category_mapping        = \get_option( 'activitypub_event_extensions_ev
 					</td>
 				</tr>
 			</table>
+		</div>
 
-			<h2> <?php esc_html_e( 'Specific mapping of Event Categories', 'activitypub-event-extensions' ); ?> </h2>
-
-			<p> <?php esc_html_e( 'Here you can assign each of your event categories in use to the basic category set used in ActivityPub.' ); ?> </p>
-
+		<div class="box">
+			<h2> <?php esc_html_e( 'Advanced Event Category Settings', 'activitypub-event-extensions' ); ?> </h2>
+			<p> <?php esc_html_e( 'Take more control by adjusting how your event categories are mapped to the basic category set used in ActivityPub. This option lets you override the default selection above, ensuring more accurate categorization and better visibility for your events.' ); ?> </p>
 			<table class="form-table">
 				<?php foreach ( $event_terms as $event_term ) { ?>
 					<tr>
