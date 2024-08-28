@@ -52,7 +52,7 @@ class Setup {
 			'post_type'         => 'event',
 			'settings_page_id'  => 'settings_page_vsel',
 			'transformer_class' => 'VS_Event',
-			'taxonomy'        => 'event_cat',
+			'taxonomy'          => 'event_cat',
 		),
 	);
 
