@@ -1,6 +1,6 @@
 <?php
 /**
- * Template for ActivityPub Event Extensions settings pages.
+ * Template for ActivityPub Event Extensions settings page.
  *
  * This template is used to display and manage settings for the ActivityPub Event Extensions plugin.
  *
@@ -15,7 +15,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event;
 
-if ( ! isset( $args ) ) {
+if ( ! isset( $args ) || ! array_key_exists( 'event_terms', $args ) ) {
 	return;
 }
 
@@ -63,6 +63,13 @@ $selected_default_event_category = \get_option( 'activitypub_event_extensions_de
 $current_category_mapping        = \get_option( 'activitypub_event_extensions_event_category_mappings', array() );
 ?>
 
+<div class="activitypub-settings-header">
+	<div class="activitypub-settings-title-section">
+		<h1><?php \esc_html_e( 'ActivityPub Event Extensions', 'activitypub-event-extensions' ); ?></h1>
+	</div>
+</div>
+<hr class="wp-header-end">
+
 <div class="activitypub-settings activitypub-settings-page hide-if-no-js">
 	<form method="post" action="options.php">
 		<?php \settings_fields( 'activitypub-event-extensions' ); ?>
@@ -90,7 +97,7 @@ $current_category_mapping        = \get_option( 'activitypub_event_extensions_ev
 
 			<h2> <?php esc_html_e( 'Specific mapping of Event Categories', 'activitypub-event-extensions' ); ?> </h2>
 
-			<p> <?php esc_html_e( 'Here you can assign each of your event categories in use to the basic category set used in ActivityPub .' ); ?> </p>
+			<p> <?php esc_html_e( 'Here you can assign each of your event categories in use to the basic category set used in ActivityPub.' ); ?> </p>
 
 			<table class="form-table">
 				<?php foreach ( $event_terms as $event_term ) { ?>
