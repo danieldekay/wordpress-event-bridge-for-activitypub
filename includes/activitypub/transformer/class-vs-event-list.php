@@ -243,7 +243,7 @@ class VS_Event_List extends Event_Transformer {
 			->set_name( get_the_title( $this->wp_object->ID ) )
 			->set_is_online( false )
 			->set_in_language( $this->get_locale() )
-			->set_actor( get_rest_url_by_path( 'application' ) )
+			->set_actor()
 			->set_to( array( 'https://www.w3.org/ns/activitystreams#Public' ) )
 			->set_location()
 			->set_id();

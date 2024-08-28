@@ -52,7 +52,7 @@ class Setup {
 			'plugin_file'       => 'very-simple-event-list/vsel.php',
 			'post_type'         => 'event',
 			'settings_page_id'  => 'settings_page_vsel',
-			'transformer_class' => 'VS_Event',
+			'transformer_class' => 'VS_Event_List',
 			'taxonomy'          => 'event_cat',
 		),
 	);

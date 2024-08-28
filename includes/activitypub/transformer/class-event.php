@@ -36,9 +36,8 @@ class Event extends Post {
 	 *
 	 * @return string The User-URL.
 	 */
-	protected function get_attributed_to() {
-		$blog = new Blog();
-		return $blog->get_id();
+	protected function get_actor() {
+		return $this->get_attributed_to();
 	}
 
 	/**
