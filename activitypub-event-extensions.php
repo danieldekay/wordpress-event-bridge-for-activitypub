@@ -9,7 +9,7 @@
  * Text Domain: activitypub-event-extensions
  * License:     AGPL-3.0-or-later
  *
- * ActivityPub tested up to: 2.4.0
+ * ActivityPub tested up to: 3.1.0
  *
  * @package activitypub-event-extensions
  * @license AGPL-3.0-or-later
@@ -23,6 +23,7 @@ define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_BASENAME', plugin_basename( __FILE_
 define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE', plugin_dir_path( __FILE__ ) . '/' . basename( __FILE__ ) );
 define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_VERSION', current( get_file_data( __FILE__, array( 'Version' ), 'plugin' ) ) );
+define( 'ACTIVITYPUB_EVENT_EXTENSIONS_DOMAIN', 'activitypub-event-extensions' );
 
 // Include and register the autoloader class for automatic loading of plugin classes.
 require_once ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . '/includes/class-autoloader.php';
