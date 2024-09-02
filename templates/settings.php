@@ -70,7 +70,7 @@ $current_category_mapping        = \get_option( 'activitypub_event_extensions_ev
 </div>
 <hr class="wp-header-end">
 
-<div class="activitypub-settings activitypub-settings-page hide-if-no-js">
+<div class="activitypub-settings activitypub-settings-page activitypub-event-extensions-settings-page hide-if-no-js">
 	<form method="post" action="options.php">
 		<?php \settings_fields( 'activitypub-event-extensions' ); ?>
 
