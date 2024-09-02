@@ -171,82 +171,37 @@ class VS_Event_List extends Event_Transformer {
 		return $summary;
 	}
 
-	/**
-	 * Generic setter.
-	 *
-	 * @param string $key   The key to set.
-	 * @param string $value The value to set.
-	 *
-	 * @return mixed The value.
-	 */
-	public function set( $key, $value ) {
+	// /**
+	//  * Transform the WordPress Object into an ActivityPub Object.
+	//  *
+	//  * @return Activitypub\Activity\Event
+	//  */
+	// public function to_object() {
 
-		if ( ! $this->ap_object->has( $key ) ) {
-			return new WP_Error( 'invalid_key', __( 'Invalid key', 'activitypub' ), array( 'status' => 404 ) );
-		}
+	// 	$this->ap_object = new Event();
+	// 	$this->ap_object = parent::to_object();
 
-		$setter_function = 'set_' . $key;
-		$getter_function = 'get_' . $key;
-
-		if ( in_array( $getter_function, get_class_methods( $this ), true ) ) {
-			$this->ap_object->$setter_function( $this->$getter_function() );
-		} else {
-			$this->ap_object->$setter_function( $value );
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Magic function to implement setter
-	 *
-	 * @param string $method The method name.
-	 * @param string $params The method params.
-	 *
-	 * @return void|this
-	 */
-	public function __call( $method, $params ) {
-
-		$var = \strtolower( \substr( $method, 4 ) );
-
-		if ( \strncasecmp( $method, 'set', 3 ) === 0 ) {
-			return $this->set( $var, $params[0] );
-		}
-
-		// TODO: When do we need: call_user_func( array( $activitypub_object, $setter ), $value ).
-
-		return $this;
-	}
-
-	/**
-	 * Transform the WordPress Object into an ActivityPub Object.
-	 *
-	 * @return Activitypub\Activity\Event
-	 */
-	public function to_object() {
-
-		$this->ap_object = new Event();
-
-		$this
-			->set_content()
-			->set_content_map()
-			->set_attributed_to()
-			->set_published()
-			->set_start_time()
-			->set_end_time()
-			->set_type()
-			->set_category()
-			->set_attachment()
-			->set_comments_enabled( true )
-			->set_external_participation_url( $this->get_url() )
-			->set_status( 'CONFIRMED' )
-			->set_name( get_the_title( $this->wp_object->ID ) )
-			->set_is_online( false )
-			->set_in_language( $this->get_locale() )
-			->set_actor()
-			->set_to( array( 'https://www.w3.org/ns/activitystreams#Public' ) )
-			->set_location()
-			->set_id();
-		return $this->ap_object;
-	}
+	// 	$this
+	// 		->set_content()
+	// 		->set_replies()
+	// 		->set_content_map()
+	// 		->set_attributed_to()
+	// 		->set_published()
+	// 		->set_start_time()
+	// 		->set_end_time()
+	// 		->set_type()
+	// 		->set_category()
+	// 		->set_attachment()
+	// 		->set_comments_enabled( true )
+	// 		->set_external_participation_url( $this->get_url() )
+	// 		->set_status( 'CONFIRMED' )
+	// 		->set_name( get_the_title( $this->wp_object->ID ) )
+	// 		->set_is_online( false )
+	// 		->set_in_language( $this->get_locale() )
+	// 		->set_actor()
+	// 		->set_to( array( 'https://www.w3.org/ns/activitystreams#Public' ) )
+	// 		->set_location()
+	// 		->set_id();
+	// 	return $this->ap_object;
+	// }
 }
