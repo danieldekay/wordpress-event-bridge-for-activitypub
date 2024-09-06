@@ -109,6 +109,17 @@ class Setup {
 		return self::$instance;
 	}
 
+	public static function get_event_plugins() {
+        // Get all plugin definition classes from the includes/plugins folder.
+        $plugin_files = glob( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'includes/plugins/class-*.php' );
+
+		foreach ( $plugin_files as $plugin_file ) {
+			require_once $plugin_file;
+			
+		}
+        return $basenames;
+	}
+
 	/**
 	 * Function that checks for supported activated event plugins.
 	 *
