@@ -79,6 +79,15 @@ class Event extends Post {
 	}
 
 	/**
+	 * Returns the locale of the event.
+	 *
+	 * @return string
+	 */
+	public function get_in_language() {
+		return $this->get_locale();
+	}
+
+	/**
 	 * Generic function that converts an WP-Event object to an ActivityPub-Event object.
 	 *
 	 * @return Event_Object
