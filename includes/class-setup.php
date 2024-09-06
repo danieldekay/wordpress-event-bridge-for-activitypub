@@ -45,8 +45,9 @@ class Setup {
 		'the_events_calendar' => array(
 			'plugin_file'       => 'the-events-calendar/the-events-calendar.php',
 			'post_type'         => 'tribe_events',
-			'transformer_class' => 'Tribe',
+			'transformer_class' => 'The_Events_Calendar',
 			'settings_page_id'  => 'tribe_general',
+			'taxonomy'          => 'event_cat',
 		),
 		'vsel'                => array(
 			'plugin_file'       => 'very-simple-event-list/vsel.php',
