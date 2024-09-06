@@ -38,9 +38,10 @@ class The_Events_Calendar extends Event {
 	 * has a lot of useful functions, we make use of our getter functions.
 	 *
 	 * @param WP_Post $wp_object The WordPress object.
+	 * @param string  $tribe_event_taxonomy The taxonomy of the events.
 	 */
-	public function __construct( $wp_object ) {
-		parent::__construct( $wp_object );
+	public function __construct( $wp_object, $tribe_event_taxonomy ) {
+		parent::__construct( $wp_object, $tribe_event_taxonomy );
 		$this->tribe_event = \tribe_get_event( $wp_object );
 	}
 
@@ -67,18 +68,13 @@ class The_Events_Calendar extends Event {
 	 * @return string status of the event
 	 */
 	public function get_tribe_status() {
-
 		if ( 'canceled' === $this->tribe_event->event_status ) {
 			return 'CANCELLED';
 		}
 		if ( 'postponed' === $this->tribe_event->event_status ) {
 			return 'CANCELLED'; // This will be reflected in the cancelled reason.
 		}
-		if ( '' === $this->tribe_event->event_status ) {
-			return 'CONFIRMED';
-		}
-
-		return new WP_Error( 'invalid event_status value', __( 'invalid event_status', 'activitypub' ), array( 'status' => 404 ) );
+		return 'CONFIRMED';
 	}
 
 	/**
@@ -165,6 +161,19 @@ class The_Events_Calendar extends Event {
 	public function to_object() {
 		$activitypub_object = parent::to_object();
 
+		if ( ! empty( $this->tribe_event->tickets ) ) {
+			$activitypub_object->set_external_participation_url( $this->tribe_event->tickets['link']->anchor );
+			$activitypub_object->set_anonymous_participation_enabled( false );
+			if ( function_exists( '\tribe_get_event_capacity' ) ) {
+				$activitypub_object->set_maximum_attendee_capacity( call_user_func( '\tribe_get_event_capacity', $this->tribe_event ) );
+			}
+			if ( function_exists( '\tribe_get_event_capacity' ) ) {
+				$activitypub_object->set_participant_count( count( call_user_func( '\tribe_tickets_get_attendees', $this->tribe_event->ID ) ) );
+			}
+			if ( function_exists( '\tribe_events_count_available_tickets' ) ) {
+				$activitypub_object->set_remaining_attendee_capacity( call_user_func( '\tribe_events_count_available_tickets', $this->tribe_event ) );
+			}
+		}
 		return $activitypub_object;
 	}
 }
