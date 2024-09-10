@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class Events_Manager extends Event_Transformer {
+final class Events_Manager extends Event_Transformer {
 
 	/**
 	 * Holds the EM_Event object.

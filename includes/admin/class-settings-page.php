@@ -12,6 +12,7 @@
 namespace Activitypub_Event_Extensions\Admin;
 
 use Activitypub_Event_Extensions\Setup;
+use Activitypub_Event_Extensions\Plugins\Event_Plugin;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -59,19 +60,20 @@ class Settings_Page {
 	/**
 	 * Receive the event categories (terms) used by the event plugin.
 	 *
-	 * @param array $event_plugin Contains info about a certain event plugin.
+	 * @param Event_Plugin $event_plugin Contains info about a certain event plugin.
 	 *
 	 * @return array An array of Terms.
 	 */
 	private static function get_event_terms( $event_plugin ) {
-		if ( isset( $event_plugin['taxonomy'] ) ) {
+		$taxonomy = $event_plugin::get_taxonomy();
+		if ( $taxonomy ) {
 			$event_terms = get_terms(
 				array(
-					'taxonomy'   => $event_plugin['taxonomy'],
+					'taxonomy'   => $taxonomy,
 					'hide_empty' => true,
 				)
 			);
-			return $event_terms;
+			return ! is_wp_error( $event_terms ) ? $event_terms : array();
 		} else {
 			return array();
 		}
@@ -87,8 +89,8 @@ class Settings_Page {
 
 		$event_terms = array();
 
-		foreach ( $event_plugins as $event_plugin_name => $events_plugin_info ) {
-			$event_terms = array_merge( $event_terms, self::get_event_terms( $events_plugin_info ) );
+		foreach ( $event_plugins as $event_plugin ) {
+			$event_terms = array_merge( $event_terms, self::get_event_terms( $event_plugin ) );
 		}
 
 		$args = array(

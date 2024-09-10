@@ -22,7 +22,7 @@ use WP_Post;
  *
  * @since 1.0.0
  */
-class The_Events_Calendar extends Event {
+final class The_Events_Calendar extends Event {
 
 	/**
 	 * The Tribe Event object.
@@ -38,9 +38,10 @@ class The_Events_Calendar extends Event {
 	 * has a lot of useful functions, we make use of our getter functions.
 	 *
 	 * @param WP_Post $wp_object The WordPress object.
+	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function __construct( $wp_object ) {
-		parent::__construct( $wp_object );
+	public function __construct( $wp_object, $wp_taxonomy ) {
+		parent::__construct( $wp_object, $wp_taxonomy );
 		$this->tribe_event = \tribe_get_event( $wp_object );
 	}
 
