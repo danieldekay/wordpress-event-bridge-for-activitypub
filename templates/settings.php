@@ -93,6 +93,7 @@ $current_category_mapping        = \get_option( 'activitypub_event_extensions_ev
 			</table>
 		</div>
 
+		<?php if( ! empty( $event_terms ) ) : ?>
 		<div class="box">
 			<h2> <?php esc_html_e( 'Advanced Event Category Settings', 'activitypub-event-extensions' ); ?> </h2>
 			<p> <?php esc_html_e( 'Take more control by adjusting how your event categories are mapped to the basic category set used in ActivityPub. This option lets you override the default selection above, ensuring more accurate categorization and better visibility for your events.' ); ?> </p>
@@ -128,6 +129,7 @@ $current_category_mapping        = \get_option( 'activitypub_event_extensions_ev
 				<?php } ?>
 			</table>
 		</div>
+		<?php endif; ?>
 		<?php \submit_button(); ?>
 	</form>
 </div>

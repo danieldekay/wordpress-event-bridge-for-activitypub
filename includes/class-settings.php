@@ -73,6 +73,9 @@ class Settings {
 	 * @param array $event_category_mappings The settings value.
 	 */
 	public static function sanitize_event_category_mappings( $event_category_mappings ) {
+		if ( empty( $event_category_mappings ) ) {
+			return array();
+		}
 		foreach ( $event_category_mappings as $taxonomy_slug => $event_category ) {
 			if ( ! self::is_allowed_event_category( $event_category ) ) {
 				unset( $event_category_mappings[ $taxonomy_slug ] );
