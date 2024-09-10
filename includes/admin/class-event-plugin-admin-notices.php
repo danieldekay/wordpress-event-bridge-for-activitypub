@@ -11,6 +11,8 @@
 
 namespace Activitypub_Event_Extensions\Admin;
 
+use Activitypub_Event_Extensions\Plugins\Event_Plugin;
+
 /**
  * Class responsible for Event Plugin related admin notices.
  *
@@ -22,14 +24,14 @@ class Event_Plugin_Admin_Notices {
 	/**
 	 * Information about the event plugin.
 	 *
-	 * @var array
+	 * @var Event_Plugin
 	 */
 	protected $event_plugin;
 
 	/**
 	 * Adds admin notices to an active supported event plugin.
 	 *
-	 * @param array $event_plugin Information about the activate event plugin.
+	 * @param Event_Plugin $event_plugin Class that has implements functions to handle a certain supported activate event plugin.
 	 */
 	public function __construct( $event_plugin ) {
 		$this->event_plugin = $event_plugin;
@@ -43,32 +45,28 @@ class Event_Plugin_Admin_Notices {
 	 *
 	 * @return bool
 	 */
-	private function event_post_type_is_not_activitypub_enabled() {
-		return ! in_array( $this->event_plugin['post_type'], get_option( 'activitypub_support_post_types', array() ), true );
+	private function event_post_type_is_not_activitypub_enabled(): bool {
+		return ! in_array( $this->event_plugin::get_post_type(), get_option( 'activitypub_support_post_types', array() ), true );
 	}
 
 	/**
 	 * Display the admin notices for the plugins.
+	 *
+	 * @return void
 	 */
-	public function admin_notice_activitypub_not_enabled_for_post_type() {
-		// Get the current page.
-		$screen = get_current_screen();
-		// Check if we are on a edit page for the event, or on the settings page of the event plugin.
-		$is_event_plugins_edit_page     = 'edit' === $screen->base && $this->event_plugin['post_type'] === $screen->post_type;
-		$is_event_plugins_settings_page = $this->event_plugin['settings_page_id'] === $screen->id;
-
-		if ( $is_event_plugins_edit_page || $is_event_plugins_settings_page ) {
-			$this->do_admin_notice_post_type_not_activitypub_enabled( $this->event_plugin['plugin_file'] );
+	public function admin_notice_activitypub_not_enabled_for_post_type(): void {
+		if ( $this->event_plugin::is_plugin_page() ) {
+			$this->do_admin_notice_post_type_not_activitypub_enabled();
 		}
 	}
 
 	/**
 	 * Print admin notice that the current post type is not enabled in the ActivityPub plugin.
 	 *
-	 * @param string $event_plugin_file The event plugin file path.
+	 * @return void
 	 */
-	private function do_admin_notice_post_type_not_activitypub_enabled( $event_plugin_file ) {
-		$event_plugin_data       = get_plugin_data( WP_PLUGIN_DIR . '/' . $event_plugin_file );
+	private function do_admin_notice_post_type_not_activitypub_enabled(): void {
+		$event_plugin_data       = get_plugin_data( WP_PLUGIN_DIR . '/' . $this->event_plugin::get_plugin_file() );
 		$activitypub_plugin_data = get_plugin_data( ACTIVITYPUB_PLUGIN_FILE );
 		$notice                  = sprintf(
 			/* translators: 1: the name of the event plugin a admin notice is shown. 2: The name of the ActivityPub plugin. */

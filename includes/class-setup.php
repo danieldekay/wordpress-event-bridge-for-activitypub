@@ -15,6 +15,7 @@ namespace Activitypub_Event_Extensions;
 use Activitypub_Event_Extensions\Admin\Event_Plugin_Admin_Notices;
 use Activitypub_Event_Extensions\Admin\General_Admin_Notices;
 use Activitypub_Event_Extensions\Admin\Settings_Page;
+use Activitypub_Event_Extensions\Plugins\Event_Plugin;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -29,34 +30,6 @@ require_once ABSPATH . 'wp-admin/includes/plugin.php';
  * @since 1.0.0
  */
 class Setup {
-	const SUPPORTED_EVENT_PLUGINS = array(
-		'events_manager'      => array(
-			'plugin_file'       => 'events-manager/events-manager.php',
-			'post_type'         => 'event',
-			'settings_page'     => 'options-general.php?page=vsel',
-			'transformer_class' => 'Events_Manager',
-		),
-		'gatherpress'         => array(
-			'plugin_file'       => 'gatherpress/gatherpress.php',
-			'post_type'         => 'gatherpress_event',
-			'transformer_class' => 'GatherPress',
-			'settings_page_id'  => 'gatherpress_general',
-		),
-		'the_events_calendar' => array(
-			'plugin_file'       => 'the-events-calendar/the-events-calendar.php',
-			'post_type'         => 'tribe_events',
-			'transformer_class' => 'Tribe',
-			'settings_page_id'  => 'tribe_general',
-		),
-		'vsel'                => array(
-			'plugin_file'       => 'very-simple-event-list/vsel.php',
-			'post_type'         => 'event',
-			'settings_page_id'  => 'settings_page_vsel',
-			'transformer_class' => 'VS_Event_List',
-			'taxonomy'          => 'event_cat',
-		),
-	);
-
 	/**
 	 * Keep the information whether the ActivityPub plugin is active.
 	 *
@@ -67,7 +40,7 @@ class Setup {
 	/**
 	 * Holds an array of the currently activated supported event plugins.
 	 *
-	 * @var array
+	 * @var Event_Plugin[]
 	 */
 	protected $active_event_plugins = array();
 
@@ -80,7 +53,7 @@ class Setup {
 	 */
 	protected function __construct() {
 		$this->activitypub_plugin_is_active = is_plugin_active( 'activitypub/activitypub.php' );
-		$this->active_event_plugins         = self::detect_supported_event_plugins();
+		$this->active_event_plugins         = self::detect_active_event_plugins();
 		$this->setup_hooks();
 	}
 
@@ -109,39 +82,46 @@ class Setup {
 		return self::$instance;
 	}
 
-	public static function get_event_plugins() {
-        // Get all plugin definition classes from the includes/plugins folder.
-        $plugin_files = glob( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'includes/plugins/class-*.php' );
-
-		foreach ( $plugin_files as $plugin_file ) {
-			require_once $plugin_file;
-			
-		}
-        return $basenames;
+	/**
+	 * Getter function for the active event plugins.
+	 *
+	 * @return Event_Plugin[]
+	 */
+	public function get_active_event_plugins() {
+		return $this->active_event_plugins;
 	}
+
+	/**
+	 * Holds all the classes for the supported event plugins.
+	 *
+	 * @var array
+	 */
+	private const EVENT_PLUGIN_CLASSES = array(
+		'\Activitypub_Event_Extensions\Plugins\Events_Manager',
+		'\Activitypub_Event_Extensions\Plugins\GatherPress',
+		'\Activitypub_Event_Extensions\Plugins\The_Events_Calendar',
+		'\Activitypub_Event_Extensions\Plugins\VS_Event_List',
+	);
 
 	/**
 	 * Function that checks for supported activated event plugins.
 	 *
 	 * @return array List of supported event plugins as keys from the SUPPORTED_EVENT_PLUGINS const.
 	 */
-	public static function detect_supported_event_plugins(): array {
+	public static function detect_active_event_plugins(): array {
 		$active_event_plugins = array();
-		foreach ( self::SUPPORTED_EVENT_PLUGINS as $event_plugin_key => $event_plugin ) {
-			if ( \is_plugin_active( $event_plugin['plugin_file'] ) ) {
-				$active_event_plugins[ $event_plugin_key ] = $event_plugin;
+
+		foreach ( self::EVENT_PLUGIN_CLASSES as $event_plugin_class ) {
+			if ( ! class_exists( $event_plugin_class ) || ! method_exists( $event_plugin_class, 'get_plugin_file' ) ) {
+				continue;
+			}
+			$event_plugin_file = call_user_func( array( $event_plugin_class, 'get_plugin_file' ) );
+			if ( \is_plugin_active( $event_plugin_file ) ) {
+				$active_event_plugins[] = new $event_plugin_class();
 			}
 		}
 		return $active_event_plugins;
 	}
-
-	/**
-	 * Getter function for the active event plugins.
-	 */
-	public function get_active_event_plugins() {
-		return $this->active_event_plugins;
-	}
-
 
 	/**
 	 * Set up hooks for various purposes.
@@ -178,8 +158,10 @@ class Setup {
 	 * Add the CSS for the admin pages.
 	 *
 	 * @param string $hook_suffix The suffix of the hook.
+	 *
+	 * @return void
 	 */
-	public static function enqueue_styles( $hook_suffix ) {
+	public static function enqueue_styles( $hook_suffix ): void {
 		if ( false !== strpos( $hook_suffix, 'activitypub-event-extensions' ) ) {
 			wp_enqueue_style(
 				'activitypub-event-extensions-admin-styles',
@@ -229,9 +211,11 @@ class Setup {
 
 		// Get the transformer for a specific event plugins event-post type.
 		foreach ( $this->active_event_plugins as $event_plugin ) {
-			if ( $wp_object->post_type === $event_plugin['post_type'] ) {
-				$transformer_class = 'Activitypub_Event_Extensions\Activitypub\Transformer\\' . $event_plugin['transformer_class'];
-				return new $transformer_class( $wp_object, $event_plugin['taxonomy'] );
+			if ( $wp_object->post_type === $event_plugin->get_post_type() ) {
+				$transformer_class = $event_plugin->get_activitypub_event_transformer_class();
+				if ( class_exists( $transformer_class ) ) {
+					return new $transformer_class( $wp_object, $event_plugin->get_taxonomy() );
+				}
 			}
 		}
 
@@ -266,7 +250,7 @@ class Setup {
 	 *
 	 * @return void
 	 */
-	public function activate() {
+	public function activate(): void {
 		// Don't allow plugin activation, when the ActivityPub plugin is not activated yet.
 		if ( ! $this->activitypub_plugin_is_active ) {
 			deactivate_plugins( plugin_basename( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE ) );

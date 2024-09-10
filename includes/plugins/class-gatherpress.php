@@ -14,13 +14,6 @@ namespace Activitypub_Event_Extensions\Plugins;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-require_once __DIR__ . '/interface-event-plugin.php';
-
-use Activitypub_Event_Extensions\Plugins\Event_Plugin;
-use GatherPress\Core\Event;
-use GatherPress\Core\Topic;
-use GatherPress\Core\Utility;
-
 /**
  * Interface for a supported event plugin.
  *
@@ -28,14 +21,14 @@ use GatherPress\Core\Utility;
  *
  * @since 1.0.0
  */
-class Gatherpress implements Event_Plugin {
+final class GatherPress extends Event_Plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
 	 * @return string
 	 */
 	public static function get_plugin_file(): string {
-		return 'the-events-calendar/the-events-calendar.php';
+		return 'gatherpress/gatherpress.php';
 	}
 
 	/**
@@ -44,7 +37,7 @@ class Gatherpress implements Event_Plugin {
 	 * @return string
 	 */
 	public static function get_post_type(): string {
-		return Event::POST_TYPE;
+		return class_exists( '\GatherPress\Core\Event' ) ? \GatherPress\Core\Event::POST_TYPE : 'gatherpress_event';
 	}
 
 	/**
@@ -53,7 +46,7 @@ class Gatherpress implements Event_Plugin {
 	 * @return string The settings page url.
 	 */
 	public static function get_settings_page(): string {
-		return Utility::prefix_key( 'general' );
+		return class_exists( '\GatherPress\Core\Utility' ) ? \GatherPress\Core\Utility::prefix_key( 'general' ) : 'gatherpress_general';
 	}
 
 	/**
@@ -71,6 +64,6 @@ class Gatherpress implements Event_Plugin {
 	 * @return string
 	 */
 	public static function get_taxonomy(): string {
-		return Topic::TAXONOMY;
+		return class_exists( '\GatherPress\Core\Topic' ) ? \GatherPress\Core\Topic::TAXONOMY : 'gatherpress_topic';
 	}
 }

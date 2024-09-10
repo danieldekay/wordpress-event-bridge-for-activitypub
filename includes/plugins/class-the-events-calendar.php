@@ -14,10 +14,6 @@ namespace Activitypub_Event_Extensions\Plugins;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-require_once __DIR__ . '/interface-event-plugin.php';
-
-use Activitypub_Event_Extensions\Plugins\Event_Plugin;
-
 /**
  * Interface for a supported event plugin.
  *
@@ -25,7 +21,7 @@ use Activitypub_Event_Extensions\Plugins\Event_Plugin;
  *
  * @since 1.0.0
  */
-class The_Events_Calendar implements Event_plugin {
+final class The_Events_Calendar extends Event_plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
@@ -41,10 +37,8 @@ class The_Events_Calendar implements Event_plugin {
 	 * @return string
 	 */
 	public static function get_post_type(): string {
-		return \Tribe__Events__Main::POSTTYPE;
+		return class_exists( '\Tribe__Events__Main' ) ? \Tribe__Events__Main::POSTTYPE : 'tribe_event';
 	}
-
-	const POST_TYPE = class_exists( 'Tribe__Events__Main' ) ? \Tribe__Events__Main::POSTTYPE : 'tribe_event';
 
 	/**
 	 * Returns the ID of the main settings page of the plugin.
@@ -57,20 +51,11 @@ class The_Events_Calendar implements Event_plugin {
 	}
 
 	/**
-	 * Returns the ActivityPub transformer class.
-	 *
-	 * @return string
-	 */
-	public static function get_activitypub_transformer_class_name(): string {
-		return 'Tribe';
-	}
-
-	/**
 	 * Returns the taxonomy used for the plugin's event categories.
 	 *
 	 * @return string
 	 */
 	public static function get_taxonomy(): string {
-		return Tribe__Events__Main::TAXONOMY;
+		return class_exists( '\Tribe__Events__Main' ) ? \Tribe__Events__Main::TAXONOMY : 'tribe_events_cat';
 	}
 }

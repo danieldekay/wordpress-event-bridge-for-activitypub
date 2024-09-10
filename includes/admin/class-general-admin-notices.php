@@ -84,7 +84,7 @@ class General_Admin_Notices {
 	 *
 	 * @return void
 	 */
-	public static function activitypub_plugin_not_enabled() {
+	public static function activitypub_plugin_not_enabled(): void {
 		$notice = self::get_admin_notice_activitypub_plugin_not_enabled();
 		echo '<div class="notice notice-warning"><p>' . \wp_kses( $notice, self::ALLOWED_HTML ) . '</p></div>';
 	}
@@ -94,7 +94,7 @@ class General_Admin_Notices {
 	 *
 	 * @return void
 	 */
-	public static function no_supported_event_plugin_active() {
+	public static function no_supported_event_plugin_active(): void {
 		$notice = self::get_admin_notice_no_supported_event_plugin_active();
 		echo '<div class="notice notice-warning"><p>' . \wp_kses( $notice, self::ALLOWED_HTML ) . '</p></div>';
 	}

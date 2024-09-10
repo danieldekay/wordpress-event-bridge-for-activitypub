@@ -26,7 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class VS_Event_List extends Event_Transformer {
+final class VS_Event_List extends Event_Transformer {
 
 	/**
 	 * The target transformer ActivityPub Event object.
@@ -44,7 +44,7 @@ class VS_Event_List extends Event_Transformer {
 	 * @access public
 	 * @return string Widget name.
 	 */
-	public function get_transformer_name() {
+	public function get_transformer_name(): string {
 		return 'activitypub-event-transformers/vs-event';
 	}
 
@@ -57,7 +57,7 @@ class VS_Event_List extends Event_Transformer {
 	 * @access public
 	 * @return string Widget title.
 	 */
-	public function get_transformer_label() {
+	public function get_transformer_label(): string {
 		return 'VS Event';
 	}
 
@@ -70,7 +70,7 @@ class VS_Event_List extends Event_Transformer {
 	 * @access public
 	 * @return array Widget categories.
 	 */
-	public static function get_supported_post_types() {
+	public static function get_supported_post_types(): string {
 		return array( 'event' );
 	}
 
@@ -81,16 +81,16 @@ class VS_Event_List extends Event_Transformer {
 	 * @since 1.0.0
 	 * @return string The Event Object-Type.
 	 */
-	protected function get_type() {
+	protected function get_type(): string {
 		return 'Event';
 	}
 
 	/**
 	 * Get the event location.
 	 *
-	 * @return array The Place.
+	 * @return Place The Place.
 	 */
-	public function get_location() {
+	public function get_location(): Place {
 		$address = get_post_meta( $this->wp_object->ID, 'event-location', true );
 		$place   = new Place();
 		$place->set_type( 'Place' );
@@ -102,7 +102,7 @@ class VS_Event_List extends Event_Transformer {
 	/**
 	 * Get the end time from the events metadata.
 	 */
-	protected function get_end_time() {
+	protected function get_end_time(): string {
 		$end_time = get_post_meta( $this->wp_object->ID, 'event-date', true );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $end_time );
 	}
@@ -110,7 +110,7 @@ class VS_Event_List extends Event_Transformer {
 	/**
 	 * Get the end time from the events metadata.
 	 */
-	protected function get_start_time() {
+	protected function get_start_time(): string {
 		$start_time = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $start_time );
 	}
@@ -118,7 +118,7 @@ class VS_Event_List extends Event_Transformer {
 	/**
 	 * Get the event link from the events metadata.
 	 */
-	private function get_event_link() {
+	private function get_event_link(): array {
 		$event_link = get_post_meta( $this->wp_object->ID, 'event-link', true );
 		if ( $event_link ) {
 			return array(

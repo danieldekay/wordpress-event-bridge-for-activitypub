@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  *
  * @since 1.0.0
  */
-class GatherPress extends Event {
+final class GatherPress extends Event {
 
 	/**
 	 * The target ActivityPub Event object of the transformer.

@@ -26,12 +26,19 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 class Settings {
 	const SETTINGS_SLUG = 'activitypub-event-extensions';
 
+	/**
+	 * The default ActivityPub event category.
+	 *
+	 * @var string
+	 */
 	const DEFAULT_EVENT_CATEGORY = 'MEETING';
 
 	/**
 	 * Register the settings for the ActivityPub Event Extensions plugin.
+	 *
+	 * @return void
 	 */
-	public static function register_settings() {
+	public static function register_settings(): void {
 		\register_setting(
 			'activitypub-event-extensions',
 			'activitypub_event_extensions_default_event_category',
@@ -61,7 +68,7 @@ class Settings {
 	 *
 	 * @param string $event_category The ActivityPUb event category.
 	 */
-	public static function sanitize_mapped_event_category( $event_category ) {
+	public static function sanitize_mapped_event_category( $event_category ): string {
 		return self::is_allowed_event_category( $event_category ) ? $event_category : self::DEFAULT_EVENT_CATEGORY;
 	}
 
@@ -71,8 +78,10 @@ class Settings {
 	 * Currently only the default event categories are allowed to be target of a mapping.
 	 *
 	 * @param array $event_category_mappings The settings value.
+	 *
+	 * @return array An array that contains only valid mapping pairs.
 	 */
-	public static function sanitize_event_category_mappings( $event_category_mappings ) {
+	public static function sanitize_event_category_mappings( $event_category_mappings ): array {
 		if ( empty( $event_category_mappings ) ) {
 			return array();
 		}
@@ -91,7 +100,7 @@ class Settings {
 	 *
 	 * @return bool True if allowed, false otherwise.
 	 */
-	private static function is_allowed_event_category( $event_category ) {
+	private static function is_allowed_event_category( $event_category ): bool {
 		$allowed_event_categories = Event::DEFAULT_EVENT_CATEGORIES;
 		return in_array( $event_category, $allowed_event_categories, true );
 	}

@@ -12,10 +12,10 @@
 
 namespace Activitypub_Event_Extensions\Plugins;
 
+use Activitypub_Event_Extensions\Event_Plugins;
+
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
-
-require_once __DIR__ . '/interface-event-plugin.php';
 
 /**
  * Interface for a supported event plugin.
@@ -24,7 +24,7 @@ require_once __DIR__ . '/interface-event-plugin.php';
  *
  * @since 1.0.0
  */
-class VS_Event_List implements Event_Plugin {
+final class VS_Event_List extends Event_Plugin {
 	/**
 	 * Returns the full plugin file.
 	 *

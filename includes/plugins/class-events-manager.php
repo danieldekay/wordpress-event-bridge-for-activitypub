@@ -14,8 +14,6 @@ namespace Activitypub_Event_Extensions\Plugins;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-require_once __DIR__ . '/interface-event-plugin.php';
-
 /**
  * Interface for a supported event plugin.
  *
@@ -23,14 +21,14 @@ require_once __DIR__ . '/interface-event-plugin.php';
  *
  * @since 1.0.0
  */
-class Events_Manager implements Event_Plugin {
+final class Events_Manager extends Event_Plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
 	 * @return string
 	 */
 	public static function get_plugin_file(): string {
-		return 'the-events-calendar/the-events-calendar.php';
+		return 'events-manager/events-manager.php';
 	}
 
 	/**
@@ -49,15 +47,6 @@ class Events_Manager implements Event_Plugin {
 	 */
 	public static function get_settings_page(): string {
 		return 'wp-admin/edit.php?post_type=event&page=events-manager-options#general';
-	}
-
-	/**
-	 * Returns the ActivityPub transformer class.
-	 *
-	 * @return string
-	 */
-	public static function get_activitypub_transformer_class_name(): string {
-		return 'GatherPress';
 	}
 
 	/**
