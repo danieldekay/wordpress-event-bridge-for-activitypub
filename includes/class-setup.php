@@ -229,6 +229,24 @@ class Setup {
 	}
 
 	/**
+	 * Activates ActivityPub support for all active event plugins event post-types.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return void
+	 */
+	public function activate_activitypub_support_for_active_event_plugins(): void {
+		// If someone installs this plugin, we simply enable ActivityPub support for all currently active event post types.
+		$activitypub_supported_post_types = get_option( 'activitypub_support_post_types', array() );
+		foreach ( $this->active_event_plugins as $event_plugin ) {
+			if ( ! in_array( $event_plugin['post_type'], $activitypub_supported_post_types, true ) ) {
+				$activitypub_supported_post_types[] = $event_plugin['post_type'];
+			}
+		}
+		update_option( 'activitypub_support_post_types', $activitypub_supported_post_types );
+	}
+
+	/**
 	 * Activates the ActivityPub Event Extensions plugin.
 	 *
 	 * This method handles the activation of the ActivityPub Event Extensions plugin.
@@ -258,13 +276,7 @@ class Setup {
 				array( 'back_link' => true ),
 			);
 		}
-		// If someone installs this plugin, we simply enable ActivityPub support for all currently active event post types.
-		$activitypub_supported_post_types = get_option( 'activitypub_support_post_types', array() );
-		foreach ( $this->active_event_plugins as $event_plugin ) {
-			if ( ! in_array( $event_plugin['post_type'], $activitypub_supported_post_types, true ) ) {
-				$activitypub_supported_post_types[] = $event_plugin['post_type'];
-			}
-		}
-		update_option( 'activitypub_support_post_types', $activitypub_supported_post_types );
+
+		self::activate_activitypub_support_for_active_event_plugins();
 	}
 }
