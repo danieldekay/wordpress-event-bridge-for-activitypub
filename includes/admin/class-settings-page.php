@@ -18,9 +18,10 @@ use Activitypub_Event_Extensions\Plugins\Event_Plugin;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
- * Class responsible for the ActivityPui Event Extension related Settings.
+ * Class responsible for the ActivityPub Event Extension related Settings.
  *
- * Class responsible for the ActivityPui Event Extension related Settings.
+ * Class which handles the "General" settings page for the ActivityPub Event Extension Plugin,
+ * providing options for configuring various general settings.
  *
  * @since 1.0.0
  */
@@ -30,8 +31,10 @@ class Settings_Page {
 	const SETTINGS_SLUG = 'activitypub-event-extensions';
 	/**
 	 * Warning if the plugin is Active and the ActivityPub plugin is not.
+	 *
+	 * @return void
 	 */
-	public static function admin_menu() {
+	public static function admin_menu(): void {
 		\add_options_page(
 			'Activitypub Event Extension',
 			__( 'ActivityPub Events', 'activitypub_event_extensions' ),
@@ -46,9 +49,10 @@ class Settings_Page {
 	 * It's called via apply_filter('plugin_action_links_' . PLUGIN_NAME).
 	 *
 	 * @param array $links    Already added links.
+	 *
 	 * @return array          Original links but with link to setting page added.
 	 */
-	public static function settings_link( $links ) {
+	public static function settings_link( $links ): array {
 		return array_merge(
 			$links,
 			array(
@@ -64,7 +68,7 @@ class Settings_Page {
 	 *
 	 * @return array An array of Terms.
 	 */
-	private static function get_event_terms( $event_plugin ) {
+	private static function get_event_terms( $event_plugin ): array {
 		$taxonomy = $event_plugin::get_taxonomy();
 		if ( $taxonomy ) {
 			$event_terms = get_terms(
@@ -80,9 +84,11 @@ class Settings_Page {
 	}
 
 	/**
-	 * Settings page.
+	 * Preparing the data and loading the template for the settings page.
+	 *
+	 * @return void
 	 */
-	public static function settings_page() {
+	public static function settings_page(): void {
 		$plugin_setup = Setup::get_instance();
 
 		$event_plugins = $plugin_setup->get_active_event_plugins();
