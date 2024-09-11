@@ -38,6 +38,13 @@ class Setup {
 	protected $activitypub_plugin_is_active = false;
 
 	/**
+	 * Keep the current version of the current ActivityPub plugin.
+	 *
+	 * @var string
+	 */
+	protected $activitypub_plugin_version = '';
+
+	/**
 	 * Holds an array of the currently activated supported event plugins.
 	 *
 	 * @var Event_Plugin[]
@@ -53,7 +60,13 @@ class Setup {
 	 */
 	protected function __construct() {
 		$this->activitypub_plugin_is_active = is_plugin_active( 'activitypub/activitypub.php' );
+		// TODO: decide whether we want to do anything at all when ActivityPub plugin is note active.
+		// if ( ! $this->activitypub_plugin_is_active ) {
+		// deactivate_plugins( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE );
+		// return;
+		// }.
 		$this->active_event_plugins         = self::detect_active_event_plugins();
+		$this->activitypub_plugin_version   = get_file_data( WP_PLUGIN_DIR . '/activitypub/activitypub.php', array( 'Version' ) )[0];
 		$this->setup_hooks();
 	}
 
@@ -151,6 +164,12 @@ class Setup {
 			'plugin_action_links_' . ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_BASENAME,
 			array( Settings_Page::class, 'settings_link' )
 		);
+
+		// Check if the minimum required version of the ActivityPub plugin is installed.
+		if ( version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_EXTENSIONS_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
+			return;
+		}
+
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
 	}
 
@@ -183,10 +202,13 @@ class Setup {
 			new Event_Plugin_Admin_Notices( $event_plugin );
 		}
 		// Check if any general admin notices are needed and add actions to insert the needed admin notices.
-
 		if ( ! $this->activitypub_plugin_is_active ) {
 			// The ActivityPub plugin is not active.
 			add_action( 'admin_notices', array( 'Activitypub_Event_Extensions\Admin\General_Admin_Notices', 'activitypub_plugin_not_enabled' ), 10, 1 );
+		}
+		if ( version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_EXTENSIONS_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
+			// The ActivityPub plugin is too old.
+			add_action( 'admin_notices', array( 'Activitypub_Event_Extensions\Admin\General_Admin_Notices', 'activitypub_plugin_version_too_old' ), 10, 1 );
 		}
 		if ( empty( $this->active_event_plugins ) ) {
 			// No supported Event Plugin is active.
