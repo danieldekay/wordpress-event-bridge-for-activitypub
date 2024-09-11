@@ -9,7 +9,6 @@
 namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
-use Activitypub\Model\Blog;
 use Activitypub\Transformer\Post;
 
 use function Activitypub\get_rest_url_by_path;
@@ -102,12 +101,11 @@ class Event extends Post {
 				$this->get_locale() => $this->get_content(),
 			)
 		);
-		$path = sprintf( 'actors/%d/followers', intval( $this->wp_object->post_author ) );
 
 		$activitypub_object->set_to(
 			array(
 				'https://www.w3.org/ns/activitystreams#Public',
-				get_rest_url_by_path( $path ),
+				$this->get_actor_object()->get_followers(),
 			)
 		);
 
