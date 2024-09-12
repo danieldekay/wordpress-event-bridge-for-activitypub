@@ -97,14 +97,26 @@ final class The_Events_Calendar extends Event {
 	 * Check if the comments are enabled for the current event.
 	 */
 	public function get_comments_enabled(): bool {
-		return ( 'open' === $this->tribe_event->comment_status ) ? true : false;
+		return 'open' === $this->tribe_event->comment_status;
 	}
 
 	/**
 	 * Check if the event is an online event.
 	 */
 	public function get_is_online(): bool {
+		if ( class_exists( 'Tribe\Events\Virtual\Event_Meta' ) &&
+		     $this->tribe_event->virtual_event_type &&
+		     Tribe\Events\Virtual\Event_Meta::$value_virtual_event_type === $this->tribe_event->virtual_event_type) {
+			return true;
+		}
 		return false;
+	}
+
+	/**
+	 * Returns language of the event
+	 */
+	public function get_in_language(): string {
+		return $this->get_locale();
 	}
 
 	/**
