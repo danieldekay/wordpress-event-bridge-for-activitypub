@@ -46,23 +46,6 @@ final class The_Events_Calendar extends Event {
 	}
 
 	/**
-	 * Get tribe category of wp_post
-	 *
-	 * @return string|null tribe category if it exists
-	 */
-	public function get_tribe_category() {
-		// TODO: make it possible that one event can have multiple categories?
-		// Using cat_slugs isn't the best way to do this, don't know if it's a good idea.
-		$categories = tribe_get_event_cat_slugs( $this->wp_object->ID );
-
-		if ( count( $categories ) === 0 ) {
-			return null;
-		}
-
-		return $categories[0];
-	}
-
-	/**
 	 * Get status of the tribe event
 	 *
 	 * @return string status of the event
