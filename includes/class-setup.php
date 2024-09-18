@@ -65,8 +65,8 @@ class Setup {
 		// deactivate_plugins( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE );
 		// return;
 		// }.
-		$this->active_event_plugins         = self::detect_active_event_plugins();
-		$this->activitypub_plugin_version   = get_file_data( WP_PLUGIN_DIR . '/activitypub/activitypub.php', array( 'Version' ) )[0];
+		$this->active_event_plugins       = self::detect_active_event_plugins();
+		$this->activitypub_plugin_version = get_file_data( WP_PLUGIN_DIR . '/activitypub/activitypub.php', array( 'Version' ) )[0];
 		$this->setup_hooks();
 	}
 
@@ -236,7 +236,7 @@ class Setup {
 			if ( $wp_object->post_type === $event_plugin->get_post_type() ) {
 				$transformer_class = $event_plugin->get_activitypub_event_transformer_class();
 				if ( class_exists( $transformer_class ) ) {
-					return new $transformer_class( $wp_object, $event_plugin->get_taxonomy() );
+					return new $transformer_class( $wp_object, $event_plugin->get_event_category_taxonomy() );
 				}
 			}
 		}

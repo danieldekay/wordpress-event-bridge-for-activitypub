@@ -66,7 +66,7 @@ final class VS_Event_List extends Event_Plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_taxonomy(): string {
+	public static function get_event_category_taxonomy(): string {
 		return 'event_cat';
 	}
 }

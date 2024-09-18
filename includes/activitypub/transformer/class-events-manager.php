@@ -2,7 +2,7 @@
 /**
  * ActivityPub Transformer for the plugin Very Simple Event List.
  *
- * @package activity-event-transformers
+ * @package Activitypub_Event_Extensions
  * @license AGPL-3.0-or-later
  */
 
@@ -69,17 +69,6 @@ final class Events_Manager extends Event_Transformer {
 	 */
 	public static function get_supported_post_types() {
 		return array();
-	}
-
-	/**
-	 * Returns the ActivityStreams 2.0 Object-Type for an Event.
-	 *
-	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-event
-	 * @since 1.0.0
-	 * @return string The Event Object-Type.
-	 */
-	protected function get_type() {
-		return 'Event';
 	}
 
 	/**

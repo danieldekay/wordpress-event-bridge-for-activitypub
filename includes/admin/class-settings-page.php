@@ -69,7 +69,7 @@ class Settings_Page {
 	 * @return array An array of Terms.
 	 */
 	private static function get_event_terms( $event_plugin ): array {
-		$taxonomy = $event_plugin::get_taxonomy();
+		$taxonomy = $event_plugin::get_event_category_taxonomy();
 		if ( $taxonomy ) {
 			$event_terms = get_terms(
 				array(

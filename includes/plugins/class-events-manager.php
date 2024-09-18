@@ -54,7 +54,7 @@ final class Events_Manager extends Event_Plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_taxonomy(): string {
+	public static function get_event_category_taxonomy(): string {
 		return defined( 'EM_TAXONOMY_CATEGORY' ) ? constant( 'EM_TAXONOMY_CATEGORY' ) : 'event-categories';
 	}
 }

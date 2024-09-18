@@ -2,7 +2,7 @@
 /**
  * ActivityPub Tribe Transformer
  *
- * @package activity-event-transformers
+ * @package Activitypub_Event_Extensions
  * @license AGPL-3.0-or-later
  */
 
@@ -60,6 +60,22 @@ final class The_Events_Calendar extends Event {
 		}
 
 		return $categories[0];
+	}
+
+	/**
+	 * Get the end time from the event object.
+	 */
+	protected function get_end_time() {
+		$date = date_create( $this->tribe_event->end_date, wp_timezone() );
+		return \gmdate( 'Y-m-d\TH:i:s\Z', $date->getTimestamp() );
+	}
+
+	/**
+	 * Get the end time from the event object.
+	 */
+	protected function get_start_time() {
+		$date = date_create( $this->tribe_event->start_date, wp_timezone() );
+		return \gmdate( 'Y-m-d\TH:i:s\Z', $date->getTimestamp() );
 	}
 
 	/**

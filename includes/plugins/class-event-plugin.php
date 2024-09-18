@@ -42,7 +42,7 @@ abstract class Event_Plugin {
 	 *
 	 * @return string
 	 */
-	abstract public static function get_taxonomy(): string;
+	abstract public static function get_event_category_taxonomy(): string;
 
 	/**
 	 * Returns the ID of the main settings page of the plugin.

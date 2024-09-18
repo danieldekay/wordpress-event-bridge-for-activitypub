@@ -2,7 +2,7 @@
 /**
  * Replace the default ActivityPub Transformer
  *
- * @package activity-event-transformers
+ * @package Activitypub_Event_Extensions
  * @license AGPL-3.0-or-later
  */
 
@@ -46,8 +46,19 @@ class Event extends Post {
 	 *
 	 * @return string The Event Object-Type.
 	 */
-	protected function get_object_type() {
+	protected function get_type() {
 		return 'Event';
+	}
+
+	/**
+	 * Returns the title of the event.
+	 *
+	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-name
+	 *
+	 * @return string The name.
+	 */
+	protected function get_name() {
+		return $this->wp_object->post_title;
 	}
 
 	/**

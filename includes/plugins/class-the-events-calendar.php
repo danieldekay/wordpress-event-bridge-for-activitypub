@@ -55,7 +55,7 @@ final class The_Events_Calendar extends Event_plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_taxonomy(): string {
+	public static function get_event_category_taxonomy(): string {
 		return class_exists( '\Tribe__Events__Main' ) ? \Tribe__Events__Main::TAXONOMY : 'tribe_events_cat';
 	}
 }

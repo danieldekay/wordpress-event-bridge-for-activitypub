@@ -2,7 +2,7 @@
 /**
  * ActivityPub Transformer for the plugin Very Simple Event List.
  *
- * @package activity-event-transformers
+ * @package Activitypub_Event_Extensions
  * @license AGPL-3.0-or-later
  */
 
@@ -46,32 +46,6 @@ final class VS_Event_List extends Event_Transformer {
 	 */
 	public function get_transformer_name(): string {
 		return 'activitypub-event-transformers/vs-event';
-	}
-
-	/**
-	 * Get transformer title.
-	 *
-	 * Retrieve the transformers label.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return string Widget title.
-	 */
-	public function get_transformer_label(): string {
-		return 'VS Event';
-	}
-
-	/**
-	 * Get supported post types.
-	 *
-	 * Retrieve the list of supported WordPress post types this transformer widget can handle.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return array Widget categories.
-	 */
-	public static function get_supported_post_types(): string {
-		return array( 'event' );
 	}
 
 	/**
