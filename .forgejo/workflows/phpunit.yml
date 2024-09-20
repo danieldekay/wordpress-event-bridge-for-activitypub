@@ -26,20 +26,12 @@ jobs:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      # - name: Setup cache environment
-      #   id: extensioncache
-      #   uses: https://github.com/shivammathur/cache-extensions@v1
-      #   with:
-      #     php-version: ${{ matrix.php-versions }}
-      #     extensions: ${{ env.extensions }}
-      #     key: ${{ env.key }}
-
-      # - name: Cache extensions
-      #   uses: https://code.forgejo.org/actions/cache@v4
-      #   with:
-      #     path: ${{ steps.extensioncache.outputs.dir }}
-      #     key: ${{ steps.extensioncache.outputs.key }}
-      #     restore-keys: ${{ steps.extensioncache.outputs.key }}
+      - name: Cache composer dependencies
+        id: cache-primes
+        uses: actions/cache@v4
+        with:
+          path: /root/.cache/composer
+          key: cache-1
 
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
@@ -52,7 +44,7 @@ jobs:
         uses: "ramsey/composer-install@v1"
 
       - name: Install mysqladmin
-        run: sudo apt update && sudo apt upgrade && sudo apt -y install mysql-client
+        run: sudo apt update && sudo apt -y upgrade && sudo apt -y install mysql-client
 
       - name: Setup Test Environment
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 ${{ matrix.wp-version }}
