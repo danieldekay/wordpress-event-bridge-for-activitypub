@@ -9,7 +9,7 @@ steps:
       - apt-get clean
       - apt-get -yqq update
       - apt-get -yqqf install zip unzip subversion
-      - docker-php-ext-enable mbstring mysqli pdo_mysql intl gd zip bz2
+      - docker-php-ext-enable mbstring mysqli intl gd zip bz2
       - bash bin/install-wp-tests.sh wordpress_tests root mysql mysql latest true
       - phpunit --configuration phpunit.xml.dist
 
