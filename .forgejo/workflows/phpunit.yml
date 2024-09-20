@@ -26,20 +26,20 @@ jobs:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      - name: Setup cache environment
-        id: extensioncache
-        uses: https://github.com/shivammathur/cache-extensions@v1
-        with:
-          php-version: ${{ matrix.php-versions }}
-          extensions: ${{ env.extensions }}
-          key: ${{ env.key }}
+      # - name: Setup cache environment
+      #   id: extensioncache
+      #   uses: https://github.com/shivammathur/cache-extensions@v1
+      #   with:
+      #     php-version: ${{ matrix.php-versions }}
+      #     extensions: ${{ env.extensions }}
+      #     key: ${{ env.key }}
 
-      - name: Cache extensions
-        uses: https://code.forgejo.org/actions/cache@v4
-        with:
-          path: ${{ steps.extensioncache.outputs.dir }}
-          key: ${{ steps.extensioncache.outputs.key }}
-          restore-keys: ${{ steps.extensioncache.outputs.key }}
+      # - name: Cache extensions
+      #   uses: https://code.forgejo.org/actions/cache@v4
+      #   with:
+      #     path: ${{ steps.extensioncache.outputs.dir }}
+      #     key: ${{ steps.extensioncache.outputs.key }}
+      #     restore-keys: ${{ steps.extensioncache.outputs.key }}
 
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
