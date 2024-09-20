@@ -18,5 +18,5 @@ services:
   - name: database
     image: mysql
     environment:
-      - MYSQL_DATABASE: wordpress_tests
-      - MYSQL_ROOT_PASSWORD: mysql
+      MYSQL_DATABASE: wordpress_tests
+      MYSQL_ROOT_PASSWORD: mysql
