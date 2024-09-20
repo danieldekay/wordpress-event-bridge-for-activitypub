@@ -10,7 +10,7 @@ steps:
     commands:
       - apt-get clean
       - apt-get -yqq update
-      - apt-get -yqqf install zip unzip subversion php8.3-mysql php8.3-bz2 php8.3-mcrypt
+      - apt-get -yqqf install zip unzip subversion php8.2-mysql php8.2-bz2 php8.2-mcrypt
       - docker-php-ext-enable mbstring mcrypt mysqli pdo_mysql intl gd zip bz2
       - composer require --dev yoast/phpunit-polyfills:"^3.0"
       - composer install
