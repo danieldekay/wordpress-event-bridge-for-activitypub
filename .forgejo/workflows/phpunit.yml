@@ -17,8 +17,7 @@ jobs:
     strategy:
       matrix:
         php-versions: ['8.1']
-        include:
-          - wp-version: latest
+        wp-version: [latest]
     name: Run phpunit tests
     env:
       extensions: mysql
