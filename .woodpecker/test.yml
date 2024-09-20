@@ -11,6 +11,7 @@ steps:
       - apt-get -yqqf install zip unzip subversion
       - docker-php-ext-enable mbstring mysqli intl gd zip
       - bash bin/install-wp-tests.sh wordpress_tests root mysql mysql latest true
+      - composer require --dev yoast/phpunit-polyfills:"^3.0"
       - composer install
       - phpunit --configuration phpunit.xml.dist
 
