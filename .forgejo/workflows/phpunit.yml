@@ -12,11 +12,11 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
         ports:
           - 3306:3306
-      strategy:
-        matrix:
-          php-versions: ['8.1', '8.2', '8.3']
-          include:
-            - wp-version: latest
+    strategy:
+      matrix:
+        php-versions: ['8.1', '8.2', '8.3']
+        include:
+          - wp-version: latest
     steps:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
