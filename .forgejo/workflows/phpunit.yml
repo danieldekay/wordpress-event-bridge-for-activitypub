@@ -21,13 +21,13 @@ jobs:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      # - name: Setup PHP
-      #   uses: shivammathur/setup-php@v2
-      #   with:
-      #     php-version: ${{ matrix.php-versions }}
-      #     coverage: none
-      #     tools: composer, phpunit-polyfills
-      #     extensions: mysql
+      - name: Setup PHP
+        uses: https://github.com/shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          coverage: none
+          tools: composer, phpunit-polyfills
+          extensions: mysql
 
       # - name: Install Composer dependencies for PHP
       #   uses: "ramsey/composer-install@v1"
