@@ -4,17 +4,10 @@ when:
 
 steps:
   - name: build
-    image: wordpressdevelop/phpunit
+    image: php:8.3
     environment:
       WP_TESTS_PHPUNIT_POLYFILLS_PATH: vendor/yoast/phpunit-polyfills
     commands:
-      - apt-get clean
-      - apt install -y apt-transport-https lsb-release ca-certificates wget
-      - wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
-      - echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
-      - apt-get -y update
-      - apt-get -y upgrade
-      - apt-get -y install zip unzip subversion php8.2-mysql php8.2-bz2 php8.2-mcrypt
       - docker-php-ext-enable mbstring mcrypt mysqli pdo_mysql intl gd zip bz2
       - composer require --dev yoast/phpunit-polyfills:"^3.0"
       - composer install
