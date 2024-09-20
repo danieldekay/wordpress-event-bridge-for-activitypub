@@ -2,13 +2,6 @@ when:
   - event: push
     branch: woodpecker
 
-services:
-  - name: database
-    image: mysql
-    environment:
-      - MYSQL_DATABASE: wordpress_tests
-      - MYSQL_ROOT_PASSWORD: mysql
-
 steps:
   - name: build
     image: wordpressdevelop/phpunit
@@ -19,3 +12,11 @@ steps:
       - docker-php-ext-enable mbstring mcrypt mysqli pdo_mysql intl gd zip bz2
       - bash bin/install-wp-tests.sh wordpress_tests root mysql mysql latest true
       - phpunit --configuration phpunit.xml.dist
+
+
+services:
+  - name: database
+    image: mysql
+    environment:
+      - MYSQL_DATABASE: wordpress_tests
+      - MYSQL_ROOT_PASSWORD: mysql
