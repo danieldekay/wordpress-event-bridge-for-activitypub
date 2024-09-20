@@ -52,7 +52,7 @@ jobs:
         uses: "ramsey/composer-install@v1"
 
       - name: Install mysqladmin
-        run: sudo apt update && sudo apt -y install mysql-client
+        run: sudo apt update && sudo apt upgrade && sudo apt -y install mysql-client
 
       - name: Setup Test Environment
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 ${{ matrix.wp-version }}
