@@ -12,12 +12,9 @@ jobs:
         image: mariadb
         env:
           MYSQL_ROOT_PASSWORD: root
-        ports:
-          - 3306:3306
     strategy:
       matrix:
         php-versions: ['8.1']
-        wp-version: [latest]
     name: Run phpunit tests
     env:
       extensions: mysql
@@ -47,7 +44,7 @@ jobs:
         run: sudo apt update && sudo apt -y upgrade && sudo apt -y install mysql-client
 
       - name: Setup Test Environment
-        run: bash bin/install-wp-tests.sh wordpress_test root root mysql:3306 ${{ matrix.wp-version }}
+        run: bash bin/install-wp-tests.sh wordpress_test root root mysql latest
 
       - name: Unit Testing
         run: ./vendor/bin/phpunit

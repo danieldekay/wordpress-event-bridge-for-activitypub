@@ -1,0 +1,19 @@
+when:
+  - event: push
+    branch: woodpecker
+
+steps:
+  - name: build
+    image: php:8.3
+    environment:
+      WP_TESTS_PHPUNIT_POLYFILLS_PATH: vendor/yoast/phpunit-polyfills
+    commands:
+      - apt -y update
+      - apt -y install libonig-dev
+      - docker-php-ext-install mbstring mysqli pdo_mysql intl gd zip bz2
+      - docker-php-ext-enable mbstring mysqli pdo_mysql intl gd zip bz2
+      - composer require --dev yoast/phpunit-polyfills:"^3.0"
+      - composer install
+      - bash bin/install-wp-tests.sh wordpress_tests root mysql mysql latest true
+      - phpunit --configuration phpunit.xml.dist
+
