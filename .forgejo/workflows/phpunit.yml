@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mysql:
-        image: 'mariadb:10.7'
+        image: mariadb
         env:
           MYSQL_ROOT_PASSWORD: root
         ports:
@@ -47,7 +47,7 @@ jobs:
         run: sudo apt update && sudo apt -y upgrade && sudo apt -y install mysql-client
 
       - name: Setup Test Environment
-        run: bash bin/install-wp-tests.sh wordpress_test root root mysql ${{ matrix.wp-version }}
+        run: bash bin/install-wp-tests.sh wordpress_test root root http://mysql:3306 ${{ matrix.wp-version }}
 
       - name: Unit Testing
         run: ./vendor/bin/phpunit
