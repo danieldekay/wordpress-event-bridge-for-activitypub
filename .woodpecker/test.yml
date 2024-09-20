@@ -9,7 +9,9 @@ steps:
       WP_TESTS_PHPUNIT_POLYFILLS_PATH: vendor/yoast/phpunit-polyfills
     commands:
       - apt-get clean
-      - add-apt-repository ppa:ondrej/php
+      - apt install -y apt-transport-https lsb-release ca-certificates wget
+      - wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+      - echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/php.list
       - apt-get -yqq update
       - apt-get -yqqf install zip unzip subversion php8.2-mysql php8.2-bz2 php8.2-mcrypt
       - docker-php-ext-enable mbstring mcrypt mysqli pdo_mysql intl gd zip bz2
