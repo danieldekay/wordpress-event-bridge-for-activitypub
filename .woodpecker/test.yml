@@ -2,9 +2,20 @@ when:
   - event: push
     branch: woodpecker
 
+services:
+  - name: database
+    image: mysql
+    environment:
+      - MYSQL_DATABASE: wordpress_tests
+      - MYSQL_ROOT_PASSWORD: mysql
+
 steps:
   - name: build
     image: wordpressdevelop/phpunit
     commands:
-      - echo "This is the build step"
-      - echo "binary-data-123" > executable
+      - apt-get clean
+      - apt-get -yqq update
+      - apt-get -yqqf install zip unzip subversion mysql-client libmysqlclient-dev --fix-missing
+      - docker-php-ext-enable mbstring mcrypt mysqli pdo_mysql intl gd zip bz2
+      - bash bin/install-wp-tests.sh wordpress_tests root mysql mysql latest true
+      - phpunit --configuration phpunit.xml.dist
