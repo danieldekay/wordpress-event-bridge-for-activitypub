@@ -5,6 +5,8 @@ when:
 steps:
   - name: build
     image: wordpressdevelop/phpunit
+    environment:
+      WP_TESTS_PHPUNIT_POLYFILLS_PATH: vendor/yoast/phpunit-polyfills
     commands:
       - apt-get clean
       - apt-get -yqq update
