@@ -60,7 +60,8 @@ jobs:
         if: steps.cache-composer.outputs.cache-hit != 'true'
         uses: ramsey/composer-install@v3
 
-      - uses: https://github.com/awalsh128/cache-apt-pkgs-action@latest
+      - name: Install and Cache mysqladmin needed to initialize the Test Database
+        uses: https://github.com/awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: mysql-client
           version: 1.0
