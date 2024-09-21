@@ -42,7 +42,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           coverage: none
-          tools: composer, phpunit-polyfills
+          tools: composer
         env:
           runner: self-hosted
 
