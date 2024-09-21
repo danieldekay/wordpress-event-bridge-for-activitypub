@@ -1,6 +1,8 @@
 version: '3'
 
 # This files purpose is to run the PHPunit tests locally.
+# Install docker and docker compose and than just run:
+# docker compose up
 
 services:
   test-db:
