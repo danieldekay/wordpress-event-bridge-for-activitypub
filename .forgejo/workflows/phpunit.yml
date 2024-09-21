@@ -47,6 +47,8 @@ jobs:
       - name: Setup Test Environment
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 latest
 
+      - run: ls -l $WP_CORE_DIR && ls -l $WP_CORE_DIR/wp-includes && ls -l $WP_CORE_DIR/wp-includes/PHPMailer/
+
       - name: Unit Testing
         run: cd /workspace/Event-Federation/wordpress-activitypub-event-extensions/ && phpunit
         env:
