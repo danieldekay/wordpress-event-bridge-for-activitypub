@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         php-version: ['8.1', '8.2', '8.3']
-    name: Run PHPUnit ${{ matrix.php-version }}
+    name: PHPUnit – PHP ${{ matrix.php-version }}
     env:
       extensions: mysql
       key: cache-v1
