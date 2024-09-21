@@ -9,6 +9,8 @@
 namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 
 use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
+use DateTime;
+use DateTimeZone;
 use EM_Event;
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
@@ -153,7 +155,7 @@ final class Events_Manager extends Event_Transformer {
 	/**
 	 * Return the remaining attendee capacity
 	 *
-	 * @todo decide whether to include pending bookings or not!
+	 * @return int
 	 */
 	public function get_remaining_attendee_capacity() {
 		$em_bookings                 = $this->em_event->get_bookings()->get_bookings();
@@ -166,7 +168,7 @@ final class Events_Manager extends Event_Transformer {
 	 *
 	 * @return int
 	 */
-	public function get_participant_count() {
+	public function get_participant_count(): int {
 		$em_bookings = $this->em_event->get_bookings()->get_bookings();
 		return count( $em_bookings->bookings );
 	}

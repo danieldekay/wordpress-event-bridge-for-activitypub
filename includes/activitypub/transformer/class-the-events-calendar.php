@@ -51,8 +51,6 @@ final class The_Events_Calendar extends Event {
 	 * @return string|null tribe category if it exists
 	 */
 	public function get_tribe_category() {
-		// TODO: make it possible that one event can have multiple categories?
-		// Using cat_slugs isn't the best way to do this, don't know if it's a good idea.
 		$categories = tribe_get_event_cat_slugs( $this->wp_object->ID );
 
 		if ( count( $categories ) === 0 ) {
@@ -133,12 +131,10 @@ final class The_Events_Calendar extends Event {
 	protected function get_content() {
 
 		$content = parent::get_content();
-		// TODO: remove link at the end of the content.
-
-		// TODO: add organizer
-		// $this->tribe_event->organizers[0].
-
-		// TODO: do add Cancelled reason in the content (maybe at the end).
+		// /BeforeFirstRelease:
+		// * remove link at the end of the content.
+		// * add organizer.
+		// * do add Cancelled reason in the content.s
 
 		return $content;
 	}
