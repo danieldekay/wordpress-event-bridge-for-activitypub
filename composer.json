@@ -36,6 +36,11 @@
         ],
         "lint:fix": [
             "vendor/bin/phpcbf"
+        ],
+        "test": [
+            "composer install",
+            "tests/install-wp-tests.sh activitypub-test root activitypub-test test-db latest true",
+            "vendor/bin/phpunit"
         ]
     }
 }
