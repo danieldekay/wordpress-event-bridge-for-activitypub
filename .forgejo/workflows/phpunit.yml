@@ -20,7 +20,7 @@ jobs:
     strategy:
       matrix:
         php-versions: ['8.1', '8.2', '8.3']
-    name: Run phpunit tests
+    name: Run PHPunit ${{ matrix.php-version }}
     env:
       extensions: mysql
       key: cache-v1
@@ -48,7 +48,7 @@ jobs:
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php-version }}
           coverage: none
           tools: composer
         env:
@@ -75,4 +75,4 @@ jobs:
       - name: Unit Testing
         run: cd /workspace/Event-Federation/wordpress-activitypub-event-extensions/ && ./vendor/bin/phpunit
         env:
-          PHP_VERSION: ${{ matrix.php-versions }}
+          PHP_VERSION: ${{ matrix.php-version }}
