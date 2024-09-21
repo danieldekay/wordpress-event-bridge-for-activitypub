@@ -42,7 +42,7 @@ jobs:
         run: sudo apt update && sudo apt -y upgrade && sudo apt -y install mysql-client
 
       - name: Clone plugin dependencies
-        run: git clone https://code.event-federation.eu/Event-Federation/wordpress-activitypub.git /tmp/wordpress/wp-content/plugins/activitypub/
+        run: git clone https://code.event-federation.eu/Event-Federation/wordpress-activitypub.git $WP_CORE_DIR/wp-content/plugins/activitypub/
 
       - name: Setup Test Environment
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 latest
