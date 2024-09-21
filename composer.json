@@ -13,7 +13,6 @@
         "wp-coding-standards/wpcs": "dev-develop",
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
         "sirbrillig/phpcs-variable-analysis": "^2.11",
-        "yoast/phpunit-polyfills": "^3.0"
     },
     "config": {
         "allow-plugins": true

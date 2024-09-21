@@ -38,12 +38,12 @@ jobs:
           key: cache-wordpress-1
 
       - name: Cache Composer
-        id: cache-composer
+        id: cache-composer-phpunit
         uses: https://code.forgejo.org/actions/cache@v4
         with:
           path: |
             ./vendor/
-          key: cache-composer-4
+          key: cache-composer-phpunit-1
 
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
@@ -54,9 +54,10 @@ jobs:
         env:
           runner: self-hosted
 
-      - name: Install composer dependencies for PHP
-        if: steps.cache-composer.outputs.cache-hit != 'true'
-        uses: ramsey/composer-install@v3
+      - name: Install PHP Unit
+        if: steps.cache-composer-phpunit.outputs.cache-hit != 'true'
+        # Polyfills requires all needed packages including phpunit itself.
+        uses: composer install --dev yoast/phpunit-polyfills:"^3.0"
 
       - name: Install and cache mysqladmin needed to initialize the test database
         uses: https://github.com/awalsh128/cache-apt-pkgs-action@latest
