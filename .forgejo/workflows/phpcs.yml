@@ -32,6 +32,7 @@ jobs:
           path: |
             ./vendor/
             /root/.cache/composer/
+            /usr/local/bin/composer
           key: cache-composer-2
 
       - name: Setup PHP
@@ -46,8 +47,6 @@ jobs:
       - name: Install Composer dependencies for PHP
         if: steps.cache-composer.outputs.cache-hit != 'true'
         uses: ramsey/composer-install@v3
-
-      - run: which composer && composer config --list
 
       - name: Detect coding standard violations
         run: ./vendor/bin/phpcs
