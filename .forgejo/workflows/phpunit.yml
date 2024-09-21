@@ -43,9 +43,7 @@ jobs:
         with:
           path: |
             ./vendor/
-            /root/.cache/composer/
-            /usr/local/bin/composer
-          key: cache-composer-3
+          key: cache-composer-4
 
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
@@ -56,11 +54,11 @@ jobs:
         env:
           runner: self-hosted
 
-      - name: Install Composer dependencies for PHP
+      - name: Install composer dependencies for PHP
         if: steps.cache-composer.outputs.cache-hit != 'true'
         uses: ramsey/composer-install@v3
 
-      - name: Install and Cache mysqladmin needed to initialize the Test Database
+      - name: Install and cache mysqladmin needed to initialize the test database
         uses: https://github.com/awalsh128/cache-apt-pkgs-action@latest
         with:
           packages: mysql-client
@@ -68,13 +66,11 @@ jobs:
 
       - name: Setup Test Environment
         if: steps.cache-wordpress.outputs.cache-hit != 'true'
-        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 6.6
+        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 6.6 false false false false
 
-      - name: Setup WordPress Test Database
+      - name: Initialize WordPress test database
         if: steps.cache-wordpress.outputs.cache-hit != 'false'
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 6.6 false true true true
-
-      - run: composer show -i
 
       - name: Unit Testing
         run: cd /workspace/Event-Federation/wordpress-activitypub-event-extensions/ && ./vendor/bin/phpunit
