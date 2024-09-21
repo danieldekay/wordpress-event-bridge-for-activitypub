@@ -1,16 +1,19 @@
 version: '3'
+
+# This files purpose is to run the PHPunit tests locally.
+
 services:
   test-db:
-    platform: linux/x86_64
     image: mariadb
     environment:
-      MYSQL_DATABASE: wordpress
-      MYSQL_ROOT_PASSWORD: wordpress
+      MARIADB_DATABASE: wordpress-test
+      MARIADB_ROOT_PASSWORD: wordpress-test
     healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:3306"]
-        interval: 5s
-        timeout: 2s
-        retries: 5
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 5s
+      interval: 4s
+      timeout: 5s
+      retries: 5
 
   test-php:
     build:

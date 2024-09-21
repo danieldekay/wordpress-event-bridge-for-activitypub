@@ -194,8 +194,11 @@ install_wp_plugins() {
         echo "Skipping WordPress plugin installation."
         return 0
     fi
-    download https://downloads.wordpress.org/plugin/activitypub.3.2.5.zip $TMPDIR/activitypub.zip
-	unzip $TMPDIR/activitypub.zip -d $WP_CORE_DIR/wp-content/plugins/
+	ACTIVITYPUB_FILE="activitypub.3.2.5.zip"
+	if ! test -f $TMPDIR/$ACTIVITYPUB_FILE; then
+	    download https://downloads.wordpress.org/plugin/$ACTIVITYPUB_FILE $TMPDIR/$ACTIVITYPUB_FILE
+	fi
+	unzip -o $TMPDIR/$ACTIVITYPUB_FILE -d $WP_CORE_DIR/wp-content/plugins/
 }
 
 install_wp
