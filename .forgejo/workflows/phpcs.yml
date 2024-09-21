@@ -45,5 +45,7 @@ jobs:
         if: steps.cache-composer.outputs.cache-hit != 'true'
         uses: ramsey/composer-install@v3
 
+      - run: composer config --list
+
       - name: Detect coding standard violations
         run: ./vendor/bin/phpcs
