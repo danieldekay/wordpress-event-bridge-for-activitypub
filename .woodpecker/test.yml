@@ -14,9 +14,10 @@ steps:
       - docker-php-ext-enable mbstring mysqli pdo_mysql intl gd zip bz2
       - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
       - composer require --dev yoast/phpunit-polyfills:"^3.0"
+      - composer require --dev phpunit/phpunit ^9
       - composer install
       - bash bin/install-wp-tests.sh wordpress_tests root mysql mysql latest true
-      - phpunit --configuration phpunit.xml.dist
+      - ./vendor/bin/phpunit --configuration phpunit.xml.dist
 
 
 services:
