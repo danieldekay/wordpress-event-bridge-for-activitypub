@@ -54,6 +54,7 @@ fi
 set -ex
 
 install_wp() {
+	rm -rf $WP_CORE_DIR
 
 	if [ -d $WP_CORE_DIR ]; then
 		return;
