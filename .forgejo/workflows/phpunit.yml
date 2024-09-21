@@ -57,7 +57,7 @@ jobs:
       - name: Install PHP Unit
         if: steps.cache-composer-phpunit.outputs.cache-hit != 'true'
         # Polyfills requires all needed packages including phpunit itself.
-        run: composer install yoast/phpunit-polyfills:"^3.0"
+        run: composer require --dev yoast/phpunit-polyfills:"^3.0"
 
       - name: Install and cache mysqladmin needed to initialize the test database
         uses: https://github.com/awalsh128/cache-apt-pkgs-action@latest
