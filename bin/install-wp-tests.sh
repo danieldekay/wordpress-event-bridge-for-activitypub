@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ $# -lt 3 ]; then
-	echo "usage: $0 <db-name> <db-user> <db-pass> [db-host] [wp-version] [skip-database-creation]"
+	echo "usage: $0 <db-name> <db-user> <db-pass> [db-host] [wp-version] [skip-database-creation] [skip-wp-install] [skip-plugins] [skip-test-suite]"
 	exit 1
 fi
 
@@ -11,6 +11,10 @@ DB_PASS=$3
 DB_HOST=${4-localhost}
 WP_VERSION=${5-latest}
 SKIP_DB_CREATE=${6-false}
+SKIP_WP_INSTALL=${7-false}
+SKIP_PLUGINS_INSTALL=${8-false}
+SKIP_TEST_SUITE_INSTALL=${9-false}
+
 
 TMPDIR=${TMPDIR-/tmp}
 TMPDIR=$(echo $TMPDIR | sed -e "s/\/$//")
@@ -54,7 +58,10 @@ fi
 set -ex
 
 install_wp() {
-	rm -rf $WP_CORE_DIR
+	if [ "$SKIP_WP_INSTALL" = "true" ]; then
+        echo "Skipping WordPress installation."
+        return 0
+    fi
 
 	if [ -d $WP_CORE_DIR ]; then
 		return;
@@ -97,6 +104,11 @@ install_wp() {
 }
 
 install_test_suite() {
+	if [ "$SKIP_TEST_SUITE_INSTALL" = "true" ]; then
+        echo "Skipping test suite installation."
+        return 0
+    fi
+
 	# portable in-place argument for both GNU sed and Mac OSX sed
 	if [[ $(uname -s) == 'Darwin' ]]; then
 		local ioption='-i.bak'
@@ -178,7 +190,11 @@ install_db() {
 }
 
 install_wp_plugins() {
-    download https://downloads.wordpress.org/plugin/activitypub.3.2.5.zip  $TMPDIR/activitypub.zip
+	if [ "$SKIP_PLUGINS_INSTALL" = "true" ]; then
+        echo "Skipping WordPress plugin installation."
+        return 0
+    fi
+    download https://downloads.wordpress.org/plugin/activitypub.3.2.5.zip $TMPDIR/activitypub.zip
 	unzip $TMPDIR/activitypub.zip -d $WP_CORE_DIR/wp-content/plugins/
 }
 

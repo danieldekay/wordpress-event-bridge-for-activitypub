@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         php-versions: ['8.1']
-    name: Run PHP Code Checker
+    name: PHP Code Checker
     env:
       extensions: mysql
       key: cache-v1
@@ -25,16 +25,25 @@ jobs:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
 
+      - name: Cache Composer
+        id: cache-composer
+        uses: https://code.forgejo.org/actions/cache@v4
+        with:
+          path: |
+            ./vendor/
+          key: cache-composer-phpcs-1
+
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
           coverage: none
-          tools: composer, cs2pr
+          tools: composer
         env:
           runner: self-hosted
 
       - name: Install Composer dependencies for PHP
+        if: steps.cache-composer.outputs.cache-hit != 'true'
         uses: ramsey/composer-install@v3
 
       - name: Detect coding standard violations

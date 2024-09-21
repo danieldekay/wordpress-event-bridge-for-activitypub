@@ -1,4 +1,5 @@
-name: Unit Testing
+name: PHPUnit
+
 on:
   push:
     branches:
@@ -19,8 +20,8 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
     strategy:
       matrix:
-        php-versions: ['8.1']
-    name: Run phpunit tests
+        php-version: ['8.1', '8.2', '8.3']
+    name: PHPUnit – PHP ${{ matrix.php-version }}
     env:
       extensions: mysql
       key: cache-v1
@@ -28,25 +29,51 @@ jobs:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
 
+      - name: Cache WordPress Setup
+        id: cache-wordpress
+        uses: https://code.forgejo.org/actions/cache@v4
+        with:
+          path: |
+            ${{ env.WP_CORE_DIR }}
+            ${{ env.WP_TESTS_DIR }}
+          key: cache-wordpress-1
+
+      - name: Cache Composer
+        id: cache-composer-phpunit
+        uses: https://code.forgejo.org/actions/cache@v4
+        with:
+          path: |
+            ./vendor/
+          key: cache-composer-phpunit-1
+
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php-version }}
           coverage: none
-          tools: composer, phpunit-polyfills
+          tools: composer
         env:
           runner: self-hosted
 
-      - name: Install Composer dependencies for PHP
-        uses: ramsey/composer-install@v3
+      - name: Install PHPUnit and PHPUnit-Polyfills
+        if: steps.cache-composer-phpunit.outputs.cache-hit != 'true'
+        run: composer require --dev yoast/phpunit-polyfills:"^3.0"
 
-      - name: Install mysqladmin
-        run: sudo apt update && sudo apt -y upgrade && sudo apt -y install mysql-client
+      - name: Install and cache mysqladmin needed to initialize the test database
+        uses: https://github.com/awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: mysql-client
+          version: 1.0
 
       - name: Setup Test Environment
-        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 6.6
+        if: steps.cache-wordpress.outputs.cache-hit != 'true'
+        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 6.6 false false false false
+
+      - name: Initialize WordPress test database
+        if: steps.cache-wordpress.outputs.cache-hit != 'false'
+        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 6.6 false true true true
 
       - name: Unit Testing
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-extensions/ && phpunit
+        run: cd /workspace/Event-Federation/wordpress-activitypub-event-extensions/ && ./vendor/bin/phpunit
         env:
-          PHP_VERSION: ${{ matrix.php-versions }}
+          PHP_VERSION: ${{ matrix.php-version }}
