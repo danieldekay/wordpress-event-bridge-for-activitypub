@@ -5,10 +5,6 @@ on:
       - main
   pull_request:
 
-env:
-  WP_TESTS_DIR: /workspace/wordpress-test-lib
-  WP_CORE_DIR: /workspace/wordpress
-
 jobs:
   phpunit:
     runs-on: ubuntu-latest
@@ -33,20 +29,12 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           coverage: none
-          tools: composer, phpunit-polyfills
+          tools: composer, cs2pr
         env:
           runner: self-hosted
 
       - name: Install Composer dependencies for PHP
         uses: ramsey/composer-install@v3
 
-      - name: Install mysqladmin
-        run: sudo apt update && sudo apt -y upgrade && sudo apt -y install mysql-client
-
-      - name: Setup Test Environment
-        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 6.6
-
-      - name: Unit Testing
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-extensions/ && phpunit
-        env:
-          PHP_VERSION: ${{ matrix.php-versions }}
+      - name: Detect coding standard violations
+        run: phpcs
