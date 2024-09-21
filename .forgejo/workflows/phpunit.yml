@@ -42,7 +42,7 @@ jobs:
         uses: https://code.forgejo.org/actions/cache@v4
         with:
           path: |
-            ./vendor/install
+            ./vendor/
           key: cache-composer-phpunit-1
 
       - name: Setup PHP
