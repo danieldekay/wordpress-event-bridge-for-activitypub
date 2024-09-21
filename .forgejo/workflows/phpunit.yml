@@ -60,8 +60,13 @@ jobs:
         if: steps.cache-composer.outputs.cache-hit != 'true'
         uses: ramsey/composer-install@v3
 
-      - name: Install mysqladmin
-        run: sudo apt update && sudo apt -y upgrade && sudo apt -y install mysql-client
+      - uses: https://github.com/awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: mysql-client
+          version: 1.0
+
+      # - name: Install mysqladmin
+      #   run: sudo apt update && sudo apt -y upgrade && sudo apt -y install mysql-client
 
       - name: Setup Test Environment
         if: steps.cache-wordpress.outputs.cache-hit != 'true'
