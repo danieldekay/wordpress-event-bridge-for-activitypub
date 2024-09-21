@@ -176,9 +176,8 @@ install_db() {
 	fi
 }
 
-
 install_wp_plugins() {
-    download https://downloads.wordpress.org/plugin/activitypub.3.2.5.zip  $TMPDIR/activitypub.zip
+    download https://downloads.wordpress.org/plugin/activitypub.3.2.5.zip $TMPDIR/activitypub.zip
 	unzip $TMPDIR/activitypub.zip -d $WP_CORE_DIR/wp-content/plugins/
 }
 
