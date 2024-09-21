@@ -19,9 +19,8 @@ steps:
       - bash bin/install-wp-tests.sh wordpress_tests root mysql mysql latest true
       - ./vendor/bin/phpunit --configuration phpunit.xml.dist
 
-
 services:
-  - name: database
+  - name: mysql
     image: mysql
     environment:
       MYSQL_DATABASE: wordpress_tests
