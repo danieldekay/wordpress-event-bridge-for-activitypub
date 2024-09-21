@@ -43,10 +43,11 @@ jobs:
       - name: Install mysqladmin
         run: sudo apt update && sudo apt -y upgrade && sudo apt -y install mysql-client
 
+      - name: Clone plugin dependencies
+        run: git clone https://code.event-federation.eu/Event-Federation/wordpress-activitypub.git /tmp/wordpress/wp-content/plugins/activitypub/
+
       - name: Setup Test Environment
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 latest
-
-      - run: cat /tmp/wordpress-tests-lib/wp-tests-config.php
 
       - name: Unit Testing
         run: phpunit
