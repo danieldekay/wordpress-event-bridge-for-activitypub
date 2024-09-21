@@ -12,6 +12,7 @@ steps:
       - apt -y install libonig-dev libicu-dev zlib1g zlib1g-dev libpng-dev libzip-dev bzip2 libbz2-dev
       - docker-php-ext-install mbstring mysqli pdo_mysql intl gd zip bz2
       - docker-php-ext-enable mbstring mysqli pdo_mysql intl gd zip bz2
+      - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
       - composer require --dev yoast/phpunit-polyfills:"^3.0"
       - composer install
       - bash bin/install-wp-tests.sh wordpress_tests root mysql mysql latest true
