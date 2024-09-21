@@ -60,7 +60,7 @@ class Setup {
 	 */
 	protected function __construct() {
 		$this->activitypub_plugin_is_active = is_plugin_active( 'activitypub/activitypub.php' );
-		// TODO: decide whether we want to do anything at all when ActivityPub plugin is note active.
+		// BeforeFirstRelease: decide whether we want to do anything at all when ActivityPub plugin is note active.
 		// if ( ! $this->activitypub_plugin_is_active ) {
 		// deactivate_plugins( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE );
 		// return;

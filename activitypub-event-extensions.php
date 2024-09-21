@@ -35,27 +35,23 @@ Activitypub_Event_Extensions\Autoloader::register();
 // Initialize the plugin.
 Activitypub_Event_Extensions\Setup::get_instance();
 
-// For local development purposes: TODO. Remove everything after here.
+// BeforeFirstRelease: Remove everything after this after here.
 
 /**
  * Add a filter for http_request_host_is_external
  *
- * TODO: Remove this for release.
- *
- * @todo This filter is temporary code needed to do local testing.
+ * BeforeFirstRelease: Remove this for release.
  */
-add_filter( 'http_request_host_is_external', 'custom_http_request_host_is_external', 10, 3 );
+add_filter( 'http_request_host_is_external', 'activitypub_event_extensions_custom_http_request_host_is_external', 10, 3 );
 
 /**
  * Add a filter for http_request_host_is_external
  *
- * TODO: Remove this for release.
+ * BeforeFirstRelease: Remove this for release.
  *
  * @param bool $is_external Whether the request is external.
- *
- * @todo This filter is temporary code needed to do local testing.
  */
-function custom_http_request_host_is_external( $is_external ) {
+function activitypub_event_extensions_custom_http_request_host_is_external( $is_external ) {
 	$is_external = true;
 
 	return $is_external;
@@ -64,15 +60,13 @@ function custom_http_request_host_is_external( $is_external ) {
 /**
  * Don't verify ssl certs for testing.
  *
- * TODO: Remove this for release.
- *
- * @todo This filter is temporary code needed to do local testing.
+ * BeforeFirstRelease: Remove this for release.
  */
-add_filter( 'https_ssl_verify', 'dont_verify_local_dev_https', 10, 3 );
+add_filter( 'https_ssl_verify', 'activitypub_event_extensions_dont_verify_local_dev_https', 10, 3 );
 
 /**
- * TODO: remove it.
+ * BeforeFirstRelease: remove it.
  */
-function dont_verify_local_dev_https() {
+function activitypub_event_extensions_dont_verify_local_dev_https() {
 	return false;
 }
