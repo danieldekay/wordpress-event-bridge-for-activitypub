@@ -14,6 +14,6 @@ steps:
       - docker-php-ext-enable mbstring mysqli pdo_mysql intl gd zip bz2
       - composer require --dev yoast/phpunit-polyfills:"^3.0"
       - composer install
-      - bash bin/install-wp-tests.sh wordpress_tests root mysql mysql latest true
+      - bash bin/install-wp-tests.sh wordpress_tests root mysql mysql 6.6 true
       - phpunit --configuration phpunit.xml.dist
 
