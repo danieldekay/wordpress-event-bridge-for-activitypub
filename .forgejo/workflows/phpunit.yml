@@ -23,13 +23,6 @@ jobs:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      # - name: Cache composer dependencies
-      #   id: cache-primes
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: /root/.cache/composer
-      #     key: cache-1
-
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
         with:
@@ -50,6 +43,6 @@ jobs:
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 latest
 
       - name: Unit Testing
-        run: ./vendor/bin/phpunit
+        run: cd /tmp/wordpress/wp-content/plugins/activitypub-event-extensions && ./vendor/bin/phpunit
         env:
           PHP_VERSION: ${{ matrix.php-versions }}
