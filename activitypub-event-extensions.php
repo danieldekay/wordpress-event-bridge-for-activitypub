@@ -44,7 +44,7 @@ Activitypub_Event_Extensions\Setup::get_instance();
  *
  * @todo This filter is temporary code needed to do local testing.
  */
-add_filter( 'http_request_host_is_external', 'custom_http_request_host_is_external', 10, 3 );
+add_filter( 'http_request_host_is_external', 'activitypub_event_extensions_custom_http_request_host_is_external', 10, 3 );
 
 /**
  * Add a filter for http_request_host_is_external
@@ -55,7 +55,7 @@ add_filter( 'http_request_host_is_external', 'custom_http_request_host_is_extern
  *
  * @todo This filter is temporary code needed to do local testing.
  */
-function custom_http_request_host_is_external( $is_external ) {
+function activitypub_event_extensions_custom_http_request_host_is_external( $is_external ) {
 	$is_external = true;
 
 	return $is_external;
@@ -68,11 +68,11 @@ function custom_http_request_host_is_external( $is_external ) {
  *
  * @todo This filter is temporary code needed to do local testing.
  */
-add_filter( 'https_ssl_verify', 'dont_verify_local_dev_https', 10, 3 );
+add_filter( 'https_ssl_verify', 'activitypub_event_extensions_dont_verify_local_dev_https', 10, 3 );
 
 /**
  * TODO: remove it.
  */
-function dont_verify_local_dev_https() {
+function activitypub_event_extensions_dont_verify_local_dev_https() {
 	return false;
 }

@@ -6,6 +6,8 @@
  * @license AGPL-3.0-or-later
  */
 
+namespace Activitypub_Event_Extensions\Activitypub\Transformer;
+
 use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
 use EM_Event;
 use Activitypub\Activity\Extended_Object\Event;

@@ -1,4 +1,5 @@
-name: Unit Testing
+name: PHP Code Checker
+
 on:
   push:
     branches:
@@ -6,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  phpunit:
+  phpcs:
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -16,7 +17,7 @@ jobs:
     strategy:
       matrix:
         php-versions: ['8.1']
-    name: Run phpunit tests
+    name: Run PHP Code Checker
     env:
       extensions: mysql
       key: cache-v1
