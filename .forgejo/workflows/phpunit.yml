@@ -34,6 +34,8 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           coverage: none
           tools: composer, phpunit-polyfills
+        env:
+          runner: self-hosted
 
       - name: Install Composer dependencies for PHP
         uses: "ramsey/composer-install@v1"
