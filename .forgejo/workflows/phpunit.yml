@@ -6,8 +6,8 @@ on:
   pull_request:
 
 env:
-  WP_TESTS_DIR: /workspace/wordpress-test-lib/
-  WP_CORE_DIR: /workspace/wordpress/
+  WP_TESTS_DIR: /workspace/wordpress-test-lib
+  WP_CORE_DIR: /workspace/wordpress
 
 jobs:
   phpunit:
