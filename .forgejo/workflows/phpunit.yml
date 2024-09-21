@@ -4,6 +4,11 @@ on:
     branches:
       - main
   pull_request:
+
+env:
+  WP_TESTS_DIR: /workspace/wordpress-test-lib/
+  WP_CORE_DIR: /workspace/wordpress/
+
 jobs:
   phpunit:
     runs-on: ubuntu-latest
@@ -38,8 +43,6 @@ jobs:
 
       - name: Clone plugin dependencies
         run: git clone https://code.event-federation.eu/Event-Federation/wordpress-activitypub.git /tmp/wordpress/wp-content/plugins/activitypub/
-
-      - run: rm -r /tmp/wordpress/ && rm -r /tmp/wordpress-tests-lib/
 
       - name: Setup Test Environment
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 latest
