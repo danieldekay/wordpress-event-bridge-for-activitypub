@@ -35,7 +35,7 @@ jobs:
           path: |
             WP_TESTS_DIR
             WP_CORE_DIR
-          key: wordpress-cache-1
+          key: cache-wordpress-1
 
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2

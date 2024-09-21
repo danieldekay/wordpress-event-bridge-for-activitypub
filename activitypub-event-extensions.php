@@ -18,7 +18,7 @@
  */
 
 // Exit if accessed directly.
-defined('ABSPATH' ) || exit; // @codeCoverageIgnore
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
