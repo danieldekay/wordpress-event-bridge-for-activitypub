@@ -28,6 +28,15 @@ jobs:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
 
+      - name: Cache WordPress Setup
+        id: cache-wordpress
+        uses: actions/cache@v4
+        with:
+          path: |
+            WP_TESTS_DIR
+            WP_CORE_DIR
+          key: wordpress-cache-1
+
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
         with:
