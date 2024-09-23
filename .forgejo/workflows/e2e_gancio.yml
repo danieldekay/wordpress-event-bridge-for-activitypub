@@ -46,17 +46,17 @@ jobs:
       - run: |
           curl 'http://localhost:13120/api/setup/db' \
           --compressed -X POST \
-          -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0'
-          -H 'Accept: application/json, text/plain, */*'
-          -H 'Accept-Language: en-US,en;q=0.5'
-          -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Content-Type: application/json'
-          -H 'Origin: http://localhost:13120'
-          -H 'Connection: keep-alive'
-          -H 'Referer: http://localhost:13120/setup/0'
-          -H 'Cookie: i18n_redirected=en; auth.strategy=local'
-          -H 'Sec-Fetch-Dest: empty'
-          -H 'Sec-Fetch-Mode: cors'
-          -H 'Sec-Fetch-Site: same-origin'
-          -H 'Priority: u=0'
+          -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0' \
+          -H 'Accept: application/json, text/plain, */*' \
+          -H 'Accept-Language: en-US,en;q=0.5' \
+          -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Content-Type: application/json' \
+          -H 'Origin: http://localhost:13120' \
+          -H 'Connection: keep-alive' \
+          -H 'Referer: http://localhost:13120/setup/0' \
+          -H 'Cookie: i18n_redirected=en; auth.strategy=local' \
+          -H 'Sec-Fetch-Dest: empty' \
+          -H 'Sec-Fetch-Mode: cors' \
+          -H 'Sec-Fetch-Site: same-origin' \
+          -H 'Priority: u=0' \
           --data-raw '{"db":{"dialect":"sqlite","storage":"./gancio.sqlite","host":"localhost","database":"gancio","password":"gancio"}}'
 
