@@ -19,7 +19,7 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: root
       postgres:
-        images: postgres
+        image: postgres
         env:
           POSTGRES_HOST_AUTH_METHOD: trust
       gancio:
