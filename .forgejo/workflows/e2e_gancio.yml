@@ -37,7 +37,5 @@ jobs:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      - run: sleep 20
-      - run: apt update && apt install net-tools telnet
-      - run: netstat -tulpn
-      - run: telnet 127.0.0.1 3306
+      - run: sleep 10
+      - run: curl 127.0.0.1:13120
