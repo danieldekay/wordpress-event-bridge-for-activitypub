@@ -22,8 +22,15 @@ class Test_Sample extends WP_UnitTestCase {
 	 * Tesd tes
 	 */
 	public function test_the_events_calendar() {
-		// Replace this with some actual testing code.
-		$class_exists = class_exists( 'Tribe__Events__Main' );
-		$this->assertTrue( $class_exists );
+		// First check manually that The Events Calendar is loaded.
+		$class = class_exists( '\Tribe__Events__Main' );
+		$this->assertTrue( $class );
+
+		// Get instance of our plugin.
+		$aec = \Activitypub_Event_Extensions\Setup::get_instance();
+		$this->assertContains( 'the-events-calendar', $aec->get_active_event_plugins() );
+
+		$aec->activate_activitypub_support_for_active_event_plugins();
+		$this->assertContains( 'tribe_events',  get_option( 'activitypub_support_post_types' ));
 	}
 }
