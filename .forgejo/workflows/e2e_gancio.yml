@@ -38,4 +38,4 @@ jobs:
         uses: https://code.forgejo.org/actions/checkout@v4
 
       - run: sleep 5
-      - run: curl http://127.0.0.1:13120
+      - run: curl http://host:13120
