@@ -21,7 +21,6 @@ jobs:
       gancio:
         image: 'cisti/gancio'
         env:
-          PATH=$PATH:/home/node/.yarn/bin
           GANCIO_DATA:/home/node/data
           NODE_ENV:production
           GANCIO_DB_DIALECT:sqlite
