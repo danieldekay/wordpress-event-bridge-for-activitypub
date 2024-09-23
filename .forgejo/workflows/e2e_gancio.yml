@@ -37,5 +37,8 @@ jobs:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      - run: sleep 10
+      - run: sleep 1
       - run: curl 127.0.0.1:13120
+      - run: curl 'http://127.0.0.1:13120/api/setup/db' --compressed -X POST --data-raw '{"db":{"dialect":"sqlite","storage":"./gancio.sqlite","host":"localhost","database":"gancio"}}'
+
+
