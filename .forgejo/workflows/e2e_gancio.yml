@@ -24,7 +24,8 @@ jobs:
           NODE_ENV: production
           GANCIO_DB_DIALECT: sqlite
           GANCIO_DB_STORAGE: ./gancio.sqlite
-        cmd: '-p 127.0.0.1:13120:13120'
+        cmd:
+          - '-p 127.0.0.1:13120:13120'
     strategy:
       matrix:
         php-version: ['8.1']
