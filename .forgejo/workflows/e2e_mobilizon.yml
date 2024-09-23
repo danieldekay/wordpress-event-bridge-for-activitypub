@@ -1,0 +1,69 @@
+name: PHPUnit
+
+on:
+  push:
+    branches:
+      - ci_mobilizon
+  pull_request:
+
+env:
+  WP_TESTS_DIR: /workspace/wordpress-test-lib
+  WP_CORE_DIR: /workspace/wordpress
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mariadb
+        env:
+          MYSQL_ROOT_PASSWORD: root
+      postgres:
+        image: docker.io/postgis/postgis:15-3.4
+        env:
+          POSTGRES_USER: mobilizon
+          POSTGRES_PASSWORD: mobilizon
+          POSTGRES_DB: mobilizon
+        cmd:
+          - '-p 127.0.0.1:5432:5432'
+      mobilizon:
+        image: docker.io/framasoft/mobilizon
+        env:
+          MOBILIZON_INSTANCE_NAME: Mobilizon
+          MOBILIZON_INSTANCE_HOST: localhost
+          MOBILIZON_INSTANCE_LISTEN_IP: "127.0.0.1"
+          MOBILIZON_INSTANCE_PORT: "4000"
+          MOBILIZON_DATABASE_HOST: "127.0.0.1"
+          MOBILIZON_DATABASE_PORT: "5432"
+        cmd:
+          - '-p 127.0.0.1:4000:4000'
+    strategy:
+      matrix:
+        php-version: ['8.1']
+    name: PHPUnit – PHP ${{ matrix.php-version }}
+    env:
+      extensions: mysql
+      key: cache-v1
+    steps:
+      - name: Checkout
+        uses: https://code.forgejo.org/actions/checkout@v4
+
+      - run: sleep 1
+      - run: curl -L 127.0.0.1:13120/setup/0
+      - run: |
+          curl 'http://localhost:13120/api/setup/db' \
+          --compressed -X POST \
+          -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0' \
+          -H 'Accept: application/json, text/plain, */*' \
+          -H 'Accept-Language: en-US,en;q=0.5' \
+          -H 'Accept-Encoding: gzip, deflate, br, zstd' -H 'Content-Type: application/json' \
+          -H 'Origin: http://localhost:13120' \
+          -H 'Connection: keep-alive' \
+          -H 'Referer: http://localhost:13120/setup/0' \
+          -H 'Cookie: i18n_redirected=en; auth.strategy=local' \
+          -H 'Sec-Fetch-Dest: empty' \
+          -H 'Sec-Fetch-Mode: cors' \
+          -H 'Sec-Fetch-Site: same-origin' \
+          -H 'Priority: u=0' \
+          --data-raw '{"db":{"dialect":"sqlite","storage":"./gancio.sqlite","host":"localhost","database":"gancio","password":"gancio"}}'
+
