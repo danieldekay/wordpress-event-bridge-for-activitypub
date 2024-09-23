@@ -29,7 +29,7 @@ jobs:
           - GANCIO_DB_STORAGE=./gancio.sqlite
     strategy:
       matrix:
-        php-version: ['8.1']s
+        php-version: ['8.1']
     name: PHPUnit – PHP ${{ matrix.php-version }}
     env:
       extensions: mysql
