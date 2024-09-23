@@ -1,0 +1,42 @@
+name: PHPUnit
+
+on:
+  push:
+    branches:
+      - ci_gancio
+  pull_request:
+
+env:
+  WP_TESTS_DIR: /workspace/wordpress-test-lib
+  WP_CORE_DIR: /workspace/wordpress
+
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mariadb
+        env:
+          MYSQL_ROOT_PASSWORD: root
+      gancio:
+        image: cisti/gancio
+        container_name: gancio
+        environment:
+          - PATH=$PATH:/home/node/.yarn/bin
+          - GANCIO_DATA=/home/node/data
+          - NODE_ENV=production
+          - GANCIO_DB_DIALECT=sqlite
+          - GANCIO_DB_STORAGE=./gancio.sqlite
+    strategy:
+      matrix:
+        php-version: ['8.1']s
+    name: PHPUnit – PHP ${{ matrix.php-version }}
+    env:
+      extensions: mysql
+      key: cache-v1
+    steps:
+      - name: Checkout
+        uses: https://code.forgejo.org/actions/checkout@v4
+
+      - run: curl http://gancio:13120
+
