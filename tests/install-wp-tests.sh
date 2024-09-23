@@ -15,6 +15,16 @@ SKIP_WP_INSTALL=${7-false}
 SKIP_PLUGINS_INSTALL=${8-false}
 SKIP_TEST_SUITE_INSTALL=${9-false}
 
+# Initialize the plugin list
+PLUGINS=""
+
+# Parse optional --plugins argument
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --plugins) PLUGINS="$2"; shift ;;
+    esac
+    shift
+done
 
 TMPDIR=${TMPDIR-/tmp}
 TMPDIR=$(echo $TMPDIR | sed -e "s/\/$//")
@@ -189,16 +199,42 @@ install_db() {
 	fi
 }
 
+install_wp_plugin() {
+    PLUGIN_NAME=$1
+
+	if [ -d "$WP_CORE_DIR/wp-content/mu-plugins/$PLUGIN_NAME" ]; then
+		return;
+	fi
+
+	# Get the latest tag.
+    LATEST_TAG=$(svn log https://plugins.svn.wordpress.org/$PLUGIN_NAME/tags --limit 1 | awk 'NR == 4 { print $4 }')
+	PLUGIN_FILE="$PLUGIN_NAME.$LATEST_TAG.zip"
+	URL="https://downloads.wordpress.org/plugin/$PLUGIN_FILE"
+
+    # Check if the plugin file already exists
+    if ! test -f "$TMPDIR/$PLUGIN_FILE"; then
+        download $URL "$TMPDIR/$PLUGIN_FILE"
+    fi
+
+    # Unzip the plugin into the WordPress must-use plugins directory
+    unzip -o "$TMPDIR/$PLUGIN_FILE" -d "$WP_CORE_DIR/wp-content/mu-plugins/"
+}
+
 install_wp_plugins() {
 	if [ "$SKIP_PLUGINS_INSTALL" = "true" ]; then
         echo "Skipping WordPress plugin installation."
         return 0
     fi
-	ACTIVITYPUB_FILE="activitypub.3.2.5.zip"
-	if ! test -f $TMPDIR/$ACTIVITYPUB_FILE; then
-	    download https://downloads.wordpress.org/plugin/$ACTIVITYPUB_FILE $TMPDIR/$ACTIVITYPUB_FILE
-	fi
-	unzip -o $TMPDIR/$ACTIVITYPUB_FILE -d $WP_CORE_DIR/wp-content/plugins/
+	# Always install the ActivityPub plugin.
+	install_wp_plugin activitypub
+	install_wp_plugin the-events-calendar
+	# Install additional plugins.
+	# if [[ -n "$PLUGINS" ]]; then
+	# 	IFS=',' read -ra PLUGIN_ARRAY <<< "$PLUGINS"
+	# 	for plugin in "${PLUGIN_ARRAY[@]}"; do
+	# 		install_wp_plugin "$plugin"
+	# 	done
+	# fi
 }
 
 install_wp

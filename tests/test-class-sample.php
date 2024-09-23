@@ -17,4 +17,13 @@ class Test_Sample extends WP_UnitTestCase {
 		// Replace this with some actual testing code.
 		$this->assertTrue( true );
 	}
+
+	/**
+	 * Tesd tes
+	 */
+	public function test_the_events_calendar() {
+		// Replace this with some actual testing code.
+		$class_exists = class_exists( 'Tribe__Events__Main' );
+		$this->assertTrue( $class_exists );
+	}
 }

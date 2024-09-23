@@ -30,6 +30,11 @@ require_once "{$_tests_dir}/includes/functions.php";
  */
 function _manually_load_plugin() {
 	require dirname( __DIR__ ) . '/activitypub-event-extensions.php';
+	$event_plugin = getenv( 'WP_EVENT_PLUGIN' );
+	switch ( $event_plugin ) {
+		case 'the-events-calendar':
+			require ABSPATH . '/wp-content/mu-plugins/the-events-calendar/the-events-calendar.php';
+	}
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
