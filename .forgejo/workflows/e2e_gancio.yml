@@ -37,5 +37,5 @@ jobs:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      - run: curl http://mysql:3306
-
+      - run: sleep 10
+      - run: curl http://gancio:13120
