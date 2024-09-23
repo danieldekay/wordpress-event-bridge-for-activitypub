@@ -20,7 +20,6 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
       gancio:
         image: cisti/gancio
-        container_name: gancio
         environment:
           - PATH=$PATH:/home/node/.yarn/bin
           - GANCIO_DATA=/home/node/data
