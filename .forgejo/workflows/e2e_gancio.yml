@@ -42,7 +42,7 @@ jobs:
         uses: https://code.forgejo.org/actions/checkout@v4
 
       - run: sleep 1
-      - run: curl 127.0.0.1:13120
-      - run: curl http://127.0.0.1:13120/api/setup/db --compressed -X POST --data-raw '{"db":{"dialect":"postgres","host":"127.0.0.1:5432","database":"gancio","username":"gancio","password:gancio"}}'
+      - run: curl -L 127.0.0.1:13120/setup/0
+      - run: curl -L http://127.0.0.1:13120/api/setup/db --compressed -X POST --data-raw '{"db":{"dialect":"postgres","host":"127.0.0.1:5432","database":"gancio","username":"gancio","password:gancio"}}'
 
 
