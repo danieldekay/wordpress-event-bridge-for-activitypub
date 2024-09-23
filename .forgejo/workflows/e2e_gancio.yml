@@ -18,6 +18,10 @@ jobs:
         image: mariadb
         env:
           MYSQL_ROOT_PASSWORD: root
+      postgres:
+        images: postgres
+        env:
+          POSTGRES_HOST_AUTH_METHOD=trust
       gancio:
         image: cisti/gancio
         env:
@@ -39,6 +43,6 @@ jobs:
 
       - run: sleep 1
       - run: curl 127.0.0.1:13120
-      - run: curl http://127.0.0.1:13120/api/setup/db --compressed -X POST --data-raw '{"db":{"dialect":"sqlite","storage":"./gancio.sqlite","host":"localhost","database":"gancio"}}'
+      - run: curl http://127.0.0.1:13120/api/setup/db --compressed -X POST --data-raw '{"db":{"dialect":"postgres","host":"127.0.0.1:5432","database":"gancio","username":"gancio","password:gancio"}}'
 
 
