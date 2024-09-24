@@ -73,6 +73,29 @@ class Event extends Post {
 	}
 
 	/**
+	 * Extract the join mode.
+	 *
+	 * Currently we don't handle joins, we always mark events as external.
+	 *
+	 * @return string
+	 */
+	public function get_join_mode() {
+		return 'external';
+	}
+
+	/**
+	 * Extract the external participation url.
+	 *
+	 * Currently we don't handle joins, we always mark events as external.
+	 * We just link back to the events HTML representation on our WordPress site.
+	 *
+	 * @return string|null The external participation URL.
+	 */
+	public function get_external_participation_url(): string|null {
+		return 'external' === $this->get_join_mode() ? $this->get_url() : null;
+	}
+
+	/**
 	 * Set the event category, via the mapping setting.
 	 */
 	public function get_category() {

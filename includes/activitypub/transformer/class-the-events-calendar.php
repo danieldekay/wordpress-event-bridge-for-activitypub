@@ -97,17 +97,6 @@ final class The_Events_Calendar extends Event {
 	}
 
 	/**
-	 * Extract the join mode.
-	 *
-	 * If the ticket sale is active set it to restricted.
-	 *
-	 * @return string
-	 */
-	public function get_join_mode() {
-		return empty( $this->tribe_event->tickets ) ? 'free' : 'restricted';
-	}
-
-	/**
 	 * Check if the comments are enabled for the current event.
 	 */
 	public function get_comments_enabled(): bool {
@@ -182,6 +171,9 @@ final class The_Events_Calendar extends Event {
 
 		if ( ! empty( $venue->address ) ) {
 			$address['streetAddress'] = $venue->address;
+		}
+		if ( ! empty( $venue->post_title ) ) {
+			$address['name'] = $venue->post_title;
 		}
 		$address['type'] = 'PostalAddress';
 
