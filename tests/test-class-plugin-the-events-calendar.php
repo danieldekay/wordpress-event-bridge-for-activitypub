@@ -51,21 +51,6 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 		),
 	);
 
-	public const MOCKUP_CATEGORIES = array(
-		'concert' => array(
-			'cat_name'             => 'concert',
-			'category_description' => 'Mostly live concerts',
-			'category_nicename'    => 'Concert',
-			'taxonomy'             => 'tribe_events_cat',
-		),
-		'theatre' => array(
-			'cat_name'             => 'theatre',
-			'category_description' => 'Theatre shows',
-			'category_nicename'    => 'Theatre',
-			'taxonomy'             => 'tribe_events_cat',
-		),
-	);
-
 	/**
 	 * Override the setup function, so that tests don't run if the Events Calendar is not active.
 	 */
@@ -139,8 +124,8 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 	 */
 	public function test_transform_event_with_mapped_categories() {
 		// Create category.
-		$category_id_music   = wp_insert_category( self::MOCKUP_CATEGORIES['concert'] );
-		$category_id_theatre = wp_insert_category( self::MOCKUP_CATEGORIES['theatre'] );
+		$category_id_music   = wp_insert_term( 'Music', Tribe__Events__Main::TAXONOMY, array( 'slug' => 'music' ) );
+		$category_id_theatre = wp_insert_term( 'Theatre', Tribe__Events__Main::TAXONOMY, array( 'slug' => 'theatre' ) );
 
 		// Set default mapping for event categories.
 		update_option( 'activitypub_event_extensions_default_event_category', 'MUSIC' );
@@ -151,26 +136,18 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 		// Create a The Events Calendar event with the music category.
 		$wp_object = tribe_events()
 			->set_args( self::MOCKUP_EVENTS['minimal_event'] )
-			->set( 'category', array( $category_id_music ) )
 			->create();
+		// Set the post term music to the event.
+		wp_set_post_terms( $wp_object->ID, $category_id_music['term_id'], Tribe__Events__Main::TAXONOMY );
 		// Call the transformer.
 		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
 		// See if the default category mapping is applied.
 		$this->assertEquals( 'MUSIC', $event_array['category'] );
 
-		// Create a The Events Calendar event with the theatre category.
-		$wp_object = tribe_events()
-			->set_args( self::MOCKUP_EVENTS['minimal_event'] )
-			->set( 'category', array( $category_id_theatre ) )
-			->create();
-
-		$test1 = wp_set_post_categories( $wp_object->ID, $category_id_theatre );
-		$terms = get_the_terms( $wp_object->ID, 'tribe_events_cat' );
-		get_the_terms( $post_id, 'tribe_events_cat' );
-
+		// Set the post term theatre to the event.
+		wp_set_post_terms( $wp_object->ID, $category_id_theatre['term_id'], Tribe__Events__Main::TAXONOMY );
 		// Call the transformer.
 		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
-
 		// See if the default category mapping is applied.
 		$this->assertEquals( 'THEATRE', $event_array['category'] );
 	}

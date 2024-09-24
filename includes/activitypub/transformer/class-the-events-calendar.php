@@ -145,8 +145,18 @@ final class The_Events_Calendar extends Event {
 	 * @return Place|array The place/venue if one is set.
 	 */
 	public function get_location(): Place|null {
+		// Get short handle for the venues.
+		$venues = $this->wp_object->venues;
+
 		// Get first venue. We currently only support a single venue.
-		$venue = $this->wp_object->venues->first();
+		if ( $venues instanceof \Tribe\Events\Collections\Lazy_Post_Collection ){
+			$venue = $venues->first();
+		} elseif ( empty( $this->wp_object->venues ) || ! empty( $this->wp_object->venues[0] ) ) {
+			return null;
+		} else {
+			$venue = $venues[0];
+		}
+
 		if ( ! $venue ) {
 			return null;
 		}
