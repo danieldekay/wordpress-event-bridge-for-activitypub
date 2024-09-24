@@ -52,9 +52,13 @@
             "@test-gatherpress",
             "@test-events-manager"
         ],
-        "test-vs-event_list": "phpunit --filter=vs_event_list",
+        "test-debug": [
+            "@prepare-test",
+            "@test-events-manager"
+        ],
+        "test-vs-event-list": "phpunit --filter=vs_event_list",
         "test-the-events-calendar": "phpunit --filter=the_events_calendar",
         "test-gatherpress": "phpunit --filter=gatherpress",
-        "test-events-manager": "phpunit --filter=events-manager"
+        "test-events-manager": "phpunit --filter=events_manager"
     }
 }

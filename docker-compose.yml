@@ -42,6 +42,6 @@ services:
       - test-db
     volumes:
       - .:/app
-    command: ["composer", "run-script", "test"]
+    command: ["composer", "run-script", "test-debug"]
     extra_hosts:
       - "host.docker.internal:host-gateway"

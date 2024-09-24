@@ -51,6 +51,13 @@ class Event extends Post {
 	}
 
 	/**
+	 * Get a sane default for whether comments are enabled.
+	 */
+	protected function get_comments_enabled() {
+		'open';
+	}
+
+	/**
 	 * Returns the title of the event.
 	 *
 	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-name
