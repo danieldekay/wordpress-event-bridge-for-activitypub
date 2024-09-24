@@ -38,7 +38,7 @@ jobs:
           path: |
             ${{ env.WP_CORE_DIR }}
             ${{ env.WP_TESTS_DIR }}
-          key: cache-wordpress-2
+          key: cache-wordpress-3
 
       - name: Cache Composer
         id: cache-composer-phpunit

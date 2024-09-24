@@ -219,7 +219,7 @@ install_wp_plugin() {
     fi
 
     # Unzip the plugin into the WordPress must-use plugins directory
-    unzip -o "$TMPDIR/$PLUGIN_FILE" -d "$WP_CORE_DIR/wp-content/plugins/"
+    unzip -q -o "$TMPDIR/$PLUGIN_FILE" -d "$WP_CORE_DIR/wp-content/plugins/"
 }
 
 install_wp_plugins() {
