@@ -72,7 +72,7 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 	/**
 	 * Test that the right transformer gets applied.
 	 */
-	public function test_transformer_class() {
+	public function test_the_events_calendar_transformer_class() {
 		// We only test for one event plugin being active at the same time,
 		// even though we support multiple onces in theory.
 		// But testing all combinations is beyond scope.
