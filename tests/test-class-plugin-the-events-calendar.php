@@ -164,6 +164,10 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 			->set( 'category', array( $category_id_theatre ) )
 			->create();
 
+		$test1 = wp_set_post_categories( $wp_object->ID, $category_id_theatre );
+		$terms = get_the_terms( $wp_object->ID, 'tribe_events_cat' );
+		get_the_terms( $post_id, 'tribe_events_cat' );
+
 		// Call the transformer.
 		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
 

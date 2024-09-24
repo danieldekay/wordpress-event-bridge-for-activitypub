@@ -59,7 +59,7 @@ class Setup {
 	 * @since 1.0.0
 	 */
 	protected function __construct() {
-		$this->activitypub_plugin_is_active = defined( 'ACTIVITYPUB_PLUGIN_VERSION' );
+		$this->activitypub_plugin_is_active = defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) || is_plugin_active( 'activitypub/activitypub.php' );
 		// BeforeFirstRelease: decide whether we want to do anything at all when ActivityPub plugin is note active.
 		// if ( ! $this->activitypub_plugin_is_active ) {
 		// deactivate_plugins( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE );
@@ -206,7 +206,7 @@ class Setup {
 			// The ActivityPub plugin is not active.
 			add_action( 'admin_notices', array( 'Activitypub_Event_Extensions\Admin\General_Admin_Notices', 'activitypub_plugin_not_enabled' ), 10, 1 );
 		}
-		if ( version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_EXTENSIONS_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
+		if ( ! version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_EXTENSIONS_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
 			// The ActivityPub plugin is too old.
 			add_action( 'admin_notices', array( 'Activitypub_Event_Extensions\Admin\General_Admin_Notices', 'activitypub_plugin_version_too_old' ), 10, 1 );
 		}
