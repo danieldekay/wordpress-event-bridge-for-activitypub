@@ -22,6 +22,7 @@ jobs:
     strategy:
       matrix:
         php-version: ['8.1', '8.2', '8.3']
+        event-plugin: []
     name: PHPUnit – PHP ${{ matrix.php-version }}
     env:
       extensions: mysql
@@ -37,7 +38,7 @@ jobs:
           path: |
             ${{ env.WP_CORE_DIR }}
             ${{ env.WP_TESTS_DIR }}
-          key: cache-wordpress-1
+          key: cache-wordpress-2
 
       - name: Cache Composer
         id: cache-composer-phpunit
