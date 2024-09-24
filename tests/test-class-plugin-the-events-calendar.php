@@ -9,6 +9,9 @@
  * Sample test case.
  */
 class Test_The_Events_Calendar extends WP_UnitTestCase {
+	/**
+	 * Mockup events of certain complexity.
+	 */
 	public const MOCKUP_VENUS = array(
 		'minimal_venue' => array(
 			'venue'         => 'Minimal Venue',
@@ -48,6 +51,21 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 		),
 	);
 
+	public const MOCKUP_CATEGORIES = array(
+		'concert' => array(
+			'cat_name'             => 'concert',
+			'category_description' => 'Mostly live concerts',
+			'category_nicename'    => 'Concert',
+			'taxonomy'             => 'tribe_events_cat',
+		),
+		'theatre' => array(
+			'cat_name'             => 'theatre',
+			'category_description' => 'Theatre shows',
+			'category_nicename'    => 'Theatre',
+			'taxonomy'             => 'tribe_events_cat',
+		),
+	);
+
 	/**
 	 * Override the setup function, so that tests don't run if the Events Calendar is not active.
 	 */
@@ -62,8 +80,8 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 		$aec = \Activitypub_Event_Extensions\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
+		// Delete all posts afterwards.
 		_delete_all_posts();
-
 	}
 
 	/**
@@ -77,7 +95,7 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 		$this->assertEquals( 1, count( $active_event_plugins ) );
 
 		// Enable ActivityPub support for the event plugin.
-		$this->assertContains( 'tribe_events',  get_option( 'activitypub_support_post_types' ) );
+		$this->assertContains( 'tribe_events', get_option( 'activitypub_support_post_types' ) );
 
 		// Create a The Events Calendar Event without content.
 		$wp_object = tribe_events()
@@ -100,10 +118,8 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 			->set_args( self::MOCKUP_EVENTS['minimal_event'] )
 			->create();
 
-		// Call the transformer Factory.
-		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
-		// Let the transformer do the work.
-		$event_array = $transformer->to_object()->to_array();
+		// Call the transformer.
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
 
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
@@ -115,6 +131,44 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 		$this->assertEquals( 'allow_all', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'free', $event_array['joinMode'] );
 		$this->assertArrayNotHasKey( 'location', $event_array );
+		$this->assertEquals( 'MEETING', $event_array['category'] );
+	}
+
+	/**
+	 * Test transformation of event with mapped category.
+	 */
+	public function test_transform_event_with_mapped_categories() {
+		// Create category.
+		$category_id_music   = wp_insert_category( self::MOCKUP_CATEGORIES['concert'] );
+		$category_id_theatre = wp_insert_category( self::MOCKUP_CATEGORIES['theatre'] );
+
+		// Set default mapping for event categories.
+		update_option( 'activitypub_event_extensions_default_event_category', 'MUSIC' );
+
+		// Set an override for the category with the slug theatre.
+		update_option( 'activitypub_event_extensions_event_category_mappings', array( 'theatre' => 'THEATRE' ) );
+
+		// Create a The Events Calendar event with the music category.
+		$wp_object = tribe_events()
+			->set_args( self::MOCKUP_EVENTS['minimal_event'] )
+			->set( 'category', array( $category_id_music ) )
+			->create();
+		// Call the transformer.
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
+		// See if the default category mapping is applied.
+		$this->assertEquals( 'MUSIC', $event_array['category'] );
+
+		// Create a The Events Calendar event with the theatre category.
+		$wp_object = tribe_events()
+			->set_args( self::MOCKUP_EVENTS['minimal_event'] )
+			->set( 'category', array( $category_id_theatre ) )
+			->create();
+
+		// Call the transformer.
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
+
+		// See if the default category mapping is applied.
+		$this->assertEquals( 'THEATRE', $event_array['category'] );
 	}
 
 	/**
@@ -129,10 +183,8 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 			->set( 'venue', $venue->ID )
 			->create();
 
-		// Call the transformer Factory.
-		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
-		// Let the transformer do the work.
-		$event_array = $transformer->to_object()->to_array();
+		// Call the transformer.
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
 
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
