@@ -84,12 +84,12 @@ jobs:
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 
-     - name: Run Integration tests for GatherPress
+      - name: Run Integration tests for GatherPress
         run: cd /workspace/Event-Federation/wordpress-activitypub-event-extensions/ && ./vendor/bin/phpunit --filter=gatherpress
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 
-     - name: Run Integration tests for Events Manager
+      - name: Run Integration tests for Events Manager
         run: cd /workspace/Event-Federation/wordpress-activitypub-event-extensions/ && ./vendor/bin/phpunit --filter=events_manager
         env:
           PHP_VERSION: ${{ matrix.php-version }}

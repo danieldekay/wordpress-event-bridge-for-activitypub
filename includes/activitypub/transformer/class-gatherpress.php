@@ -92,7 +92,6 @@ final class GatherPress extends Event {
 		} else {
 			return null;
 		}
-
 	}
 
 	/**
