@@ -4,6 +4,20 @@ version: '3'
 # Install docker and docker compose and than just run:
 # docker compose up
 
+# To live debug in VSCode add this launch configuration to your .vscode/launch.json.
+# It assumes that the WordPress root-dir is your workspace root.
+#
+# {
+#   "name": "Listen for PHPUnit",
+#   "type": "php",
+#   "request": "launch",
+#   "port": 9003,
+#   "pathMappings": {
+#    "/app/": "${workspaceRoot}/wp-content/plugins/activitypub-event-extensions/",
+#    "/tmp/wordpress/": "${workspaceRoot}/"
+#   },
+# },
+
 services:
   test-db:
     image: mariadb
@@ -29,3 +43,5 @@ services:
     volumes:
       - .:/app
     command: ["composer", "run-script", "test"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

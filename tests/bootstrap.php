@@ -26,9 +26,21 @@ if ( ! file_exists( "{$_tests_dir}/includes/functions.php" ) ) {
 require_once "{$_tests_dir}/includes/functions.php";
 
 /**
- * Manually load the plugin being tested.
+ * Manually load the plugin being tested and its integrations.
  */
 function _manually_load_plugin() {
+	$plugin_dir = ABSPATH . '/wp-content/plugins/';
+	require_once $plugin_dir . 'activitypub/activitypub.php';
+	$event_plugin = 'the-events-calendar';
+	switch ( $event_plugin ) {
+		case 'the-events-calendar':
+			$plugin_file = 'the-events-calendar/the-events-calendar.php';
+			require_once $plugin_dir . $plugin_file;
+			$current   = get_option( 'active_plugins', array() );
+			$current[] = $plugin_file;
+			sort( $current );
+			update_option( 'active_plugins', $current );
+	}
 	require dirname( __DIR__ ) . '/activitypub-event-extensions.php';
 }
 

@@ -145,25 +145,52 @@ final class The_Events_Calendar extends Event {
 	 * @return Place|array The place/venue if one is set.
 	 */
 	public function get_location(): Place|null {
-		if ( empty( $this->wp_object->venues ) || ! empty( $this->wp_object->venues[0] ) ) {
+		// Get short handle for the venues.
+		$venues = $this->wp_object->venues;
+
+		// Get first venue. We currently only support a single venue.
+		if ( $venues instanceof \Tribe\Events\Collections\Lazy_Post_Collection ) {
+			$venue = $venues->first();
+		} elseif ( empty( $this->wp_object->venues ) || ! empty( $this->wp_object->venues[0] ) ) {
+			return null;
+		} else {
+			$venue = $venues[0];
+		}
+
+		if ( ! $venue ) {
 			return null;
 		}
-		// We currently only support a single venue.
-		$event_venue = $this->wp_object->venues[0];
 
-		$address = array(
-			'addressCountry'  => $event_venue->country,
-			'addressLocality' => $event_venue->city,
-			'addressRegion'   => $event_venue->province,
-			'postalCode'      => $event_venue->zip,
-			'streetAddress'   => $event_venue->address,
-			'type'            => 'PostalAddress',
-		);
+		// Set the address.
+		$address = array();
+
+		if ( ! empty( $venue->country ) ) {
+			$address['addressCountry'] = $venue->country;
+		}
+
+		if ( ! empty( $venue->city ) ) {
+			$address['addressLocality'] = $venue->city;
+		}
+
+		if ( ! empty( $venue->province ) ) {
+			$address['addressRegion'] = $venue->province;
+		}
+
+		if ( ! empty( $venue->zip ) ) {
+			$address['postalCode'] = $venue->zip;
+		}
+
+		if ( ! empty( $venue->address ) ) {
+			$address['streetAddress'] = $venue->address;
+		}
+		$address['type'] = 'PostalAddress';
 
 		$location = new Place();
-		$location->set_address( $address );
-		$location->set_id( $event_venue->permalink );
-		$location->set_name( $event_venue->post_name );
+		if ( count( $address ) > 1 ) {
+			$location->set_address( $address );
+		}
+		$location->set_id( $venue->permalink );
+		$location->set_name( $venue->post_title );
 
 		return $location;
 	}

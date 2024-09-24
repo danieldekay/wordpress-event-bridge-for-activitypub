@@ -11,7 +11,18 @@ RUN apk update \
 
 RUN docker-php-ext-install mysqli
 
-#  Install Composer
+# Install Xdebug
+RUN apk add --no-cache $PHPIZE_DEPS \
+    && apk add --update linux-headers \
+    && pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && apk del --purge $PHPIZE_DEPS \
+    && echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.client_host=host.docker.internal" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.mode=debug" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini \
+    && echo "xdebug.idekey=VSCODE" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
+# Install Composer
 RUN EXPECTED_CHECKSUM=$(curl -s https://composer.github.io/installer.sig) \
     && curl https://getcomposer.org/installer -o composer-setup.php \
     && ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")" \

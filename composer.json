@@ -43,7 +43,7 @@
         ],
         "test": [
             "composer install",
-            "tests/install-wp-tests.sh wordpress-test root wordpress-test test-db latest true",
+            "bin/install-wp-tests.sh wordpress-test root wordpress-test test-db latest true",
             "phpunit"
         ]
     }
