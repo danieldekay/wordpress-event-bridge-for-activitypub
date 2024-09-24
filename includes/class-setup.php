@@ -59,14 +59,15 @@ class Setup {
 	 * @since 1.0.0
 	 */
 	protected function __construct() {
-		$this->activitypub_plugin_is_active = defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) || is_plugin_active( 'activitypub/activitypub.php' );
+		$this->activitypub_plugin_is_active = defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) ||
+			is_plugin_active( 'activitypub/activitypub.php' );
 		// BeforeFirstRelease: decide whether we want to do anything at all when ActivityPub plugin is note active.
 		// if ( ! $this->activitypub_plugin_is_active ) {
 		// deactivate_plugins( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE );
 		// return;
 		// }.
 		$this->active_event_plugins       = self::detect_active_event_plugins();
-		$this->activitypub_plugin_version = defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) ? constant( 'ACTIVITYPUB_PLUGIN_VERSION' ): '0';
+		$this->activitypub_plugin_version = self::get_activitypub_plugin_version();
 		$this->setup_hooks();
 	}
 
@@ -93,6 +94,19 @@ class Setup {
 		}
 
 		return self::$instance;
+	}
+
+	/**
+	 * LooksUp the current version of the ActivityPub.
+	 *
+	 * @return string The semantic Version.
+	 */
+	private static function get_activitypub_plugin_version(): string {
+		if ( defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) ) {
+			return constant( 'ACTIVITYPUB_PLUGIN_VERSION' );
+		}
+		$version = get_file_data( WP_PLUGIN_DIR . '/activitypub/activitypub.php', array( 'Version' ) )[0];
+		return $version ?? '0.0.0';
 	}
 
 	/**

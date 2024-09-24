@@ -14,8 +14,8 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 	 */
 	public const MOCKUP_VENUS = array(
 		'minimal_venue' => array(
-			'venue'         => 'Minimal Venue',
-			'status'        => 'publish',
+			'venue'  => 'Minimal Venue',
+			'status' => 'publish',
 		),
 		'complex_venue' => array(
 			'venue'         => 'Complex Venue',

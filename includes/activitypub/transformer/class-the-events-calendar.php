@@ -149,7 +149,7 @@ final class The_Events_Calendar extends Event {
 		$venues = $this->wp_object->venues;
 
 		// Get first venue. We currently only support a single venue.
-		if ( $venues instanceof \Tribe\Events\Collections\Lazy_Post_Collection ){
+		if ( $venues instanceof \Tribe\Events\Collections\Lazy_Post_Collection ) {
 			$venue = $venues->first();
 		} elseif ( empty( $this->wp_object->venues ) || ! empty( $this->wp_object->venues[0] ) ) {
 			return null;
