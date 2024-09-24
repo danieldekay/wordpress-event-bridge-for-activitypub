@@ -29,3 +29,5 @@ services:
     volumes:
       - .:/app
     command: ["composer", "run-script", "test"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
