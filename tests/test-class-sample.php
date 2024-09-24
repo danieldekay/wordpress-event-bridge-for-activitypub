@@ -39,6 +39,7 @@ class Test_Sample extends WP_UnitTestCase {
 		$aec->activate_activitypub_support_for_active_event_plugins();
 		$this->assertContains( 'tribe_events',  get_option( 'activitypub_support_post_types' ) );
 
+		// Create a The Events Calendar Event without content.
 		$wp_object = tribe_events()
 			->set_args(
 				array(
@@ -51,10 +52,16 @@ class Test_Sample extends WP_UnitTestCase {
 			)
 			->create();
 
+		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
+		// Check that we got the right transformer.
+		$this->assertInstanceOf( \Activitypub_Event_Extensions\Activitypub\Transformer\The_Events_Calendar::class, $transformer );
+
+		// Let the transformer do the work.
 		$event_array = $transformer->to_object()->to_array();
 
+		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertArrayHasKey( 'type', $event_array );
 		$this->assertEquals( 'Event', $event_array['type'] );
 
