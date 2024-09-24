@@ -234,9 +234,9 @@ class Setup {
 		// Get the transformer for a specific event plugins event-post type.
 		foreach ( $this->active_event_plugins as $event_plugin ) {
 			if ( $wp_object->post_type === $event_plugin->get_post_type() ) {
-				$transformer_class = $event_plugin->get_activitypub_event_transformer_class();
+				$transformer_class = $event_plugin::get_activitypub_event_transformer_class();
 				if ( class_exists( $transformer_class ) ) {
-					return new $transformer_class( $wp_object, $event_plugin->get_event_category_taxonomy() );
+					return new $transformer_class( $wp_object, $event_plugin::get_event_category_taxonomy() );
 				}
 			}
 		}
