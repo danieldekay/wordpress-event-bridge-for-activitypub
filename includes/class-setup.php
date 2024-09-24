@@ -59,14 +59,14 @@ class Setup {
 	 * @since 1.0.0
 	 */
 	protected function __construct() {
-		$this->activitypub_plugin_is_active = is_plugin_active( 'activitypub/activitypub.php' );
+		$this->activitypub_plugin_is_active = defined( 'ACTIVITYPUB_PLUGIN_VERSION' );
 		// BeforeFirstRelease: decide whether we want to do anything at all when ActivityPub plugin is note active.
 		// if ( ! $this->activitypub_plugin_is_active ) {
 		// deactivate_plugins( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE );
 		// return;
 		// }.
 		$this->active_event_plugins       = self::detect_active_event_plugins();
-		$this->activitypub_plugin_version = get_file_data( WP_PLUGIN_DIR . '/activitypub/activitypub.php', array( 'Version' ) )[0];
+		$this->activitypub_plugin_version = defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) ? constant( 'ACTIVITYPUB_PLUGIN_VERSION' ): '0';
 		$this->setup_hooks();
 	}
 
@@ -166,7 +166,7 @@ class Setup {
 		);
 
 		// Check if the minimum required version of the ActivityPub plugin is installed.
-		if ( version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_EXTENSIONS_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
+		if ( ! version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_EXTENSIONS_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
 			return;
 		}
 
@@ -256,8 +256,8 @@ class Setup {
 		// If someone installs this plugin, we simply enable ActivityPub support for all currently active event post types.
 		$activitypub_supported_post_types = get_option( 'activitypub_support_post_types', array() );
 		foreach ( $this->active_event_plugins as $event_plugin ) {
-			if ( ! in_array( $event_plugin['post_type'], $activitypub_supported_post_types, true ) ) {
-				$activitypub_supported_post_types[] = $event_plugin['post_type'];
+			if ( ! in_array( $event_plugin->get_post_type(), $activitypub_supported_post_types, true ) ) {
+				$activitypub_supported_post_types[] = $event_plugin->get_post_type();
 			}
 		}
 		update_option( 'activitypub_support_post_types', $activitypub_supported_post_types );

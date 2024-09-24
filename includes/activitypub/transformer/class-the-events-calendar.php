@@ -151,6 +151,10 @@ final class The_Events_Calendar extends Event {
 		// We currently only support a single venue.
 		$event_venue = $this->wp_object->venues[0];
 
+		if ( is_null( $event_venue ) ) {
+			return null;
+		}
+
 		$address = array(
 			'addressCountry'  => $event_venue->country,
 			'addressLocality' => $event_venue->city,

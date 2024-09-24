@@ -202,7 +202,9 @@ install_db() {
 install_wp_plugin() {
     PLUGIN_NAME=$1
 
-	if [ -d "$WP_CORE_DIR/wp-content/mu-plugins/$PLUGIN_NAME" ]; then
+	mkdir -p "$WP_CORE_DIR/wp-content/plugins/"
+
+	if [ -d "$WP_CORE_DIR/wp-content/plugins/$PLUGIN_NAME" ]; then
 		return;
 	fi
 
@@ -217,7 +219,7 @@ install_wp_plugin() {
     fi
 
     # Unzip the plugin into the WordPress must-use plugins directory
-    unzip -o "$TMPDIR/$PLUGIN_FILE" -d "$WP_CORE_DIR/wp-content/mu-plugins/"
+    unzip -o "$TMPDIR/$PLUGIN_FILE" -d "$WP_CORE_DIR/wp-content/plugins/"
 }
 
 install_wp_plugins() {
