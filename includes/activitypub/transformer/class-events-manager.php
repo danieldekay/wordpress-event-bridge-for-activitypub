@@ -264,7 +264,7 @@ final class Events_Manager extends Event_Transformer {
 	 *
 	 * @return Activitypub\Activity\Event
 	 */
-	public function to_object() {
+	public function to_object(): Event {
 		$this->em_event     = new EM_Event( $this->wp_object->ID, 'post_id' );
 		$activitypub_object = new Event();
 

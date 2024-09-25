@@ -199,7 +199,7 @@ final class GatherPress extends Event {
 	 *
 	 * @return Activitypub\Activity\Event
 	 */
-	public function to_object() {
+	public function to_object(): Event_Object {
 		$activitypub_object = parent::to_object();
 
 		return $activitypub_object;
