@@ -125,14 +125,14 @@ final class Events_Manager extends Event_Transformer {
 	/**
 	 * Get the end time from the events metadata.
 	 */
-	public function get_end_time() {
+	public function get_end_time(): ?string {
 		return null;
 	}
 
 	/**
 	 * Get the end time from the events metadata.
 	 */
-	public function get_start_time() {
+	public function get_start_time(): string {
 		$date_string     = $this->em_event->event_start_date;
 		$time_string     = $this->em_event->event_start_time;
 		$timezone_string = $this->em_event->event_timezone;
