@@ -95,7 +95,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$this->assertEquals( '', $event_array['content'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( comments_open( $event->post_id ), $event_array['commentsEnabled'] );
-		$this->assertEquals( comments_open( $event->post_id )? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
+		$this->assertEquals( comments_open( $event->post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertArrayNotHasKey( 'location', $event_array );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
