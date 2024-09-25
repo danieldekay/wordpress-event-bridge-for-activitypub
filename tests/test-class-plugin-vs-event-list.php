@@ -163,4 +163,49 @@ class Test_VS_Event_List extends WP_UnitTestCase {
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertArrayNotHasKey( 'endTime', $event_array );
 	}
+
+	/**
+	 * Test transformation of event with mapped category.
+	 */
+	public function test_transform_event_with_mapped_categories() {
+		// Create category.
+		$category_id_music   = wp_insert_term( 'Music', 'event_cat', array( 'slug' => 'music' ) );
+		$category_id_theatre = wp_insert_term( 'Theatre', 'event_cat', array( 'slug' => 'theatre' ) );
+
+		// Set default mapping for event categories.
+		update_option( 'activitypub_event_extensions_default_event_category', 'MUSIC' );
+
+		// Set an override for the category with the slug theatre.
+		update_option( 'activitypub_event_extensions_event_category_mappings', array( 'theatre' => 'THEATRE' ) );
+
+		// Create a VS Event List event with the music category.
+		$wp_post_id = wp_insert_post(
+			array(
+				'post_title'  => 'VSEL Test Event',
+				'post_status' => 'published',
+				'post_type'   => 'event',
+				'meta_input'  => array(
+					'event-start-date'    => strtotime( '+10 days 15:00:00' ),
+					'event-date'          => strtotime( '+10 days 16:00:00' ),
+					'event-hide-end-time' => 'yes',
+				),
+			)
+		);
+		wp_set_post_terms( $wp_post_id, $category_id_music['term_id'], 'event_cat' );
+
+		// Call the transformer.
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $wp_post_id )  )->to_object()->to_array();
+
+		// See if the default category mapping is applied.
+		$this->assertEquals( 'MUSIC', $event_array['category'] );
+
+		// Change the event category to theatre.
+		wp_set_post_terms( $wp_post_id, $category_id_theatre['term_id'], 'event_cat', false );
+
+		// Call the transformer.
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $wp_post_id ) )->to_object()->to_array();
+
+		// See if the default category mapping is applied.
+		$this->assertEquals( 'THEATRE', $event_array['category'] );
+	}
 }
