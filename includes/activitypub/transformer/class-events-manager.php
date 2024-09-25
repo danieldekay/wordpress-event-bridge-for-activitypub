@@ -94,16 +94,21 @@ final class Events_Manager extends Event_Transformer {
 			return null;
 		}
 
-		$location    = new Place();
 		$em_location = $this->em_event->get_location();
 
+		if ( '' === $em_location->location_id ) {
+			return null;
+		}
+
+		$location = new Place();
 		$location->set_name( $em_location->location_name );
 
 		$address = array(
 			'type'            => 'PostalAddress',
 			'addressCountry'  => $em_location->location_country,
 			'addressLocality' => $em_location->location_town,
-			'streetAddress'   => $em_location->location_address,
+			'postalAddress'   => $em_location->location_address,
+			'postalCode'   => $em_location->location_postcode,
 			'name'            => $em_location->location_name,
 		);
 		if ( $em_location->location_state ) {

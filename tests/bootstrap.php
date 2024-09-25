@@ -69,6 +69,14 @@ function _manually_load_plugin() {
 		update_option( 'active_plugins', $current );
 	}
 
+	// Hot fix that allows using Events Manager within unit tests, because the em_init() is later not run as admin.
+	if ( 'events_manager' === $activitypub_event_extension_integration_filter ) {
+		require_once $plugin_dir . 'events-manager/em-install.php';
+		em_create_events_table();
+		em_create_events_meta_table();
+		em_create_locations_table();
+	}
+
 	// At last manually load our WordPress plugin.
 	require dirname( __DIR__ ) . '/activitypub-event-extensions.php';
 }
