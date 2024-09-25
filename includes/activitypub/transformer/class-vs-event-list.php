@@ -32,17 +32,6 @@ final class VS_Event_List extends Event_Transformer {
 	protected $ap_object;
 
 	/**
-	 * Returns the ActivityStreams 2.0 Object-Type for an Event.
-	 *
-	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-event
-	 * @since 1.0.0
-	 * @return string The Event Object-Type.
-	 */
-	protected function get_type(): string {
-		return 'Event';
-	}
-
-	/**
 	 * Get the event location.
 	 *
 	 * @return Place The Place.
@@ -68,6 +57,9 @@ final class VS_Event_List extends Event_Transformer {
 			return null;
 		}
 		$end_time = get_post_meta( $this->wp_object->ID, 'event-date', true );
+		if ( is_null( $end_time ) || empty( $end_time ) || 'no' === $end_time ) {
+			return null;
+		}
 		return $end_time ? \gmdate( 'Y-m-d\TH:i:s\Z', $end_time ) : null;
 	}
 

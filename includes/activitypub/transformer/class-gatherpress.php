@@ -81,7 +81,7 @@ final class GatherPress extends Event {
 	 *
 	 * @return Place|null The place objector null if not place set.
 	 */
-	public function get_location(): Place|null {
+	public function get_location(): ?Place {
 		$address = $this->gp_venue['full_address'];
 		if ( $address ) {
 			$place = new Place();

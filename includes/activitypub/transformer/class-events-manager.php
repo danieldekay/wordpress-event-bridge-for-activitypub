@@ -89,7 +89,7 @@ final class Events_Manager extends Event_Transformer {
 	 *
 	 * @return array The Place.
 	 */
-	public function get_location() {
+	public function get_location(): ?Place {
 		if ( 'url' === $this->em_event->event_location_type ) {
 			return null;
 		}
@@ -181,7 +181,7 @@ final class Events_Manager extends Event_Transformer {
 	/**
 	 * Hardcoded function for generating a summary.
 	 */
-	public function get_summary() {
+	public function get_summary(): ?string {
 		if ( $this->em_event->post_excerpt ) {
 			$excerpt = $this->em_event->post_excerpt;
 		} else {
