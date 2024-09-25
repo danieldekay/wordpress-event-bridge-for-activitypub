@@ -12,9 +12,6 @@ use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transfor
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
 
-use WP_Error;
-use function Activitypub\get_rest_url_by_path;
-
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
@@ -79,7 +76,7 @@ final class VS_Event_List extends Event_Transformer {
 	 */
 	protected function get_start_time(): string {
 		$start_time = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
-		return $start_time ? \gmdate( 'Y-m-d\TH:i:s\Z', $start_time ) : null;
+		return \gmdate( 'Y-m-d\TH:i:s\Z', $start_time );
 	}
 
 	/**
@@ -117,28 +114,19 @@ final class VS_Event_List extends Event_Transformer {
 		return $attachments;
 	}
 
-	/**
-	 * Create a custom summary.
-	 *
-	 * It contains also the most important meta-information. The summary is often used when the
-	 * ActivityPub object type 'Event' is not supported, e.g. in Mastodon.
-	 *
-	 * @return string $summary The custom event summary.
-	 */
-	public function get_summary(): ?string {
-		if ( $this->wp_object->excerpt ) {
-			$excerpt = $this->wp_object->post_excerpt;
-		} elseif ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
-			$excerpt = get_post_meta( $this->wp_object->ID, 'event-summary', true );
-		} else {
-			$excerpt = $this->get_content();
-		}
 
-		$address           = get_post_meta( $this->wp_object->ID, 'event-location', true );
-		$start_time        = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
-		$datetime_format   = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
-		$start_time_string = wp_date( $datetime_format, $start_time );
-		$summary           = "📍 {$address}\n📅 {$start_time_string}\n\n{$excerpt}";
-		return $summary;
+	/**
+	 * Retrieves the excerpt text (may be HTML). Used for constructing the summary.
+	 *
+	 * @return ?string
+	 */
+	protected function get_excerpt(): ?string {
+		if ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
+			return get_post_meta( $this->wp_object->ID, 'event-summary', true );
+		} elseif ( $this->wp_object->excerpt ) {
+			return $this->wp_object->post_excerpt;
+		} else {
+			return null;
+		}
 	}
 }
