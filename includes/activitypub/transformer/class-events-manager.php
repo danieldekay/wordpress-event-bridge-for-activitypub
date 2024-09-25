@@ -94,16 +94,21 @@ final class Events_Manager extends Event_Transformer {
 			return null;
 		}
 
-		$location    = new Place();
 		$em_location = $this->em_event->get_location();
 
+		if ( '' === $em_location->location_id ) {
+			return null;
+		}
+
+		$location = new Place();
 		$location->set_name( $em_location->location_name );
 
 		$address = array(
 			'type'            => 'PostalAddress',
 			'addressCountry'  => $em_location->location_country,
 			'addressLocality' => $em_location->location_town,
-			'streetAddress'   => $em_location->location_address,
+			'postalAddress'   => $em_location->location_address,
+			'postalCode'      => $em_location->location_postcode,
 			'name'            => $em_location->location_name,
 		);
 		if ( $em_location->location_state ) {
@@ -249,8 +254,10 @@ final class Events_Manager extends Event_Transformer {
 
 	/**
 	 * Get the events title/name.
+	 *
+	 * @return string
 	 */
-	protected function get_name() {
+	protected function get_name(): string {
 		return $this->em_event->event_name;
 	}
 
@@ -259,7 +266,7 @@ final class Events_Manager extends Event_Transformer {
 	 *
 	 * @return Activitypub\Activity\Event
 	 */
-	public function to_object() {
+	public function to_object(): Event {
 		$this->em_event     = new EM_Event( $this->wp_object->ID, 'post_id' );
 		$activitypub_object = new Event();
 

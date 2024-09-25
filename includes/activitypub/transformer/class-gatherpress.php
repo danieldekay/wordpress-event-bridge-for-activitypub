@@ -49,29 +49,18 @@ final class GatherPress extends Event {
 	protected $gp_venue;
 
 	/**
-	 * Get transformer name.
+	 * Extend the constructor, to also set the GatherPress objects.
 	 *
-	 * Retrieve the transformers name.
+	 * This is a special class object form The Events Calendar which
+	 * has a lot of useful functions, we make use of our getter functions.
 	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return string Widget name.
+	 * @param WP_Post $wp_object The WordPress object.
+	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function get_transformer_name() {
-		return 'gatherpress/gp-event';
-	}
-
-	/**
-	 * Get transformer title.
-	 *
-	 * Retrieve the transformers label.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return string Widget title.
-	 */
-	public function get_transformer_label() {
-		return 'GatherPress Event';
+	public function __construct( $wp_object, $wp_taxonomy ) {
+		parent::__construct( $wp_object, $wp_taxonomy );
+		$this->gp_event = new GatherPress_Event( $this->wp_object->ID );
+		$this->gp_venue = $this->gp_event->get_venue_information();
 	}
 
 	/**
@@ -90,15 +79,19 @@ final class GatherPress extends Event {
 	/**
 	 * Get the event location.
 	 *
-	 * @return array The Place.
+	 * @return Place|null The place objector null if not place set.
 	 */
-	public function get_location() {
+	public function get_location(): Place|null {
 		$address = $this->gp_venue['full_address'];
-		$place   = new Place();
-		$place->set_type( 'Place' );
-		$place->set_name( $address );
-		$place->set_address( $address );
-		return $place;
+		if ( $address ) {
+			$place = new Place();
+			$place->set_type( 'Place' );
+			$place->set_name( $address );
+			$place->set_address( $address );
+			return $place;
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -134,7 +127,7 @@ final class GatherPress extends Event {
 	/**
 	 * Overrides/extends the get_attachments function to also add the event Link.
 	 */
-	protected function get_attachment() {
+	protected function get_attachment(): array {
 		$attachments = parent::get_attachment();
 		if ( count( $attachments ) ) {
 			$attachments[0]['type'] = 'Document';
@@ -154,7 +147,7 @@ final class GatherPress extends Event {
 	 *
 	 * @return string The User-URL.
 	 */
-	protected function get_attributed_to() {
+	protected function get_attributed_to(): string {
 		$user = new Blog();
 		return $user->get_url();
 	}
@@ -167,7 +160,7 @@ final class GatherPress extends Event {
 	 *
 	 * @return string $summary The custom event summary.
 	 */
-	public function get_summary() {
+	public function get_summary(): string {
 		if ( $this->wp_object->excerpt ) {
 			$excerpt = $this->wp_object->post_excerpt;
 		} elseif ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
@@ -185,37 +178,30 @@ final class GatherPress extends Event {
 	}
 
 	/**
+	 * Get the content.
+	 */
+	public function get_content(): string {
+		return $this->wp_object->post_content;
+	}
+
+	/**
+	 * Determine whether the event is online.
+	 *
+	 * @return bool
+	 */
+	public function get_is_online(): bool {
+		return $this->gp_event->maybe_get_online_event_link() ? true : false;
+	}
+
+
+	/**
 	 * Transform the WordPress Object into an ActivityPub Object.
 	 *
 	 * @return Activitypub\Activity\Event
 	 */
-	public function to_object() {
-		$this->ap_object = new Event_Object();
-		$this->gp_event  = new GatherPress_Event( $this->wp_object->ID );
-		$this->gp_venue  = $this->gp_event->get_venue_information();
+	public function to_object(): Event_Object {
+		$activitypub_object = parent::to_object();
 
-		$this->ap_object = parent::to_object();
-
-		$this->ap_object->set_comments_enabled( 'open' === $this->wp_object->comment_status ? true : false );
-
-		$this->ap_object->set_external_participation_url( $this->get_url() );
-
-		$online_event_link = $this->gp_event->maybe_get_online_event_link();
-
-		if ( $online_event_link ) {
-			$this->ap_object->set_is_online( true );
-		} else {
-			$this->ap_object->set_is_online( false );
-		}
-
-		$this->ap_object->set_status( 'CONFIRMED' );
-
-		$this->ap_object->set_name( get_the_title( $this->wp_object->ID ) );
-
-		$this->ap_object->set_actor( get_rest_url_by_path( 'application' ) );
-		$this->ap_object->set_to( array( 'https://www.w3.org/ns/activitystreams#Public' ) );
-
-		$this->ap_object->set_location();
-		return $this->ap_object;
+		return $activitypub_object;
 	}
 }

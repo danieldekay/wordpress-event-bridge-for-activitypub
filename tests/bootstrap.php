@@ -30,17 +30,54 @@ require_once "{$_tests_dir}/includes/functions.php";
  */
 function _manually_load_plugin() {
 	$plugin_dir = ABSPATH . '/wp-content/plugins/';
+
+	// Always manually load the ActivityPub plugin.
 	require_once $plugin_dir . 'activitypub/activitypub.php';
-	$event_plugin = 'the-events-calendar';
-	switch ( $event_plugin ) {
-		case 'the-events-calendar':
-			$plugin_file = 'the-events-calendar/the-events-calendar.php';
-			require_once $plugin_dir . $plugin_file;
-			$current   = get_option( 'active_plugins', array() );
-			$current[] = $plugin_file;
-			sort( $current );
-			update_option( 'active_plugins', $current );
+
+	// Capture the --filter argument.
+	$activitypub_event_extension_integration_filter = null;
+	foreach ( $_SERVER['argv'] as $arg ) {
+		if ( strpos( $arg, '--filter=' ) === 0 ) {
+			$activitypub_event_extension_integration_filter = substr( $arg, strlen( '--filter=' ) );
+			break;
+		}
 	}
+
+	$plugin_file = null;
+	// See if we want to run integration tests for a specific event-plugin.
+	switch ( $activitypub_event_extension_integration_filter ) {
+		case 'the_events_calendar':
+			$plugin_file = 'the-events-calendar/the-events-calendar.php';
+			break;
+		case 'vs_event_list':
+			$plugin_file = 'very-simple-event-list/vsel.php';
+			break;
+		case 'events_manager':
+			$plugin_file = 'events-manager/events-manager.php';
+			break;
+		case 'gatherpress':
+			$plugin_file = 'gatherpress/gatherpress.php';
+			break;
+	}
+
+	if ( $plugin_file ) {
+		// Manually load the event plugin.
+		require_once $plugin_dir . $plugin_file;
+		$current   = get_option( 'active_plugins', array() );
+		$current[] = $plugin_file;
+		sort( $current );
+		update_option( 'active_plugins', $current );
+	}
+
+	// Hot fix that allows using Events Manager within unit tests, because the em_init() is later not run as admin.
+	if ( 'events_manager' === $activitypub_event_extension_integration_filter ) {
+		require_once $plugin_dir . 'events-manager/em-install.php';
+		em_create_events_table();
+		em_create_events_meta_table();
+		em_create_locations_table();
+	}
+
+	// At last manually load our WordPress plugin.
 	require dirname( __DIR__ ) . '/activitypub-event-extensions.php';
 }
 

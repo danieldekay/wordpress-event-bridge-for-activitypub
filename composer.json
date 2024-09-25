@@ -41,10 +41,24 @@
         "lint:fix": [
             "vendor/bin/phpcbf"
         ],
-        "test": [
+        "prepare-test": [
             "composer install",
-            "bin/install-wp-tests.sh wordpress-test root wordpress-test test-db latest true",
-            "phpunit"
-        ]
+            "bin/install-wp-tests.sh wordpress-test root wordpress-test test-db latest true"
+        ],
+        "test": [
+            "@prepare-test",
+            "@test-vs-event-list",
+            "@test-the-events-calendar",
+            "@test-gatherpress",
+            "@test-events-manager"
+        ],
+        "test-debug": [
+            "@prepare-test",
+            "@test-vs-event-list"
+        ],
+        "test-vs-event-list": "phpunit --filter=vs_event_list",
+        "test-the-events-calendar": "phpunit --filter=the_events_calendar",
+        "test-gatherpress": "phpunit --filter=gatherpress",
+        "test-events-manager": "phpunit --filter=events_manager"
     }
 }

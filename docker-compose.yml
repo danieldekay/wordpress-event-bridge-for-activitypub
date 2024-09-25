@@ -26,10 +26,10 @@ services:
       MARIADB_ROOT_PASSWORD: wordpress-test
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      start_period: 5s
-      interval: 4s
+      start_period: 2s
+      interval: 1s
       timeout: 5s
-      retries: 5
+      retries: 10
 
   test-php:
     build:
@@ -42,6 +42,6 @@ services:
       - test-db
     volumes:
       - .:/app
-    command: ["composer", "run-script", "test"]
+    command: ["composer", "run-script", "test-debug"]
     extra_hosts:
       - "host.docker.internal:host-gateway"

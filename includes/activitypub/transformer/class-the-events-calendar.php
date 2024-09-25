@@ -14,6 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 use Activitypub_Event_Extensions\Activitypub\Transformer\Event;
 use Activitypub\Activity\Extended_Object\Place;
+use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use WP_Error;
 use WP_Post;
 
@@ -194,7 +195,7 @@ final class The_Events_Calendar extends Event {
 	 *
 	 * @return Event_Object
 	 */
-	public function to_object() {
+	public function to_object(): Event_Object {
 		$activitypub_object = parent::to_object();
 
 		return $activitypub_object;
