@@ -54,7 +54,7 @@ class Event extends Post {
 	 * Get a sane default for whether comments are enabled.
 	 */
 	protected function get_comments_enabled() {
-		'open';
+		return comments_open( $this->wp_object );
 	}
 
 	/**
