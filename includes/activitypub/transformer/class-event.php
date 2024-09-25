@@ -160,6 +160,8 @@ abstract class Event extends Post {
 
 	/**
 	 * Compose a human readable formatted start time.
+	 *
+	 * @param bool $is_start_time  Whether format the events start or end time.
 	 */
 	protected function format_time( $is_start_time = true ) {
 		$time = $is_start_time ? $this->get_start_time() : $this->get_end_time();
