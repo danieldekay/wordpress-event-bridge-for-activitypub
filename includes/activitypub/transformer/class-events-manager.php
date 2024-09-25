@@ -254,8 +254,10 @@ final class Events_Manager extends Event_Transformer {
 
 	/**
 	 * Get the events title/name.
+	 *
+	 * @return string
 	 */
-	protected function get_name() {
+	protected function get_name(): string {
 		return $this->em_event->event_name;
 	}
 
