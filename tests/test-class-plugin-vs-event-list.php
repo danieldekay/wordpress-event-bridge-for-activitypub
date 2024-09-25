@@ -194,7 +194,7 @@ class Test_VS_Event_List extends WP_UnitTestCase {
 		wp_set_post_terms( $wp_post_id, $category_id_music['term_id'], 'event_cat' );
 
 		// Call the transformer.
-		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $wp_post_id )  )->to_object()->to_array();
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $wp_post_id ) )->to_object()->to_array();
 
 		// See if the default category mapping is applied.
 		$this->assertEquals( 'MUSIC', $event_array['category'] );
