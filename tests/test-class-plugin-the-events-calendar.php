@@ -180,7 +180,7 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test transformation of  minimal event with minimal venue.
+	 * Test transformation of  minimal event with fully filled venue.
 	 */
 	public function test_transform_of_minimal_event_with_address_venue() {
 		// Create Venue.

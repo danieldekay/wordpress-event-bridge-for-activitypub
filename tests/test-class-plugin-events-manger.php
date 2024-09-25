@@ -73,21 +73,14 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$event->event_name       = 'Events Manager Test event';
 		$event->post_content     = 'Event description';
 		$event->event_start_date = gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) );
-		$event->event_end_date   = gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) );
 		$event->event_start_time = '15:00:00';
-		$event->event_end_time   = '16:00:00';
 		$event->start            = strtotime( $event->event_start_date . ' ' . $event->event_start_time );
-		$event->end              = strtotime( $event->event_end_date . ' ' . $event->event_end_time );
 		$event->force_status     = 'published';
 		$event->event_rsvp       = false;
-		// Save the Event.
-		$event->save();
-		// Insert a new Event.
-
-		$post = get_post( $event->post_id );
+		$this->assertTrue( $event->save() );
 
 		// Call the transformer Factory.
-		$event_array = \Activitypub\Transformer\Factory::get_transformer( $post )->to_object()->to_array();
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $event->post_id ) )->to_object()->to_array();
 
 		// Check that we got the right transformer.
 		$this->assertEquals( 'Event', $event_array['type'] );
@@ -98,13 +91,14 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$this->assertEquals( comments_open( $event->post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertArrayNotHasKey( 'location', $event_array );
+		$this->assertArrayNotHasKey( 'endTime', $event_array );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
 	}
 
 	/**
-	 * Test the transformation of a minimal event.
+	 * Test the transformation of a event with full location.
 	 */
-	public function test_transform_of_event_with_location() {
+	public function test_transform_of__full_event_with_location() {
 		// Create a mockup location.
 		$location                    = new EM_Location();
 		$location->location_name     = 'Test location';
@@ -114,7 +108,8 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$location->location_postcode = '1337';
 		$location->location_region   = 'Test region';
 		$location->location_country  = 'AT'; // Must be a two char country code.
-		$location->save();
+		$this->assertTrue( $location->save() );
+
 		// Create mockup event.
 		$event                   = new EM_Event();
 		$event->event_name       = 'Events Manager Test event';
@@ -128,14 +123,10 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$event->end              = strtotime( $event->event_end_date . ' ' . $event->event_end_time );
 		$event->force_status     = 'published';
 		$event->event_rsvp       = false;
-		// Save the Event.
-		$event->save();
-		// Insert a new Event.
-
-		$post = get_post( $event->post_id );
+		$this->assertTrue( $event->save() );
 
 		// Call the transformer Factory.
-		$event_array = \Activitypub\Transformer\Factory::get_transformer( $post )->to_object()->to_array();
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $event->post_id ) )->to_object()->to_array();
 
 		// Check that we got the right transformer.
 		$this->assertEquals( 'Event', $event_array['type'] );
@@ -151,5 +142,43 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$this->assertEquals( 'Test state', $event_array['location']['address']['addressRegion'] );
 		$this->assertEquals( '1337', $event_array['location']['address']['postalCode'] );
 		$this->assertEquals( 'AT', $event_array['location']['address']['addressCountry'] );
+	}
+
+	/**
+	 * Test the transformation of a minimal event.
+	 */
+	public function test_transform_of_event_with_name_only_location() {
+		// Create a mockup location.
+		$location                = new EM_Location();
+		$location->location_name = 'Name only location';
+		$this->assertTrue( $location->save() );
+
+		// Create mockup event.
+		$event                   = new EM_Event();
+		$event->event_name       = 'Events Manager Test event';
+		$event->post_content     = 'Event description';
+		$event->location_id      = $location->location_id;
+		$event->event_start_date = gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) );
+		$event->event_end_date   = gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) );
+		$event->event_start_time = '15:00:00';
+		$event->event_end_time   = '16:00:00';
+		$event->start            = strtotime( $event->event_start_date . ' ' . $event->event_start_time );
+		$event->end              = strtotime( $event->event_end_date . ' ' . $event->event_end_time );
+		$event->force_status     = 'published';
+		$event->event_rsvp       = false;
+		$this->assertTrue( $event->save() );
+
+		// Call the transformer Factory.
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $event->post_id ) )->to_object()->to_array();
+
+		// Check that we got the right transformer.
+		$this->assertEquals( 'Event', $event_array['type'] );
+		$this->assertEquals( 'Events Manager Test event', $event_array['name'] );
+		$this->assertEquals( '', $event_array['content'] );
+		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
+		$this->assertEquals( 'external', $event_array['joinMode'] );
+		$this->assertEquals( 'MEETING', $event_array['category'] );
+		$this->assertArrayHasKey( 'location', $event_array );
+		$this->assertEquals( 'Name only location', $event_array['location']['name'] );
 	}
 }
