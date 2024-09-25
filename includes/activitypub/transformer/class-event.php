@@ -35,7 +35,7 @@ class Event extends Post {
 	 *
 	 * @return string The User-URL.
 	 */
-	protected function get_actor() {
+	protected function get_actor(): ?string {
 		return $this->get_attributed_to();
 	}
 
@@ -46,14 +46,14 @@ class Event extends Post {
 	 *
 	 * @return string The Event Object-Type.
 	 */
-	protected function get_type() {
+	protected function get_type(): string {
 		return 'Event';
 	}
 
 	/**
 	 * Get a sane default for whether comments are enabled.
 	 */
-	protected function get_comments_enabled() {
+	protected function get_comments_enabled(): ?bool {
 		return comments_open( $this->wp_object );
 	}
 
@@ -64,7 +64,7 @@ class Event extends Post {
 	 *
 	 * @return string The name.
 	 */
-	protected function get_name() {
+	protected function get_name(): string {
 		return $this->wp_object->post_title;
 	}
 
@@ -86,7 +86,7 @@ class Event extends Post {
 	 *
 	 * @return string
 	 */
-	public function get_join_mode() {
+	public function get_join_mode(): ?string {
 		return 'external';
 	}
 
@@ -96,16 +96,16 @@ class Event extends Post {
 	 * Currently we don't handle joins, we always mark events as external.
 	 * We just link back to the events HTML representation on our WordPress site.
 	 *
-	 * @return string|null The external participation URL.
+	 * @return ?string The external participation URL.
 	 */
-	public function get_external_participation_url(): string|null {
+	public function get_external_participation_url(): ?string {
 		return 'external' === $this->get_join_mode() ? $this->get_url() : null;
 	}
 
 	/**
 	 * Set the event category, via the mapping setting.
 	 */
-	public function get_category() {
+	public function get_category(): ?string {
 		$current_category_mapping = \get_option( 'activitypub_event_extensions_event_category_mappings', array() );
 		$terms                    = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
 
@@ -123,7 +123,7 @@ class Event extends Post {
 	 *
 	 * @return Event_Object
 	 */
-	public function to_object() {
+	public function to_object(): Event_Object {
 		$activitypub_object = new Event_Object();
 		$activitypub_object = $this->transform_object_properties( $activitypub_object );
 
