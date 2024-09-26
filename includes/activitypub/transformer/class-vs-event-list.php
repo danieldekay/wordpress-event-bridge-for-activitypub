@@ -106,7 +106,6 @@ final class VS_Event_List extends Event_Transformer {
 		return $attachments;
 	}
 
-
 	/**
 	 * Retrieves the excerpt text (may be HTML). Used for constructing the summary.
 	 *

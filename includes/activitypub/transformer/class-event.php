@@ -217,12 +217,15 @@ abstract class Event extends Post {
 	 * @return string $summary The custom event summary.
 	 */
 	public function get_summary(): ?string {
+		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2 );
 		$excerpt = $this->extract_excerpt();
 		// BeforeFirstRelease: decide whether this should be a admin setting.
 		$fallback_to_content = true;
 		if ( is_null( $excerpt ) && $fallback_to_content ) {
 			$excerpt = $this->get_content();
 		}
+		remove_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ) );
+
 		$category   = $this->format_category();
 		$start_time = $this->format_time();
 		$end_time   = $this->format_time( false );
@@ -234,11 +237,11 @@ abstract class Event extends Post {
 		}
 
 		if ( ! empty( $start_time ) ) {
-			$formatted_items[] = "🗓️ . {$start_time}";
+			$formatted_items[] = "🗓️ {$start_time}";
 		}
 
 		if ( ! empty( $end_time ) ) {
-			$formatted_items[] = "⏳ . {$end_time}";
+			$formatted_items[] = "⏳ {$end_time}";
 		}
 
 		if ( ! empty( $address ) ) {
@@ -255,6 +258,13 @@ abstract class Event extends Post {
 
 		$summary .= $excerpt;
 		return $summary;
+	}
+
+	public static function remove_ap_permalink_from_template( $template) {
+		$template = str_replace( '[ap_permalink]', '', $template );
+		$template = str_replace( '[ap_permalink type="html"]', '', $template );
+
+		return $template;
 	}
 
 	/**
