@@ -260,7 +260,15 @@ abstract class Event extends Post {
 		return $summary;
 	}
 
-	public static function remove_ap_permalink_from_template( $template) {
+	/**
+	 * Remove the permalink shortcode from a WordPress template.
+	 *
+	 * This used for the summary template, because the summary usually gets,
+	 * used when converting a object, where the URL is usually appended anyway.
+	 *
+	 * @param string $template The template string.
+	 */
+	public static function remove_ap_permalink_from_template( $template ) {
 		$template = str_replace( '[ap_permalink]', '', $template );
 		$template = str_replace( '[ap_permalink type="html"]', '', $template );
 
