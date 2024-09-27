@@ -136,7 +136,7 @@ final class The_Events_Calendar extends Event {
 	 */
 	public function get_location(): Place|null {
 		// Get short handle for the venues.
-		$venues = $this->wp_object->venues;
+		$venues = $this->tribe_event->venues;
 
 		// Get first venue. We currently only support a single venue.
 		if ( $venues instanceof \Tribe\Events\Collections\Lazy_Post_Collection ) {
@@ -181,6 +181,8 @@ final class The_Events_Calendar extends Event {
 		$location = new Place();
 		if ( count( $address ) > 1 ) {
 			$location->set_address( $address );
+		} else {
+			$location->set_address( $venue->post_title );
 		}
 		$location->set_id( $venue->permalink );
 		$location->set_name( $venue->post_title );
