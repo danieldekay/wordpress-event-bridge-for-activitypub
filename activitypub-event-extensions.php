@@ -13,7 +13,7 @@
  *
  * Requires at least ActivityPub plugin with version >= 3.2.2. ActivityPub plugin tested up to: 3.2.2.
  *
- * @package activitypub-event-extensions
+ * @package Activitypub_Event_Extensions
  * @license AGPL-3.0-or-later
  */
 
