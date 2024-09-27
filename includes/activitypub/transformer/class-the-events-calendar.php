@@ -12,11 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-use Activitypub_Event_Extensions\Activitypub\Transformer\Event;
-use Activitypub\Activity\Extended_Object\Place;
-use Activitypub\Activity\Extended_Object\Event as Event_Object;
-use WP_Error;
 use WP_Post;
+
+use Activitypub\Activity\Extended_Object\Event as Event_Object;
+use Activitypub\Activity\Extended_Object\Place;
+use Activitypub_Event_Extensions\Activitypub\Transformer\Event;
+
+use function Activitypub\esc_hashtag;
 
 /**
  * ActivityPub Tribe Transformer
@@ -47,24 +49,33 @@ final class The_Events_Calendar extends Event {
 	}
 
 	/**
-	 * Get tribe category of wp_post
+	 * Get the tags, including also the set categories from The Events Calendar.
 	 *
-	 * @return string|null tribe category if it exists
+	 * @return ?array The array if tags,
 	 */
-	public function get_tribe_category() {
-		$categories = tribe_get_event_cat_slugs( $this->wp_object->ID );
-
-		if ( count( $categories ) === 0 ) {
-			return null;
+	public function get_tag(): ?array {
+		$tags         = array();
+		$category_ids = tribe_get_event_cat_ids();
+		if ( $category_ids ) {
+			foreach ( $category_ids as $category_id ) {
+				$term   = \get_term( $category_id );
+				$tag    = array(
+					'type' => 'Hashtag',
+					'href' => \esc_url( \get_term_link( $term ) ),
+					'name' => esc_hashtag( $term->name ),
+				);
+				$tags[] = $tag;
+			}
 		}
+		$tags[] = parent::get_tag();
 
-		return $categories[0];
+		return $tags;
 	}
 
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_end_time() {
+	protected function get_end_time(): string {
 		$date = date_create( $this->tribe_event->end_date, wp_timezone() );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $date->getTimestamp() );
 	}
@@ -83,19 +94,15 @@ final class The_Events_Calendar extends Event {
 	 * @return string status of the event
 	 */
 	public function get_tribe_status() {
-
 		if ( 'canceled' === $this->tribe_event->event_status ) {
 			return 'CANCELLED';
 		}
 		if ( 'postponed' === $this->tribe_event->event_status ) {
 			return 'CANCELLED'; // This will be reflected in the cancelled reason.
 		}
-		if ( '' === $this->tribe_event->event_status ) {
-			return 'CONFIRMED';
-		}
-
-		return new WP_Error( 'invalid event_status value', __( 'invalid event_status', 'activitypub' ), array( 'status' => 404 ) );
+		return 'CONFIRMED';
 	}
+
 
 	/**
 	 * Check if the comments are enabled for the current event.
@@ -119,7 +126,6 @@ final class The_Events_Calendar extends Event {
 	 * @return string The content.
 	 */
 	protected function get_content() {
-
 		$content = parent::get_content();
 		// /BeforeFirstRelease:
 		// * remove link at the end of the content.
