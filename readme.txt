@@ -25,15 +25,13 @@ By integrating into your existing setup, it ensures no extra work is needed whil
 With the Event Federation Plugin for WordPress, sharing your events is effortless and automatic!
 Once you create an event on your WordPress site, it is seamlessly shared across the decentralized web using the ActivityPub protocol.
 
+![](./.wordpress-org/event-activitypub-publishing.gif)
+
 Your events can be automatically delivered to platforms that fully support events, such as [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/).
 These platforms build public event calendars utilizing multiple event sources, including your site. Updates are also handled automatically whenever you make changes — no extra work for you than managing the event on your own website.
 
-![](./.wordpress.org/decentralized-event-calenders).
+![](./.wordpress-org/decentralized-event-calenders.gif)
 
-Even platforms that don’t yet fully support events, like [Mastodon](https://joinmastodon.org), will still receive a detailed, well-composed summary of your event.
-The Event Federation Plugin ensures that users from those platforms are provided with all important information about an event.
-
-[](./.wordpress.org/event-activitypub-publishing)
 
 == Installation ==
 
