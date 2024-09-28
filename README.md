@@ -9,7 +9,7 @@ Requires PHP: 8.1
 License: AGPL-3.0-or-later  
 License URI: https://www.gnu.org/licenses/agpl-3.0.html  
 
-Enhancing the integration of popular event plugins with the ActivityPub plugin.
+Integrating popular event plugins with the ActivityPub plugin.
 
 ![](.wordpress-org/banner-1544x500.jpg)
 
