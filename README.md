@@ -34,10 +34,10 @@ These platforms build public event calendars utilizing multiple event sources, i
 
 ![](./.wordpress-org/decentralized-event-calenders.gif)
 
-[](./.wordpress-org/event-activitypub-publishing.gif)
-
 Even platforms that don’t yet fully support events, like [Mastodon](https://joinmastodon.org), will still receive a detailed, well-composed summary of your event.
 The Event Federation Plugin ensures that users from those platforms are provided with all important information about an event.
+
+![](./.wordpress-org/event-activitypub-publishing.gif)
 
 ## Installation
 
