@@ -18,11 +18,10 @@ Enhancing the integration of popular event plugins with the ActivityPub plugin.
 Make your events more discoverable, expand your reach effortlessly while being independent of other (commercial) platforms, and part of the growing decentralized web.
 With the ActivityPub Event Extensions Plugin for WordPress, your events can be automatically aggregated and displayed across decentralized platforms like [Mastodon](https://joinmastodon.org) or [Gancio](https://gancio.org), without any extra work.
 Forget the hassle of managing multiple social media accounts just to keep your audience informed.
-Now people can follow your website directly and engage with your events just as they would on social media - liking, boosting and even commenting if you enable it.
-You retain full ownership of your content.
 
-This plugin is not an event manager itself, but an add-on to the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/), extending its capabilities to support popular WordPress event plugins.
-By integrating into your existing setup, it ensures no extra work is needed while enhancing your events' visibility across the Fediverse.
+This plugin is not an event managing plugin but an add-on to popular event plugins. It extends their functionality to fully support the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/).
+With the ActivityPub plugin people can follow your website directly and engage with your events just as they would on social media - liking, boosting and even commenting if you enable it.
+You retain full ownership of your content. By integrating into your existing setup, it ensures no extra work is needed while enhancing your events' visibility across the Fediverse.
 
 ### How It Works
 
