@@ -276,6 +276,16 @@ abstract class Event extends Post {
 		return $template;
 	}
 
+	/** By default set the timezone of the WordPress site.
+	 *
+	 * This is likely to be overwritten by the actual transformer.
+	 *
+	 * @return string  The timezone string of the site.
+	 */
+	public function get_timezone(): string {
+		return wp_timezone_string();
+	}
+
 	/**
 	 * Generic function that converts an WP-Event object to an ActivityPub-Event object.
 	 *
