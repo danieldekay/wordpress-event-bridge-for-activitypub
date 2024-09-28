@@ -1,26 +1,86 @@
-This is a WordPress plugin improves the Fediverse integration of Events via the [WordPress ActivityPub plugin](https://wordpress.org/plugins/activitypub/).
+# ActivityPub Event Extensions
+Contributors: andremenrath
+Tags: events, fediverse, activitypub, activitystreams, calendar
+Requires at least: 6.5
+Tested up to: 6.6
+Stable tag: 0.1.0
+Requires PHP: 8.1
+License: AGPL-3.0-or-later
+License URI: https://www.gnu.org/licenses/agpl-3.0.html
+Enhancing the integration of popular event plugins with the ActivityPub plugin.
 
-> **_NOTE:_** This is still pre-alpha. It is not more than a skeleton/playground. Things change rapidly. Please contact us, instead of trying it out yourself at this time.
+![](.wordpress-org/banner-1544x500.jpg)
 
-For more information checkout our website https://event-federation.eu/. You can follow updates via [RSS](https://event-federation.eu/feed/) or ActivityPub: [@blog@event-federation.eu](https://event-federation.eu/blog/).
+## Description
 
-## Goals
-* Proper ActivityPub (JSON-LD) representation of events within WordPress
-* Improving the setup and configuration workflow of ActivityPub
-* Researching/Implementing federated RSVP/attendee management
+Make your events more discoverable, expand your reach effortlessly while being independent of other (commercial) platforms, and part of the growing decentralized web.
+With the ActivityPub Event Extensions Plugin for WordPress, your events can be automatically aggregated and displayed across decentralized platforms like [Mastodon](https://joinmastodon.org) or [Gancio](https://gancio.org), without any extra work.
+Forget the hassle of managing multiple social media accounts just to keep your audience informed.
+Now people can follow your website directly and engage with your events just as they would on social media - liking, boosting and even commenting if you enable it.
+You retain full ownership of your content.
 
-## Supported Event Plugins
+This plugin is not an event manager itself, but an add-on to the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/), extending its capabilities to support popular WordPress event plugins.
+By integrating into your existing setup, it ensures no extra work is needed while enhancing your events' visibility across the Fediverse.
 
-### Events plugin that will be supported at first:
+### How It Works
+
+With the Event Federation Plugin for WordPress, sharing your events is effortless and automatic!
+Once you create an event on your WordPress site, it is seamlessly shared across the decentralized web using the ActivityPub protocol.
+
+When your events are delivered to platforms that fully support events, such as [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/), these platforms can then build public event calendars from your site, updating whenever you make changes — no extra work for you!
+
+![](./.wordpress.org/decentralized-event-calenders)
+
+Even platforms that don’t yet fully support events, like [Mastodon](https://joinmastodon.org), will still receive a detailed, well-composed summary of your event.
+The Event Federation Plugin ensures that users from those platforms are provided with all important information about an event.
+
+[](./.wordpress.org/event-activitypub-publishing)
+
+## Installation
+
+This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/). Additionally, you need to use one of the supported Event Plugins. See below.
+
+### Supported Event Plugins
 
 * [The Events Calendar](https://de.wordpress.org/plugins/the-events-calendar/)
 * [VS Event List](https://de.wordpress.org/plugins/very-simple-event-list/)
 * [Events Manager](https://de.wordpress.org/plugins/events-manager/)
-* [GatherPress](https://github.com/GatherPress/gatherpress)
 
-### Later:
-- [All in One Events Calendar](https://de.wordpress.org/plugins/all-in-one-event-calendar/)
-- TBA
+## Configuration
 
-### Your event plugin:
-- [**Contact us**](https://event-federation.eu/contact/), if you want to see your event plugin on the list.
+If you’re new to the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/), it’s recommended to spend a few minutes reading through its documentation to familiarize yourself with its setup and functionality.
+
+##  Frequently Asked Questions
+
+### Do I need to install another event plugin to use the Event Federation Plugin?
+
+Yes, this plugin works needs a supported event plugin such as The Events Calendar, VS Event List, or Events Manager to manage your events. It just fills the missing gap between event plugins and the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/).
+
+### What platforms can follow my events?
+Your events can be followed on platforms that support ActivityPub like [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/). Even other applications like [Mastodon](https://joinmastodon.org), which don’t fully support events yet, will display a all important information about the events.
+
+### How much extra work is required to maintain my events across the decentralized Web?
+
+None! Once the plugin is set up, your events are automatically sent to all connected platforms or account that follow you (your Website). Any updates you make to your events are synced without additional effort.
+
+### Can I still use social media to promote my events?
+
+Yes, you can still use traditional social media if you wish. However, this plugin helps reduce reliance on commercial platforms by connecting your events to the decentralized Fediverse.
+
+### Will this plugin work if I don't use the ActivityPub plugin?
+
+No, the Event Federation Plugin depends on the ActivityPub plugin to deliver your events across decentralized platforms, so it's essential to have it installed and configured.
+
+### My event plugin is not supported, what can I do?
+
+If you know about coding have a look at the documentation of how to add your plugin or open an [issue](https://code.event-federation.eu/Event-Federation/wordpress-activitypub-event-extensions/issues), if we can spare some free hours we might add it.
+
+### What if I experience problems?
+
+We're always interested in your feedback. Feel free to reach out to us via [E-Mail](https://event-federation.eu/contact/) or create an [issue](https://code.event-federation.eu/Event-Federation/wordpress-activitypub-event-extensions/issues).
+
+## Changelog
+
+### [0.1.0] 2024-10-01
+
+* Initial alpha release on WordPress.org
