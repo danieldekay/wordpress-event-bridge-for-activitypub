@@ -1,12 +1,14 @@
 # ActivityPub Event Extensions
-Contributors: andremenrath
-Tags: events, fediverse, activitypub, activitystreams, calendar
-Requires at least: 6.5
-Tested up to: 6.6
-Stable tag: 0.1.0
-Requires PHP: 8.1
-License: AGPL-3.0-or-later
-License URI: https://www.gnu.org/licenses/agpl-3.0.html
+
+Contributors: andremenrath  
+Tags: events, fediverse, activitypub,, calendar  
+Requires at least: 6.5  
+Tested up to: 6.6  
+Stable tag: 0.1.0  
+Requires PHP: 8.1  
+License: AGPL-3.0-or-later  
+License URI: https://www.gnu.org/licenses/agpl-3.0.html  
+
 Enhancing the integration of popular event plugins with the ActivityPub plugin.
 
 ![](.wordpress-org/banner-1544x500.jpg)
