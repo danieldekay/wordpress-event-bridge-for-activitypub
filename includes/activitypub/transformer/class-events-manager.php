@@ -89,7 +89,7 @@ final class Events_Manager extends Event_Transformer {
 	 *
 	 * @return array The Place.
 	 */
-	public function get_location() {
+	public function get_location(): ?Place {
 		if ( 'url' === $this->em_event->event_location_type ) {
 			return null;
 		}
@@ -125,14 +125,14 @@ final class Events_Manager extends Event_Transformer {
 	/**
 	 * Get the end time from the events metadata.
 	 */
-	public function get_end_time() {
+	public function get_end_time(): ?string {
 		return null;
 	}
 
 	/**
 	 * Get the end time from the events metadata.
 	 */
-	public function get_start_time() {
+	public function get_start_time(): string {
 		$date_string     = $this->em_event->event_start_date;
 		$time_string     = $this->em_event->event_start_time;
 		$timezone_string = $this->em_event->event_timezone;
@@ -181,7 +181,7 @@ final class Events_Manager extends Event_Transformer {
 	/**
 	 * Hardcoded function for generating a summary.
 	 */
-	public function get_summary() {
+	public function get_summary(): ?string {
 		if ( $this->em_event->post_excerpt ) {
 			$excerpt = $this->em_event->post_excerpt;
 		} else {

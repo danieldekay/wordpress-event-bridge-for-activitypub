@@ -12,7 +12,9 @@ namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
+use Activitypub\Activity\Extended_Object\Place;
 use Activitypub\Transformer\Post;
+use DateTime;
 
 /**
  * Base transformer for WordPress event post types to ActivityPub events.
@@ -20,7 +22,7 @@ use Activitypub\Transformer\Post;
  * Everything that transforming several WordPress post types that represent events
  * have in common, as well as sane defaults for events should be defined here.
  */
-class Event extends Post {
+abstract class Event extends Post {
 
 	/**
 	 * The WordPress event taxonomy.
@@ -117,6 +119,161 @@ class Event extends Post {
 			// Return the default event category.
 			return sanitize_text_field( \get_option( 'activitypub_event_extensions_default_event_category', 'MEETING' ) );
 		}
+	}
+
+	/**
+	 * Retrieves the excerpt text (may be HTML). Used for constructing the summary.
+	 *
+	 * @return ?string
+	 */
+	protected function extract_excerpt(): ?string {
+		if ( $this->wp_object->excerpt ) {
+			return $this->wp_object->post_excerpt;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Get the start time.
+	 *
+	 * This is mandatory and must be implemented in the final event transformer class.
+	 */
+	abstract protected function get_start_time(): string;
+
+	/**
+	 * Get the end time.
+	 *
+	 * This is not mandatory and therefore just return null by default.
+	 */
+	protected function get_end_time(): ?string {
+		return null;
+	}
+
+	/**
+	 * Get a default for the location.
+	 *
+	 * This should be overridden in the actual event transformer.
+	 */
+	protected function get_location(): ?Place {
+		return null;
+	}
+
+	/**
+	 * Compose a human readable formatted start time.
+	 *
+	 * @param bool $is_start_time  Whether format the events start or end time.
+	 */
+	protected function format_time( $is_start_time = true ) {
+		$time = $is_start_time ? $this->get_start_time() : $this->get_end_time();
+		if ( is_null( $time ) ) {
+			return '';
+		}
+		$start_datetime  = new DateTime( $time );
+		$start_timestamp = $start_datetime->getTimestamp();
+		$datetime_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+		return wp_date( $datetime_format, $start_timestamp );
+	}
+
+	/**
+	 * Format a human readable address.
+	 */
+	protected function format_address(): string {
+		$location = $this->get_location();
+		if ( is_null( $location ) ) {
+			return '';
+		}
+		$address = $location->get_address();
+		if ( ! $address ) {
+			return $location->get_name();
+		}
+		if ( is_string( $address ) ) {
+			return $address;
+		}
+		if ( ! is_array( $address ) ) {
+			return '';
+		}
+		return isset( $address['locality'] ) ? $address['locality'] : '';
+	}
+
+	/**
+	 * Format the category using the translation.
+	 */
+	protected function format_category(): string {
+		require_once ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . '/includes/event-categories.php';
+		$category = $this->get_category();
+		if ( array_key_exists( $category, ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES ) ) {
+			return ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES[ $category ];
+		} else {
+			return ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES['MEETING'];
+		}
+	}
+
+	/**
+	 * Create a custom summary.
+	 *
+	 * It contains also the most important meta-information. The summary is often used when the
+	 * ActivityPub object type 'Event' is not supported, e.g. in Mastodon.
+	 *
+	 * @return string $summary The custom event summary.
+	 */
+	public function get_summary(): ?string {
+		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2 );
+		$excerpt = $this->extract_excerpt();
+		// BeforeFirstRelease: decide whether this should be a admin setting.
+		$fallback_to_content = true;
+		if ( is_null( $excerpt ) && $fallback_to_content ) {
+			$excerpt = $this->get_content();
+		}
+		remove_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ) );
+
+		$category   = $this->format_category();
+		$start_time = $this->format_time();
+		$end_time   = $this->format_time( false );
+		$address    = $this->format_address();
+
+		$formatted_items = array();
+		if ( ! empty( $category ) ) {
+			$formatted_items[] = "🏷️ $category";
+		}
+
+		if ( ! empty( $start_time ) ) {
+			$formatted_items[] = "🗓️ {$start_time}";
+		}
+
+		if ( ! empty( $end_time ) ) {
+			$formatted_items[] = "⏳ {$end_time}";
+		}
+
+		if ( ! empty( $address ) ) {
+			$formatted_items[] = "📍 {$address}";
+		}
+		// Compose the summary based on the number of meta items.
+		if ( count( $formatted_items ) > 1 ) {
+			$summary = '<ul><li>' . implode( '</li><li>', $formatted_items ) . '</li></ul>';
+		} elseif ( 1 === count( $formatted_items ) ) {
+			$summary = $formatted_items[0]; // Just the one item without <ul><li>.
+		} else {
+			$summary = ''; // No items, so no output.
+		}
+
+		$summary .= $excerpt;
+		return $summary;
+	}
+
+	/**
+	 * Remove the permalink shortcode from a WordPress template.
+	 *
+	 * This used for the summary template, because the summary usually gets,
+	 * used when converting a object, where the URL is usually appended anyway.
+	 *
+	 * @param string $template The template string.
+	 */
+	public static function remove_ap_permalink_from_template( $template ) {
+		$template = str_replace( '[ap_permalink]', '', $template );
+		$template = str_replace( '[ap_permalink type="html"]', '', $template );
+
+		return $template;
 	}
 
 	/**

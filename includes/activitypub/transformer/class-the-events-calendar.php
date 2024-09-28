@@ -11,11 +11,10 @@ namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use WP_Post;
-
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
 use Activitypub_Event_Extensions\Activitypub\Transformer\Event;
+use WP_Post;
 
 use function Activitypub\esc_hashtag;
 
@@ -74,7 +73,10 @@ final class The_Events_Calendar extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_end_time(): string {
+	protected function get_end_time(): ?string {
+		if ( empty( $this->tribe_event->end_date ) ) {
+			return null;
+		}
 		$date = date_create( $this->tribe_event->end_date, wp_timezone() );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $date->getTimestamp() );
 	}
@@ -82,7 +84,7 @@ final class The_Events_Calendar extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_start_time() {
+	protected function get_start_time(): string {
 		$date = date_create( $this->tribe_event->start_date, wp_timezone() );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $date->getTimestamp() );
 	}

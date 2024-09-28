@@ -78,7 +78,7 @@ final class GatherPress extends Event {
 	 *
 	 * @return Place|null The place objector null if not place set.
 	 */
-	public function get_location(): Place|null {
+	public function get_location(): ?Place {
 		$address = $this->gp_venue['full_address'];
 		if ( $address ) {
 			$place = new Place();
@@ -94,14 +94,14 @@ final class GatherPress extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_end_time() {
+	protected function get_end_time(): ?string {
 		return $this->gp_event->get_datetime_end( 'Y-m-d\TH:i:s\Z' );
 	}
 
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_start_time() {
+	protected function get_start_time(): string {
 		return $this->gp_event->get_datetime_start( 'Y-m-d\TH:i:s\Z' );
 	}
 
