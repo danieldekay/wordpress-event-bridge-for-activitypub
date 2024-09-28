@@ -8,16 +8,12 @@
 
 namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 
-use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
-
-use WP_Error;
-use function Activitypub\get_rest_url_by_path;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
-}
+use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
 
 /**
  * ActivityPub Transformer for VS Event.

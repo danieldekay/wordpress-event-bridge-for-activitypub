@@ -8,9 +8,8 @@
 
 namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
-}
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use WP_Post;
 

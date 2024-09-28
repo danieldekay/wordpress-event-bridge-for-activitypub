@@ -8,6 +8,9 @@
 
 namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Transformer\Post;
 

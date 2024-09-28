@@ -8,17 +8,17 @@
 
 namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
+use Activitypub\Activity\Extended_Object\Event;
+use Activitypub\Activity\Extended_Object\Place;
 use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
 use DateTime;
 use DateTimeZone;
 use EM_Event;
-use Activitypub\Activity\Extended_Object\Event;
-use Activitypub\Activity\Extended_Object\Place;
-use function Activitypub\esc_hashtag;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
-}
+use function Activitypub\esc_hashtag;
 
 /**
  * ActivityPub Transformer for events from the WordPress plugin 'Events Manager'

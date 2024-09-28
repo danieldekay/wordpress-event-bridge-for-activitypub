@@ -11,10 +11,10 @@
 
 namespace Activitypub_Event_Extensions;
 
-use Activitypub\Activity\Extended_Object\Event;
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
+use Activitypub\Activity\Extended_Object\Event;
 
 /**
  * Class responsible for the ActivityPui Event Extension related Settings.
