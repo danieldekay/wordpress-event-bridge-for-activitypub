@@ -11,8 +11,6 @@ namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Transformer\Post;
 
-use function Activitypub\get_rest_url_by_path;
-
 /**
  * Base transformer for WordPress event post types to ActivityPub events.
  *
