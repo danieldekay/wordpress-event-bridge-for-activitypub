@@ -11,6 +11,9 @@
 
 namespace Activitypub_Event_Extensions\Admin;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub_Event_Extensions\Plugins\Event_Plugin;
 
 /**

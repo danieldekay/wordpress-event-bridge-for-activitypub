@@ -8,17 +8,14 @@
 
 namespace Activitypub_Event_Extensions\Activitypub\Transformer;
 
-use Activitypub_Event_Extensions\Activitypub\Transformer\Event;
-use Activitypub\Model\Blog;
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
+use Activitypub\Model\Blog;
+use Activitypub_Event_Extensions\Activitypub\Transformer\Event;
 use GatherPress\Core\Event as GatherPress_Event;
-
-use function Activitypub\get_rest_url_by_path;
-
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly.
-}
 
 /**
  * ActivityPub Transformer for VS Event

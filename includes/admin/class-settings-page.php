@@ -11,11 +11,11 @@
 
 namespace Activitypub_Event_Extensions\Admin;
 
-use Activitypub_Event_Extensions\Setup;
-use Activitypub_Event_Extensions\Plugins\Event_Plugin;
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
+use Activitypub_Event_Extensions\Plugins\Event_Plugin;
+use Activitypub_Event_Extensions\Setup;
 
 /**
  * Class responsible for the ActivityPub Event Extension related Settings.

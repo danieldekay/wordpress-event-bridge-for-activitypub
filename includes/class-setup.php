@@ -12,13 +12,13 @@
 
 namespace Activitypub_Event_Extensions;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub_Event_Extensions\Admin\Event_Plugin_Admin_Notices;
 use Activitypub_Event_Extensions\Admin\General_Admin_Notices;
 use Activitypub_Event_Extensions\Admin\Settings_Page;
 use Activitypub_Event_Extensions\Plugins\Event_Plugin;
-
-// Exit if accessed directly.
-defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
