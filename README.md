@@ -31,12 +31,12 @@ Once you create an event on your WordPress site, it is seamlessly shared across 
 
 When your events are delivered to platforms that fully support events, such as [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/), these platforms can then build public event calendars from your site, updating whenever you make changes — no extra work for you!
 
-![](./.wordpress.org/decentralized-event-calenders.gif)
+![](./.wordpress-org/decentralized-event-calenders.gif)
 
 Even platforms that don’t yet fully support events, like [Mastodon](https://joinmastodon.org), will still receive a detailed, well-composed summary of your event.
 The Event Federation Plugin ensures that users from those platforms are provided with all important information about an event.
 
-[](./.wordpress.org/event-activitypub-publishing.gif)
+[](./.wordpress-org/event-activitypub-publishing.gif)
 
 ## Installation
 
