@@ -197,6 +197,17 @@ final class The_Events_Calendar extends Event {
 		return $location;
 	}
 
+	/** By default set the timezone of the WordPress site.
+	 *
+	 * This is likely to be overwritten by the actual transformer.
+	 *
+	 * @return string  The timezone string of the site.
+	 */
+	public function get_timezone(): string {
+		return $this->tribe_event->timezone;
+	}
+
+
 	/**
 	 * Extend the default event transformers to_object function.
 	 *
