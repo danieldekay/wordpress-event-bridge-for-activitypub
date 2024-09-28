@@ -65,7 +65,7 @@ final class The_Events_Calendar extends Event {
 				$tags[] = $tag;
 			}
 		}
-		$tags[] = parent::get_tag();
+		$tags = array_merge( $tags, parent::get_tag() );
 
 		return $tags;
 	}
@@ -193,6 +193,7 @@ final class The_Events_Calendar extends Event {
 		}
 		$location->set_id( $venue->permalink );
 		$location->set_name( $venue->post_title );
+		$location->set_sensitive( null );
 
 		return $location;
 	}
