@@ -33,7 +33,7 @@ Once you create an event on your WordPress site, it is seamlessly shared across 
 </p>
 
 Your events can be automatically delivered to platforms that fully support events, such as [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/).
-These platforms build public event calendars utilizing multiple event sources, including your site. Updates are also handled automatically whenever you make changes — no extra work for you than managing the event on your own website.
+These platforms create public event calendars by pulling in events from various sources, including your website. Any updates you make to your events are synced across these platforms—so you only need to manage your events on your own site, with no extra work required.
 
 <p align="center">
     <img src="./.wordpress-org/decentralized-event-calenders.gif" alt="Logo" width="250" />
