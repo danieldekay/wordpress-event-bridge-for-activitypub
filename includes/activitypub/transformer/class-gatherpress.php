@@ -138,9 +138,13 @@ final class GatherPress extends Event {
 	 * @return string $summary The custom event summary.
 	 */
 	public function get_summary(): string {
-		$excerpt = $this->wp_object->post_excerpt
-			       ?: get_post_meta( $this->wp_object->ID, 'event-summary', true )
-				   ?: $this->get_content();
+		if ( $this->wp_object->excerpt ) {
+			$excerpt = $this->wp_object->post_excerpt;
+		} elseif ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
+			$excerpt = get_post_meta( $this->wp_object->ID, 'event-summary', true );
+		} else {
+			$excerpt = $this->get_content();
+		}
 
 		$address           = get_post_meta( $this->wp_object->ID, 'event-location', true );
 		$start_time        = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
