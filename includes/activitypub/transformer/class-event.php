@@ -235,7 +235,7 @@ abstract class Event extends Post {
 		// - either use the (userdefined) template of the activitypub plugin as it is.
 		// - or implement our own templating (based on the activitypub plugin templates / by reusing their code heavily).
 		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2 );
-		$excerpt = $this->extract_excerpt();
+		$excerpt = $this->get_excerpt();
 		// BeforeFirstRelease: decide whether this should be a admin setting.
 		$fallback_to_content = true;
 		if ( is_null( $excerpt ) && $fallback_to_content ) {
