@@ -37,6 +37,20 @@ final class Events_Manager extends Event_Transformer {
 	protected $em_event;
 
 	/**
+	 * Extend the constructor, to also set the Eventsmanager objects.
+	 *
+	 * This is a special class object form The Events Calendar which
+	 * has a lot of useful functions, we make use of our getter functions.
+	 *
+	 * @param WP_Post $wp_object The WordPress object.
+	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
+	 */
+	public function __construct( $wp_object, $wp_taxonomy ) {
+		parent::__construct( $wp_object, $wp_taxonomy );
+		$this->em_event     = new EM_Event( $this->wp_object->ID, 'post_id' );
+	}
+
+	/**
 	 * Returns whether the even is online
 	 *
 	 * @return bool
@@ -225,12 +239,7 @@ final class Events_Manager extends Event_Transformer {
 	 * @return Activitypub\Activity\Event
 	 */
 	public function to_object(): Event {
-		$this->em_event     = new EM_Event( $this->wp_object->ID, 'post_id' );
-		$activitypub_object = new Event();
-
-		$activitypub_object = $this->transform_object_properties( $activitypub_object );
-
-		$activitypub_object->set_external_participation_url( $this->get_url() );
+		$activitypub_object = parent::to_object();
 
 		return $activitypub_object;
 	}
