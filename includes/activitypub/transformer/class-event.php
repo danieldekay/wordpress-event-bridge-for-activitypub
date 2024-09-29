@@ -226,6 +226,9 @@ abstract class Event extends Post {
 	 * @return string $summary The custom event summary.
 	 */
 	public function get_summary(): ?string {
+		// this will result in race conditions and is imho a bad idea
+		// - either use the (userdefined) template of the activitypub plugin as it is
+		// - or implement our own templating (based on the activitypub plugin templates / by reusing their code heavily)
 		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2 );
 		$excerpt = $this->extract_excerpt();
 		// BeforeFirstRelease: decide whether this should be a admin setting.
@@ -312,7 +315,7 @@ abstract class Event extends Post {
 		$activitypub_object->set_to(
 			array(
 				'https://www.w3.org/ns/activitystreams#Public',
-				$this->get_actor_object()->get_followers(),
+				$this->get_actor_object()->get_followers(), // this fails on my machine
 			)
 		);
 
