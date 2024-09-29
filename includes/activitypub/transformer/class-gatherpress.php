@@ -54,19 +54,6 @@ final class GatherPress extends Event {
 	}
 
 	/**
-	 * Get supported post types.
-	 *
-	 * Retrieve the list of supported WordPress post types this transformer widget can handle.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return array Widget categories.
-	 */
-	public static function get_supported_post_types() { // todo can we remove this or is this in use?
-		return array( GatherPress_Event::POST_TYPE );
-	}
-
-	/**
 	 * Get the event location.
 	 *
 	 * @return Place|null The place objector null if not place set.
