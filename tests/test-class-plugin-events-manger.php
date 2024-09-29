@@ -85,7 +85,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		// Check that we got the right transformer.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Events Manager Test event', $event_array['name'] );
-		$this->assertEquals( '', $event_array['content'] );
+		$this->assertEquals( 'Event description', $event_array['content'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( comments_open( $event->post_id ), $event_array['commentsEnabled'] );
 		$this->assertEquals( comments_open( $event->post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
@@ -131,7 +131,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		// Check that we got the right transformer.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Events Manager Test event', $event_array['name'] );
-		$this->assertEquals( '', $event_array['content'] );
+		$this->assertEquals( 'Event description', $event_array['content'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
@@ -174,7 +174,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		// Check that we got the right transformer.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Events Manager Test event', $event_array['name'] );
-		$this->assertEquals( '', $event_array['content'] );
+		$this->assertEquals( 'Event description', $event_array['content'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
