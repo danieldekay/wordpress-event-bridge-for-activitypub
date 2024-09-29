@@ -326,4 +326,31 @@ abstract class Event extends Post {
 
 		return $activitypub_object;
 	}
+
+	/**
+	 * Gets the template to use to generate the content of the event.
+	 *
+	 * @return string The Template.
+	 */
+	protected function get_post_content_template() {
+		return "[ap_content]\n\n[ap_hashtags]";
+
+		// Decide: what kind of control does the user get?
+		// e.g. we could give the user way more control by only overriding (some) defaults like this:
+
+		/**
+		$type = \get_option( 'activitypub_post_content_type', 'content' );
+
+		switch ( $type ) {
+			case 'content':
+				return "[ap_content]\n\n[ap_hashtags]";
+				break;
+			default:
+				return parent::get_post_content_template();
+				break;
+		}
+		 **/
+
+	}
+
 }

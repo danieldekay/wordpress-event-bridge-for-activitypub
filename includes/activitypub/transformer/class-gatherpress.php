@@ -130,13 +130,6 @@ final class GatherPress extends Event {
 	}
 
 	/**
-	 * Get the content.
-	 */
-	public function get_content(): string {
-		return $this->wp_object->post_content;
-	}
-
-	/**
 	 * Determine whether the event is online.
 	 *
 	 * @return bool

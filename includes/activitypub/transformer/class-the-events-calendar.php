@@ -127,12 +127,16 @@ final class The_Events_Calendar extends Event {
 	 * @return string The content.
 	 */
 	protected function get_content() {
-		$content = parent::get_content();
 		// /BeforeFirstRelease:
-		// * remove link at the end of the content.
-		// * add organizer.
-		// * do add Cancelled reason in the content.s
+		// * [X] remove link at the end of the content.
+		// * [ ] add organizer.
+		// * [ ] do add Cancelled reason in the content.
 
+		// Add Organizer:
+		// $this->wp_object->post_content .= organizer_string;
+		// rest will be handled by parent::get_content().
+
+		$content = parent::get_content();
 		return $content;
 	}
 
