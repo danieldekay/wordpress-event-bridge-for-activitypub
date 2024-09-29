@@ -176,7 +176,7 @@ abstract class Event extends Post {
 	/**
 	 * Compose a human readable formatted time.
 	 *
-	 * @param ?string $time The time which needs to be formatted
+	 * @param ?string $time The time which needs to be formatted.
 	 */
 	private static function format_time( $time ) {
 		if ( is_null( $time ) ) {

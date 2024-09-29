@@ -125,7 +125,7 @@ final class GatherPress extends Event {
 	 * @return string The User-URL.
 	 */
 	protected function get_attributed_to(): string {
-		$user = new Blog();
+		$user = new Blog(); // todo is this correct? feels not right.
 		return $user->get_url();
 	}
 
