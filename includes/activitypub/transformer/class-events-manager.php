@@ -232,15 +232,4 @@ final class Events_Manager extends Event_Transformer {
 	protected function get_name(): string {
 		return $this->em_event->event_name;
 	}
-
-	/**
-	 * Transform the WordPress Object into an ActivityPub Object.
-	 *
-	 * @return Activitypub\Activity\Event
-	 */
-	public function to_object(): Event {
-		$activitypub_object = parent::to_object();
-
-		return $activitypub_object;
-	}
 }

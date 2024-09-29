@@ -196,17 +196,4 @@ final class The_Events_Calendar extends Event {
 
 		return $location;
 	}
-
-	/**
-	 * Extend the default event transformers to_object function.
-	 *
-	 * This is the heart of the ActivityPub transformer.
-	 *
-	 * @return Event_Object
-	 */
-	public function to_object(): Event_Object {
-		$activitypub_object = parent::to_object();
-
-		return $activitypub_object;
-	}
 }

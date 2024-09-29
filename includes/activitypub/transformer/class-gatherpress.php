@@ -165,16 +165,4 @@ final class GatherPress extends Event {
 	public function get_is_online(): bool {
 		return $this->gp_event->maybe_get_online_event_link() ? true : false;
 	}
-
-
-	/**
-	 * Transform the WordPress Object into an ActivityPub Object.
-	 *
-	 * @return Activitypub\Activity\Event
-	 */
-	public function to_object(): Event_Object {
-		$activitypub_object = parent::to_object();
-
-		return $activitypub_object;
-	}
 }
