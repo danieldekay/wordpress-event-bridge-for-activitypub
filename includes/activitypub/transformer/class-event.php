@@ -173,7 +173,10 @@ abstract class Event extends Post {
 		return $this->format_time( $this->get_end_time() );
 	}
 
-	static private function format_time( $time ) {
+	/**
+	 * Compose a human readable formatted time from the parameter $time.
+	 */
+	private static function format_time( $time ) {
 		if ( is_null( $time ) ) {
 			return '';
 		}
@@ -226,9 +229,9 @@ abstract class Event extends Post {
 	 * @return string $summary The custom event summary.
 	 */
 	public function get_summary(): ?string {
-		// this will result in race conditions and is imho a bad idea
-		// - either use the (userdefined) template of the activitypub plugin as it is
-		// - or implement our own templating (based on the activitypub plugin templates / by reusing their code heavily)
+		// this will result in race conditions and is imho a bad idea.
+		// - either use the (userdefined) template of the activitypub plugin as it is.
+		// - or implement our own templating (based on the activitypub plugin templates / by reusing their code heavily).
 		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2 );
 		$excerpt = $this->extract_excerpt();
 		// BeforeFirstRelease: decide whether this should be a admin setting.
@@ -315,7 +318,7 @@ abstract class Event extends Post {
 		$activitypub_object->set_to(
 			array(
 				'https://www.w3.org/ns/activitystreams#Public',
-				$this->get_actor_object()->get_followers(), // this fails on my machine
+				$this->get_actor_object()->get_followers(), // this fails on my machine.
 			)
 		);
 

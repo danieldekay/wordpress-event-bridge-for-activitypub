@@ -114,7 +114,7 @@ final class VS_Event_List extends Event_Transformer {
 		if ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
 			return get_post_meta( $this->wp_object->ID, 'event-summary', true );
 		} else {
-			return parent::extract_excerpt(); // todo naming not uniform
+			return parent::extract_excerpt(); // todo naming not uniform.
 		}
 	}
 }
