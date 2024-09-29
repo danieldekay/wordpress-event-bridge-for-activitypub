@@ -353,4 +353,7 @@ abstract class Event extends Post {
 
 	}
 
+	protected function get_content() {
+		return $this->wp_object->post_content;
+	}
 }
