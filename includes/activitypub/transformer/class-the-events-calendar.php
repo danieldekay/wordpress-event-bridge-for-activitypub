@@ -94,7 +94,7 @@ final class The_Events_Calendar extends Event {
 	 *
 	 * @return string status of the event
 	 */
-	public function get_tribe_status() {
+	public function get_status() {
 		if ( 'canceled' === $this->tribe_event->event_status ) {
 			return 'CANCELLED';
 		}
