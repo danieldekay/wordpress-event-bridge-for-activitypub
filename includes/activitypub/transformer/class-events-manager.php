@@ -75,9 +75,6 @@ final class Events_Manager extends Event_Transformer {
 		if ( $em_location->location_state ) {
 			$address['addressRegion'] = $em_location->location_state;
 		}
-		if ( $em_location->location_postcode ) {
-			$address['postalCode'] = $em_location->location_postcode;
-		}
 
 		$location->set_address( $address );
 		return $location;
@@ -124,8 +121,8 @@ final class Events_Manager extends Event_Transformer {
 	 * @return int
 	 */
 	public function get_remaining_attendee_capacity() {
-		$em_bookings                 = $this->em_event->get_bookings()->get_bookings();
-		$remaining_attendee_capacity = $this->em_event->event_spaces - count( $em_bookings->bookings );
+		$em_bookings_count           = $this->get_participant_count();
+		$remaining_attendee_capacity = $this->em_event->event_spaces - $em_bookings_count;
 		return $remaining_attendee_capacity;
 	}
 
