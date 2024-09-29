@@ -173,7 +173,7 @@ abstract class Event extends Post {
 		return $this->format_time( $this->get_end_time() );
 	}
 
-	static protected function format_time( $time ) {
+	static private function format_time( $time ) {
 		if ( is_null( $time ) ) {
 			return '';
 		}
