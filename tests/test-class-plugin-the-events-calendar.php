@@ -109,7 +109,7 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'My Event', $event_array['name'] );
-		$this->assertEquals( '', $event_array['content'] );
+		$this->assertEquals( 'Come to my event. Let\'s connect!', $event_array['content'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
 		$this->assertTrue( $event_array['commentsEnabled'] );
@@ -170,7 +170,7 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'My Event', $event_array['name'] );
-		$this->assertEquals( '', $event_array['content'] );
+		$this->assertEquals( 'Come to my event. Let\'s connect!', $event_array['content'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['commentsEnabled'] );
@@ -197,7 +197,7 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'My Event', $event_array['name'] );
-		$this->assertEquals( '', $event_array['content'] );
+		$this->assertEquals( 'Come to my event. Let\'s connect!', $event_array['content'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['commentsEnabled'] );
