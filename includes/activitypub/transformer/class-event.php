@@ -126,8 +126,8 @@ abstract class Event extends Post {
 	 *
 	 * @return ?string
 	 */
-	protected function extract_excerpt(): ?string {
-		if ( $this->wp_object->excerpt ) {
+	protected function get_excerpt(): ?string {
+		if ( $this->wp_object->post_excerpt ) {
 			return $this->wp_object->post_excerpt;
 		} else {
 			return null;
