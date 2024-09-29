@@ -37,45 +37,6 @@ final class Events_Manager extends Event_Transformer {
 	protected $em_event;
 
 	/**
-	 * Get transformer name.
-	 *
-	 * Retrieve the transformers name.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return string Widget name.
-	 */
-	public function get_transformer_name() { // todo can we remove this or is this in use?
-		return 'activitypub-event-transformers/events-manager';
-	}
-
-	/**
-	 * Get transformer title.
-	 *
-	 * Retrieve the transformers label.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return string Widget title.
-	 */
-	public function get_transformer_label() { // todo can we remove this or is this in use?
-		return 'Events Manager';
-	}
-
-	/**
-	 * Get supported post types.
-	 *
-	 * Retrieve the list of supported WordPress post types this transformer widget can handle.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return array Widget categories.
-	 */
-	public static function get_supported_post_types() { // todo can we remove this or is this in use?
-		return array();
-	}
-
-	/**
 	 * Returns whether the even is online
 	 *
 	 * @return bool

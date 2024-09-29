@@ -23,12 +23,6 @@ use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transfor
  * @since 1.0.0
  */
 final class VS_Event_List extends Event_Transformer {
-	/**
-	 * The target transformer ActivityPub Event object.
-	 *
-	 * @var Event
-	 */
-	protected $ap_object;  // todo can we remove this or is this in use?
 
 	/**
 	 * Get the event location.

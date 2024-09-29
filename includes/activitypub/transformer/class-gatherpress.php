@@ -25,13 +25,6 @@ use GatherPress\Core\Event as GatherPress_Event;
 final class GatherPress extends Event {
 
 	/**
-	 * The target ActivityPub Event object of the transformer.
-	 *
-	 * @var Event
-	 */
-	protected $ap_object;  // todo can we remove this or is this in use?
-
-	/**
 	 * The current GatherPress Event object.
 	 *
 	 * @var GatherPress_Event
