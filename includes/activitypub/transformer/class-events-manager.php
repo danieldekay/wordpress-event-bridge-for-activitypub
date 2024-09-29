@@ -45,7 +45,7 @@ final class Events_Manager extends Event_Transformer {
 	 * @access public
 	 * @return string Widget name.
 	 */
-	public function get_transformer_name() {
+	public function get_transformer_name() { // todo can we remove this or is this in use?
 		return 'activitypub-event-transformers/events-manager';
 	}
 
@@ -58,7 +58,7 @@ final class Events_Manager extends Event_Transformer {
 	 * @access public
 	 * @return string Widget title.
 	 */
-	public function get_transformer_label() {
+	public function get_transformer_label() { // todo can we remove this or is this in use?
 		return 'Events Manager';
 	}
 
@@ -71,7 +71,7 @@ final class Events_Manager extends Event_Transformer {
 	 * @access public
 	 * @return array Widget categories.
 	 */
-	public static function get_supported_post_types() {
+	public static function get_supported_post_types() { // todo can we remove this or is this in use?
 		return array();
 	}
 

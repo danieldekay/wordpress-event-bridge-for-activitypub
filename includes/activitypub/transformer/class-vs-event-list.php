@@ -28,7 +28,7 @@ final class VS_Event_List extends Event_Transformer {
 	 *
 	 * @var Event
 	 */
-	protected $ap_object;
+	protected $ap_object;  // todo can we remove this or is this in use?
 
 	/**
 	 * Get the event location.

@@ -29,7 +29,7 @@ final class GatherPress extends Event {
 	 *
 	 * @var Event
 	 */
-	protected $ap_object;
+	protected $ap_object;  // todo can we remove this or is this in use?
 
 	/**
 	 * The current GatherPress Event object.
@@ -69,7 +69,7 @@ final class GatherPress extends Event {
 	 * @access public
 	 * @return array Widget categories.
 	 */
-	public static function get_supported_post_types() {
+	public static function get_supported_post_types() { // todo can we remove this or is this in use?
 		return array( GatherPress_Event::POST_TYPE );
 	}
 
