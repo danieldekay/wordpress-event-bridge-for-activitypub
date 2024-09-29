@@ -162,14 +162,14 @@ abstract class Event extends Post {
 	/**
 	 * Compose a human readable formatted start time.
 	 */
-	protected function format_start_time(): ?string {
+	protected function format_start_time(): string {
 		return $this->format_time( $this->get_start_time() );
 	}
 
 	/**
 	 * Compose a human readable formatted end time.
 	 */
-	protected function format_end_time(): ?string {
+	protected function format_end_time(): string {
 		return $this->format_time( $this->get_end_time() );
 	}
 
