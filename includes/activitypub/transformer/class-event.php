@@ -161,11 +161,19 @@ abstract class Event extends Post {
 
 	/**
 	 * Compose a human readable formatted start time.
-	 *
-	 * @param bool $is_start_time  Whether format the events start or end time.
 	 */
-	protected function format_time( $is_start_time = true ) {
-		$time = $is_start_time ? $this->get_start_time() : $this->get_end_time();
+	protected function format_start_time(): ?string {
+		return $this->format_time( $this->get_start_time() );
+	}
+
+	/**
+	 * Compose a human readable formatted end time.
+	 */
+	protected function format_end_time(): ?string {
+		return $this->format_time( $this->get_end_time() );
+	}
+
+	static protected function format_time( $time ) {
 		if ( is_null( $time ) ) {
 			return '';
 		}
@@ -228,8 +236,8 @@ abstract class Event extends Post {
 		remove_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ) );
 
 		$category   = $this->format_category();
-		$start_time = $this->format_time();
-		$end_time   = $this->format_time( false );
+		$start_time = $this->format_start_time();
+		$end_time   = $this->format_end_time();
 		$address    = $this->format_address();
 
 		$formatted_items = array();
