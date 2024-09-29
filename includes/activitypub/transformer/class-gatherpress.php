@@ -130,31 +130,6 @@ final class GatherPress extends Event {
 	}
 
 	/**
-	 * Create a custom summary.
-	 *
-	 * It contains also the most important meta-information. The summary is often used when the
-	 * ActivityPub object type 'Event' is not supported, e.g. in Mastodon.
-	 *
-	 * @return string $summary The custom event summary.
-	 */
-	public function get_summary(): string {
-		if ( $this->wp_object->excerpt ) {
-			$excerpt = $this->wp_object->post_excerpt;
-		} elseif ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
-			$excerpt = get_post_meta( $this->wp_object->ID, 'event-summary', true );
-		} else {
-			$excerpt = $this->get_content();
-		}
-
-		$address           = get_post_meta( $this->wp_object->ID, 'event-location', true );
-		$start_time        = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
-		$datetime_format   = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
-		$start_time_string = wp_date( $datetime_format, $start_time );
-		$summary           = "📍 {$address}\n📅 {$start_time_string}\n\n{$excerpt}";
-		return $summary;
-	}
-
-	/**
 	 * Get the content.
 	 */
 	public function get_content(): string {
