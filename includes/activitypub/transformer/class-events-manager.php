@@ -47,7 +47,7 @@ final class Events_Manager extends Event_Transformer {
 	 */
 	public function __construct( $wp_object, $wp_taxonomy ) {
 		parent::__construct( $wp_object, $wp_taxonomy );
-		$this->em_event     = new EM_Event( $this->wp_object->ID, 'post_id' );
+		$this->em_event = new EM_Event( $this->wp_object->ID, 'post_id' );
 	}
 
 	/**
