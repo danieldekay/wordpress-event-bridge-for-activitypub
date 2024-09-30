@@ -232,7 +232,7 @@ abstract class Event extends Post {
 	 */
 	public function get_summary(): ?string {
 		// todo when do we add the filter? we could add it and just keep it?
-		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2, 2);
+		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2, 2 );
 		$excerpt = $this->get_excerpt();
 		// BeforeFirstRelease: decide whether this should be a admin setting.
 		$fallback_to_content = true;
@@ -281,15 +281,14 @@ abstract class Event extends Post {
 	 * This used for the summary template, because the summary usually gets,
 	 * used when converting a object, where the URL is usually appended anyway.
 	 *
-	 * @param string $template The template string.
+	 * @param string             $template The template string.
 	 * @param WP_Post|WP_Comment $wp_object The wp_object which was used to select the template.
-	 *
 	 */
 	public static function remove_ap_permalink_from_template( $template, $wp_object ) {
 
 		// we could override the template here, to get out custom template from an option.
 
-		if ( $wp_object->post_type === "event" ) {
+		if ( 'event' === $wp_object->post_type ) {
 			$template = str_replace( '[ap_permalink]', '', $template );
 			$template = str_replace( '[ap_permalink type="html"]', '', $template );
 		}
@@ -345,7 +344,7 @@ abstract class Event extends Post {
 		// * [ ] add organizer.
 		// * [ ] do add Cancelled reason in the content.
 
-		// return parent::get_content();
+		// return parent::get_content();?
 		return $this->wp_object->post_content;
 	}
 }
