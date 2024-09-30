@@ -305,6 +305,8 @@ abstract class Event extends Post {
 		$activitypub_object = new Event_Object();
 		$activitypub_object = $this->transform_object_properties( $activitypub_object );
 
+		// maybe move the following logic (till end of the function) into getter functions.
+
 		$published = \strtotime( $this->wp_object->post_date_gmt );
 
 		$activitypub_object->set_published( \gmdate( 'Y-m-d\TH:i:s\Z', $published ) );
