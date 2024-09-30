@@ -120,27 +120,6 @@ final class The_Events_Calendar extends Event {
 	}
 
 	/**
-	 * Returns the content for the ActivityPub Item with
-	 *
-	 * The content will be generated based on the user settings.
-	 *
-	 * @return string The content.
-	 */
-	protected function get_content() {
-		// /BeforeFirstRelease:
-		// * [X] remove link at the end of the content.
-		// * [ ] add organizer.
-		// * [ ] do add Cancelled reason in the content.
-
-		// Add Organizer:
-		// $this->wp_object->post_content .= organizer_string;
-		// rest will be handled by parent::get_content().
-
-		$content = parent::get_content();
-		return $content;
-	}
-
-	/**
 	 * Get the event location.
 	 *
 	 * @return Place|array The place/venue if one is set.

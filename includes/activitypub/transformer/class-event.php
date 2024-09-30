@@ -231,15 +231,13 @@ abstract class Event extends Post {
 	 * @return string $summary The custom event summary.
 	 */
 	public function get_summary(): ?string {
-		// this will result in race conditions and is imho a bad idea.
-		// - either use the (userdefined) template of the activitypub plugin as it is.
-		// - or implement our own templating (based on the activitypub plugin templates / by reusing their code heavily).
-		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2 );
+		// todo when do we add the filter? we could add it and just keep it?
+		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2, 2);
 		$excerpt = $this->get_excerpt();
 		// BeforeFirstRelease: decide whether this should be a admin setting.
 		$fallback_to_content = true;
 		if ( is_null( $excerpt ) && $fallback_to_content ) {
-			$excerpt = $this->get_content();
+			$excerpt = parent::get_content();
 		}
 		remove_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ) );
 
@@ -284,10 +282,17 @@ abstract class Event extends Post {
 	 * used when converting a object, where the URL is usually appended anyway.
 	 *
 	 * @param string $template The template string.
+	 * @param WP_Post|WP_Comment $wp_object The wp_object which was used to select the template.
+	 *
 	 */
-	public static function remove_ap_permalink_from_template( $template ) {
-		$template = str_replace( '[ap_permalink]', '', $template );
-		$template = str_replace( '[ap_permalink type="html"]', '', $template );
+	public static function remove_ap_permalink_from_template( $template, $wp_object ) {
+
+		// we could override the template here, to get out custom template from an option.
+
+		if ( $wp_object->post_type === "event" ) {
+			$template = str_replace( '[ap_permalink]', '', $template );
+			$template = str_replace( '[ap_permalink type="html"]', '', $template );
+		}
 
 		return $template;
 	}
@@ -328,32 +333,19 @@ abstract class Event extends Post {
 	}
 
 	/**
-	 * Gets the template to use to generate the content of the event.
+	 * Returns the content for the ActivityPub Item with
 	 *
-	 * @return string The Template.
+	 * The content will be generated based on the user settings.
+	 *
+	 * @return string The content.
 	 */
-	protected function get_post_content_template() {
-		return "[ap_content]\n\n[ap_hashtags]";
-
-		// Decide: what kind of control does the user get?
-		// e.g. we could give the user way more control by only overriding (some) defaults like this:
-
-		/**
-		$type = \get_option( 'activitypub_post_content_type', 'content' );
-
-		switch ( $type ) {
-			case 'content':
-				return "[ap_content]\n\n[ap_hashtags]";
-				break;
-			default:
-				return parent::get_post_content_template();
-				break;
-		}
-		 **/
-
-	}
-
 	protected function get_content() {
+		// /BeforeFirstRelease:
+		// * [ ] remove link at the end of the content.
+		// * [ ] add organizer.
+		// * [ ] do add Cancelled reason in the content.
+
+		// return parent::get_content();
 		return $this->wp_object->post_content;
 	}
 }
