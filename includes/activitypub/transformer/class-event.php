@@ -126,7 +126,7 @@ abstract class Event extends Post {
 	 *
 	 * @return ?string
 	 */
-	protected function get_excerpt(): ?string {
+	protected function extract_excerpt(): ?string {
 		if ( $this->wp_object->post_excerpt ) {
 			return $this->wp_object->post_excerpt;
 		} else {
@@ -233,7 +233,7 @@ abstract class Event extends Post {
 	public function get_summary(): ?string {
 		// todo when do we add the filter? we could add it and just keep it?
 		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2, 2 );
-		$excerpt = $this->get_excerpt();
+		$excerpt = $this->extract_excerpt();
 		// BeforeFirstRelease: decide whether this should be a admin setting.
 		$fallback_to_content = true;
 		if ( is_null( $excerpt ) && $fallback_to_content ) {
