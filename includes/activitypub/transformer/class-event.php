@@ -231,7 +231,6 @@ abstract class Event extends Post {
 	 * @return string $summary The custom event summary.
 	 */
 	public function get_summary(): ?string {
-		// todo when do we add the filter? we could add it and just keep it?
 		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2, 2 );
 		$excerpt = $this->extract_excerpt();
 		// BeforeFirstRelease: decide whether this should be a admin setting.
