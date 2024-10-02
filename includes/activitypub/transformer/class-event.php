@@ -32,17 +32,6 @@ abstract class Event extends Post {
 	protected $wp_taxonomy;
 
 	/**
-	 * Returns the User-URL of the Author of the Post.
-	 *
-	 * If `single_user` mode is enabled, the URL of the Blog-User is returned.
-	 *
-	 * @return string The User-URL.
-	 */
-	protected function get_actor(): ?string {
-		return $this->get_attributed_to();
-	}
-
-	/**
 	 * Returns the ActivityStreams 2.0 Object-Type for an Event.
 	 *
 	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-event

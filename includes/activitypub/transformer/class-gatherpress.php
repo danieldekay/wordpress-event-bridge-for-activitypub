@@ -118,18 +118,6 @@ final class GatherPress extends Event {
 	}
 
 	/**
-	 * Returns the User-URL of the Author of the Post.
-	 *
-	 * If `single_user` mode is enabled, the URL of the Blog-User is returned.
-	 *
-	 * @return string The User-URL.
-	 */
-	protected function get_attributed_to(): string {
-		$user = new Blog(); // todo is this correct? feels not right.
-		return $user->get_url();
-	}
-
-	/**
 	 * Determine whether the event is online.
 	 *
 	 * @return bool
