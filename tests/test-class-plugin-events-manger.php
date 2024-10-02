@@ -47,7 +47,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$wp_post_id = wp_insert_post(
 			array(
 				'post_title'  => 'Events Manager Test event',
-				'post_status' => 'published',
+				'post_status' => 'publish',
 				'post_type'   => EM_POST_TYPE_EVENT,
 				'meta_input'  => array(
 					'event_start_time' => strtotime( '+10 days 15:00:00' ),
@@ -75,7 +75,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$event->event_start_date = gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) );
 		$event->event_start_time = '15:00:00';
 		$event->start            = strtotime( $event->event_start_date . ' ' . $event->event_start_time );
-		$event->force_status     = 'published';
+		$event->force_status     = 'publish';
 		$event->event_rsvp       = false;
 		$this->assertTrue( $event->save() );
 
@@ -121,7 +121,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$event->event_end_time   = '16:00:00';
 		$event->start            = strtotime( $event->event_start_date . ' ' . $event->event_start_time );
 		$event->end              = strtotime( $event->event_end_date . ' ' . $event->event_end_time );
-		$event->force_status     = 'published';
+		$event->force_status     = 'publish';
 		$event->event_rsvp       = false;
 		$this->assertTrue( $event->save() );
 
@@ -164,7 +164,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$event->event_end_time   = '16:00:00';
 		$event->start            = strtotime( $event->event_start_date . ' ' . $event->event_start_time );
 		$event->end              = strtotime( $event->event_end_date . ' ' . $event->event_end_time );
-		$event->force_status     = 'published';
+		$event->force_status     = 'publish';
 		$event->event_rsvp       = false;
 		$this->assertTrue( $event->save() );
 
