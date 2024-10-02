@@ -49,6 +49,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 				'post_title'   => 'Unit Test Event',
 				'post_type'    => 'gatherpress_event',
 				'post_content' => 'Unit Test description.',
+				'post_status'  => 'publish',
 			)
 		);
 		$event   = new \GatherPress\Core\Event( $post_id );
@@ -77,7 +78,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 				'post_title'   => 'Unit Test Event',
 				'post_type'    => 'gatherpress_event',
 				'post_content' => 'Unit Test description.',
-				'post_status'  => 'published',
+				'post_status'  => 'publish',
 			)
 		);
 		$event   = new \GatherPress\Core\Event( $post_id );
