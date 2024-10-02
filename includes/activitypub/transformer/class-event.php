@@ -226,8 +226,10 @@ abstract class Event extends Post {
 
 		// Add all category terms.
 		$terms = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
-		foreach ( $terms as $term ) {
-			$categories[] = $term->name;
+		if ( $terms && ! is_wp_error( $terms ) ) {
+			foreach ( $terms as $term ) {
+				$categories[] = $term->name;
+			}
 		}
 
 		if ( ! empty( $categories ) ) {
