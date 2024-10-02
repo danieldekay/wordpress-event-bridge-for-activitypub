@@ -94,7 +94,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Unit Test Event', $event_array['name'] );
-		$this->assertEquals( 'Unit Test description.', $event_array['content'] );
+		$this->assertEquals( 'Unit Test description.', wp_strip_all_tags( $event_array['content'] ) );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
