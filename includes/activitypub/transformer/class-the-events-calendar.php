@@ -65,7 +65,7 @@ final class The_Events_Calendar extends Event {
 				$tags[] = $tag;
 			}
 		}
-		$tags[] = parent::get_tag();
+		$tags = array_merge( $tags, parent::get_tag() );
 
 		return $tags;
 	}
