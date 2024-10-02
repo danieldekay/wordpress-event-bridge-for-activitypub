@@ -5,11 +5,11 @@
  * Defines all the necessary meta information for the Events Manager WordPress Plugin.
  *
  * @link    https://wordpress.org/plugins/events-manager/
- * @package Activitypub_Event_Extensions
+ * @package ActivityPub_Event_Bridge
  * @since   1.0.0
  */
 
-namespace Activitypub_Event_Extensions\Plugins;
+namespace ActivityPub_Event_Bridge\Plugins;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore

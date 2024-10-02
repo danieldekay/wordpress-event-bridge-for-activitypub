@@ -1,6 +1,6 @@
 {
-    "name": "menrath/wordpress-activitypub-event-extensions",
-    "description": "The ActivityPub Event Extensions help for event custom post types to federate properly.",
+    "name": "menrath/wordpress-activitypub-event-bridge",
+    "description": "The ActivityPub Event Bridge help for event custom post types to federate properly.",
     "type": "wordpress-plugin",
     "require": {
         "php": ">=8.1.0",
@@ -32,7 +32,7 @@
         }
     ],
     "extra": {
-        "installer-name": "activitypub-event-extensions"
+        "installer-name": "activitypub-event-bridge"
     },
     "scripts": {
         "lint": [

@@ -6,13 +6,13 @@
  * "Very Simple Events List".
  *
  * @link    https://de.wordpress.org/plugins/very-simple-event-list/
- * @package Activitypub_Event_Extensions
+ * @package ActivityPub_Event_Bridge
  * @since   1.0.0
  */
 
-namespace Activitypub_Event_Extensions\Plugins;
+namespace ActivityPub_Event_Bridge\Plugins;
 
-use Activitypub_Event_Extensions\Event_Plugins;
+use ActivityPub_Event_Bridge\Event_Plugins;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore

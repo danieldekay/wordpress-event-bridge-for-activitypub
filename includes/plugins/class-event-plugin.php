@@ -4,13 +4,13 @@
  *
  * Basic information that each supported event needs for this plugin to work.
  *
- * @package Activitypub_Event_Extensions
+ * @package ActivityPub_Event_Bridge
  * @since 1.0.0
  */
 
-namespace Activitypub_Event_Extensions\Plugins;
+namespace ActivityPub_Event_Bridge\Plugins;
 
-use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
+use ActivityPub_Event_Bridge\Activitypub\Transformer\Event as Event_Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore

@@ -2,18 +2,18 @@
 /**
  * ActivityPub Transformer for the plugin Very Simple Event List.
  *
- * @package Activitypub_Event_Extensions
+ * @package ActivityPub_Event_Bridge
  * @license AGPL-3.0-or-later
  */
 
-namespace Activitypub_Event_Extensions\Activitypub\Transformer;
+namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
-use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
+use ActivityPub_Event_Bridge\Activitypub\Transformer\Event as Event_Transformer;
 
 /**
  * ActivityPub Transformer for VS Event.
