@@ -302,6 +302,17 @@ abstract class Event extends Post {
 	}
 
 	/**
+	 * By default set the timezone of the WordPress site.
+	 *
+	 * This is likely to be overwritten by the actual transformer.
+	 *
+	 * @return string  The timezone string of the site.
+	 */
+	public function get_timezone(): string {
+		return wp_timezone_string();
+	}
+
+	/**
 	 * Remove the permalink shortcode from a WordPress template.
 	 *
 	 * This used for the summary template, because the summary usually gets,
