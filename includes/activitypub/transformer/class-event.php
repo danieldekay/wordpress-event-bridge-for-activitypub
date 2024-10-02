@@ -21,6 +21,11 @@ use DateTime;
  *
  * Everything that transforming several WordPress post types that represent events
  * have in common, as well as sane defaults for events should be defined here.
+ *
+ * BeforeFirstRelease:
+ * [ ] remove link at the end of the content.
+ * [ ] add organizer.
+ * [ ] do add Cancelled reason in the content.
  */
 abstract class Event extends Post {
 
@@ -66,7 +71,7 @@ abstract class Event extends Post {
 	 * @param WP_Post $wp_object The WordPress post object (event).
 	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function __construct( $wp_object, $wp_taxonomy ) {
+	public function __construct( $wp_object, $wp_taxonomy = 'category' ) {
 		parent::__construct( $wp_object );
 		$this->wp_taxonomy = $wp_taxonomy;
 	}
@@ -96,8 +101,13 @@ abstract class Event extends Post {
 
 	/**
 	 * Set the event category, via the mapping setting.
+	 *
+	 * @return ?string
 	 */
 	public function get_category(): ?string {
+		if ( is_null( $this->wp_taxonomy ) ) {
+			return null;
+		}
 		$current_category_mapping = \get_option( 'activitypub_event_extensions_event_category_mappings', array() );
 		$terms                    = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
 
@@ -201,14 +211,29 @@ abstract class Event extends Post {
 	/**
 	 * Format the category using the translation.
 	 */
-	protected function format_category(): string {
-		require_once ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . '/includes/event-categories.php';
-		$category = $this->get_category();
-		if ( array_key_exists( $category, ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES ) ) {
-			return ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES[ $category ];
-		} else {
-			return ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES['MEETING'];
+	protected function format_categories(): string {
+		if ( is_null( $this->wp_taxonomy ) ) {
+			return '';
 		}
+		$categories = array();
+
+		// Add the federated category string.
+		require_once ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . '/includes/event-categories.php';
+		$federated_category = $this->get_category();
+		if ( array_key_exists( $federated_category, ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES ) ) {
+			$categories[] = ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES[ $federated_category ];
+		}
+
+		// Add all category terms.
+		$terms = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
+		foreach ( $terms as $term ) {
+			$categories[] = $term->name;
+		}
+
+		if ( ! empty( $categories ) ) {
+			return implode( ' · ', array_unique( $categories ) );
+		}
+		return '';
 	}
 
 	/**
@@ -229,27 +254,28 @@ abstract class Event extends Post {
 		}
 		remove_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ) );
 
-		$category   = $this->format_category();
+		$category   = $this->format_categories();
 		$start_time = $this->format_start_time();
 		$end_time   = $this->format_end_time();
 		$address    = $this->format_address();
 
 		$formatted_items = array();
 		if ( ! empty( $category ) ) {
-			$formatted_items[] = "🏷️ $category";
+			$formatted_items[] = '🏷️ ' . __( 'Category', 'activitypub-event-extensions' ) . ': ' . $category;
 		}
 
 		if ( ! empty( $start_time ) ) {
-			$formatted_items[] = "🗓️ {$start_time}";
+			$formatted_items[] = '🗓️ ' . __( 'Start', 'activitypub-event-extensions' ) . ': ' . $start_time;
 		}
 
 		if ( ! empty( $end_time ) ) {
-			$formatted_items[] = "⏳ {$end_time}";
+			$formatted_items[] = '⏳ ' . __( 'End', 'activitypub-event-extensions' ) . ': ' . $end_time;
 		}
 
 		if ( ! empty( $address ) ) {
-			$formatted_items[] = "📍 {$address}";
+			$formatted_items[] = '📍 ' . __( 'Address', 'activitypub-event-extensions' ) . ': ' . $address;
 		}
+
 		// Compose the summary based on the number of meta items.
 		if ( count( $formatted_items ) > 1 ) {
 			$summary = '<ul><li>' . implode( '</li><li>', $formatted_items ) . '</li></ul>';
@@ -319,22 +345,5 @@ abstract class Event extends Post {
 		);
 
 		return $activitypub_object;
-	}
-
-	/**
-	 * Returns the content for the ActivityPub Item with
-	 *
-	 * The content will be generated based on the user settings.
-	 *
-	 * @return string The content.
-	 */
-	protected function get_content() {
-		// /BeforeFirstRelease:
-		// * [ ] remove link at the end of the content.
-		// * [ ] add organizer.
-		// * [ ] do add Cancelled reason in the content.
-
-		// return parent::get_content();?
-		return $this->wp_object->post_content;
 	}
 }
