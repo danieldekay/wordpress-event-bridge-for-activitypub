@@ -118,6 +118,33 @@ final class GatherPress extends Event {
 	}
 
 	/**
+	 * Prevents gatherpress blocks from being rendered for the content.
+	 *
+	 * @param mixed $block_content The blocks content.
+	 * @param mixed $block         The block.
+	 */
+	public static function filter_gatherpress_blocks( $block_content, $block ) {
+		// Check if the block name starts with 'gatherpress'.
+		if ( strpos( $block['blockName'], 'gatherpress/' ) === 0 ) {
+			return ''; // Skip rendering this block.
+		}
+
+		return $block_content; // Return the content for other blocks.
+	}
+
+	/**
+	 * Apply the filter for preventing the rendering off gatherpress blocks just in time.
+	 *
+	 * @return Event_Object
+	 */
+	public function to_object(): Event_Object {
+		add_filter( 'render_block', array( self::class, 'filter_gatherpress_blocks' ), 10, 2 );
+		$activitypub_object = parent::to_object();
+		remove_filter( 'render_block', array( self::class, 'filter_gatherpress_blocks' ) );
+		return $activitypub_object;
+	}
+
+	/**
 	 * Determine whether the event is online.
 	 *
 	 * @return bool
