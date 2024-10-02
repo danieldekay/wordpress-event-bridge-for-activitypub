@@ -47,7 +47,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$wp_post_id = wp_insert_post(
 			array(
 				'post_title'  => 'Events Manager Test event',
-				'post_status' => 'published',
+				'post_status' => 'publish',
 				'post_type'   => EM_POST_TYPE_EVENT,
 				'meta_input'  => array(
 					'event_start_time' => strtotime( '+10 days 15:00:00' ),
@@ -75,7 +75,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$event->event_start_date = gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) );
 		$event->event_start_time = '15:00:00';
 		$event->start            = strtotime( $event->event_start_date . ' ' . $event->event_start_time );
-		$event->force_status     = 'published';
+		$event->force_status     = 'publish';
 		$event->event_rsvp       = false;
 		$this->assertTrue( $event->save() );
 
@@ -85,7 +85,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		// Check that we got the right transformer.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Events Manager Test event', $event_array['name'] );
-		$this->assertEquals( '', $event_array['content'] );
+		$this->assertEquals( 'Event description', wp_strip_all_tags( $event_array['content'] ) );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( comments_open( $event->post_id ), $event_array['commentsEnabled'] );
 		$this->assertEquals( comments_open( $event->post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
@@ -121,7 +121,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$event->event_end_time   = '16:00:00';
 		$event->start            = strtotime( $event->event_start_date . ' ' . $event->event_start_time );
 		$event->end              = strtotime( $event->event_end_date . ' ' . $event->event_end_time );
-		$event->force_status     = 'published';
+		$event->force_status     = 'publish';
 		$event->event_rsvp       = false;
 		$this->assertTrue( $event->save() );
 
@@ -131,7 +131,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		// Check that we got the right transformer.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Events Manager Test event', $event_array['name'] );
-		$this->assertEquals( '', $event_array['content'] );
+		$this->assertEquals( 'Event description', wp_strip_all_tags( $event_array['content'] ) );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
@@ -164,7 +164,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$event->event_end_time   = '16:00:00';
 		$event->start            = strtotime( $event->event_start_date . ' ' . $event->event_start_time );
 		$event->end              = strtotime( $event->event_end_date . ' ' . $event->event_end_time );
-		$event->force_status     = 'published';
+		$event->force_status     = 'publish';
 		$event->event_rsvp       = false;
 		$this->assertTrue( $event->save() );
 
@@ -174,7 +174,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		// Check that we got the right transformer.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Events Manager Test event', $event_array['name'] );
-		$this->assertEquals( '', $event_array['content'] );
+		$this->assertEquals( 'Event description', wp_strip_all_tags( $event_array['content'] ) );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertEquals( 'MEETING', $event_array['category'] );

@@ -37,42 +37,17 @@ final class Events_Manager extends Event_Transformer {
 	protected $em_event;
 
 	/**
-	 * Get transformer name.
+	 * Extend the constructor, to also set the Eventsmanager objects.
 	 *
-	 * Retrieve the transformers name.
+	 * This is a special class object form The Events Calendar which
+	 * has a lot of useful functions, we make use of our getter functions.
 	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return string Widget name.
+	 * @param WP_Post $wp_object The WordPress object.
+	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function get_transformer_name() {
-		return 'activitypub-event-transformers/events-manager';
-	}
-
-	/**
-	 * Get transformer title.
-	 *
-	 * Retrieve the transformers label.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return string Widget title.
-	 */
-	public function get_transformer_label() {
-		return 'Events Manager';
-	}
-
-	/**
-	 * Get supported post types.
-	 *
-	 * Retrieve the list of supported WordPress post types this transformer widget can handle.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return array Widget categories.
-	 */
-	public static function get_supported_post_types() {
-		return array();
+	public function __construct( $wp_object, $wp_taxonomy ) {
+		parent::__construct( $wp_object, $wp_taxonomy );
+		$this->em_event = new EM_Event( $this->wp_object->ID, 'post_id' );
 	}
 
 	/**
@@ -113,9 +88,6 @@ final class Events_Manager extends Event_Transformer {
 		);
 		if ( $em_location->location_state ) {
 			$address['addressRegion'] = $em_location->location_state;
-		}
-		if ( $em_location->location_postcode ) {
-			$address['postalCode'] = $em_location->location_postcode;
 		}
 
 		$location->set_address( $address );
@@ -163,8 +135,8 @@ final class Events_Manager extends Event_Transformer {
 	 * @return int
 	 */
 	public function get_remaining_attendee_capacity() {
-		$em_bookings                 = $this->em_event->get_bookings()->get_bookings();
-		$remaining_attendee_capacity = $this->em_event->event_spaces - count( $em_bookings->bookings );
+		$em_bookings_count           = $this->get_participant_count();
+		$remaining_attendee_capacity = $this->em_event->event_spaces - $em_bookings_count;
 		return $remaining_attendee_capacity;
 	}
 
@@ -176,23 +148,6 @@ final class Events_Manager extends Event_Transformer {
 	public function get_participant_count(): int {
 		$em_bookings = $this->em_event->get_bookings()->get_bookings();
 		return count( $em_bookings->bookings );
-	}
-
-	/**
-	 * Hardcoded function for generating a summary.
-	 */
-	public function get_summary(): ?string {
-		if ( $this->em_event->post_excerpt ) {
-			$excerpt = $this->em_event->post_excerpt;
-		} else {
-			$excerpt = $this->get_content();
-		}
-		$address           = $this->em_event->get_location()->location_name;
-		$start_time        = strtotime( $this->get_start_time() );
-		$datetime_format   = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
-		$start_time_string = wp_date( $datetime_format, $start_time );
-		$summary           = "📍 {$address}\n📅 {$start_time_string}\n\n{$excerpt}";
-		return $summary;
 	}
 
 	/**
@@ -259,21 +214,5 @@ final class Events_Manager extends Event_Transformer {
 	 */
 	protected function get_name(): string {
 		return $this->em_event->event_name;
-	}
-
-	/**
-	 * Transform the WordPress Object into an ActivityPub Object.
-	 *
-	 * @return Activitypub\Activity\Event
-	 */
-	public function to_object(): Event {
-		$this->em_event     = new EM_Event( $this->wp_object->ID, 'post_id' );
-		$activitypub_object = new Event();
-
-		$activitypub_object = $this->transform_object_properties( $activitypub_object );
-
-		$activitypub_object->set_external_participation_url( $this->get_url() );
-
-		return $activitypub_object;
 	}
 }

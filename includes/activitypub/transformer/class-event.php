@@ -21,6 +21,11 @@ use DateTime;
  *
  * Everything that transforming several WordPress post types that represent events
  * have in common, as well as sane defaults for events should be defined here.
+ *
+ * BeforeFirstRelease:
+ * [ ] remove link at the end of the content.
+ * [ ] add organizer.
+ * [ ] do add Cancelled reason in the content.
  */
 abstract class Event extends Post {
 
@@ -30,17 +35,6 @@ abstract class Event extends Post {
 	 * @var string
 	 */
 	protected $wp_taxonomy;
-
-	/**
-	 * Returns the User-URL of the Author of the Post.
-	 *
-	 * If `single_user` mode is enabled, the URL of the Blog-User is returned.
-	 *
-	 * @return string The User-URL.
-	 */
-	protected function get_actor(): ?string {
-		return $this->get_attributed_to();
-	}
 
 	/**
 	 * Returns the ActivityStreams 2.0 Object-Type for an Event.
@@ -61,6 +55,16 @@ abstract class Event extends Post {
 	}
 
 	/**
+	 * Set a hardcoded template for the content.
+	 *
+	 * This actually disabled templates for the content.
+	 * Maybe this independent templates for events will be added later.
+	 */
+	protected function get_post_content_template(): string {
+		return '[ap_content]';
+	}
+
+	/**
 	 * Returns the title of the event.
 	 *
 	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-name
@@ -77,7 +81,7 @@ abstract class Event extends Post {
 	 * @param WP_Post $wp_object The WordPress post object (event).
 	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function __construct( $wp_object, $wp_taxonomy ) {
+	public function __construct( $wp_object, $wp_taxonomy = 'category' ) {
 		parent::__construct( $wp_object );
 		$this->wp_taxonomy = $wp_taxonomy;
 	}
@@ -107,8 +111,13 @@ abstract class Event extends Post {
 
 	/**
 	 * Set the event category, via the mapping setting.
+	 *
+	 * @return ?string
 	 */
 	public function get_category(): ?string {
+		if ( is_null( $this->wp_taxonomy ) ) {
+			return null;
+		}
 		$current_category_mapping = \get_option( 'activitypub_event_extensions_event_category_mappings', array() );
 		$terms                    = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
 
@@ -126,8 +135,8 @@ abstract class Event extends Post {
 	 *
 	 * @return ?string
 	 */
-	protected function extract_excerpt(): ?string {
-		if ( $this->wp_object->excerpt ) {
+	protected function retrieve_excerpt(): ?string {
+		if ( $this->wp_object->post_excerpt ) {
 			return $this->wp_object->post_excerpt;
 		} else {
 			return null;
@@ -161,11 +170,24 @@ abstract class Event extends Post {
 
 	/**
 	 * Compose a human readable formatted start time.
-	 *
-	 * @param bool $is_start_time  Whether format the events start or end time.
 	 */
-	protected function format_time( $is_start_time = true ) {
-		$time = $is_start_time ? $this->get_start_time() : $this->get_end_time();
+	protected function format_start_time(): string {
+		return $this->format_time( $this->get_start_time() );
+	}
+
+	/**
+	 * Compose a human readable formatted end time.
+	 */
+	protected function format_end_time(): string {
+		return $this->format_time( $this->get_end_time() );
+	}
+
+	/**
+	 * Compose a human readable formatted time.
+	 *
+	 * @param ?string $time The time which needs to be formatted.
+	 */
+	private static function format_time( $time ) {
 		if ( is_null( $time ) ) {
 			return '';
 		}
@@ -199,14 +221,31 @@ abstract class Event extends Post {
 	/**
 	 * Format the category using the translation.
 	 */
-	protected function format_category(): string {
-		require_once ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . '/includes/event-categories.php';
-		$category = $this->get_category();
-		if ( array_key_exists( $category, ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES ) ) {
-			return ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES[ $category ];
-		} else {
-			return ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES['MEETING'];
+	protected function format_categories(): string {
+		if ( is_null( $this->wp_taxonomy ) ) {
+			return '';
 		}
+		$categories = array();
+
+		// Add the federated category string.
+		require_once ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . '/includes/event-categories.php';
+		$federated_category = $this->get_category();
+		if ( array_key_exists( $federated_category, ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES ) ) {
+			$categories[] = ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES[ $federated_category ];
+		}
+
+		// Add all category terms.
+		$terms = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
+		if ( $terms && ! is_wp_error( $terms ) ) {
+			foreach ( $terms as $term ) {
+				$categories[] = $term->name;
+			}
+		}
+
+		if ( ! empty( $categories ) ) {
+			return implode( ' · ', array_unique( $categories ) );
+		}
+		return '';
 	}
 
 	/**
@@ -218,36 +257,37 @@ abstract class Event extends Post {
 	 * @return string $summary The custom event summary.
 	 */
 	public function get_summary(): ?string {
-		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2 );
-		$excerpt = $this->extract_excerpt();
+		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2, 2 );
+		$excerpt = $this->retrieve_excerpt();
 		// BeforeFirstRelease: decide whether this should be a admin setting.
 		$fallback_to_content = true;
 		if ( is_null( $excerpt ) && $fallback_to_content ) {
-			$excerpt = $this->get_content();
+			$excerpt = parent::get_content();
 		}
 		remove_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ) );
 
-		$category   = $this->format_category();
-		$start_time = $this->format_time();
-		$end_time   = $this->format_time( false );
+		$category   = $this->format_categories();
+		$start_time = $this->format_start_time();
+		$end_time   = $this->format_end_time();
 		$address    = $this->format_address();
 
 		$formatted_items = array();
 		if ( ! empty( $category ) ) {
-			$formatted_items[] = "🏷️ $category";
+			$formatted_items[] = '🏷️ ' . __( 'Category', 'activitypub-event-extensions' ) . ': ' . $category;
 		}
 
 		if ( ! empty( $start_time ) ) {
-			$formatted_items[] = "🗓️ {$start_time}";
+			$formatted_items[] = '🗓️ ' . __( 'Start', 'activitypub-event-extensions' ) . ': ' . $start_time;
 		}
 
 		if ( ! empty( $end_time ) ) {
-			$formatted_items[] = "⏳ {$end_time}";
+			$formatted_items[] = '⏳ ' . __( 'End', 'activitypub-event-extensions' ) . ': ' . $end_time;
 		}
 
 		if ( ! empty( $address ) ) {
-			$formatted_items[] = "📍 {$address}";
+			$formatted_items[] = '📍 ' . __( 'Address', 'activitypub-event-extensions' ) . ': ' . $address;
 		}
+
 		// Compose the summary based on the number of meta items.
 		if ( count( $formatted_items ) > 1 ) {
 			$summary = '<ul><li>' . implode( '</li><li>', $formatted_items ) . '</li></ul>';
@@ -267,11 +307,17 @@ abstract class Event extends Post {
 	 * This used for the summary template, because the summary usually gets,
 	 * used when converting a object, where the URL is usually appended anyway.
 	 *
-	 * @param string $template The template string.
+	 * @param string             $template The template string.
+	 * @param WP_Post|WP_Comment $wp_object The wp_object which was used to select the template.
 	 */
-	public static function remove_ap_permalink_from_template( $template ) {
-		$template = str_replace( '[ap_permalink]', '', $template );
-		$template = str_replace( '[ap_permalink type="html"]', '', $template );
+	public static function remove_ap_permalink_from_template( $template, $wp_object ) {
+
+		// we could override the template here, to get out custom template from an option.
+
+		if ( 'event' === $wp_object->post_type ) {
+			$template = str_replace( '[ap_permalink]', '', $template );
+			$template = str_replace( '[ap_permalink type="html"]', '', $template );
+		}
 
 		return $template;
 	}
@@ -284,6 +330,8 @@ abstract class Event extends Post {
 	public function to_object(): Event_Object {
 		$activitypub_object = new Event_Object();
 		$activitypub_object = $this->transform_object_properties( $activitypub_object );
+
+		// maybe move the following logic (till end of the function) into getter functions.
 
 		$published = \strtotime( $this->wp_object->post_date_gmt );
 
@@ -304,7 +352,7 @@ abstract class Event extends Post {
 		$activitypub_object->set_to(
 			array(
 				'https://www.w3.org/ns/activitystreams#Public',
-				$this->get_actor_object()->get_followers(),
+				$this->get_actor_object()->get_followers(), // this fails on my machine.
 			)
 		);
 

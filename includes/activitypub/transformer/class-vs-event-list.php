@@ -23,12 +23,6 @@ use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transfor
  * @since 1.0.0
  */
 final class VS_Event_List extends Event_Transformer {
-	/**
-	 * The target transformer ActivityPub Event object.
-	 *
-	 * @var Event
-	 */
-	protected $ap_object;
 
 	/**
 	 * Get the event location.
@@ -110,13 +104,11 @@ final class VS_Event_List extends Event_Transformer {
 	 *
 	 * @return ?string
 	 */
-	protected function get_excerpt(): ?string {
+	protected function retrieve_excerpt(): ?string {
 		if ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
 			return get_post_meta( $this->wp_object->ID, 'event-summary', true );
-		} elseif ( $this->wp_object->excerpt ) {
-			return $this->wp_object->post_excerpt;
 		} else {
-			return null;
+			return parent::retrieve_excerpt();
 		}
 	}
 }

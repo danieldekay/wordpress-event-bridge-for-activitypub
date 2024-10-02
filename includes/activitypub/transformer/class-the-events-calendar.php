@@ -65,7 +65,7 @@ final class The_Events_Calendar extends Event {
 				$tags[] = $tag;
 			}
 		}
-		$tags[] = parent::get_tag();
+		$tags = array_merge( $tags, parent::get_tag() );
 
 		return $tags;
 	}
@@ -117,23 +117,6 @@ final class The_Events_Calendar extends Event {
 	 */
 	public function get_is_online(): bool {
 		return false;
-	}
-
-	/**
-	 * Returns the content for the ActivityPub Item with
-	 *
-	 * The content will be generated based on the user settings.
-	 *
-	 * @return string The content.
-	 */
-	protected function get_content() {
-		$content = parent::get_content();
-		// /BeforeFirstRelease:
-		// * remove link at the end of the content.
-		// * add organizer.
-		// * do add Cancelled reason in the content.s
-
-		return $content;
 	}
 
 	/**
@@ -195,18 +178,5 @@ final class The_Events_Calendar extends Event {
 		$location->set_name( $venue->post_title );
 
 		return $location;
-	}
-
-	/**
-	 * Extend the default event transformers to_object function.
-	 *
-	 * This is the heart of the ActivityPub transformer.
-	 *
-	 * @return Event_Object
-	 */
-	public function to_object(): Event_Object {
-		$activitypub_object = parent::to_object();
-
-		return $activitypub_object;
 	}
 }

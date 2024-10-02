@@ -25,13 +25,6 @@ use GatherPress\Core\Event as GatherPress_Event;
 final class GatherPress extends Event {
 
 	/**
-	 * The target ActivityPub Event object of the transformer.
-	 *
-	 * @var Event
-	 */
-	protected $ap_object;
-
-	/**
 	 * The current GatherPress Event object.
 	 *
 	 * @var GatherPress_Event
@@ -58,19 +51,6 @@ final class GatherPress extends Event {
 		parent::__construct( $wp_object, $wp_taxonomy );
 		$this->gp_event = new GatherPress_Event( $this->wp_object->ID );
 		$this->gp_venue = $this->gp_event->get_venue_information();
-	}
-
-	/**
-	 * Get supported post types.
-	 *
-	 * Retrieve the list of supported WordPress post types this transformer widget can handle.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 * @return array Widget categories.
-	 */
-	public static function get_supported_post_types() {
-		return array( GatherPress_Event::POST_TYPE );
 	}
 
 	/**
@@ -138,47 +118,30 @@ final class GatherPress extends Event {
 	}
 
 	/**
-	 * Returns the User-URL of the Author of the Post.
+	 * Prevents gatherpress blocks from being rendered for the content.
 	 *
-	 * If `single_user` mode is enabled, the URL of the Blog-User is returned.
-	 *
-	 * @return string The User-URL.
+	 * @param mixed $block_content The blocks content.
+	 * @param mixed $block         The block.
 	 */
-	protected function get_attributed_to(): string {
-		$user = new Blog();
-		return $user->get_url();
-	}
-
-	/**
-	 * Create a custom summary.
-	 *
-	 * It contains also the most important meta-information. The summary is often used when the
-	 * ActivityPub object type 'Event' is not supported, e.g. in Mastodon.
-	 *
-	 * @return string $summary The custom event summary.
-	 */
-	public function get_summary(): string {
-		if ( $this->wp_object->excerpt ) {
-			$excerpt = $this->wp_object->post_excerpt;
-		} elseif ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
-			$excerpt = get_post_meta( $this->wp_object->ID, 'event-summary', true );
-		} else {
-			$excerpt = $this->get_content();
+	public static function filter_gatherpress_blocks( $block_content, $block ) {
+		// Check if the block name starts with 'gatherpress'.
+		if ( strpos( $block['blockName'], 'gatherpress/' ) === 0 ) {
+			return ''; // Skip rendering this block.
 		}
 
-		$address           = get_post_meta( $this->wp_object->ID, 'event-location', true );
-		$start_time        = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
-		$datetime_format   = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
-		$start_time_string = wp_date( $datetime_format, $start_time );
-		$summary           = "📍 {$address}\n📅 {$start_time_string}\n\n{$excerpt}";
-		return $summary;
+		return $block_content; // Return the content for other blocks.
 	}
 
 	/**
-	 * Get the content.
+	 * Apply the filter for preventing the rendering off gatherpress blocks just in time.
+	 *
+	 * @return Event_Object
 	 */
-	public function get_content(): string {
-		return $this->wp_object->post_content;
+	public function to_object(): Event_Object {
+		add_filter( 'render_block', array( self::class, 'filter_gatherpress_blocks' ), 10, 2 );
+		$activitypub_object = parent::to_object();
+		remove_filter( 'render_block', array( self::class, 'filter_gatherpress_blocks' ) );
+		return $activitypub_object;
 	}
 
 	/**
@@ -188,17 +151,5 @@ final class GatherPress extends Event {
 	 */
 	public function get_is_online(): bool {
 		return $this->gp_event->maybe_get_online_event_link() ? true : false;
-	}
-
-
-	/**
-	 * Transform the WordPress Object into an ActivityPub Object.
-	 *
-	 * @return Activitypub\Activity\Event
-	 */
-	public function to_object(): Event_Object {
-		$activitypub_object = parent::to_object();
-
-		return $activitypub_object;
 	}
 }
