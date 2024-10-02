@@ -169,6 +169,13 @@ abstract class Event extends Post {
 	}
 
 	/**
+	 * Default value for the event status.
+	 */
+	protected function get_status(): ?string {
+		return 'CONFIRMED';
+	}
+
+	/**
 	 * Compose a human readable formatted start time.
 	 */
 	protected function format_start_time(): string {
