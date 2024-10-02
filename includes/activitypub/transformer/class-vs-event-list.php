@@ -104,11 +104,11 @@ final class VS_Event_List extends Event_Transformer {
 	 *
 	 * @return ?string
 	 */
-	protected function extract_excerpt(): ?string {
+	protected function retrieve_excerpt(): ?string {
 		if ( get_post_meta( $this->wp_object->ID, 'event-summary', true ) ) {
 			return get_post_meta( $this->wp_object->ID, 'event-summary', true );
 		} else {
-			return parent::extract_excerpt();
+			return parent::retrieve_excerpt();
 		}
 	}
 }
