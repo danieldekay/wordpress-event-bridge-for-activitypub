@@ -10,34 +10,48 @@ To make the WordPress ActivityPub plugin use a custom transformer simply add a f
 
 ## Add your event plugin
 
-First you need to add some basic information about your event plugin in the constant `SUPPORTED_EVENT_PLUGIN` in the file `includes/class-setup.php`:
+First you need to add some basic information about your event plugin. Just create a new file in `./includes/plugins/my-event-plugin.php`. Implement at least all abstract functions of the `Event_Plugin` class.
 
 ```php
-    // Example from the Events Manager plugin.
-    'events_manager' => array( // Choose any key you like.
-        'plugin_file'       => 'events-manager/events-manager.php',
-        'post_type'         => 'event',
-        'settings_page'     => 'options-general.php?page=vsel',
-        'transformer_class' => 'Events_Manager', // Points to the class in the file `includes/activitypub/transformer/class-events-manager.php`.
-    ),
+  namespace ActivityPub_Event_Bridge\Plugins;
+
+  // Exit if accessed directly.
+  defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
+  /**
+   * Integration information for My Event Plugin
+   *
+   * This class defines necessary meta information is for the integration of My Event Plugin with the ActivityPub plugin.
+   *
+   * @since 1.0.0
+   */
+  final class My_Event_Plugin extends Event_Plugin {
 ```
 
-The Plugin takes care of applying the transformer, so you can jump right into implementing it.
+The ActivityPub Event Bridge then takes care of applying the transformer, so you can jump right into implementing it.
 
 ## Writing an event transformer class
 
-If you are writing a transformer for a custom post type it is recommended to start by extending the provided [event transformer](./includes/activitypub/transformer/class-event.php). It is an extension of the default generic post transformer and inherits useful default implementations for generating the [attachments](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-attachment), rendering a proper [content](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-content) in HTML from either blocks or the classic editor, extracting [tags](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-tag) and more.
+Within WordPress most content types are stored as a custom post type in the posts table. The ActivityPub plugin offers a basic support for all post types out of the box. So-called transformers take care of converting WordPress WP_Post objects to ActivityStreams JSON. The ActivityPub plugin offers a generic transformer for all post types. Additionally, custom transformers can be implemented to better fit a custom post type, and they can be easily registered with the ActivityPub plugin.
+
+If you are writing a transformer for your event post type we recommend to start by extending the provided [event transformer](./includes/activitypub/transformer/class-event.php). It is an extension of the default generic post transformer and inherits useful default implementations for generating the [attachments](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-attachment), rendering a proper [content](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-content) in HTML from either blocks or the classic editor, extracting [tags](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-tag) and more. Furthermore, it offers functions which are likely to be shared by multiple event plugins, so you do not need to reimplement those, or you can fork and extend them to your needs.
+
+So create a new file at `./includes/activitypub/transformer/my-event-plugin.php`.
 
 ```php
 namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
 
+use ActivityPub_Event_Bridge\Activitypub\Transformer\Event as Event_Transformer;
+
 /**
- * ActivityPub Transformer for my_event_post_type.
+ * ActivityPub Transformer for My Event Plugin' event post type.
  */
-class My_Event_Post_Type_Transformer extends Event; {
+class My_Event_Plugin extends Event_Transformer; {
 ```
 
-The main function which controls the transformation is `to_object`. This one is called by the ActivityPub plugin to get the resulting ActivityPub representation as an PHP-array. The conversion to JSON-LD takes place later, and you don't need to cover that. You might just want to start by applying the parent function, but the chances are high, you don't even need to extend this functions functionality.
+The main function which controls the transformation is `to_object`. This one is called by the ActivityPub plugin to get the resulting ActivityStreams represented by a PHP-object (`\Activitypub\Activity\Object\Extended_Object\Event`). The conversion to the actual JSON-LD takes place later, and you don't need to cover that (> `to_array` > associative array > `to_json` > JSON).
+The chances are good that you will not need to override that function.
+
 
 ```php
 /**
@@ -52,7 +66,16 @@ public function to_object() {
 }
 ```
 
-The ActivityPub object classes contain dynamic getter and setter functions: `set_<property-name>` and `get_<property-name>`. Of course, the property with `property-name` must exist for these to work. The function `transform_object_properties` tries to set all properties known to the ActivityPub object where a function called `get_<property-name>` exists in the current transformer class.
+We also recommend extending the constructor of the transformer class and set a specialized API object of the event, if it is available. For instance:
+
+```php
+	public function __construct( $wp_object, $wp_taxonomy ) {
+		parent::__construct( $wp_object, $wp_taxonomy );
+		$this->event_api = new My_Event_Object_API( $wp_object );
+	}
+```
+
+The ActivityPub object classes contain dynamic getter and setter functions: `set_<property>()` and `get_<property>()`. The function `transform_object_properties()` usually called by `to_object()` tries to set all properties known to the target ActivityPub object where a function called `get_<property>` exists in the current transformer class.
 
 ### How to add new properties
 
@@ -65,7 +88,7 @@ Adding new properties is not encouraged to do at the transformer level. It's rec
 
 You can find all available event related properties in the [event class](https://github.com/Automattic/wordpress-activitypub/blob/master/includes/activity/extended-object/class-event.php) along documentation and with links to the specifications.
 
-#### Mandatory Properties for an Event
+####  Mandatory fields
 
 In order to ensure your events are compatible with other ActivityPub Event implementations there are several required properties that must be set by your transformer.
 
@@ -75,8 +98,12 @@ In order to ensure your events are compatible with other ActivityPub Event imple
 
 * **[`name`](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-name)**: the title of the event
 
-#### Recommended properties for an Event in order to achieve good interoperability with other ActivityPub platforms
+#### Checklist for properties you SHOULD at least consider writing a getter functions for
 
-* **[summary](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-summary)**: Other ActivityPub platforms that don't natively support event should use the summary (and the `name`) to display it as a converted object type. For example Mastodon converts an `Event` object to a `Note`. It is recommended to write the summary as text-centered with minimal HTML markup and that it contains the most important event details like place, time, etc.
-
-* **`isOnline`**:
+* **`endTime`**
+* **`location`** – Note: the `address` within can be both a `string` or a `PostalAddress`.
+* **`isOnline`**
+* **`status`**
+* **`get_tag`**
+* **`timezone`**
+* **`commentsEnabled`**
