@@ -5,11 +5,11 @@
  * This file contains the General class definition, which handles the "General" settings
  * page for the ActivityPub Event Extension Plugin, providing options for configuring various general settings.
  *
- * @package Activitypub_Event_Extensions
+ * @package ActivityPub_Event_Bridge
  * @since 1.0.0
  */
 
-namespace Activitypub_Event_Extensions;
+namespace ActivityPub_Event_Bridge;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -24,7 +24,7 @@ use Activitypub\Activity\Extended_Object\Event;
  * @since 1.0.0
  */
 class Settings {
-	const SETTINGS_SLUG = 'activitypub-event-extensions';
+	const SETTINGS_SLUG = 'activitypub-event-bridge';
 
 	/**
 	 * The default ActivityPub event category.
@@ -34,14 +34,14 @@ class Settings {
 	const DEFAULT_EVENT_CATEGORY = 'MEETING';
 
 	/**
-	 * Register the settings for the ActivityPub Event Extensions plugin.
+	 * Register the settings for the ActivityPub Event Bridge plugin.
 	 *
 	 * @return void
 	 */
 	public static function register_settings(): void {
 		\register_setting(
-			'activitypub-event-extensions',
-			'activitypub_event_extensions_default_event_category',
+			'activitypub-event-bridge',
+			'activitypub_event_bridge_default_event_category',
 			array(
 				'type'              => 'string',
 				'description'       => \__( 'Define your own custom post template', 'activitypub' ),
@@ -52,8 +52,8 @@ class Settings {
 		);
 
 		\register_setting(
-			'activitypub-event-extensions',
-			'activitypub_event_extensions_event_category_mappings',
+			'activitypub-event-bridge',
+			'activitypub_event_bridge_event_category_mappings',
 			array(
 				'type'              => 'array',
 				'description'       => \__( 'Define your own custom post template', 'activitypub' ),

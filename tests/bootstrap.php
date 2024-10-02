@@ -2,7 +2,7 @@
 /**
  * PHPUnit bootstrap file.
  *
- * @package Activitypub_Event_Extensions
+ * @package ActivityPub_Event_Bridge
  */
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
@@ -78,7 +78,7 @@ function _manually_load_plugin() {
 	}
 
 	// At last manually load our WordPress plugin.
-	require dirname( __DIR__ ) . '/activitypub-event-extensions.php';
+	require dirname( __DIR__ ) . '/activitypub-event-bridge.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );

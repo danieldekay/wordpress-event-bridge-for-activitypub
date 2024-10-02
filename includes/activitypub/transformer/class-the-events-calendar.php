@@ -2,18 +2,18 @@
 /**
  * ActivityPub Tribe Transformer
  *
- * @package Activitypub_Event_Extensions
+ * @package ActivityPub_Event_Bridge
  * @license AGPL-3.0-or-later
  */
 
-namespace Activitypub_Event_Extensions\Activitypub\Transformer;
+namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
-use Activitypub_Event_Extensions\Activitypub\Transformer\Event;
+use ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
 use WP_Post;
 
 use function Activitypub\esc_hashtag;

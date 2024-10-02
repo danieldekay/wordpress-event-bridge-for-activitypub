@@ -29,7 +29,7 @@ The Plugin takes care of applying the transformer, so you can jump right into im
 If you are writing a transformer for a custom post type it is recommended to start by extending the provided [event transformer](./includes/activitypub/transformer/class-event.php). It is an extension of the default generic post transformer and inherits useful default implementations for generating the [attachments](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-attachment), rendering a proper [content](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-content) in HTML from either blocks or the classic editor, extracting [tags](https://www.w3.org/TR/activitystreams-vocabulary/#dfn-tag) and more.
 
 ```php
-namespace Activitypub_Event_Extensions\Activitypub\Transformer;
+namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
 
 /**
  * ActivityPub Transformer for my_event_post_type.

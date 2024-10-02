@@ -1,31 +1,31 @@
 <?php
 /**
- * Class responsible for initializing ActivityPub Event Extensions.
+ * Class responsible for initializing ActivityPub Event Bridge.
  *
  * The setup class provides function for checking if this plugin should be activated.
  * It detects supported event plugins and provides all setup hooks and filters.
  *
- * @package Activitypub_Event_Extensions
+ * @package ActivityPub_Event_Bridge
  * @since 1.0.0
  * @license AGPL-3.0-or-later
  */
 
-namespace Activitypub_Event_Extensions;
+namespace ActivityPub_Event_Bridge;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Activitypub_Event_Extensions\Admin\Event_Plugin_Admin_Notices;
-use Activitypub_Event_Extensions\Admin\General_Admin_Notices;
-use Activitypub_Event_Extensions\Admin\Settings_Page;
-use Activitypub_Event_Extensions\Plugins\Event_Plugin;
+use ActivityPub_Event_Bridge\Admin\Event_Plugin_Admin_Notices;
+use ActivityPub_Event_Bridge\Admin\General_Admin_Notices;
+use ActivityPub_Event_Bridge\Admin\Settings_Page;
+use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
 
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 /**
  * Class Setup.
  *
- * This class is responsible for initializing ActivityPub Event Extensions.
+ * This class is responsible for initializing ActivityPub Event Bridge.
  *
  * @since 1.0.0
  */
@@ -63,7 +63,7 @@ class Setup {
 			is_plugin_active( 'activitypub/activitypub.php' );
 		// BeforeFirstRelease: decide whether we want to do anything at all when ActivityPub plugin is note active.
 		// if ( ! $this->activitypub_plugin_is_active ) {
-		// deactivate_plugins( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE );
+		// deactivate_plugins( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_FILE );
 		// return;
 		// }.
 		$this->active_event_plugins       = self::detect_active_event_plugins();
@@ -124,10 +124,10 @@ class Setup {
 	 * @var array
 	 */
 	private const EVENT_PLUGIN_CLASSES = array(
-		'\Activitypub_Event_Extensions\Plugins\Events_Manager',
-		'\Activitypub_Event_Extensions\Plugins\GatherPress',
-		'\Activitypub_Event_Extensions\Plugins\The_Events_Calendar',
-		'\Activitypub_Event_Extensions\Plugins\VS_Event_List',
+		'\ActivityPub_Event_Bridge\Plugins\Events_Manager',
+		'\ActivityPub_Event_Bridge\Plugins\GatherPress',
+		'\ActivityPub_Event_Bridge\Plugins\The_Events_Calendar',
+		'\ActivityPub_Event_Bridge\Plugins\VS_Event_List',
 	);
 
 	/**
@@ -160,7 +160,7 @@ class Setup {
 	 * @return void
 	 */
 	protected function setup_hooks(): void {
-		register_activation_hook( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE, array( $this, 'activate' ) );
+		register_activation_hook( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_FILE, array( $this, 'activate' ) );
 
 		add_action( 'admin_init', array( $this, 'do_admin_notices' ) );
 		add_action( 'admin_init', array( Settings::class, 'register_settings' ) );
@@ -175,12 +175,12 @@ class Setup {
 		add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
 
 		add_filter(
-			'plugin_action_links_' . ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_BASENAME,
+			'plugin_action_links_' . ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_BASENAME,
 			array( Settings_Page::class, 'settings_link' )
 		);
 
 		// Check if the minimum required version of the ActivityPub plugin is installed.
-		if ( ! version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_EXTENSIONS_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
+		if ( ! version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_BRIDGE_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
 			return;
 		}
 
@@ -195,15 +195,15 @@ class Setup {
 	 * @return void
 	 */
 	public static function enqueue_styles( $hook_suffix ): void {
-		if ( false !== strpos( $hook_suffix, 'activitypub-event-extensions' ) ) {
+		if ( false !== strpos( $hook_suffix, 'activitypub-event-bridge' ) ) {
 			wp_enqueue_style(
-				'activitypub-event-extensions-admin-styles',
+				'activitypub-event-bridge-admin-styles',
 				plugins_url(
-					'assets/css/activitypub-event-extensions-admin.css',
-					ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE
+					'assets/css/activitypub-event-bridge-admin.css',
+					ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_FILE
 				),
 				array(),
-				ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_VERSION
+				ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_VERSION
 			);
 		}
 	}
@@ -218,15 +218,15 @@ class Setup {
 		// Check if any general admin notices are needed and add actions to insert the needed admin notices.
 		if ( ! $this->activitypub_plugin_is_active ) {
 			// The ActivityPub plugin is not active.
-			add_action( 'admin_notices', array( 'Activitypub_Event_Extensions\Admin\General_Admin_Notices', 'activitypub_plugin_not_enabled' ), 10, 1 );
+			add_action( 'admin_notices', array( 'ActivityPub_Event_Bridge\Admin\General_Admin_Notices', 'activitypub_plugin_not_enabled' ), 10, 1 );
 		}
-		if ( ! version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_EXTENSIONS_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
+		if ( ! version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_BRIDGE_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
 			// The ActivityPub plugin is too old.
-			add_action( 'admin_notices', array( 'Activitypub_Event_Extensions\Admin\General_Admin_Notices', 'activitypub_plugin_version_too_old' ), 10, 1 );
+			add_action( 'admin_notices', array( 'ActivityPub_Event_Bridge\Admin\General_Admin_Notices', 'activitypub_plugin_version_too_old' ), 10, 1 );
 		}
 		if ( empty( $this->active_event_plugins ) ) {
 			// No supported Event Plugin is active.
-			add_action( 'admin_notices', array( 'Activitypub_Event_Extensions\Admin\General_Admin_Notices', 'no_supported_event_plugin_active' ), 10, 1 );
+			add_action( 'admin_notices', array( 'ActivityPub_Event_Bridge\Admin\General_Admin_Notices', 'no_supported_event_plugin_active' ), 10, 1 );
 		}
 	}
 
@@ -279,9 +279,9 @@ class Setup {
 	}
 
 	/**
-	 * Activates the ActivityPub Event Extensions plugin.
+	 * Activates the ActivityPub Event Bridge plugin.
 	 *
-	 * This method handles the activation of the ActivityPub Event Extensions plugin.
+	 * This method handles the activation of the ActivityPub Event Bridge plugin.
 	 *
 	 * @since 1.0.0
 	 *
@@ -290,7 +290,7 @@ class Setup {
 	public function activate(): void {
 		// Don't allow plugin activation, when the ActivityPub plugin is not activated yet.
 		if ( ! $this->activitypub_plugin_is_active ) {
-			deactivate_plugins( plugin_basename( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE ) );
+			deactivate_plugins( plugin_basename( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_FILE ) );
 			$notice = General_Admin_Notices::get_admin_notice_activitypub_plugin_not_enabled();
 			wp_die(
 				wp_kses( $notice, General_Admin_Notices::ALLOWED_HTML ),
@@ -300,7 +300,7 @@ class Setup {
 		}
 
 		if ( empty( $this->active_event_plugins ) ) {
-			deactivate_plugins( plugin_basename( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_FILE ) );
+			deactivate_plugins( plugin_basename( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_FILE ) );
 			$notice = General_Admin_Notices::get_admin_notice_no_supported_event_plugin_active();
 			wp_die(
 				wp_kses( $notice, General_Admin_Notices::ALLOWED_HTML ),

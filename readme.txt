@@ -1,4 +1,4 @@
-=== ActivityPub Event Extensions ===
+=== ActivityPub Event Bridge ===
 Contributors: andremenrath
 Tags: events, fediverse, activitypub, activitystreams, calendar
 Requires at least: 6.5
@@ -11,17 +11,17 @@ Integrating popular event plugins with the ActivityPub plugin.
 
 == Description ==
 
-Make your events more discoverable, expand your reach effortlessly while being independent of other (commercial) platforms, and part of the growing decentralized web.
-With the ActivityPub Event Extensions Plugin for WordPress, your events can be automatically aggregated and displayed across decentralized platforms like [Mastodon](https://joinmastodon.org) or [Gancio](https://gancio.org), without any extra work.
+Make your events more discoverable, expand your reach effortlessly while being independent of other (commercial) platforms, and be a part of the growing decentralized web (the Fediverse).
+With the ActivityPub Event Bridge Plugin for WordPress, your events can be automatically followed, aggregated and displayed across decentralized platforms like [Mastodon](https://joinmastodon.org) or [Gancio](https://gancio.org), without any extra work.
 Forget the hassle of managing multiple social media accounts just to keep your audience informed.
 
 This plugin is not an event managing plugin but an add-on to popular event plugins. It extends their functionality to fully support the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/).
-With the ActivityPub plugin people can follow your website directly and engage with your events just as they would on social media - liking, boosting and even commenting if you enable it.
-You retain full ownership of your content. By integrating into your existing setup, it ensures no extra work is needed while enhancing your events' visibility across the Fediverse.
+With the ActivityPub plugin people can follow your website directly and engage with your events just as they would on social media: liking, boosting and even commenting if you enable it.
+You retain full ownership of your content. By integrating into your existing setup, it ensures no extra work is needed while enhancing your events' visibility across the web.
 
 = How It Works =
 
-With the Event Federation Plugin for WordPress, sharing your events is effortless and automatic!
+With the ActivityPub Event Bridge WordPress plugin, sharing your events is effortless and automatic!
 Once you create an event on your WordPress site, it is seamlessly shared across the decentralized web using the ActivityPub protocol.
 
 ![](./.wordpress-org/event-activitypub-publishing.gif)
@@ -34,7 +34,7 @@ These platforms create public event calendars by pulling in events from various 
 
 == Installation ==
 
-This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/). Additionally, you need to use one of the supported Event Plugins.
+This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/). Additionally, you need to use one of the supported event Plugins.
 
 = Supported Event Plugins =
 
@@ -53,7 +53,7 @@ If you’re new to the [ActivityPub plugin](https://wordpress.org/plugins/activi
 Yes, this plugin works as an add-on and requires both the ActivityPub plugin a supported event plugin such as The Events Calendar, VS Event List, or Events Manager to manage your events.
 
 = What platforms can follow my events? =
-Your events can be followed on platforms that support ActivityPub like [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/). Even other applications like [Mastodon](https://joinmastodon.org), which don’t fully support events yet, will display a all important information about the events.
+Your events can be followed on platforms that support ActivityPub like [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/). Even other applications like [Mastodon](https://joinmastodon.org), which don’t fully support events yet, will display all important information about the events.
 
 = How much extra work is required to maintain my events across the decentralized Web? =
 
@@ -69,11 +69,11 @@ No, the Event Federation Plugin depends on the [ActivityPub plugin](https://word
 
 = My event plugin is not supported, what can I do? =
 
-If you know about coding have a look at the documentation of how to add your plugin or open an [issue](https://code.event-federation.eu/Event-Federation/wordpress-activitypub-event-extensions/issues), if we can spare some free hours we might add it.
+If you know about coding have a look at the documentation of how to add your plugin or open an [issue](https://code.event-federation.eu/Event-Federation/wordpress-activitypub-event-bridge/issues), if we can spare some free hours we might add it.
 
 = What if I experience problems? =
 
-We're always interested in your feedback. Feel free to reach out to us via [E-Mail](https://event-federation.eu/contact/) or create an [issue](https://code.event-federation.eu/Event-Federation/wordpress-activitypub-event-extensions/issues).
+We're always interested in your feedback. Feel free to reach out to us via [E-Mail](https://event-federation.eu/contact/) or create an [issue](https://code.event-federation.eu/Event-Federation/wordpress-activitypub-event-bridge/issues).
 
 == Changelog ==
 

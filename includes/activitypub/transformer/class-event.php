@@ -2,11 +2,11 @@
 /**
  * Replace the default ActivityPub Transformer
  *
- * @package Activitypub_Event_Extensions
+ * @package ActivityPub_Event_Bridge
  * @license AGPL-3.0-or-later
  */
 
-namespace Activitypub_Event_Extensions\Activitypub\Transformer;
+namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -118,7 +118,7 @@ abstract class Event extends Post {
 		if ( is_null( $this->wp_taxonomy ) ) {
 			return null;
 		}
-		$current_category_mapping = \get_option( 'activitypub_event_extensions_event_category_mappings', array() );
+		$current_category_mapping = \get_option( 'activitypub_event_bridge_event_category_mappings', array() );
 		$terms                    = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
 
 		// Check if the event has a category set and if that category has a specific mapping return that one.
@@ -126,7 +126,7 @@ abstract class Event extends Post {
 			return sanitize_text_field( $current_category_mapping[ $terms[0]->slug ] );
 		} else {
 			// Return the default event category.
-			return sanitize_text_field( \get_option( 'activitypub_event_extensions_default_event_category', 'MEETING' ) );
+			return sanitize_text_field( \get_option( 'activitypub_event_bridge_default_event_category', 'MEETING' ) );
 		}
 	}
 
@@ -228,10 +228,10 @@ abstract class Event extends Post {
 		$categories = array();
 
 		// Add the federated category string.
-		require_once ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . '/includes/event-categories.php';
+		require_once ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . '/includes/event-categories.php';
 		$federated_category = $this->get_category();
-		if ( array_key_exists( $federated_category, ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES ) ) {
-			$categories[] = ACTIVITYPUB_EVENT_EXTENSIONS_EVENT_CATEGORIES[ $federated_category ];
+		if ( array_key_exists( $federated_category, ACTIVITYPUB_EVENT_BRIDGE_EVENT_CATEGORIES ) ) {
+			$categories[] = ACTIVITYPUB_EVENT_BRIDGE_EVENT_CATEGORIES[ $federated_category ];
 		}
 
 		// Add all category terms.
@@ -273,19 +273,19 @@ abstract class Event extends Post {
 
 		$formatted_items = array();
 		if ( ! empty( $category ) ) {
-			$formatted_items[] = '🏷️ ' . __( 'Category', 'activitypub-event-extensions' ) . ': ' . $category;
+			$formatted_items[] = '🏷️ ' . __( 'Category', 'activitypub-event-bridge' ) . ': ' . $category;
 		}
 
 		if ( ! empty( $start_time ) ) {
-			$formatted_items[] = '🗓️ ' . __( 'Start', 'activitypub-event-extensions' ) . ': ' . $start_time;
+			$formatted_items[] = '🗓️ ' . __( 'Start', 'activitypub-event-bridge' ) . ': ' . $start_time;
 		}
 
 		if ( ! empty( $end_time ) ) {
-			$formatted_items[] = '⏳ ' . __( 'End', 'activitypub-event-extensions' ) . ': ' . $end_time;
+			$formatted_items[] = '⏳ ' . __( 'End', 'activitypub-event-bridge' ) . ': ' . $end_time;
 		}
 
 		if ( ! empty( $address ) ) {
-			$formatted_items[] = '📍 ' . __( 'Address', 'activitypub-event-extensions' ) . ': ' . $address;
+			$formatted_items[] = '📍 ' . __( 'Address', 'activitypub-event-bridge' ) . ': ' . $address;
 		}
 
 		// Compose the summary based on the number of meta items.

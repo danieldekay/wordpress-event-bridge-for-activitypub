@@ -5,17 +5,17 @@
  * This file contains the General class definition, which handles the "General" settings
  * page for the ActivityPub Event Extension Plugin, providing options for configuring various general settings.
  *
- * @package Activitypub_Event_Extensions
+ * @package ActivityPub_Event_Bridge
  * @since 1.0.0
  */
 
-namespace Activitypub_Event_Extensions\Admin;
+namespace ActivityPub_Event_Bridge\Admin;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Activitypub_Event_Extensions\Plugins\Event_Plugin;
-use Activitypub_Event_Extensions\Setup;
+use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
+use ActivityPub_Event_Bridge\Setup;
 
 /**
  * Class responsible for the ActivityPub Event Extension related Settings.
@@ -26,9 +26,9 @@ use Activitypub_Event_Extensions\Setup;
  * @since 1.0.0
  */
 class Settings_Page {
-	const STATIC = 'Activitypub_Event_Extensions\Admin\Settings_Page';
+	const STATIC = 'ActivityPub_Event_Bridge\Admin\Settings_Page';
 
-	const SETTINGS_SLUG = 'activitypub-event-extensions';
+	const SETTINGS_SLUG = 'activitypub-event-bridge';
 	/**
 	 * Warning if the plugin is Active and the ActivityPub plugin is not.
 	 *
@@ -37,7 +37,7 @@ class Settings_Page {
 	public static function admin_menu(): void {
 		\add_options_page(
 			'Activitypub Event Extension',
-			__( 'ActivityPub Events', 'activitypub-event-extensions' ),
+			__( 'ActivityPub Events', 'activitypub-event-bridge' ),
 			'manage_options',
 			self::SETTINGS_SLUG,
 			array( self::STATIC, 'settings_page' )
@@ -104,6 +104,6 @@ class Settings_Page {
 			'event_terms' => $event_terms,
 		);
 
-		\load_template( ACTIVITYPUB_EVENT_EXTENSIONS_PLUGIN_DIR . 'templates/settings.php', true, $args );
+		\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/settings.php', true, $args );
 	}
 }

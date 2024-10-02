@@ -13,7 +13,7 @@ version: '3'
 #   "request": "launch",
 #   "port": 9003,
 #   "pathMappings": {
-#    "/app/": "${workspaceRoot}/wp-content/plugins/activitypub-event-extensions/",
+#    "/app/": "${workspaceRoot}/wp-content/plugins/activitypub-event-bridge/",
 #    "/tmp/wordpress/": "${workspaceRoot}/"
 #   },
 # },

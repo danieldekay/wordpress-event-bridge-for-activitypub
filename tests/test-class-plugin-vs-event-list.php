@@ -2,7 +2,7 @@
 /**
  * Class SampleTest
  *
- * @package Activitypub_Event_Extensions
+ * @package ActivityPub_Event_Bridge
  */
 
 /**
@@ -20,7 +20,7 @@ class Test_VS_Event_List extends WP_UnitTestCase {
 		}
 
 		// Make sure that ActivityPub support is enabled for The Events Calendar.
-		$aec = \Activitypub_Event_Extensions\Setup::get_instance();
+		$aec = \ActivityPub_Event_Bridge\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
 		// Delete all posts afterwards.
@@ -34,7 +34,7 @@ class Test_VS_Event_List extends WP_UnitTestCase {
 		// We only test for one event plugin being active at the same time,
 		// even though we support multiple onces in theory.
 		// But testing all combinations is beyond scope.
-		$active_event_plugins = \Activitypub_Event_Extensions\Setup::get_instance()->get_active_event_plugins();
+		$active_event_plugins = \ActivityPub_Event_Bridge\Setup::get_instance()->get_active_event_plugins();
 		$this->assertEquals( 1, count( $active_event_plugins ) );
 
 		// Enable ActivityPub support for the event plugin.
@@ -58,7 +58,7 @@ class Test_VS_Event_List extends WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Activitypub_Event_Extensions\Activitypub\Transformer\VS_Event_List::class, $transformer );
+		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\VS_Event_List::class, $transformer );
 	}
 
 	/**
@@ -173,10 +173,10 @@ class Test_VS_Event_List extends WP_UnitTestCase {
 		$category_id_theatre = wp_insert_term( 'Theatre', 'event_cat', array( 'slug' => 'theatre' ) );
 
 		// Set default mapping for event categories.
-		update_option( 'activitypub_event_extensions_default_event_category', 'MUSIC' );
+		update_option( 'activitypub_event_bridge_default_event_category', 'MUSIC' );
 
 		// Set an override for the category with the slug theatre.
-		update_option( 'activitypub_event_extensions_event_category_mappings', array( 'theatre' => 'THEATRE' ) );
+		update_option( 'activitypub_event_bridge_event_category_mappings', array( 'theatre' => 'THEATRE' ) );
 
 		// Create a VS Event List event with the music category.
 		$wp_post_id = wp_insert_post(
