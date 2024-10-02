@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:  ActivityPub Event Bridge
- * Description:  Custom ActivityPub Transformers and Integrations for common Event Plugins.
+ * Description:  Integrating popular event plugins with the ActivityPub plugin.
  * Plugin URI:   https://event-federation.eu/
  * Version:      0.1.0
  * Author:       André Menrath
