@@ -55,6 +55,16 @@ abstract class Event extends Post {
 	}
 
 	/**
+	 * Set a hardcoded template for the content.
+	 *
+	 * This actually disabled templates for the content.
+	 * Maybe this independent templates for events will be added later.
+	 */
+	protected function get_post_content_template(): string {
+		return '[ap_content]';
+	}
+
+	/**
 	 * Returns the title of the event.
 	 *
 	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-name
