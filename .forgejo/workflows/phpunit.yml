@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - improve_tests
+      - ci_badge
   pull_request:
 
 env:
@@ -93,3 +94,12 @@ jobs:
         run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=events_manager
         env:
           PHP_VERSION: ${{ matrix.php-version }}
+
+      - name: Save WordPress version and plugin versions to file
+        run: wp core version > wordpress_versions.txt && wp plugin list --format=json >> wordpress_versions.txt
+
+      - name: Upload WordPress and Plugin Versions
+        uses: https://code.forgejo.org/actions/upload-artifact@v3
+        with:
+          name: versions
+          path: wordpress_versions.txt
