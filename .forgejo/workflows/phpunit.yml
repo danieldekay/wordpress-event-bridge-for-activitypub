@@ -96,7 +96,7 @@ jobs:
           PHP_VERSION: ${{ matrix.php-version }}
 
       - name: Save WordPress version and plugin versions to file
-        run: curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp && wp core version > wordpress_versions.txt && wp plugin list --format=json >> wordpress_versions.txt
+        run: curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp && wp core version --allow-root > wordpress_versions.txt && wp plugin list --allow-root --format=json >> wordpress_versions.txt
 
       - name: Upload WordPress and Plugin Versions
         uses: https://code.forgejo.org/actions/upload-artifact@v3
