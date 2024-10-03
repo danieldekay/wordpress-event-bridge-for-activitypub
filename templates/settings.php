@@ -25,39 +25,7 @@ if ( ! current_user_can( 'manage_options' ) ) {
 
 $event_terms = $args['event_terms'];
 
-$default_event_category_strings = array(
-	'ARTS'                          => __( 'Arts', 'activitypub-event-bridge' ),
-	'BOOK_CLUBS'                    => __( 'Book clubs', 'activitypub-event-bridge' ),
-	'BUSINESS'                      => __( 'Business', 'activitypub-event-bridge' ),
-	'CAUSES'                        => __( 'Causes', 'activitypub-event-bridge' ),
-	'COMEDY'                        => __( 'Comedy', 'activitypub-event-bridge' ),
-	'CRAFTS'                        => __( 'Crafts', 'activitypub-event-bridge' ),
-	'FOOD_DRINK'                    => __( 'Food & Drink', 'activitypub-event-bridge' ),
-	'HEALTH'                        => __( 'Health', 'activitypub-event-bridge' ),
-	'MUSIC'                         => __( 'Music', 'activitypub-event-bridge' ),
-	'AUTO_BOAT_AIR'                 => __( 'Auto, boat and air', 'activitypub-event-bridge' ),
-	'COMMUNITY'                     => __( 'Community', 'activitypub-event-bridge' ),
-	'FAMILY_EDUCATION'              => __( 'Family & Education', 'activitypub-event-bridge' ),
-	'FASHION_BEAUTY'                => __( 'Fashion & Beauty', 'activitypub-event-bridge' ),
-	'FILM_MEDIA'                    => __( 'Film & Media', 'activitypub-event-bridge' ),
-	'GAMES'                         => __( 'Games', 'activitypub-event-bridge' ),
-	'LANGUAGE_CULTURE'              => __( 'Language & Culture', 'activitypub-event-bridge' ),
-	'LEARNING'                      => __( 'Learning', 'activitypub-event-bridge' ),
-	'LGBTQ'                         => __( 'LGBTQ', 'activitypub-event-bridge' ),
-	'MOVEMENTS_POLITICS'            => __( 'Movements and politics', 'activitypub-event-bridge' ),
-	'NETWORKING'                    => __( 'Networking', 'activitypub-event-bridge' ),
-	'PARTY'                         => __( 'Party', 'activitypub-event-bridge' ),
-	'PERFORMING_VISUAL_ARTS'        => __( 'Performing & Visual Arts', 'activitypub-event-bridge' ),
-	'PETS'                          => __( 'Pets', 'activitypub-event-bridge' ),
-	'PHOTOGRAPHY'                   => __( 'Photography', 'activitypub-event-bridge' ),
-	'OUTDOORS_ADVENTURE'            => __( 'Outdoors & Adventure', 'activitypub-event-bridge' ),
-	'SPIRITUALITY_RELIGION_BELIEFS' => __( 'Spirituality, Religion & Beliefs', 'activitypub-event-bridge' ),
-	'SCIENCE_TECH'                  => __( 'Science & Tech', 'activitypub-event-bridge' ),
-	'SPORTS'                        => __( 'Sports', 'activitypub-event-bridge' ),
-	'THEATRE'                       => __( 'Theatre', 'activitypub-event-bridge' ),
-	'MEETING'                       => __( 'Meeting', 'activitypub-event-bridge' ), // Default value in federation.
-	'DEFAULT'                       => __( 'Default', 'activitypub-event-bridge' ), // Internal default for overrides.
-);
+require_once ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . '/includes/event-categories.php';
 
 $selected_default_event_category = \get_option( 'activitypub_event_bridge_default_event_category', 'MEETING' );
 $current_category_mapping        = \get_option( 'activitypub_event_bridge_event_category_mappings', array() );
@@ -83,7 +51,7 @@ $current_category_mapping        = \get_option( 'activitypub_event_bridge_event_
 					<td>
 						<select id="activitypub_event_bridge_default_event_category" name="activitypub_event_bridge_default_event_category">';
 						<?php
-						foreach ( $default_event_category_strings as $value => $label ) {
+						foreach ( ACTIVITYPUB_EVENT_BRIDGE_EVENT_CATEGORIES as $value => $label ) {
 							echo '<option value="' . esc_attr( $value ) . '" ' . selected( $selected_default_event_category, $value, false ) . '>' . esc_html( $label ) . '</option>';
 						}
 						?>
@@ -114,13 +82,13 @@ $current_category_mapping        = \get_option( 'activitypub_event_bridge_event_
 									$mapping = 'DEFAULT';
 								}
 								if ( 'DEFAULT' === $mapping ) {
-									echo '<option value="' . esc_attr( $mapping ) . '"> -- ' . esc_html( $default_event_category_strings[ $mapping ] ) . ' -- </option>';
+									echo '<option value="' . esc_attr( $mapping ) . '"> -- ' . esc_html( ACTIVITYPUB_EVENT_BRIDGE_EVENT_CATEGORIES[ $mapping ] ) . ' -- </option>';
 								} else {
-									echo '<option value="' . esc_attr( $mapping ) . '">' . esc_html( $default_event_category_strings[ $mapping ] ) . '</option>';
+									echo '<option value="' . esc_attr( $mapping ) . '">' . esc_html( ACTIVITYPUB_EVENT_BRIDGE_EVENT_CATEGORIES[ $mapping ] ) . '</option>';
 								}
 								echo '<option value="DEFAULT" ' . selected( $selected_default_event_category, 'DEFAULT', false ) . '> -- ' . esc_html__( 'Default', 'activitypub-event-bridge' ) . ' -- </option>';
 								foreach ( Event::DEFAULT_EVENT_CATEGORIES as $event_category ) {
-									echo '<option value="' . esc_attr( $event_category ) . '" ' . selected( $mappings[ $event_term->slug ] ?? '', $event_category, false ) . '>' . esc_html( $default_event_category_strings[ $event_category ] ) . '</option>';
+									echo '<option value="' . esc_attr( $event_category ) . '" ' . selected( $mappings[ $event_term->slug ] ?? '', $event_category, false ) . '>' . esc_html( ACTIVITYPUB_EVENT_BRIDGE_EVENT_CATEGORIES[ $event_category ] ) . '</option>';
 								}
 								?>
 							</select>
