@@ -1,6 +1,6 @@
 === ActivityPub Event Bridge ===
 Contributors: andremenrath
-Tags: events, fediverse, activitypub, activitystreams, calendar
+Tags: events, fediverse, activitypub, calendar
 Requires at least: 6.5
 Tested up to: 6.6
 Stable tag: 0.1.0

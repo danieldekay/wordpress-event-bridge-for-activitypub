@@ -34,39 +34,3 @@ ActivityPub_Event_Bridge\Autoloader::register();
 
 // Initialize the plugin.
 ActivityPub_Event_Bridge\Setup::get_instance();
-
-// BeforeFirstRelease: Remove everything after this after here.
-
-/**
- * Add a filter for http_request_host_is_external
- *
- * BeforeFirstRelease: Remove this for release.
- */
-add_filter( 'http_request_host_is_external', 'activitypub_event_bridge_custom_http_request_host_is_external', 10, 3 );
-
-/**
- * Add a filter for http_request_host_is_external
- *
- * BeforeFirstRelease: Remove this for release.
- *
- * @param bool $is_external Whether the request is external.
- */
-function activitypub_event_bridge_custom_http_request_host_is_external( $is_external ) {
-	$is_external = true;
-
-	return $is_external;
-}
-
-/**
- * Don't verify ssl certs for testing.
- *
- * BeforeFirstRelease: Remove this for release.
- */
-add_filter( 'https_ssl_verify', 'activitypub_event_bridge_dont_verify_local_dev_https', 10, 3 );
-
-/**
- * BeforeFirstRelease: remove it.
- */
-function activitypub_event_bridge_dont_verify_local_dev_https() {
-	return false;
-}
