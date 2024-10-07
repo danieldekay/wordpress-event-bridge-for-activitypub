@@ -124,10 +124,11 @@ class Setup {
 	 * @var array
 	 */
 	private const EVENT_PLUGIN_CLASSES = array(
-		'\ActivityPub_Event_Bridge\Plugins\Events_Manager',
-		'\ActivityPub_Event_Bridge\Plugins\GatherPress',
-		'\ActivityPub_Event_Bridge\Plugins\The_Events_Calendar',
-		'\ActivityPub_Event_Bridge\Plugins\VS_Event_List',
+		'\Activitypub_Event_Extensions\Plugins\Events_Manager',
+		'\Activitypub_Event_Extensions\Plugins\GatherPress',
+		'\Activitypub_Event_Extensions\Plugins\The_Events_Calendar',
+		'\Activitypub_Event_Extensions\Plugins\VS_Event_List',
+		'\Activitypub_Event_Extensions\Plugins\My_Calendar',
 	);
 
 	/**
