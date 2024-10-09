@@ -238,6 +238,7 @@ install_wp_plugins() {
 	install_wp_plugin very-simple-event-list
 	install_wp_plugin gatherpress
 	install_wp_plugin events-manager
+	install_wp_plugin wp-event-manager
 }
 
 install_wp
