@@ -108,10 +108,10 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 				'post_type'    => 'event_listing',
 				'post_content' => 'Come to my WP Event Manager event!',
 				'meta_input'   => array(
-					'event-start-date' => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 15:00:00' ) ),
-					'event-date'       => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 16:00:00' ) ),
-					'_event_video_url' => 'https://event-federation.eu/meeting-room',
-					'_event_online'    => 'yes',
+					'_event_start_date' => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 15:00:00' ) ),
+					'_event_end_date'   => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 16:00:00' ) ),
+					'_event_video_url'  => 'https://event-federation.eu/meeting-room',
+					'_event_online'     => 'yes',
 				),
 			)
 		);
