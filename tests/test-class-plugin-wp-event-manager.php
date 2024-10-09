@@ -85,7 +85,6 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'WP Event Manager TestEvent', $event_array['name'] );
 		$this->assertEquals( 'Come to my WP Event Manager event!', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( '', $event_array['content'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertArrayNotHasKey( 'endTime', $event_array );
 		$this->assertEquals( comments_open( $wp_post_id ), $event_array['commentsEnabled'] );
