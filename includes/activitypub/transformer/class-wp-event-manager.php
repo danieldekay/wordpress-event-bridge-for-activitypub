@@ -48,12 +48,17 @@ final class WP_Event_Manager extends Event_Transformer {
 	 * @return array The Place.
 	 */
 	public function get_location(): ?Place {
-		$location      = new Place();
 		$location_name = get_post_meta( $this->wp_object->ID, '_event_online', true );
-		$location->set_name( $location_name );
-		$location->set_sensitive( null );
-		$location->set_address( $location_name );
-		return $location;
+
+		if ( $location_name ) {
+			$location = new Place();
+			$location->set_name( $location_name );
+			$location->set_sensitive( null );
+			$location->set_address( $location_name );
+
+			return $location;
+		}
+		return null;
 	}
 
 	/**
