@@ -11,7 +11,6 @@ namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
 use ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
 use WP_Post;
