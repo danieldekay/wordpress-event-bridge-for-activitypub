@@ -15,8 +15,8 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 	public function set_up() {
 		parent::set_up();
 
-		if ( ! function_exists( 'vsel_custom_post_type' ) ) {
-			self::markTestSkipped( 'VS Event List plugin is not active.' );
+		if ( ! function_exists( 'wp_event_manager_notify_new_user' ) ) {
+			self::markTestSkipped( 'WP Event Manager plugin is not active.' );
 		}
 
 		// Make sure that ActivityPub support is enabled for The Events Calendar.
@@ -103,11 +103,11 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		// Insert a new Event.
 		$wp_post_id = wp_insert_post(
 			array(
-				'post_title'  => 'WP Event Manager TestEvent',
-				'post_status' => 'published',
-				'post_type'   => 'event_listing',
+				'post_title'   => 'WP Event Manager TestEvent',
+				'post_status'  => 'published',
+				'post_type'    => 'event_listing',
 				'post_content' => 'Come to my WP Event Manager event!',
-				'meta_input'  => array(
+				'meta_input'   => array(
 					'event-start-date' => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 15:00:00' ) ),
 					'event-date'       => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 16:00:00' ) ),
 					'_event_video_url' => 'https://event-federation.eu/meeting-room',
