@@ -82,9 +82,9 @@ final class WP_Event_Manager extends Event_Transformer {
 	/**
 	 * Get the event link as an ActivityPub Link object, but as an associative array.
 	 *
-	 * @return array
+	 * @return ?array
 	 */
-	private function get_event_link_attachment(): array {
+	private function get_event_link_attachment(): ?array {
 		$event_link_url = get_post_meta( $this->wp_object->ID, '_event_video_url', true );
 
 		if ( str_starts_with( $event_link_url, 'http' ) ) {
