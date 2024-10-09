@@ -44,7 +44,7 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		$wp_post_id = wp_insert_post(
 			array(
 				'post_title'  => 'WP Event Manager TestEvent',
-				'post_status' => 'published',
+				'post_status' => 'publish',
 				'post_type'   => 'event_listing',
 				'meta_input'  => array(
 					'event-start-date' => strtotime( '+10 days 15:00:00' ),
@@ -69,7 +69,7 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		$wp_post_id = wp_insert_post(
 			array(
 				'post_title'   => 'WP Event Manager TestEvent',
-				'post_status'  => 'published',
+				'post_status'  => 'publish',
 				'post_type'    => 'event_listing',
 				'post_content' => 'Come to my WP Event Manager event!',
 				'meta_input'   => array(
@@ -104,7 +104,7 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		$wp_post_id = wp_insert_post(
 			array(
 				'post_title'   => 'WP Event Manager TestEvent',
-				'post_status'  => 'published',
+				'post_status'  => 'publish',
 				'post_type'    => 'event_listing',
 				'post_content' => 'Come to my WP Event Manager event!',
 				'meta_input'   => array(

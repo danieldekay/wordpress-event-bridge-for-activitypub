@@ -50,15 +50,17 @@
             "@test-vs-event-list",
             "@test-the-events-calendar",
             "@test-gatherpress",
-            "@test-events-manager"
+            "@test-events-manager",
+            "@test-wp-event-manager"
         ],
         "test-debug": [
             "@prepare-test",
-            "@test-gatherpress"
+            "@test-wp-event-manager"
         ],
         "test-vs-event-list": "phpunit --filter=vs_event_list",
         "test-the-events-calendar": "phpunit --filter=the_events_calendar",
         "test-gatherpress": "phpunit --filter=gatherpress",
-        "test-events-manager": "phpunit --filter=events_manager"
+        "test-events-manager": "phpunit --filter=events_manager",
+        "test-wp-event-manager": "phpunit --filter=wp_event_manager"
     }
 }

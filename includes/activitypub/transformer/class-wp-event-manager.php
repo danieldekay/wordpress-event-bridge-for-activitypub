@@ -63,20 +63,31 @@ final class WP_Event_Manager extends Event_Transformer {
 
 	/**
 	 * Get the end time from the events metadata.
+	 *
+	 * @return ?string The events end-datetime if is set, null otherwise.
 	 */
 	public function get_end_time(): ?string {
-		$end_date     = get_post_meta( $this->wp_object->ID, '_event_end_date', true );
-		$end_datetime = new DateTime( $end_date );
-		return \gmdate( 'Y-m-d\TH:i:s\Z', $end_datetime->getTimestamp() );
+		$end_date = get_post_meta( $this->wp_object->ID, '_event_end_date', true );
+		if ( $end_date ) {
+			$end_datetime = new DateTime( $end_date );
+			return \gmdate( 'Y-m-d\TH:i:s\Z', $end_datetime->getTimestamp() );
+		}
+		return null;
 	}
 
 	/**
 	 * Get the end time from the events metadata.
 	 */
 	public function get_start_time(): string {
-		$start_date     = get_post_meta( $this->wp_object->ID, '_event_start_date', true );
-		$start_datetime = new DateTime( $start_date );
-		return \gmdate( 'Y-m-d\TH:i:s\Z', $start_datetime->getTimestamp() );
+		$start_date = get_post_meta( $this->wp_object->ID, '_event_start_date', true );
+		if ( ! is_numeric( $start_date ) ) {
+			$start_datetime  = new DateTime( $start_date );
+			$start_timestamp = $start_datetime->getTimestamp();
+		} else {
+			$start_timestamp = (int) $start_date;
+		}
+
+		return \gmdate( 'Y-m-d\TH:i:s\Z', $start_timestamp );
 	}
 
 	/**

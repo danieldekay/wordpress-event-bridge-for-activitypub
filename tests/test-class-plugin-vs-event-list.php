@@ -44,7 +44,7 @@ class Test_VS_Event_List extends WP_UnitTestCase {
 		$wp_post_id = wp_insert_post(
 			array(
 				'post_title'  => 'VSEL Test Event',
-				'post_status' => 'published',
+				'post_status' => 'publish',
 				'post_type'   => 'event',
 				'meta_input'  => array(
 					'event-start-date' => strtotime( '+10 days 15:00:00' ),
@@ -69,7 +69,7 @@ class Test_VS_Event_List extends WP_UnitTestCase {
 		$wp_post_id = wp_insert_post(
 			array(
 				'post_title'  => 'VSEL Test Event',
-				'post_status' => 'published',
+				'post_status' => 'publish',
 				'post_type'   => 'event',
 				'meta_input'  => array(
 					'event-start-date' => strtotime( '+10 days 15:00:00' ),
@@ -102,7 +102,7 @@ class Test_VS_Event_List extends WP_UnitTestCase {
 		$wp_post_id = wp_insert_post(
 			array(
 				'post_title'  => 'VSEL Test Event',
-				'post_status' => 'published',
+				'post_status' => 'publish',
 				'post_type'   => 'event',
 				'meta_input'  => array(
 					'event-start-date' => strtotime( '+10 days 15:00:00' ),
@@ -147,7 +147,7 @@ class Test_VS_Event_List extends WP_UnitTestCase {
 		$wp_post_id = wp_insert_post(
 			array(
 				'post_title'  => 'VSEL Test Event',
-				'post_status' => 'published',
+				'post_status' => 'publish',
 				'post_type'   => 'event',
 				'meta_input'  => array(
 					'event-start-date'    => strtotime( '+10 days 15:00:00' ),
@@ -182,7 +182,7 @@ class Test_VS_Event_List extends WP_UnitTestCase {
 		$wp_post_id = wp_insert_post(
 			array(
 				'post_title'  => 'VSEL Test Event',
-				'post_status' => 'published',
+				'post_status' => 'publish',
 				'post_type'   => 'event',
 				'meta_input'  => array(
 					'event-start-date'    => strtotime( '+10 days 15:00:00' ),
