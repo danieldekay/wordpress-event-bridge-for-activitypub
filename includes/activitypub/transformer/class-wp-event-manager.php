@@ -48,7 +48,7 @@ final class WP_Event_Manager extends Event_Transformer {
 	 * @return array The Place.
 	 */
 	public function get_location(): ?Place {
-		$location_name = get_post_meta( $this->wp_object->ID, '_event_online', true );
+		$location_name = get_post_meta( $this->wp_object->ID, '_event_location', true );
 
 		if ( $location_name ) {
 			$location = new Place();
@@ -101,7 +101,7 @@ final class WP_Event_Manager extends Event_Transformer {
 		if ( str_starts_with( $event_link_url, 'http' ) ) {
 			return array(
 				'type'      => 'Link',
-				'name'      => 'Video URL',
+				'name'      => \esc_html__( 'Video URL', 'activitypub-event-bridge' ),
 				'href'      => \esc_url( $event_link_url ),
 				'mediaType' => 'text/html',
 			);

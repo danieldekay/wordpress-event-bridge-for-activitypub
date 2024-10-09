@@ -134,7 +134,7 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		$this->assertContains(
 			array(
 				'type'      => 'Link',
-				'name'      => 'Video Link',
+				'name'      => __( 'Video URL', 'activitypub-event-bridge' ),
 				'href'      => 'https://event-federation.eu/meeting-room',
 				'mediaType' => 'text/html',
 			),
