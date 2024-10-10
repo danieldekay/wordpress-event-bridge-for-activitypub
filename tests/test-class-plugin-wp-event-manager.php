@@ -141,4 +141,42 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 			$event_array['attachment']
 		);
 	}
+
+	/**
+	 * Test the transformation to ActivityStreams of minimal event.
+	 */
+	public function test_transform_of_event_with_location() {
+		// Insert a new Event.
+		$wp_post_id = wp_insert_post(
+			array(
+				'post_title'   => 'WP Event Manager TestEvent',
+				'post_status'  => 'publish',
+				'post_type'    => 'event_listing',
+				'post_content' => 'Come to my WP Event Manager event!',
+				'meta_input'   => array(
+					'_event_start_date' => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 15:00:00' ) ),
+					'_event_end_date'   => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 16:00:00' ) ),
+					'_event_location'   => 'Some text location',
+					'_event_online'     => 'no',
+				),
+			)
+		);
+
+		// Transform the event to ActivityStreams.
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $wp_post_id ) )->to_object()->to_array();
+
+		// Check that the event ActivityStreams representation contains everything as expected.
+		$this->assertEquals( 'Event', $event_array['type'] );
+		$this->assertEquals( 'WP Event Manager TestEvent', $event_array['name'] );
+		$this->assertEquals( 'Come to my WP Event Manager event!', wp_strip_all_tags( $event_array['content'] ) );
+		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
+		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
+		$this->assertEquals( comments_open( $wp_post_id ), $event_array['commentsEnabled'] );
+		$this->assertEquals( comments_open( $wp_post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
+		$this->assertEquals( 'external', $event_array['joinMode'] );
+		$this->assertEquals( false, $event_array['isOnline'] );
+		$this->assertEquals( esc_url( get_permalink( $wp_post_id ) ), $event_array['externalParticipationUrl'] );
+		$this->assertArrayHasKey( 'location', $event_array );
+		$this->assertEquals( 'Some text location', $event_array['location']['address'] );
+	}
 }
