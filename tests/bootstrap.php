@@ -58,6 +58,9 @@ function _manually_load_plugin() {
 		case 'gatherpress':
 			$plugin_file = 'gatherpress/gatherpress.php';
 			break;
+		case 'wp_event_manager':
+			$plugin_file = 'wp-event-manager/wp-event-manager.php';
+			break;
 	}
 
 	if ( $plugin_file ) {

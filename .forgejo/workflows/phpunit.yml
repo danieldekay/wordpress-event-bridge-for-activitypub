@@ -37,7 +37,7 @@ jobs:
           path: |
             ${{ env.WP_CORE_DIR }}
             ${{ env.WP_TESTS_DIR }}
-          key: cache-wordpress-4
+          key: cache-wordpress-5
 
       - name: Cache Composer
         id: cache-composer-phpunit
@@ -91,5 +91,10 @@ jobs:
 
       - name: Run Integration tests for Events Manager
         run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=events_manager
+        env:
+          PHP_VERSION: ${{ matrix.php-version }}
+
+      - name: Run Integration tests for WP Event Manager
+        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=wp_event_manager
         env:
           PHP_VERSION: ${{ matrix.php-version }}
