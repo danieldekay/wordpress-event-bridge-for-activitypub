@@ -82,11 +82,32 @@ final class My_Calendar extends Event_Transformer {
 		return $this->convert_time( $this->mc_event->event_end, $this->mc_event->event_endtime);
 	}
 
+	/**
+	 * Get the event location.
+	 *
+	 * @return Place|null The place/venue if one is set.
+	 */
+	public function get_location(): ?Place {
+		if ( array_key_exists('location', $this->mc_event_schema ) && $this->mc_event_schema['location']['@type'] == 'Place' ) {
+			$mc_place = $this->mc_event_schema['location'];
+
+			$place = new Place();
+			$place->set_name( $mc_place['name'] );
+			$place->set_url( $mc_place['url'] );
+			$place->set_address( $mc_place['address'] );
+
+			if ( ! empty( $mc_place['geo'] ) ) {
+				$place->set_latitude( $mc_place['geo']['latitude'] );
+				$place->set_longitude( $mc_place['geo']['longitude'] );
+			}
+			return $place;
+		}
+		return null;
+	}
+
 	public function to_object(): Event {
 		$activitypub_object = parent::to_object();
 
 		return $activitypub_object;
 	}
-
-
 }
