@@ -34,6 +34,7 @@ final class My_Calendar extends Event_Transformer {
 	 * @var array
 	 */
 	protected $mc_event;
+	protected $mc_event_schema;
 
 	/**
 	 * Extend the constructor, to also set the Eventsmanager objects.
@@ -46,7 +47,10 @@ final class My_Calendar extends Event_Transformer {
 	 */
 	public function __construct( $wp_object, $wp_taxonomy ) {
 		parent::__construct( $wp_object, $wp_taxonomy );
-		$this->mc_event = get_post_meta( $wp_object->ID, '_mc_event_data', true);
+		$mc_event_id = get_post_meta( $this->wp_object->ID, '_mc_event_id', true );
+		$this->mc_event = mc_get_event( $mc_event_id );
+
+		$this->mc_event_schema = mc_event_schema( $this->mc_event );
 	}
 
 
@@ -68,14 +72,14 @@ final class My_Calendar extends Event_Transformer {
 	 * Get the start time from the events metadata.
 	 */
 	public function get_start_time(): string {
-		return $this->convert_time( $this->mc_event['event_begin'], $this->mc_event['event_time']);
+		return $this->convert_time( $this->mc_event->event_begin, $this->mc_event->event_time);
 	}
 
 	/**
 	 * Get the end time from the events metadata.
 	 */
 	public function get_end_time(): ?string {
-		return $this->convert_time( $this->mc_event['event_end'], $this->mc_event['event_endtime']);
+		return $this->convert_time( $this->mc_event->event_end, $this->mc_event->event_endtime);
 	}
 
 	public function to_object(): Event {
