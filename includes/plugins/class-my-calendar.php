@@ -10,7 +10,7 @@
  * @since   1.0.0
  */
 
-namespace Activitypub_Event_Extensions\Plugins;
+namespace ActivityPub_Event_Bridge\Plugins;
 
 use Activitypub_Event_Extensions\Event_Plugins;
 

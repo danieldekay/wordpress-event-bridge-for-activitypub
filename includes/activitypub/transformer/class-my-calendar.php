@@ -6,14 +6,14 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Activitypub_Event_Extensions\Activitypub\Transformer;
+namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
-use Activitypub_Event_Extensions\Activitypub\Transformer\Event as Event_Transformer;
+use ActivityPub_Event_Bridge\Activitypub\Transformer\Event as Event_Transformer;
 use DateTime;
 use DateTimeZone;
 use EM_Event;
