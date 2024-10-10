@@ -105,6 +105,16 @@ final class My_Calendar extends Event_Transformer {
 		return null;
 	}
 
+	/**
+	 * Get status of the event
+	 *
+	 * @return string status of the event
+	 */
+	public function get_status(): ?string {
+		return 'CONFIRMED'; # my-calender doesn't implement canceled events.
+	}
+
+
 	public function to_object(): Event {
 		$activitypub_object = parent::to_object();
 
