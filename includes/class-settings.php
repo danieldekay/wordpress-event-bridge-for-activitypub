@@ -44,7 +44,7 @@ class Settings {
 			'activitypub_event_bridge_default_event_category',
 			array(
 				'type'              => 'string',
-				'description'       => \__( 'Define your own custom post template', 'activitypub' ),
+				'description'       => \__( 'Default standardized federated event category.s', 'activitypub' ),
 				'show_in_rest'      => true,
 				'default'           => self::DEFAULT_EVENT_CATEGORY,
 				'sanitize_callback' => array( self::class, 'sanitize_mapped_event_category' ),
@@ -56,9 +56,20 @@ class Settings {
 			'activitypub_event_bridge_event_category_mappings',
 			array(
 				'type'              => 'array',
-				'description'       => \__( 'Define your own custom post template', 'activitypub' ),
+				'description'       => \__( 'Category mappings to standardized federated event categories.', 'activitypub' ),
 				'default'           => array(),
 				'sanitize_callback' => array( self::class, 'sanitize_event_category_mappings' ),
+			)
+		);
+
+		\register_setting(
+			'activitypub-event-bridge',
+			'activitypub_event_bridge_reminder_time_gap',
+			array(
+				'type'              => 'array',
+				'description'       => \__( 'Time gap in seconds when a reminder is triggered that the event is about to start.', 'activitypub' ),
+				'default'           => array(),
+				'sanitize_callback' => 'absint',
 			)
 		);
 	}

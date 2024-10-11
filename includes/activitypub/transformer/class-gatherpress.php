@@ -80,7 +80,7 @@ final class GatherPress extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_start_time(): string {
+	public function get_start_time(): string {
 		return $this->gp_event->get_datetime_start( 'Y-m-d\TH:i:s\Z' );
 	}
 

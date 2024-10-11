@@ -58,7 +58,7 @@ final class VS_Event_List extends Event_Transformer {
 	/**
 	 * Get the end time from the events metadata.
 	 */
-	protected function get_start_time(): string {
+	public function get_start_time(): string {
 		$start_time = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $start_time );
 	}

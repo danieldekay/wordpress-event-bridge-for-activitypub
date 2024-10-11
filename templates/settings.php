@@ -29,6 +29,15 @@ require_once ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . '/includes/event-categories.p
 
 $selected_default_event_category = \get_option( 'activitypub_event_bridge_default_event_category', 'MEETING' );
 $current_category_mapping        = \get_option( 'activitypub_event_bridge_event_category_mappings', array() );
+$reminder_time_gap               = \get_option( 'activitypub_event_bridge_reminder_time_gap', 0 );
+
+$reminder_time_gap_choices = array(
+	0      => __( 'Disabled', 'activitypub-event-bridge' ),
+	21600  => __( '6 hours', 'activitypub-event-bridge' ),
+	86400  => __( '1 day', 'activitypub-event-bridge' ),
+	259200 => __( '3 days', 'activitypub-event-bridge' ),
+	604800 => __( '1 week', 'activitypub-event-bridge' ),
+)
 ?>
 
 <div class="activitypub-settings-header">
@@ -98,6 +107,17 @@ $current_category_mapping        = \get_option( 'activitypub_event_bridge_event_
 			</table>
 		</div>
 		<?php endif; ?>
+		<div class="box">
+			<h2> <?php esc_html_e( 'Send reminder before event', 'activitypub-event-bridge' ); ?> </h2>
+			<p> <?php esc_html_e( 'Specify a time interval before the event starts to trigger a reminder. This reminder automatically boosts the event, making it reappear in users\' timelines at the defined time before the event to increase visibility just before the event begins.', 'activitypub-event-bridge' ); ?> </p>
+			<select id="activitypub_event_bridge_reminder_time_gap" name="activitypub_event_bridge_reminder_time_gap">';
+						<?php
+						foreach ( $reminder_time_gap_choices as $value => $label ) {
+							echo '<option value="' . esc_attr( $value ) . '" ' . selected( $reminder_time_gap, $value, false ) . '>' . esc_html( $label ) . '</option>';
+						}
+						?>
+			</select>
+		</div>
 		<?php \submit_button(); ?>
 	</form>
 </div>

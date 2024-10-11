@@ -1,0 +1,9 @@
+{
+	"name": "reminder",
+	"title": "Reminder Plugin: not a block, but block.json is very useful.",
+	"category": "widgets",
+	"icon": "admin-comments",
+	"keywords": [
+	],
+	"editorScript": "file:./plugin.js"
+}

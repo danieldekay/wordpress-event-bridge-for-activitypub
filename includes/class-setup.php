@@ -18,6 +18,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 use ActivityPub_Event_Bridge\Admin\Event_Plugin_Admin_Notices;
 use ActivityPub_Event_Bridge\Admin\General_Admin_Notices;
 use ActivityPub_Event_Bridge\Admin\Settings_Page;
+use ActivityPub_Event_Bridge\Reminder;
 use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
 
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -119,6 +120,38 @@ class Setup {
 	}
 
 	/**
+	 * Getter function for the active event plugins post types.
+	 *
+	 * @return array List of event post types of the active event plugins.
+	 */
+	public function get_active_event_plugins_post_types() {
+		$post_types = array();
+		foreach ( $this->active_event_plugins as $event_plugin ) {
+			$post_types[] = $event_plugin->get_post_type();
+		}
+
+		return $post_types;
+	}
+
+	/**
+	 * Function to check whether a post type is an event post type of an active event plugin.
+	 *
+	 * @param string $post_type The post type.
+	 *
+	 * @return bool True if it is an event post type.
+	 */
+	public function is_post_type_event_of_active_event_plugin( $post_type ) {
+		foreach ( $this->active_event_plugins as $event_plugin ) {
+			if ( $post_type === $event_plugin->get_post_type() ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
+	/**
 	 * Holds all the classes for the supported event plugins.
 	 *
 	 * @var array
@@ -184,6 +217,8 @@ class Setup {
 		if ( ! version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_BRIDGE_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
 			return;
 		}
+
+		add_action( 'init', array( Reminder::class, 'init' ) );
 
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
 	}

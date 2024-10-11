@@ -11,6 +11,7 @@ namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Activitypub\Activity\Activity;
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
 use Activitypub\Transformer\Post;
@@ -148,7 +149,7 @@ abstract class Event extends Post {
 	 *
 	 * This is mandatory and must be implemented in the final event transformer class.
 	 */
-	abstract protected function get_start_time(): string;
+	abstract public function get_start_time(): string;
 
 	/**
 	 * Get the end time.
@@ -375,5 +376,20 @@ abstract class Event extends Post {
 		);
 
 		return $activitypub_object;
+	}
+
+	/**
+	 * Creates an activity for announcing itself.
+	 *
+	 * @return Activity The Activity.
+	 */
+	public function to_announce_self_activity() {
+		$activity = new Activity();
+		$activity->set_type( 'Announce' );
+
+		// Pre-fill the Activity with data (for example cc and to).
+		$activity->set_object( $this->get_id() );
+
+		return $activity;
 	}
 }
