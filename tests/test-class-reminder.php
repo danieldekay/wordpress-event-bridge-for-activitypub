@@ -46,6 +46,9 @@ class Test_Reminder extends WP_UnitTestCase {
 		_delete_all_posts();
 	}
 
+	/**
+	 * Test that with the default reminder setting (time-gap is zero) no reminder event is scheduled.
+	 */
 	public function test_event_reminder_not_being_scheduled_by_default() {
 		// Create a The Events Calendar Event.
 		$wp_object = tribe_events()
@@ -57,6 +60,9 @@ class Test_Reminder extends WP_UnitTestCase {
 		$this->assertEquals( false, $scheduled_event );
 	}
 
+	/**
+	 * Test that with a side-wide option the reminder is scheduled.
+	 */
 	public function test_event_reminder_scheduled_with_site_wide_option() {
 		\update_option( 'activitypub_event_bridge_reminder_time_gap', DAY_IN_SECONDS );
 		// Create a The Events Calendar Event.
@@ -72,6 +78,9 @@ class Test_Reminder extends WP_UnitTestCase {
 		$this->assertEquals( 'activitypub_event_bridge_send_event_reminder', $scheduled_event->hook );
 	}
 
+	/**
+	 * Test that a specific event can override the side-wide reminder default.
+	 */
 	public function test_event_reminder_scheduled_with_per_event_override() {
 		\update_option( 'activitypub_event_bridge_reminder_time_gap', DAY_IN_SECONDS );
 
@@ -106,6 +115,9 @@ class Test_Reminder extends WP_UnitTestCase {
 		$this->assertEquals( strtotime( self::MOCKUP_EVENT['start_date'] ) - HOUR_IN_SECONDS, $scheduled_event->timestamp );
 	}
 
+	/**
+	 * Test that the scheduled reminder is removed when the event is deleted.
+	 */
 	public function test_event_reminder_deleted_event() {
 		\update_option( 'activitypub_event_bridge_reminder_time_gap', DAY_IN_SECONDS );
 
@@ -133,6 +145,9 @@ class Test_Reminder extends WP_UnitTestCase {
 		$this->assertEquals( false, $scheduled_event );
 	}
 
+	/**
+	 * Test that the scheduled reminder is removed when the event is moved to trash.
+	 */
 	public function test_event_reminder_event_moved_to_trash() {
 		\update_option( 'activitypub_event_bridge_reminder_time_gap', DAY_IN_SECONDS );
 

@@ -29,6 +29,9 @@
 	<!-- Exclude Javascript files. -->
 	<exclude-pattern>*.js</exclude-pattern>
 
+	<!-- Exclude build assets from js blocks. -->
+	<exclude-pattern>/build/*/*asset.php</exclude-pattern>
+
 	<!-- Exclude minified Javascript files. -->
 	<exclude-pattern>*.min.js</exclude-pattern>
 
