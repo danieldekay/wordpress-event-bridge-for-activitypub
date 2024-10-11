@@ -103,7 +103,7 @@ class Test_Reminder extends WP_UnitTestCase {
 
 		$scheduled_event = \wp_get_scheduled_event( 'activitypub_event_bridge_send_event_reminder', array( $post_id ) );
 		$this->assertNotEquals( false, $scheduled_event );
-		$this->assertEquals(  strtotime( self::MOCKUP_EVENT['start_date'] ) - HOUR_IN_SECONDS, $scheduled_event->timestamp );
+		$this->assertEquals( strtotime( self::MOCKUP_EVENT['start_date'] ) - HOUR_IN_SECONDS, $scheduled_event->timestamp );
 	}
 
 	public function test_event_reminder_deleted_event() {
