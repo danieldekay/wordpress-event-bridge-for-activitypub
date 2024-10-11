@@ -32,11 +32,11 @@ $current_category_mapping        = \get_option( 'activitypub_event_bridge_event_
 $reminder_time_gap               = \get_option( 'activitypub_event_bridge_reminder_time_gap', 0 );
 
 $reminder_time_gap_choices = array(
-	0      => __( 'Disabled', 'activitypub-event-bridge' ),
-	21600  => __( '6 hours', 'activitypub-event-bridge' ),
-	86400  => __( '1 day', 'activitypub-event-bridge' ),
-	259200 => __( '3 days', 'activitypub-event-bridge' ),
-	604800 => __( '1 week', 'activitypub-event-bridge' ),
+	0                   => __( 'Disabled', 'activitypub-event-bridge' ),
+	HOUR_IN_SECONDS * 6 => __( '6 hours', 'activitypub-event-bridge' ),
+	DAY_IN_SECONDS      => __( '1 day', 'activitypub-event-bridge' ),
+	DAY_IN_SECONDS * 3  => __( '3 days', 'activitypub-event-bridge' ),
+	WEEK_IN_SECONDS     => __( '1 week', 'activitypub-event-bridge' ),
 )
 ?>
 

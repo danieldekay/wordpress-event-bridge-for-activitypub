@@ -1,12 +1,12 @@
 <?php
 /**
- * Class SampleTest
+ * Tests for GatherPress.
  *
  * @package ActivityPub_Event_Bridge
  */
 
 /**
- * Sample test case.
+ * Test class for testing the GatherPress integration.
  */
 class Test_GatherPress extends WP_UnitTestCase {
 	/**

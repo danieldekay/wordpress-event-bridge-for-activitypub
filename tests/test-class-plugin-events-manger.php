@@ -16,7 +16,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		parent::set_up();
 
 		if ( ! class_exists( 'EM_Events' ) ) {
-			self::markTestSkipped( 'VS Event List plugin is not active.' );
+			self::markTestSkipped( 'Events Manager plugin is not active.' );
 		}
 
 		// For tests allow every user to create new events.

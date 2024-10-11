@@ -55,8 +55,9 @@
         ],
         "test-debug": [
             "@prepare-test",
-            "@test-wp-event-manager"
+            "@test-features"
         ],
+        "test-features": "phpunit --filter=reminder",
         "test-vs-event-list": "phpunit --filter=vs_event_list",
         "test-the-events-calendar": "phpunit --filter=the_events_calendar",
         "test-gatherpress": "phpunit --filter=gatherpress",

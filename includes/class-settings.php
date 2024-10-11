@@ -68,7 +68,7 @@ class Settings {
 			array(
 				'type'              => 'array',
 				'description'       => \__( 'Time gap in seconds when a reminder is triggered that the event is about to start.', 'activitypub' ),
-				'default'           => array(),
+				'default'           => 0, // Zero leads to this feature being deactivated.
 				'sanitize_callback' => 'absint',
 			)
 		);

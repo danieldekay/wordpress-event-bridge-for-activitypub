@@ -31,7 +31,9 @@ class Reminder {
 	 */
 	public static function init() {
 		// Post transitions.
-		\add_action( 'transition_post_status', array( self::class, 'maybe_schedule_event_post_announcement' ), 33, 3 );
+		\add_action( 'transition_post_status', array( self::class, 'maybe_schedule_event_reminder' ), 33, 3 );
+
+		\add_action( 'delete_post', array( self::class, 'unschedule_event_reminder' ), 33, 1 );
 
 		// Send an event reminder.
 		\add_action( 'activitypub_event_bridge_send_event_reminder', array( self::class, 'send_event_reminder' ), 10, 1 );
@@ -90,10 +92,10 @@ class Reminder {
 	 * @param string  $old_status  Old post status.
 	 * @param WP_Post $post        Post object.
 	 */
-	public static function maybe_schedule_event_post_announcement( $new_status, $old_status, $post ): void {
+	public static function maybe_schedule_event_reminder( $new_status, $old_status, $post ): void {
 		$reminder_time_gap = (int) get_post_meta( $post->ID, 'activitypub_event_bridge_reminder_time_gap', true );
 
-		if ( '' === $reminder_time_gap ) {
+		if ( ! $reminder_time_gap ) {
 			$reminder_time_gap = \get_option( 'activitypub_event_bridge_reminder_time_gap', 0 );
 		}
 
@@ -115,6 +117,10 @@ class Reminder {
 		// Only schedule an reminder for event post types.
 		if ( ! Setup::get_instance()->is_post_type_event_of_active_event_plugin( $post->post_type ) ) {
 			return;
+		}
+
+		if ( 'trash' === $new_status ) {
+			self::unschedule_event_reminder( $post->ID );
 		}
 
 		// Do not schedule a reminder if the event is not published.
@@ -148,6 +154,17 @@ class Reminder {
 	}
 
 	/**
+	 * Unschedule the event reminder.
+	 *
+	 * @param int $post_id The WordPress post ID of the event post.
+	 */
+	public static function unschedule_event_reminder( $post_id ): void {
+		$hook = 'activitypub_event_bridge_send_event_reminder';
+		$args = array( $post_id );
+		\wp_clear_scheduled_hook( $hook, $args );
+	}
+
+	/**
 	 * Send a reminder for an event post.
 	 *
 	 * This currently sends an Announce activity.
@@ -165,7 +182,7 @@ class Reminder {
 
 		$user_id = $transformer->get_wp_user_id();
 
-		if ( is_user_disabled( $user_id ) ) {
+		if ( $user_id > 0 && is_user_disabled( $user_id ) ) {
 			return;
 		}
 

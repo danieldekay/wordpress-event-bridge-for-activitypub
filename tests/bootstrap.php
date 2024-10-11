@@ -46,9 +46,6 @@ function _manually_load_plugin() {
 	$plugin_file = null;
 	// See if we want to run integration tests for a specific event-plugin.
 	switch ( $activitypub_event_extension_integration_filter ) {
-		case 'the_events_calendar':
-			$plugin_file = 'the-events-calendar/the-events-calendar.php';
-			break;
 		case 'vs_event_list':
 			$plugin_file = 'very-simple-event-list/vsel.php';
 			break;
@@ -61,6 +58,9 @@ function _manually_load_plugin() {
 		case 'wp_event_manager':
 			$plugin_file = 'wp-event-manager/wp-event-manager.php';
 			break;
+		default:
+			// By default we test other stuff using The Events Calendar.
+			$plugin_file = 'the-events-calendar/the-events-calendar.php';
 	}
 
 	if ( $plugin_file ) {
