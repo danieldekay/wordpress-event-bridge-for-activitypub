@@ -28,6 +28,15 @@ First you need to add some basic information about your event plugin. Just creat
   final class My_Event_Plugin extends Event_Plugin {
 ```
 
+Then you need to tell the ActivityPub Event Bridge about that class by adding it to the `EVENT_PLUGIN_CLASSES` constant in the `includes/setup.php` file:
+
+```php
+	private const EVENT_PLUGIN_CLASSES = array(
+		...
+		'\ActivityPub_Event_Bridge\Plugins\My_Event_Plugin',
+	);
+```
+
 The ActivityPub Event Bridge then takes care of applying the transformer, so you can jump right into implementing it.
 
 ## Writing an event transformer class
@@ -107,3 +116,107 @@ In order to ensure your events are compatible with other ActivityPub Event imple
 * **`get_tag`**
 * **`timezone`**
 * **`commentsEnabled`**
+
+## Writing integration tests
+
+Create a new tests class in `tests/test-class-plugin-my-event-plugin.php`.
+
+```
+/**
+ * Sample test case.
+ */
+class Test_My_Event_Plugin extends WP_UnitTestCase {
+```
+
+Implement a check whether your event plugin is active in the `set_up` function. It may be the presence of a class, function or constant.
+
+```php
+	/**
+	 * Override the setup function, so that tests don't run if the Events Calendar is not active.
+	 */
+	public function set_up() {
+		parent::set_up();
+
+		if ( ! <TODO:my-event-plugin-is-active> ) {
+			self::markTestSkipped( 'The Events Calendar plugin is not active.' );
+		}
+
+		// Make sure that ActivityPub support is enabled for The Events Calendar.
+		$aec = \ActivityPub_Event_Bridge\Setup::get_instance();
+		$aec->activate_activitypub_support_for_active_event_plugins();
+
+		// Delete all posts afterwards.
+		_delete_all_posts();
+	}
+```
+
+## Running the tests for your plugin/ add the tests to the CI pipeline
+
+### Install the plugin in the CI
+
+The tests are set up by the bash script in `bin/install-wp-tests.sh`. Make sure your WordPress Event plugin is installed within the function `install_wp_plugins`.
+
+### Add a composer script for your plugin
+
+In the pipeline we want to run each event plugins integration tests in a single command, to achieve that, we use phpunit's filters.
+
+```json
+{
+  "scripts": {
+    ...
+    "test": [
+              ...
+              "@test-my-event-plugin"
+          ],
+          ...
+          "@test-my-event-plugin": "phpunit --filter=my_event_plugin",
+    ]
+  }
+}
+```
+
+### Load your plugin during the tests
+
+To activate/load your plugin add it to the switch statement within the function `_manually_load_plugin()` within `tests/bootstrap.php`.
+
+```php
+	switch ( $activitypub_event_extension_integration_filter ) {
+    ...
+    case 'my_event_plugin':
+			$plugin_file = 'my-event-plugin/my-event-plugin.php';
+			break;
+```
+
+If you want to run your tests locally just change the `test-debug` script in the `composer.json` file:
+
+```json
+    "test-debug": [
+        "@prepare-test",
+        "@test-my-event-plugin"
+    ],
+```
+
+Now you just can execute `docker compose up` to run the tests (make sure you have the latest docker and docker-compose installed).
+
+### Debugging the tests
+
+If you are using Visual Studio Code or VSCodium you can step-debug within the tests by adding this configuration to your `.vscode/launch.json`:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    ...,
+    {
+      "name": "Listen for PHPUnit",
+      "type": "php",
+      "request": "launch",
+      "port": 9003,
+      "pathMappings": {
+      "/app/": "${workspaceRoot}/wp-content/plugins/activitypub-event-bridge/",
+      "/tmp/wordpress/": "${workspaceRoot}/"
+      },
+    }
+  ]
+}
+```
