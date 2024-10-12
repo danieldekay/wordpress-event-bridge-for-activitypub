@@ -53,16 +53,14 @@ final class Eventin extends Event {
 	 * Get the end time from the event object.
 	 */
 	public function get_start_time(): string {
-		$datetime = new DateTime( $this->event_model->get_start_datetime(), new DateTimeZone( $this->event_model->get_timezone() ) );
-		return \gmdate( 'Y-m-d\TH:i:s\Z', $datetime->getTimestamp() );
+		return \gmdate( 'Y-m-d\TH:i:s\Z', strtotime( $this->event_model->get_start_datetime() ) );
 	}
 
 	/**
 	 * Get the end time from the event object.
 	 */
 	public function get_end_time(): string {
-		$datetime = new DateTime( $this->event_model->get_end_datetime(), new DateTimeZone( $this->event_model->get_timezone() ) );
-		return \gmdate( 'Y-m-d\TH:i:s\Z', $datetime->getTimestamp() );
+		return \gmdate( 'Y-m-d\TH:i:s\Z', strtotime( $this->event_model->get_end_datetime() ) );
 	}
 
 	/**
