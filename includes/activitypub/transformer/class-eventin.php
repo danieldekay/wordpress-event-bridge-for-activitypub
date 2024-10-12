@@ -15,7 +15,11 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
 use ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
+use DateTime;
+use DateTimeZone;
 use Etn\Core\Event\Event_Model;
+
+use function Activitypub\esc_hashtag;
 
 /**
  * ActivityPub Transformer for Events managed with Eventin.
@@ -48,16 +52,115 @@ final class Eventin extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_start_time(): string {
-		return \gmdate( 'Y-m-d\TH:i:s\Z', \time() );
+	public function get_start_time(): string {
+		$datetime = new DateTime( $this->event_model->get_start_datetime(), new DateTimeZone( $this->event_model->get_timezone() ) );
+		return \gmdate( 'Y-m-d\TH:i:s\Z', $datetime->getTimestamp() );
 	}
 
 	/**
-	 * Get status of the tribe event
-	 *
-	 * @return string status of the event
+	 * Get the end time from the event object.
 	 */
-	public function get_status(): ?string {
-		return 'CONFIRMED';
+	public function get_end_time(): string {
+		$datetime = new DateTime( $this->event_model->get_end_datetime(), new DateTimeZone( $this->event_model->get_timezone() ) );
+		return \gmdate( 'Y-m-d\TH:i:s\Z', $datetime->getTimestamp() );
+	}
+
+	/**
+	 * Get the timezone of the event.
+	 */
+	public function get_timezone(): string {
+		return $this->event_model->get_timezone();
+	}
+
+	/**
+	 * Get whether the event is online.
+	 *
+	 * @return bool
+	 */
+	public function get_is_online(): bool {
+		return 'online' === $this->event_model->__get( 'event_type' ) ? true : false;
+	}
+
+	/**
+	 * Maybe add online link to attachments.
+	 *
+	 * @return array
+	 */
+	public function get_attachment(): array {
+		$attachment = parent::get_attachment();
+
+		$location = (array) $this->event_model->__get( 'location' );
+		if ( array_key_exists( 'integration', $location ) && array_key_exists( $location['integration'], $location ) ) {
+			$online_link  = array(
+				'type'      => 'Link',
+				'mediaType' => 'text/html',
+				'name'      => $location[ $location['integration'] ],
+				'href'      => $location[ $location['integration'] ],
+			);
+			$attachment[] = $online_link;
+		}
+		return $attachment;
+	}
+
+	/**
+	 * Compose the events tags.
+	 */
+	public function get_tag() {
+		// The parent tag function also fetches the mentions.
+		$tags = parent::get_tag();
+
+		$post_tags       = \wp_get_post_terms( $this->wp_object->ID, 'etn_tags' );
+		$post_categories = \wp_get_post_terms( $this->wp_object->ID, 'etn_category' );
+
+		if ( ! is_wp_error( $post_tags ) && $post_tags ) {
+			foreach ( $post_tags as $term ) {
+				$tag    = array(
+					'type' => 'Hashtag',
+					'href' => \esc_url( \get_tag_link( $term->term_id ) ),
+					'name' => esc_hashtag( $term->name ),
+				);
+				$tags[] = $tag;
+			}
+		}
+
+		if ( ! is_wp_error( $post_categories ) && $post_categories ) {
+			foreach ( $post_categories as $term ) {
+				$tag    = array(
+					'type' => 'Hashtag',
+					'href' => \esc_url( \get_tag_link( $term->term_id ) ),
+					'name' => esc_hashtag( $term->name ),
+				);
+				$tags[] = $tag;
+			}
+		}
+
+		if ( empty( $tags ) ) {
+			return null;
+		}
+
+		return $tags;
+	}
+
+	/**
+	 * Get the location.
+	 *
+	 * @return ?Place
+	 */
+	public function get_location(): ?Place {
+		$location = (array) $this->event_model->__get( 'location' );
+
+		if ( ! array_key_exists( 'address', $location ) ) {
+			return null;
+		}
+
+		$place = new Place();
+
+		$address = $location['address'];
+
+		$place->set_name( $address );
+		$place->set_address( $address );
+		$place->set_sensitive( null);
+
+		return $place;
 	}
 }
