@@ -100,6 +100,6 @@ jobs:
           PHP_VERSION: ${{ matrix.php-version }}
 
       - name: Run Integration tests for Eventin (WP Event Solution)
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=wp_event_solution
+        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=eventin
         env:
           PHP_VERSION: ${{ matrix.php-version }}
