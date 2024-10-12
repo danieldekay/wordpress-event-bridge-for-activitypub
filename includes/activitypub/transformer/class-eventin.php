@@ -159,7 +159,7 @@ final class Eventin extends Event {
 
 		$place->set_name( $address );
 		$place->set_address( $address );
-		$place->set_sensitive( null);
+		$place->set_sensitive( null );
 
 		return $place;
 	}

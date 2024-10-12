@@ -43,7 +43,9 @@ function _manually_load_plugin() {
 		}
 	}
 
+	// Hot fixes for eventin.
 	update_option( 'purchase_history_table_structure_migration_done', true );
+	update_option( 'etn_wizard', 'active' );
 
 	$plugin_file = null;
 	// See if we want to run integration tests for a specific event-plugin.
