@@ -1,5 +1,6 @@
 {
     "name": "menrath/wordpress-activitypub-event-bridge",
+    "version": "1.0.0",
     "description": "The ActivityPub Event Bridge help for event custom post types to federate properly.",
     "type": "wordpress-plugin",
     "require": {
@@ -51,17 +52,20 @@
             "@test-the-events-calendar",
             "@test-gatherpress",
             "@test-events-manager",
-            "@test-wp-event-manager"
+            "@test-wp-event-manager",
+            "@test-eventin"
         ],
         "test-debug": [
             "@prepare-test",
-            "@test-features"
+            "@test-wp-event-manager"
         ],
         "test-features": "phpunit --filter=reminder",
         "test-vs-event-list": "phpunit --filter=vs_event_list",
         "test-the-events-calendar": "phpunit --filter=the_events_calendar",
         "test-gatherpress": "phpunit --filter=gatherpress",
         "test-events-manager": "phpunit --filter=events_manager",
-        "test-wp-event-manager": "phpunit --filter=wp_event_manager"
+        "test-wp-event-manager": "phpunit --filter=wp_event_manager",
+        "test-eventin": "phpunit --filter=eventin",
+        "test-all": "phpunit"
     }
 }

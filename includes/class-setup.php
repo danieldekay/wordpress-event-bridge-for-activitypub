@@ -162,6 +162,7 @@ class Setup {
 		'\ActivityPub_Event_Bridge\Plugins\The_Events_Calendar',
 		'\ActivityPub_Event_Bridge\Plugins\VS_Event_List',
 		'\ActivityPub_Event_Bridge\Plugins\WP_Event_Manager',
+		'\ActivityPub_Event_Bridge\Plugins\Eventin',
 	);
 
 	/**
