@@ -32,13 +32,15 @@ class Reminder {
 	public static function init() {
 		// Post transitions.
 		\add_action( 'transition_post_status', array( self::class, 'maybe_schedule_event_reminder' ), 33, 3 );
-
 		\add_action( 'delete_post', array( self::class, 'unschedule_event_reminder' ), 33, 1 );
 
 		// Send an event reminder.
 		\add_action( 'activitypub_event_bridge_send_event_reminder', array( self::class, 'send_event_reminder' ), 10, 1 );
 
+		// Load the block which allows overriding the reminder time for an individual event in the post settings.
 		\add_action( 'enqueue_block_editor_assets', array( self::class, 'enqueue_editor_assets' ) );
+
+		// Register the post-meta which stores per-event overrides of the side-wide default of the reminder time gap.
 		\add_action( 'init', array( self::class, 'register_postmeta' ), 11 );
 	}
 
@@ -93,23 +95,17 @@ class Reminder {
 	 * @param WP_Post $post        Post object.
 	 */
 	public static function maybe_schedule_event_reminder( $new_status, $old_status, $post ): void {
-		$reminder_time_gap = (int) get_post_meta( $post->ID, 'activitypub_event_bridge_reminder_time_gap', true );
-
-		if ( ! $reminder_time_gap ) {
-			$reminder_time_gap = \get_option( 'activitypub_event_bridge_reminder_time_gap', 0 );
-		}
-
-		if ( 0 === $reminder_time_gap || ! is_int( $reminder_time_gap ) ) {
-			return;
-		}
-
+		// Re-Check that we got a valid post.
 		$post = get_post( $post );
 
 		if ( ! $post ) {
 			return;
 		}
 
-		// Do not send activities if post is password protected.
+		// At first always unschedule the reminder for this event, it will be added again, in case.
+		self::unschedule_event_reminder( $post->ID );
+
+		// Do not set reminders if post is password protected.
 		if ( \post_password_required( $post ) ) {
 			return;
 		}
@@ -119,12 +115,21 @@ class Reminder {
 			return;
 		}
 
-		if ( 'trash' === $new_status ) {
-			self::unschedule_event_reminder( $post->ID );
-		}
-
 		// Do not schedule a reminder if the event is not published.
 		if ( 'publish' !== $new_status ) {
+			return;
+		}
+
+		// See if a reminder time gap is set for the event individually in the events post-meta.
+		$reminder_time_gap = (int) get_post_meta( $post->ID, 'activitypub_event_bridge_reminder_time_gap', true );
+
+		// If not fallback to the global reminder time gap.
+		if ( ! $reminder_time_gap ) {
+			$reminder_time_gap = \get_option( 'activitypub_event_bridge_reminder_time_gap', 0 );
+		}
+
+		// Any non positive integer means that this feature is not active for this event post.
+		if ( 0 === $reminder_time_gap || ! is_int( $reminder_time_gap ) ) {
 			return;
 		}
 
@@ -142,15 +147,13 @@ class Reminder {
 		// Get the time when the reminder of the event's start should be sent.
 		$schedule_time = $start_timestamp - $reminder_time_gap;
 
+		// If the reminder time has already passed "now" skip it.
 		if ( $schedule_time < \time() ) {
 			return;
 		}
 
-		$hook = 'activitypub_event_bridge_send_event_reminder';
-		$args = array( $post->ID );
-
-		\wp_clear_scheduled_hook( $hook, $args );
-		\wp_schedule_single_event( $schedule_time, $hook, $args );
+		// All checks passed: schedule a single event which will trigger the sending of the reminder for this event post.
+		\wp_schedule_single_event( $schedule_time, 'activitypub_event_bridge_send_event_reminder', array( $post->ID ) );
 	}
 
 	/**
@@ -159,9 +162,7 @@ class Reminder {
 	 * @param int $post_id The WordPress post ID of the event post.
 	 */
 	public static function unschedule_event_reminder( $post_id ): void {
-		$hook = 'activitypub_event_bridge_send_event_reminder';
-		$args = array( $post_id );
-		\wp_clear_scheduled_hook( $hook, $args );
+		\wp_clear_scheduled_hook( 'activitypub_event_bridge_send_event_reminder', array( $post_id ) );
 	}
 
 	/**
