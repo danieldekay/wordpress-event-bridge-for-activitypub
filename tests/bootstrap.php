@@ -43,6 +43,10 @@ function _manually_load_plugin() {
 		}
 	}
 
+	// Hot fixes for eventin.
+	update_option( 'purchase_history_table_structure_migration_done', true );
+	update_option( 'etn_wizard', 'active' );
+
 	$plugin_file = null;
 	// See if we want to run integration tests for a specific event-plugin.
 	switch ( $activitypub_event_extension_integration_filter ) {
@@ -55,6 +59,9 @@ function _manually_load_plugin() {
 		case 'events_manager':
 			$plugin_file = 'events-manager/events-manager.php';
 			break;
+		case 'eventin':
+			$plugin_file = 'wp-event-solution/eventin.php';
+			break;
 		case 'gatherpress':
 			$plugin_file = 'gatherpress/gatherpress.php';
 			break;
@@ -66,6 +73,7 @@ function _manually_load_plugin() {
 	if ( $plugin_file ) {
 		// Manually load the event plugin.
 		require_once $plugin_dir . $plugin_file;
+		update_option( 'purchase_history_table_structure_migration_done', true );
 		$current   = get_option( 'active_plugins', array() );
 		$current[] = $plugin_file;
 		sort( $current );
