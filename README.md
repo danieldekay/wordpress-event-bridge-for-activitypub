@@ -39,7 +39,7 @@ These platforms create public event calendars by pulling in events from various 
     <img src="./.wordpress-org/decentralized-event-calenders.gif" alt="Logo" width="250" />
 </p>
 
-Even platforms that don’t yet fully support events, like [Mastodon](https://joinmastodon.org), will still receive a detailed, well-composed summary of your event.
+Even platforms that don't yet fully support events, like [Mastodon](https://joinmastodon.org), will still receive a detailed, well-composed summary of your event.
 The Event Federation plugin ensures that users from those platforms are provided with all important information about an event.
 
 ### Features for Your WordPress Events and the Fediverse
@@ -50,7 +50,7 @@ The Event Federation plugin ensures that users from those platforms are provided
 
 **Improved Event Discoverability:** Your custom event categories are mapped to a set of default categories used in the Fediverse, helping your events reach a wider audience. This improves the chances that users searching for similar events on other platforms will find yours.
 
-**Event Reminders for Your Followers:** Often, events are planned well in advance. To keep your followers informed right in time, you can set up reminders that are supposed to trigger the events showing up in their timelines right before the event starts. At the moment this reminder is implemented as a self-boost of your original event post. While this feature may behave differently across various platforms, we are working on a more robust solution that will let you schedule dedicated reminder notes that appear in all followers’ timelines.
+**Event Reminders for Your Followers:** Often, events are planned well in advance. To keep your followers informed right in time, you can set up reminders that are supposed to trigger the events showing up in their timelines right before the event starts. At the moment this reminder is implemented as a self-boost of your original event post. While this feature may behave differently across various platforms, we are working on a more robust solution that will let you schedule dedicated reminder notes that appear in all followers' timelines.
 
 ## Installation
 
