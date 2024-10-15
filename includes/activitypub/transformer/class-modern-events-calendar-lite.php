@@ -14,7 +14,9 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 use Activitypub\Activity\Extended_Object\Place;
 use ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
 
+use MEC;
 use MEC\Events\Event as MEC_Event;
+use MEC_main;
 
 /**
  * ActivityPub Tribe Transformer
@@ -30,6 +32,14 @@ final class Modern_Events_Calendar_Lite extends Event {
 	protected $mec_event;
 
 	/**
+	 * The MEC main instance.
+	 *
+	 * @var MEC_main|null
+	 */
+	protected $mec_main;
+
+
+	/**
 	 * Extend the constructor, to also set the tribe object.
 	 *
 	 * This is a special class object form The Events Calendar which
@@ -40,6 +50,7 @@ final class Modern_Events_Calendar_Lite extends Event {
 	 */
 	public function __construct( $wp_object, $wp_taxonomy ) {
 		parent::__construct( $wp_object, $wp_taxonomy );
+		$this->mec_main  = MEC::getInstance( 'app.libraries.main' );
 		$this->mec_event = new MEC_Event( $wp_object );
 	}
 
@@ -61,7 +72,31 @@ final class Modern_Events_Calendar_Lite extends Event {
 	 * Get the location.
 	 */
 	public function get_location(): ?Place {
-		return null;
+		$location_id = $this->mec_main->get_master_location_id( $this->mec_event->ID );
+
+		if ( ! $location_id ) {
+			return null;
+		}
+
+		$data = $this->mec_main->get_location_data( $location_id );
+
+		$location = new Place();
+		$location->set_sensitive( null );
+
+		if ( ! empty( $data['address'] ) ) {
+			$location->set_address( $data['address'] );
+		}
+		if ( ! empty( $data['name'] ) ) {
+			$location->set_name( $data['name'] );
+		}
+		if ( ! empty( $data['longitude'] ) ) {
+			$location->set_longitude( $data['longitude'] );
+		}
+		if ( ! empty( $data['latitude'] ) ) {
+			$location->set_latitude( $data['latitude'] );
+		}
+
+		return $location;
 	}
 
 	/**
@@ -73,6 +108,7 @@ final class Modern_Events_Calendar_Lite extends Event {
 		if ( 'global' === $timezone ) {
 			return parent::get_timezone();
 		}
+
 		return $timezone;
 	}
 }
