@@ -44,7 +44,7 @@ The Event Federation plugin ensures that users from those platforms are provided
 
 ### Features for Your WordPress Events and the Fediverse
 
-**ActivityPub-Enabled Event Sharing:** Your WordPress events are now compatible with the Fediverse, using the ActivityStreams format. This means your events can be easily discovered and followed by users on platforms like Mastodon and other ActivityPub-compatible services.
+**ActivityPub-Enabled Event Sharing:** Your WordPress events are not part of the Fediverse and
 
 **Automatic Event Summaries:** When your event is shared on the Fediverse, platforms like Mastodon that don't fully support events will display a brief HTML summary of key details — such as the event's title, start time, and location. This ensures that even if someone can't view the full event on their platform, they still get the important info at a glance, with a link to your WordPress event page.
 
