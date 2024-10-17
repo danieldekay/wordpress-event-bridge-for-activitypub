@@ -53,6 +53,7 @@ This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/ac
 * [Events Manager](https://de.wordpress.org/plugins/events-manager/)
 * [WP Event Manager](https://de.wordpress.org/plugins/wp-event-manager/)
 * [Eventin](https://de.wordpress.org/plugins/wp-event-solution/)
+* [Modern Events Calendar Lite](https://webnus.net/modern-events-calendar/)
 
 == Configuration ==
 
