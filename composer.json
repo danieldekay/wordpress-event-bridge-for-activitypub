@@ -53,11 +53,12 @@
             "@test-gatherpress",
             "@test-events-manager",
             "@test-wp-event-manager",
-            "@test-eventin"
+            "@test-eventin",
+            "@test-modern-events-calendar-lite"
         ],
         "test-debug": [
             "@prepare-test",
-            "@test-eventin"
+            "@test-modern-events-calendar-lite"
         ],
         "test-vs-event-list": "phpunit --filter=vs_event_list",
         "test-the-events-calendar": "phpunit --filter=the_events_calendar",
@@ -65,6 +66,7 @@
         "test-events-manager": "phpunit --filter=events_manager",
         "test-wp-event-manager": "phpunit --filter=wp_event_manager",
         "test-eventin": "phpunit --filter=eventin",
+        "test-modern-events-calendar-lite": "phpunit --filter=modern_events_calendar_lite",
         "test-all": "phpunit"
     }
 }

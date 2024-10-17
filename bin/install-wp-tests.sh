@@ -226,6 +226,20 @@ install_wp_plugin() {
     unzip -q -o "$TMPDIR/$PLUGIN_FILE" -d "$WP_CORE_DIR/wp-content/plugins/"
 }
 
+install_wp_plugin_mec() {
+	mkdir -p "$WP_CORE_DIR/wp-content/plugins/"
+
+	if [ -d "$WP_CORE_DIR/wp-content/plugins/modern-events-calendar-lite" ]; then
+		return;
+	fi
+
+	PLUGIN_VERSION="v7.15.0"
+
+    URL="https://code.event-federation.eu/Event-Federation/modern-events-calendar-lite"
+
+	git clone $URL "$WP_CORE_DIR/wp-content/plugins/modern-events-calendar-lite"
+}
+
 install_wp_plugins() {
 	if [ "$SKIP_PLUGINS_INSTALL" = "true" ]; then
         echo "Skipping WordPress plugin installation."
@@ -240,6 +254,8 @@ install_wp_plugins() {
 	install_wp_plugin events-manager
 	install_wp_plugin wp-event-manager
 	install_wp_plugin wp-event-solution
+	# Mec is not installable via wordpress.org, we use our own mirror.
+	install_wp_plugin_mec
 }
 
 install_wp

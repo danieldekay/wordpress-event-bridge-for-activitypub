@@ -62,6 +62,9 @@ function _manually_load_plugin() {
 		case 'eventin':
 			$plugin_file = 'wp-event-solution/eventin.php';
 			break;
+		case 'modern_events_calendar_lite':
+			$plugin_file = 'modern-events-calendar-lite/modern-events-calendar-lite.php';
+			break;
 		case 'gatherpress':
 			$plugin_file = 'gatherpress/gatherpress.php';
 			break;
