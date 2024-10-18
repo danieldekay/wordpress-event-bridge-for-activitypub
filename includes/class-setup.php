@@ -17,6 +17,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use ActivityPub_Event_Bridge\Admin\Event_Plugin_Admin_Notices;
 use ActivityPub_Event_Bridge\Admin\General_Admin_Notices;
+use ActivityPub_Event_Bridge\Admin\Health_Check;
 use ActivityPub_Event_Bridge\Admin\Settings_Page;
 use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
 
@@ -173,8 +174,8 @@ class Setup {
 			return;
 		}
 
+		add_action( 'init', array( Health_Check::class, 'init' ) );
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_styles' ) );
-
 		add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
 
 		add_filter(

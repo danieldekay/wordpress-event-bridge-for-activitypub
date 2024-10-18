@@ -61,6 +61,16 @@ class Settings {
 				'sanitize_callback' => array( self::class, 'sanitize_event_category_mappings' ),
 			)
 		);
+
+		\register_setting(
+			'activitypub-event-bridge',
+			'activitypub_event_bridge_initially_activated',
+			array(
+				'type'        => 'boolean',
+				'description' => \__( 'Whether the plugin just got activated for the first time.', 'activitypub' ),
+				'default'     => true,
+			)
+		);
 	}
 
 	/**
