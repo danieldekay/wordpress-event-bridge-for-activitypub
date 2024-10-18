@@ -62,6 +62,9 @@ function _manually_load_plugin() {
 		case 'eventin':
 			$plugin_file = 'wp-event-solution/eventin.php';
 			break;
+		case 'modern_events_calendar_lite':
+			$plugin_file = 'modern-events-calendar-lite/modern-events-calendar-lite.php';
+			break;
 		case 'gatherpress':
 			$plugin_file = 'gatherpress/gatherpress.php';
 			break;
@@ -86,6 +89,12 @@ function _manually_load_plugin() {
 		em_create_events_table();
 		em_create_events_meta_table();
 		em_create_locations_table();
+	}
+
+	if ( 'modern_events_calendar_lite' === $activitypub_event_extension_integration_filter ) {
+		require_once $plugin_dir . 'modern-events-calendar-lite/app/libraries/factory.php';
+		$mec_factory = new MEC_factory();
+		$mec_factory->install();
 	}
 
 	// At last manually load our WordPress plugin.
