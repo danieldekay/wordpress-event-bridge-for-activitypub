@@ -91,6 +91,12 @@ function _manually_load_plugin() {
 		em_create_locations_table();
 	}
 
+	if ( 'modern_events_calendar_lite' === $activitypub_event_extension_integration_filter ) {
+		require_once $plugin_dir . 'modern-events-calendar-lite/app/libraries/factory.php';
+		$mec_factory = new MEC_factory();
+		$mec_factory->install();
+	}
+
 	// At last manually load our WordPress plugin.
 	require dirname( __DIR__ ) . '/activitypub-event-bridge.php';
 }
