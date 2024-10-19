@@ -9,7 +9,7 @@
 $args = wp_parse_args(
 	$args,
 	array(
-		'status'   => '',
+		'welcome'  => '',
 		'settings' => '',
 	)
 );
@@ -21,8 +21,8 @@ $args = wp_parse_args(
 	</div>
 
 	<nav class="activitypub-event-bridge-settings-tabs-wrapper" aria-label="<?php \esc_attr_e( 'Secondary menu', 'activitypub-event-bridge' ); ?>">
-		<a href="<?php echo \esc_url( admin_url( 'options-general.php?page=activitypub-event-bridge' ) ); ?>" class="activitypub-event-bridge-settings-tab <?php echo \esc_attr( $args['status'] ); ?>">
-			<?php \esc_html_e( 'Status', 'activitypub-event-bridge' ); ?>
+		<a href="<?php echo \esc_url( admin_url( 'options-general.php?page=activitypub-event-bridge' ) ); ?>" class="activitypub-event-bridge-settings-tab <?php echo \esc_attr( $args['welcome'] ); ?>">
+			<?php \esc_html_e( 'Welcome', 'activitypub-event-bridge' ); ?>
 		</a>
 
 		<a href="<?php echo \esc_url( admin_url( 'options-general.php?page=activitypub-event-bridge&tab=settings' ) ); ?>" class="activitypub-event-bridge-settings-tab <?php echo \esc_attr( $args['settings'] ); ?>">

@@ -7,8 +7,10 @@
 
 namespace ActivityPub_Event_Bridge\Admin;
 
+use Activitypub\Transformer\Factory as Transformer_Factory;
+use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
 use ActivityPub_Event_Bridge\Setup;
-use WP_Error;
+use WP_Query;
 
 /**
  * ActivityPub Health_Check Class.
@@ -74,6 +76,58 @@ class Health_Check {
 		);
 
 		return $result;
+	}
+
+	/**
+	 * Test if right transformer gets applied.
+	 *
+	 * @param Event_Plugin $event_plugin  The event plugin definition.
+	 *
+	 * @return bool True if the check passed.
+	 */
+	public static function test_if_event_transformer_is_used( $event_plugin ) {
+		// Get a (random) event post.
+		$event_posts = self::get_most_recent_event_posts( $event_plugin->get_post_type(), 1 );
+
+		// If no post is found, we can not do this test.
+		if ( ! $event_posts || is_wp_error( $event_posts ) || empty( $event_posts ) ) {
+			return true;
+		}
+
+		// Call the transformer Factory.
+		$transformer = Transformer_Factory::get_transformer( $event_posts[0] );
+		// Check that we got the right transformer.
+		$desired_transformer_class = $event_plugin::get_activitypub_event_transformer_class();
+		if ( $transformer instanceof $desired_transformer_class ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Retrieves the most recently published event posts of a certain event post type.
+	 *
+	 * @param string $event_post_type  The post type of the events.
+	 * @param int    $number_of_posts  The maximum number of events to return.
+	 *
+	 * @return WP_Post[]|false         Array of event posts, or false if none are found.
+	 */
+	public static function get_most_recent_event_posts( $event_post_type, $number_of_posts = 5 ) {
+		$args = array(
+			'numberposts'      => $number_of_posts,
+			'category'         => 0,
+			'orderby'          => 'date',
+			'order'            => 'DESC',
+			'include'          => array(),
+			'exclude'          => array(),
+			'meta_key'         => '',
+			'meta_value'       => '',
+			'post_type'        => $event_post_type,
+			'suppress_filters' => true,
+		);
+
+		$query = new WP_Query();
+		return $query->query( $args );
 	}
 
 	/**

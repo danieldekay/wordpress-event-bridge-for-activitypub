@@ -287,7 +287,7 @@ class Setup {
 	 * This method handles the activation of the ActivityPub Event Bridge plugin.
 	 *
 	 * @since 1.0.0
-	 *
+	 * @see register_activation_hook()
 	 * @return void
 	 */
 	public function activate(): void {

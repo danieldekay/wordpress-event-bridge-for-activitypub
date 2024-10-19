@@ -6,8 +6,8 @@
 }
 
 .activitypub-event-bridge-settings-page .box ul.activitypub-event-bridge-list {
-	list-style-type: 	disc;
-	margin-left: 1rem;
+	list-style-type: disc;
+	margin-left: 1.4rem;
 }
 
 .activitypub-event-bridge-settings-page .box pre {
@@ -65,3 +65,6 @@
 	font-size: 1.1rem!important;
 }
 
+#activitypub_event_bridge_initially_activated {
+	display: hidden;
+}

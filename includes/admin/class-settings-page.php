@@ -91,7 +91,7 @@ class Settings_Page {
 	public static function settings_page(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		if ( empty( $_GET['tab'] ) ) {
-			$tab = 'status';
+			$tab = 'welcome';
 		} else {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$tab = sanitize_key( $_GET['tab'] );
@@ -116,13 +116,13 @@ class Settings_Page {
 
 				\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/settings.php', true, $args );
 				break;
-			case 'status':
+			case 'welcome':
 			default:
 				wp_enqueue_script( 'plugin-install' );
 				add_thickbox();
 				wp_enqueue_script( 'updates' );
 
-				\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/status.php', true );
+				\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/welcome.php', true );
 				break;
 		}
 	}

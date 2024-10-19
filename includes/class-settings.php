@@ -68,7 +68,7 @@ class Settings {
 			array(
 				'type'        => 'boolean',
 				'description' => \__( 'Whether the plugin just got activated for the first time.', 'activitypub' ),
-				'default'     => true,
+				'default'     => 1,
 			)
 		);
 	}

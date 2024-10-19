@@ -97,6 +97,10 @@ $current_category_mapping        = \get_option( 'activitypub_event_bridge_event_
 			</table>
 			<?php endif; ?>
 		</div>
+		<!-- This disables the setup wizard. -->
+		<div class="hidden">
+			<input type="checkbox" id="activitypub_event_bridge_initially_activated" name="activitypub_event_bridge_initially_activated"/>
+		</div>
 		<?php \submit_button(); ?>
 	</form>
 </div>
