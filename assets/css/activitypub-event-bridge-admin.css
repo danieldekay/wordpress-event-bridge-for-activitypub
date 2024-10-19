@@ -5,6 +5,20 @@
 	margin-bottom: 1.5em;
 }
 
+.activitypub-event-bridge-settings-page .box ul.activitypub-event-bridge-list {
+	list-style-type: 	disc;
+	margin-left: 1rem;
+}
+
+.activitypub-event-bridge-settings-page .box pre {
+	padding: 1rem;
+	min-height: 200px;
+	box-shadow: none;
+	border-radius: 15px;
+	border: 1px solid #dfe0e2;
+	background-color: #f7f7f7;
+}
+
 .activitypub-event-bridge-settings {
 	max-width: 800px;
 	margin: 0 auto;
@@ -50,3 +64,4 @@
 .activitypub-event-bridge-settings .box h3 {
 	font-size: 1.1rem!important;
 }
+
