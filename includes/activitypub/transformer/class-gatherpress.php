@@ -124,7 +124,7 @@ final class GatherPress extends Event {
 	 */
 	public static function filter_gatherpress_blocks( $block_content, $block ) {
 		// Check if the block name starts with 'gatherpress'.
-		if ( strpos( $block['blockName'], 'gatherpress/' ) === 0 ) {
+		if ( isset( $block['blockName'] ) && 0 === strpos( $block['blockName'], 'gatherpress/' ) ) {
 			return ''; // Skip rendering this block.
 		}
 
