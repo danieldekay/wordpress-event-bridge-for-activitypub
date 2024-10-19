@@ -1,0 +1,52 @@
+.activitypub-event-bridge-settings-page .box {
+	border: 1px solid #c3c4c7;
+	background-color: #fff;
+	padding: 1em 1.5em;
+	margin-bottom: 1.5em;
+}
+
+.activitypub-event-bridge-settings {
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.activitypub-event-bridge-settings-header {
+	text-align: center;
+	margin: 0 0 1rem;
+	background: #fff;
+	border-bottom: 1px solid #dcdcde;
+}
+
+.activitypub-event-bridge-settings-title-section {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	clear: both;
+	padding-top: 8px;
+}
+
+.activitypub-event-bridge-settings-tabs-wrapper {
+	display: -ms-inline-grid;
+	-ms-grid-columns: auto auto auto auto;
+	vertical-align: top;
+	display: inline-grid;
+	grid-template-columns: auto auto auto auto;
+}
+
+.activitypub-event-bridge-settings-tab.active {
+	box-shadow: inset 0 -3px #3582c4;
+	font-weight: 600;
+}
+
+.activitypub-event-bridge-settings-tab {
+	display: block;
+	text-decoration: none;
+	color: inherit;
+	padding: .5rem 1rem 1rem;
+	margin: 0 1rem;
+	transition: box-shadow .5s ease-in-out;
+}
+
+.activitypub-event-bridge-settings .box h3 {
+	font-size: 1.1rem!important;
+}

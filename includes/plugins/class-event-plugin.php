@@ -54,6 +54,18 @@ abstract class Event_Plugin {
 	}
 
 	/**
+	 * Get the plugins name from the main plugin-file's top-level-file-comment.
+	 */
+	final public static function get_plugin_name(): string {
+		$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . static::get_plugin_file() );
+		if ( isset( $plugin_data['Name'] ) ) {
+			return $plugin_data['Name'];
+		} else {
+			return '';
+		}
+	}
+
+	/**
 	 * Detects whether the current screen is a admin page of the event plugin.
 	 */
 	public static function is_plugin_page(): bool {
