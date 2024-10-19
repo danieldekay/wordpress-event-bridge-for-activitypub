@@ -74,7 +74,7 @@ abstract class Event_Plugin {
 
 		// Check if we are on a edit page for the event, or on the settings page of the event plugin.
 		$is_event_plugins_edit_page     = 'edit' === $screen->base && static::get_post_type() === $screen->post_type;
-		$is_event_plugins_settings_page = in_array( $screen->id, static::get_settings_pages(), true);
+		$is_event_plugins_settings_page = in_array( $screen->id, static::get_settings_pages(), true );
 
 		return $is_event_plugins_edit_page || $is_event_plugins_settings_page;
 	}
