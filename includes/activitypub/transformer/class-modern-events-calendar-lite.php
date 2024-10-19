@@ -55,6 +55,14 @@ final class Modern_Events_Calendar_Lite extends Event {
 	}
 
 	/**
+	 * Retrieves the content without the plugins rendered shortcodes.
+	 */
+	public function get_content(): string {
+		$content = wpautop( $this->wp_object->post_content );
+		return $content;
+	}
+
+	/**
 	 * Get the end time from the event object.
 	 */
 	public function get_start_time(): string {
