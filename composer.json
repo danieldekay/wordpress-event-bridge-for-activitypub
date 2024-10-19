@@ -58,7 +58,7 @@
         ],
         "test-debug": [
             "@prepare-test",
-            "@test-modern-events-calendar-lite"
+            "@test-gatherpress"
         ],
         "test-vs-event-list": "phpunit --filter=vs_event_list",
         "test-the-events-calendar": "phpunit --filter=the_events_calendar",
