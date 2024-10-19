@@ -89,21 +89,41 @@ class Settings_Page {
 	 * @return void
 	 */
 	public static function settings_page(): void {
-		$plugin_setup = Setup::get_instance();
-
-		$event_plugins = $plugin_setup->get_active_event_plugins();
-
-		$event_terms = array();
-
-		foreach ( $event_plugins as $event_plugin ) {
-			$event_terms = array_merge( $event_terms, self::get_event_terms( $event_plugin ) );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( empty( $_GET['tab'] ) ) {
+			$tab = 'welcome';
+		} else {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$tab = sanitize_key( $_GET['tab'] );
 		}
 
-		$args = array(
-			'slug'        => self::SETTINGS_SLUG,
-			'event_terms' => $event_terms,
-		);
+		switch ( $tab ) {
+			case 'settings':
+				$plugin_setup = Setup::get_instance();
 
-		\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/settings.php', true, $args );
+				$event_plugins = $plugin_setup->get_active_event_plugins();
+
+				$event_terms = array();
+
+				foreach ( $event_plugins as $event_plugin ) {
+					$event_terms = array_merge( $event_terms, self::get_event_terms( $event_plugin ) );
+				}
+
+				$args = array(
+					'slug'        => self::SETTINGS_SLUG,
+					'event_terms' => $event_terms,
+				);
+
+				\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/settings.php', true, $args );
+				break;
+			case 'welcome':
+			default:
+				wp_enqueue_script( 'plugin-install' );
+				add_thickbox();
+				wp_enqueue_script( 'updates' );
+
+				\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/welcome.php', true );
+				break;
+		}
 	}
 }

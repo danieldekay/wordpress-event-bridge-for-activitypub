@@ -41,17 +41,17 @@ final class The_Events_Calendar extends Event_plugin {
 	}
 
 	/**
-	 * Returns the ID of the main settings page of the plugin.
+	 * Returns the IDs of the admin pages of the plugin.
 	 *
-	 * @return string The settings page url.
+	 * @return array The settings page urls.
 	 */
-	public static function get_settings_page(): string {
+	public static function get_settings_pages(): array {
 		if ( class_exists( '\Tribe\Events\Admin\Settings' ) ) {
 			$page = \Tribe\Events\Admin\Settings::$settings_page_id;
 		} else {
 			$page = 'tec-events-settings';
 		}
-		return sprintf( 'edit.php?post_type=tribe_events&page=%s', $page );
+		return array( $page );
 	}
 
 	/**

@@ -13,6 +13,14 @@
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+\load_template(
+	__DIR__ . '/admin-header.php',
+	true,
+	array(
+		'settings' => 'active',
+	)
+);
+
 use Activitypub\Activity\Extended_Object\Event;
 
 if ( ! isset( $args ) || ! array_key_exists( 'event_terms', $args ) ) {
@@ -31,19 +39,12 @@ $selected_default_event_category = \get_option( 'activitypub_event_bridge_defaul
 $current_category_mapping        = \get_option( 'activitypub_event_bridge_event_category_mappings', array() );
 ?>
 
-<div class="activitypub-settings-header">
-	<div class="activitypub-settings-title-section">
-		<h1><?php \esc_html_e( 'ActivityPub Event Bridge', 'activitypub-event-bridge' ); ?></h1>
-	</div>
-</div>
-<hr class="wp-header-end">
-
-<div class="activitypub-settings activitypub-settings-page activitypub-event-bridge-settings-page hide-if-no-js">
+<div class="activitypub-event-bridge-settings activitypub-event-bridge-settings-page hide-if-no-js">
 	<form method="post" action="options.php">
 		<?php \settings_fields( 'activitypub-event-bridge' ); ?>
 
 		<div class="box">
-			<h2> <?php esc_html_e( 'Default ActivityPub Event Category', 'activitypub-event-bridge' ); ?> </h2>
+			<h2> <?php esc_html_e( 'ActivityPub Event Category', 'activitypub-event-bridge' ); ?> </h2>
 			<p> <?php esc_html_e( 'To help visitors find events more easily, the community created a set of basic event categories. Please select the category that best matches the majority of the events you organize.', 'activitypub-event-bridge' ); ?> </p>
 			<table class="form-table">
 				<tr>
@@ -59,11 +60,9 @@ $current_category_mapping        = \get_option( 'activitypub_event_bridge_event_
 					</td>
 				</tr>
 			</table>
-		</div>
 
-		<?php if ( ! empty( $event_terms ) ) : ?>
-		<div class="box">
-			<h2> <?php esc_html_e( 'Advanced Event Category Settings', 'activitypub-event-bridge' ); ?> </h2>
+			<?php if ( ! empty( $event_terms ) ) : ?>
+			<h3> <?php esc_html_e( 'Advanced Event Category Settings', 'activitypub-event-bridge' ); ?> </h3>
 			<p> <?php esc_html_e( 'Take more control by adjusting how your event categories are mapped to the basic category set used in ActivityPub. This option lets you override the default selection above, ensuring more accurate categorization and better visibility for your events.', 'activitypub-event-bridge' ); ?> </p>
 			<table class="form-table">
 				<?php foreach ( $event_terms as $event_term ) { ?>
@@ -96,8 +95,12 @@ $current_category_mapping        = \get_option( 'activitypub_event_bridge_event_
 					</tr>
 				<?php } ?>
 			</table>
+			<?php endif; ?>
 		</div>
-		<?php endif; ?>
+		<!-- This disables the setup wizard. -->
+		<div class="hidden">
+			<input type="checkbox" id="activitypub_event_bridge_initially_activated" name="activitypub_event_bridge_initially_activated"/>
+		</div>
 		<?php \submit_button(); ?>
 	</form>
 </div>

@@ -42,12 +42,12 @@ final class Modern_Events_Calendar_Lite extends Event_plugin {
 	}
 
 	/**
-	 * Returns the ID of the main settings page of the plugin.
+	 * Returns the IDs of the admin pages of the plugin.
 	 *
-	 * @return string The settings page url.
+	 * @return array The settings page urls.
 	 */
-	public static function get_settings_page(): string {
-		return 'mec-event';
+	public static function get_settings_pages(): array {
+		return array( 'MEC-settings', 'MEC-support', 'MEC-ix', 'MEC-wizard', 'MEC-addons', 'mec-intro' );
 	}
 
 	/**
