@@ -41,12 +41,12 @@ final class Eventin extends Event_plugin {
 	}
 
 	/**
-	 * Returns the ID of the main settings page of the plugin.
+	 * Returns the IDs of the admin pages of the plugin.
 	 *
-	 * @return string The settings page url.
+	 * @return array The settings page url.
 	 */
-	public static function get_settings_page(): string {
-		return 'eventin'; // Base always is wp-admin/admin.php?page=eventin.
+	public static function get_settings_pages(): array {
+		return array( 'eventin' ); // Base always is wp-admin/admin.php?page=eventin.
 	}
 
 	/**

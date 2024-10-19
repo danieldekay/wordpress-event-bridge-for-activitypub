@@ -45,12 +45,12 @@ abstract class Event_Plugin {
 	abstract public static function get_event_category_taxonomy(): string;
 
 	/**
-	 * Returns the ID of the main settings page of the plugin.
+	 * Returns the IDs of the admin pages of the plugin.
 	 *
-	 * @return string The settings page url.
+	 * @return array The IDs of one or several admin/settings pages.
 	 */
-	public static function get_settings_page(): string {
-		return '';
+	public static function get_settings_pages(): array {
+		return array();
 	}
 
 	/**
@@ -74,7 +74,7 @@ abstract class Event_Plugin {
 
 		// Check if we are on a edit page for the event, or on the settings page of the event plugin.
 		$is_event_plugins_edit_page     = 'edit' === $screen->base && static::get_post_type() === $screen->post_type;
-		$is_event_plugins_settings_page = static::get_settings_page() === $screen->id;
+		$is_event_plugins_settings_page = in_array( $screen->id, static::get_settings_pages(), true);
 
 		return $is_event_plugins_edit_page || $is_event_plugins_settings_page;
 	}

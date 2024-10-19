@@ -168,6 +168,12 @@ class Setup {
 
 		add_action( 'admin_init', array( $this, 'do_admin_notices' ) );
 		add_action( 'admin_init', array( Settings::class, 'register_settings' ) );
+		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_styles' ) );
+		add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
+		add_filter(
+			'plugin_action_links_' . ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_BASENAME,
+			array( Settings_Page::class, 'settings_link' )
+		);
 
 		// If we don't have any active event plugins, or the ActivityPub plugin is not enabled, abort here.
 		if ( empty( $this->active_event_plugins ) || ! $this->activitypub_plugin_is_active ) {
@@ -175,13 +181,6 @@ class Setup {
 		}
 
 		add_action( 'init', array( Health_Check::class, 'init' ) );
-		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_styles' ) );
-		add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
-
-		add_filter(
-			'plugin_action_links_' . ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_BASENAME,
-			array( Settings_Page::class, 'settings_link' )
-		);
 
 		// Check if the minimum required version of the ActivityPub plugin is installed.
 		if ( ! version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_BRIDGE_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {

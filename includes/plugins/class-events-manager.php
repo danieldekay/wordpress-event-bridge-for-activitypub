@@ -41,12 +41,12 @@ final class Events_Manager extends Event_Plugin {
 	}
 
 	/**
-	 * Returns the ID of the main settings page of the plugin.
+	 * Returns the IDs of the admin pages of the plugin.
 	 *
-	 * @return string The settings page url.
+	 * @return array The settings page urls.
 	 */
-	public static function get_settings_page(): string {
-		return 'wp-admin/edit.php?post_type=event&page=events-manager-options#general';
+	public static function get_settings_page(): array {
+		return array();
 	}
 
 	/**

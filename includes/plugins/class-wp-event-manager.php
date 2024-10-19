@@ -44,12 +44,12 @@ final class WP_Event_Manager extends Event_Plugin {
 	}
 
 	/**
-	 * Returns the ID of the main settings page of the plugin.
+	 * Returns the IDs of the admin pages of the plugin.
 	 *
-	 * @return string The settings page url.
+	 * @return array The settings page urls.
 	 */
-	public static function get_settings_page(): string {
-		return 'event-manager-settings';
+	public static function get_settings_pages(): array {
+		return array( 'event-manager-settings' );
 	}
 
 	/**
