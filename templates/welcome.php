@@ -58,6 +58,26 @@ WP_Filesystem();
 	<?php else : ?>
 
 	<div class="box">
+		<h2><?php \esc_html_e( 'How to Check if It\'s Working', 'activitypub-event-bridge' ); ?></h2>
+		<p><?php esc_html_e( 'Most of the magic happens behind the scenes, but here’s how you can verify that your events are ready to be discovered:', 'activitypub-event-bridge' ); ?></p>
+		<div class="activitypub-event-bridge-settings-accordion">
+				<h4 class="activitypub-event-bridge-settings-accordion-heading">
+				<button aria-expanded="false" class="activitypub-event-bridge-settings-accordion-trigger" aria-controls="activitypub-event-bridge-help-accordion-mastodon" type="button">
+					<span class="title"><?php \esc_html_e( '1. Using Your Mastodon Account', 'activitypub-event-bridge' ); ?></span>
+					<span class="icon"></span>
+				</button>
+			</h4>
+			<div id="activitypub-event-bridge-help-accordion-mastodon" class="activitypub-event-bridge-settings-accordion-panel" hidden="hidden">
+				<ol class="activitypub-event-bridge-settings-numbered-list">
+					<li><?php \esc_html_e( 'Log into your Mastodon account.', 'activitypub-event-bridge' ); ?></li>
+					<li><?php \esc_html_e( 'In the search bar, type or copy the full URL of one of your event pages (e.g., https://yoursite.com/events/event-name).', 'activitypub-event-bridge' ); ?></li>
+					<li><?php \esc_html_e( 'If everything is set up correctly, you\'ll see a post representing your event. It should include the event\'s image, title, and a brief description.', 'activitypub-event-bridge' ); ?></li>
+				</ol>
+			</div>
+		</div>
+	</div>
+
+	<div class="box">
 		<h2><?php \esc_html_e( 'Changelog', 'activitypub-event-bridge' ); ?></h2>
 		<pre>
 			<?php

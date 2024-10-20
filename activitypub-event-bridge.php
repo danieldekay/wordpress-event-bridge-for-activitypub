@@ -3,7 +3,7 @@
  * Plugin Name:  ActivityPub Event Bridge
  * Description:  Integrating popular event plugins with the ActivityPub plugin.
  * Plugin URI:   https://event-federation.eu/
- * Version:      0.1.0
+ * Version:      0.1.1
  * Author:       André Menrath
  * Author URI:   https://graz.social/@linos
  * Text Domain:  activitypub-event-bridge

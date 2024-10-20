@@ -208,6 +208,16 @@ class Setup {
 				array(),
 				ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_VERSION
 			);
+			wp_enqueue_script(
+				'activitypub-event-bridge-admin-script',
+				plugins_url(
+					'assets/js/activitypub-event-bridge-admin.js',
+					ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_FILE
+				),
+				array( 'jquery' ),
+				ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_VERSION,
+				false
+			);
 		}
 	}
 
