@@ -3,7 +3,7 @@
  * General settings class.
  *
  * This file contains the General class definition, which handles the "General" settings
- * page for the ActivityPub Event Extension Plugin, providing options for configuring various general settings.
+ * page for the Activitypub Event Bridge Plugin, providing options for configuring various general settings.
  *
  * @package ActivityPub_Event_Bridge
  * @since 1.0.0

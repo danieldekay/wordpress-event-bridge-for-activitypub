@@ -29,7 +29,7 @@ if ( empty( $example_event_post ) ) {
 	$example_event_post          = 'https://yoursite.com/events/event-name';
 	$example_event_post_is_dummy = true;
 } else {
-	$example_event_post          = \get_permalink( $example_event_post[0]);
+	$example_event_post          = \get_permalink( $example_event_post[0] );
 	$example_event_post_is_dummy = false;
 }
 
@@ -133,8 +133,10 @@ WP_Filesystem();
 			<div id="activitypub-event-bridge-help-accordion-mastodon" class="activitypub-event-bridge-settings-accordion-panel" hidden="hidden">
 				<ol class="activitypub-event-bridge-settings-numbered-list">
 					<li><?php \esc_html_e( 'Log into your Mastodon account.', 'activitypub-event-bridge' ); ?></li>
-
-					<li><?php \esc_html_e( 'In the search bar, type or copy the full URL of one of your event pages (e.g., https://yoursite.com/events/event-name).', 'activitypub-event-bridge' ); ?></li>
+					<li>
+						<?php \esc_html_e( 'In the search bar, type or copy the full URL of one of your event pages. For example:', 'activitypub-event-bridge' ); ?>
+						<code class="activitypub-event-bridge-settings-example-url"><?php echo \esc_url( $example_event_post ); ?></code>
+					</li>
 					<li><?php \esc_html_e( 'If everything is set up correctly, you\'ll see a post representing your event. It should include the event\'s image, title, and a brief description.', 'activitypub-event-bridge' ); ?></li>
 				</ol>
 			</div>
@@ -151,7 +153,10 @@ WP_Filesystem();
 			<div id="activitypub-event-bridge-help-accordion-mobilizon" class="activitypub-event-bridge-settings-accordion-panel" hidden="hidden">
 				<ol class="activitypub-event-bridge-settings-numbered-list">
 					<li><?php \esc_html_e( 'Log into your Mobilizon account.', 'activitypub-event-bridge' ); ?></li>
-					<li><?php \esc_html_e( 'In the search bar, type or copy the full URL of one of your event pages.', 'activitypub-event-bridge' ); ?></li>
+					<li>
+						<?php \esc_html_e( 'In the search bar, type or copy the full URL of one of your event pages. For example:', 'activitypub-event-bridge' ); ?>
+						<code class="activitypub-event-bridge-settings-example-url"><?php echo \esc_url( $example_event_post ); ?></code>
+					</li>
 					<li><?php \esc_html_e( 'If everything is set up correctly, you\'ll see a full representation of your WordPress event. This will include the event\'s banner image, title, complete description, start and end times, categories, tags, and whether it\'s an online event.', 'activitypub-event-bridge' ); ?></li>
 				</ol>
 			</div>
@@ -169,7 +174,10 @@ WP_Filesystem();
 				<p><?php \esc_html_e( 'Of course any other application in the Fediverse should work as well. Most applications support importing external content via searching for the contents full URL.', 'activitypub-event-bridge' ); ?></p>
 				<ol class="activitypub-event-bridge-settings-numbered-list">
 					<li><?php \esc_html_e( 'Log into your account on any Fediverse app.', 'activitypub-event-bridge' ); ?></li>
-					<li><?php \esc_html_e( 'In the search bar, type or copy the full URL of one of your event pages (e.g., https://yoursite.com/events/event-name).', 'activitypub-event-bridge' ); ?></li>
+					<li>
+						<?php \esc_html_e( 'In the search bar, type or copy the full URL of one of your event pages. For example:', 'activitypub-event-bridge' ); ?>
+						<code class="activitypub-event-bridge-settings-example-url"><?php echo \esc_url( $example_event_post ); ?></code>
+					</li>
 					<li><?php \esc_html_e( 'If the application which your are using natively supports ActivityPub events, you should see a representation of your WordPress event. If your application is supports receiving ActivityPub events you will get a post which summarizes the event. Keep in mind that some apps may not support events at all.', 'activitypub-event-bridge' ); ?></li>
 				</ol>
 			</div>

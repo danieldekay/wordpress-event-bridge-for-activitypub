@@ -3,7 +3,7 @@
  * General settings class.
  *
  * This file contains the General class definition, which handles the "General" settings
- * page for the ActivityPub Event Extension Plugin, providing options for configuring various general settings.
+ * page for the Activitypub Event Bridge Plugin, providing options for configuring various general settings.
  *
  * @package ActivityPub_Event_Bridge
  * @since 1.0.0
@@ -18,9 +18,9 @@ use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
 use ActivityPub_Event_Bridge\Setup;
 
 /**
- * Class responsible for the ActivityPub Event Extension related Settings.
+ * Class responsible for the Activitypub Event Bridge related Settings.
  *
- * Class which handles the "General" settings page for the ActivityPub Event Extension Plugin,
+ * Class which handles the "General" settings page for the Activitypub Event Bridge Plugin,
  * providing options for configuring various general settings.
  *
  * @since 1.0.0
@@ -36,11 +36,11 @@ class Settings_Page {
 	 */
 	public static function admin_menu(): void {
 		\add_options_page(
-			'Activitypub Event Extension',
+			'Activitypub Event Bridge',
 			__( 'ActivityPub Event Bridge', 'activitypub-event-bridge' ),
 			'manage_options',
 			self::SETTINGS_SLUG,
-			array( self::STATIC, 'settings_page' )
+			array( self::STATIC, 'settings_page' ),
 		);
 	}
 

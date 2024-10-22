@@ -166,3 +166,14 @@
     vertical-align: middle;
 	margin: 0 0.3em;
 }
+
+code.activitypub-event-bridge-settings-example-url {
+	display: block;
+	background: rgb(28, 29, 33);
+	padding: 8px;
+	margin: 10px 0px 10px 0;
+	border-radius: 7px;
+	color: #d5d5d6;
+	overflow-x: auto;
+	word-break: break-all;
+}
