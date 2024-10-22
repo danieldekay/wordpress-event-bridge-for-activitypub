@@ -20,10 +20,9 @@ use ActivityPub_Event_Bridge\Admin\Health_Check;
 	)
 );
 
-$active_event_plugins = Setup::get_instance()->get_active_event_plugins();
+$active_event_plugins               = Setup::get_instance()->get_active_event_plugins();
 $activitypub_event_bridge_status_ok = true;
-
-$example_event_post = Health_Check::get_most_recent_event_posts();
+$example_event_post                 = Health_Check::get_most_recent_event_posts();
 
 if ( empty( $example_event_post ) ) {
 	$example_event_post          = 'https://yoursite.com/events/event-name';
@@ -208,7 +207,7 @@ WP_Filesystem();
 					// Allowed HTML tags in the string (only <code> and <a>).
 					$allowed_html = array(
 						'a'    => array(
-							'href'  => array(),
+							'href'   => array(),
 							'target' => array(),
 						),
 						'nobr' => array(),
