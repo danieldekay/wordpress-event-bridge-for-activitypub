@@ -107,12 +107,16 @@ class Health_Check {
 	/**
 	 * Retrieves the most recently published event posts of a certain event post type.
 	 *
-	 * @param string $event_post_type  The post type of the events.
-	 * @param int    $number_of_posts  The maximum number of events to return.
+	 * @param ?string $event_post_type  The post type of the events.
+	 * @param ?int    $number_of_posts  The maximum number of events to return.
 	 *
 	 * @return WP_Post[]|false         Array of event posts, or false if none are found.
 	 */
-	public static function get_most_recent_event_posts( $event_post_type, $number_of_posts = 5 ) {
+	public static function get_most_recent_event_posts( $event_post_type = null, $number_of_posts = 5 ) {
+		if ( ! $event_post_type ) {
+			$event_post_type = Setup::get_instance()->get_active_event_plugins()[0]->get_post_type();
+		}
+
 		$args = array(
 			'numberposts'      => $number_of_posts,
 			'category'         => 0,

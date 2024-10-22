@@ -173,7 +173,7 @@ final class The_Events_Calendar extends Event {
 		} else {
 			$location->set_address( $venue->post_title );
 		}
-		$location->set_id( $venue->permalink );
+		$location->set_id( $venue->ID );
 		$location->set_name( $venue->post_title );
 
 		return $location;
