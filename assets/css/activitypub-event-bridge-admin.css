@@ -1,3 +1,7 @@
+.settings_page_activitypub-event-bridge #wpcontent {
+	padding-left: 0;
+}
+
 .activitypub-event-bridge-settings-page .box {
 	border: 1px solid #c3c4c7;
 	background-color: #fff;
@@ -6,8 +10,7 @@
 }
 
 .activitypub-event-bridge-settings-page .box ul.activitypub-event-bridge-list {
-	list-style-type: disc;
-	margin-left: 1.4rem;
+	margin-left: 0.6em;
 }
 
 .activitypub-event-bridge-settings-page .box pre {
@@ -62,7 +65,8 @@
 }
 
 .activitypub-event-bridge-settings .box h3 {
-	font-size: 1.1rem!important;
+	font-size: 1.15em;
+	margin-bottom: 0em;
 }
 
 #activitypub_event_bridge_initially_activated {
@@ -154,4 +158,11 @@
 	outline-offset: -1px;
 	outline: 2px solid #2271b1;
 	background-color: #f6f7f7;
+}
+
+.activitypub-event-bridge-settings-inline-icon {
+	width: 1.5em;
+    height: 1.5em;
+    vertical-align: middle;
+	margin: 0 0.3em;
 }

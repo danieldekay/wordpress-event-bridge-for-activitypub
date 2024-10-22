@@ -37,7 +37,7 @@ class Settings_Page {
 	public static function admin_menu(): void {
 		\add_options_page(
 			'Activitypub Event Extension',
-			__( 'ActivityPub Events', 'activitypub-event-bridge' ),
+			__( 'ActivityPub Event Bridge', 'activitypub-event-bridge' ),
 			'manage_options',
 			self::SETTINGS_SLUG,
 			array( self::STATIC, 'settings_page' )
