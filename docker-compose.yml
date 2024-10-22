@@ -1,6 +1,9 @@
 version: '3'
 
 # This files purpose is to run the PHPunit tests locally.
+# Prerequisites:
+# Run "composer install" to generate a composer.lock file and install PHP dev dependencies.
+#
 # Install docker and docker compose and than just run:
 # docker compose up
 
