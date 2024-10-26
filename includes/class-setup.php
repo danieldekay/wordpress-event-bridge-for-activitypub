@@ -17,6 +17,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use ActivityPub_Event_Bridge\Admin\Event_Plugin_Admin_Notices;
 use ActivityPub_Event_Bridge\Admin\General_Admin_Notices;
+use ActivityPub_Event_Bridge\Admin\Health_Check;
 use ActivityPub_Event_Bridge\Admin\Settings_Page;
 use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
 
@@ -129,6 +130,9 @@ class Setup {
 		'\ActivityPub_Event_Bridge\Plugins\The_Events_Calendar',
 		'\ActivityPub_Event_Bridge\Plugins\VS_Event_List',
 		'\ActivityPub_Event_Bridge\Plugins\My_Calendar',
+		'\ActivityPub_Event_Bridge\Plugins\WP_Event_Manager',
+		'\ActivityPub_Event_Bridge\Plugins\Eventin',
+		'\ActivityPub_Event_Bridge\Plugins\Modern_Events_Calendar_Lite',
 	);
 
 	/**
@@ -165,20 +169,19 @@ class Setup {
 
 		add_action( 'admin_init', array( $this, 'do_admin_notices' ) );
 		add_action( 'admin_init', array( Settings::class, 'register_settings' ) );
+		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_styles' ) );
+		add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
+		add_filter(
+			'plugin_action_links_' . ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_BASENAME,
+			array( Settings_Page::class, 'settings_link' )
+		);
 
 		// If we don't have any active event plugins, or the ActivityPub plugin is not enabled, abort here.
 		if ( empty( $this->active_event_plugins ) || ! $this->activitypub_plugin_is_active ) {
 			return;
 		}
 
-		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_styles' ) );
-
-		add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
-
-		add_filter(
-			'plugin_action_links_' . ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_BASENAME,
-			array( Settings_Page::class, 'settings_link' )
-		);
+		add_action( 'init', array( Health_Check::class, 'init' ) );
 
 		// Check if the minimum required version of the ActivityPub plugin is installed.
 		if ( ! version_compare( $this->activitypub_plugin_version, ACTIVITYPUB_EVENT_BRIDGE_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
@@ -205,6 +208,16 @@ class Setup {
 				),
 				array(),
 				ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_VERSION
+			);
+			wp_enqueue_script(
+				'activitypub-event-bridge-admin-script',
+				plugins_url(
+					'assets/js/activitypub-event-bridge-admin.js',
+					ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_FILE
+				),
+				array( 'jquery' ),
+				ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_VERSION,
+				false
 			);
 		}
 	}
@@ -285,7 +298,7 @@ class Setup {
 	 * This method handles the activation of the ActivityPub Event Bridge plugin.
 	 *
 	 * @since 1.0.0
-	 *
+	 * @see register_activation_hook()
 	 * @return void
 	 */
 	public function activate(): void {

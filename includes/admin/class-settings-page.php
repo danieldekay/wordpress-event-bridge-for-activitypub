@@ -3,7 +3,7 @@
  * General settings class.
  *
  * This file contains the General class definition, which handles the "General" settings
- * page for the ActivityPub Event Extension Plugin, providing options for configuring various general settings.
+ * page for the Activitypub Event Bridge Plugin, providing options for configuring various general settings.
  *
  * @package ActivityPub_Event_Bridge
  * @since 1.0.0
@@ -18,9 +18,9 @@ use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
 use ActivityPub_Event_Bridge\Setup;
 
 /**
- * Class responsible for the ActivityPub Event Extension related Settings.
+ * Class responsible for the Activitypub Event Bridge related Settings.
  *
- * Class which handles the "General" settings page for the ActivityPub Event Extension Plugin,
+ * Class which handles the "General" settings page for the Activitypub Event Bridge Plugin,
  * providing options for configuring various general settings.
  *
  * @since 1.0.0
@@ -36,11 +36,11 @@ class Settings_Page {
 	 */
 	public static function admin_menu(): void {
 		\add_options_page(
-			'Activitypub Event Extension',
-			__( 'ActivityPub Events', 'activitypub-event-bridge' ),
+			'Activitypub Event Bridge',
+			__( 'ActivityPub Event Bridge', 'activitypub-event-bridge' ),
 			'manage_options',
 			self::SETTINGS_SLUG,
-			array( self::STATIC, 'settings_page' )
+			array( self::STATIC, 'settings_page' ),
 		);
 	}
 
@@ -89,21 +89,41 @@ class Settings_Page {
 	 * @return void
 	 */
 	public static function settings_page(): void {
-		$plugin_setup = Setup::get_instance();
-
-		$event_plugins = $plugin_setup->get_active_event_plugins();
-
-		$event_terms = array();
-
-		foreach ( $event_plugins as $event_plugin ) {
-			$event_terms = array_merge( $event_terms, self::get_event_terms( $event_plugin ) );
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( empty( $_GET['tab'] ) ) {
+			$tab = 'welcome';
+		} else {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$tab = sanitize_key( $_GET['tab'] );
 		}
 
-		$args = array(
-			'slug'        => self::SETTINGS_SLUG,
-			'event_terms' => $event_terms,
-		);
+		switch ( $tab ) {
+			case 'settings':
+				$plugin_setup = Setup::get_instance();
 
-		\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/settings.php', true, $args );
+				$event_plugins = $plugin_setup->get_active_event_plugins();
+
+				$event_terms = array();
+
+				foreach ( $event_plugins as $event_plugin ) {
+					$event_terms = array_merge( $event_terms, self::get_event_terms( $event_plugin ) );
+				}
+
+				$args = array(
+					'slug'        => self::SETTINGS_SLUG,
+					'event_terms' => $event_terms,
+				);
+
+				\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/settings.php', true, $args );
+				break;
+			case 'welcome':
+			default:
+				wp_enqueue_script( 'plugin-install' );
+				add_thickbox();
+				wp_enqueue_script( 'updates' );
+
+				\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/welcome.php', true );
+				break;
+		}
 	}
 }

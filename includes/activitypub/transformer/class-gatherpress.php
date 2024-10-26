@@ -13,7 +13,6 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
-use Activitypub\Model\Blog;
 use ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
 use GatherPress\Core\Event as GatherPress_Event;
 
@@ -125,7 +124,7 @@ final class GatherPress extends Event {
 	 */
 	public static function filter_gatherpress_blocks( $block_content, $block ) {
 		// Check if the block name starts with 'gatherpress'.
-		if ( strpos( $block['blockName'], 'gatherpress/' ) === 0 ) {
+		if ( isset( $block['blockName'] ) && 0 === strpos( $block['blockName'], 'gatherpress/' ) ) {
 			return ''; // Skip rendering this block.
 		}
 

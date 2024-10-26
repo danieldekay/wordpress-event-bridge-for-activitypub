@@ -3,7 +3,7 @@
  * Plugin Name:  ActivityPub Event Bridge
  * Description:  Integrating popular event plugins with the ActivityPub plugin.
  * Plugin URI:   https://event-federation.eu/
- * Version:      0.1.0
+ * Version:      0.1.1
  * Author:       André Menrath
  * Author URI:   https://graz.social/@linos
  * Text Domain:  activitypub-event-bridge
@@ -11,7 +11,7 @@
  * License URI:  https://www.gnu.org/licenses/agpl-3.0.de.html
  * Requires PHP: 8.1
  *
- * Requires at least ActivityPub plugin with version >= 3.2.2. ActivityPub plugin tested up to: 3.2.2.
+ * Requires at least ActivityPub plugin with version >= 3.2.2. ActivityPub plugin tested up to: 3.3.3.
  *
  * @package ActivityPub_Event_Bridge
  * @license AGPL-3.0-or-later

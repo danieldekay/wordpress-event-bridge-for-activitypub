@@ -267,9 +267,9 @@ abstract class Event extends Post {
 		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2, 2 );
 		$excerpt = $this->retrieve_excerpt();
 		// BeforeFirstRelease: decide whether this should be a admin setting.
-		$fallback_to_content = true;
+		$fallback_to_content = false;
 		if ( is_null( $excerpt ) && $fallback_to_content ) {
-			$excerpt = parent::get_content();
+			$excerpt = $this->get_content();
 		}
 		remove_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ) );
 

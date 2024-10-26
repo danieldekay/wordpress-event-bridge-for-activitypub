@@ -1,15 +1,18 @@
 <?php
 /**
- * Events Manager.
+ * WP Event Manager.
  *
- * Defines all the necessary meta information for the Events Manager WordPress Plugin.
+ * Defines all the necessary meta information for the WordPress event plugin
+ * "WP Event Manager"
  *
- * @link    https://wordpress.org/plugins/events-manager/
+ * @link    https://de.wordpress.org/plugins/wp-event-manager
  * @package ActivityPub_Event_Bridge
  * @since   1.0.0
  */
 
 namespace ActivityPub_Event_Bridge\Plugins;
+
+use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -21,14 +24,14 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class Events_Manager extends Event_Plugin {
+final class WP_Event_Manager extends Event_Plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
 	 * @return string
 	 */
 	public static function get_plugin_file(): string {
-		return 'events-manager/events-manager.php';
+		return 'wp-event-manager/wp-event-manager.php';
 	}
 
 	/**
@@ -37,7 +40,7 @@ final class Events_Manager extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_post_type(): string {
-		return defined( 'EM_POST_TYPE_EVENT' ) ? constant( 'EM_POST_TYPE_EVENT' ) : 'event';
+		return 'event_listing';
 	}
 
 	/**
@@ -45,8 +48,17 @@ final class Events_Manager extends Event_Plugin {
 	 *
 	 * @return array The settings page urls.
 	 */
-	public static function get_settings_page(): array {
-		return array();
+	public static function get_settings_pages(): array {
+		return array( 'event-manager-settings' );
+	}
+
+	/**
+	 * Returns the ActivityPub transformer class.
+	 *
+	 * @return string
+	 */
+	public static function get_activitypub_transformer_class_name(): string {
+		return 'WP_Event_Manager';
 	}
 
 	/**
@@ -55,6 +67,6 @@ final class Events_Manager extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_event_category_taxonomy(): string {
-		return defined( 'EM_TAXONOMY_CATEGORY' ) ? constant( 'EM_TAXONOMY_CATEGORY' ) : 'event-categories';
+		return 'event_listing_category';
 	}
 }

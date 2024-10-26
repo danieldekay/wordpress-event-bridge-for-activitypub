@@ -39,8 +39,18 @@ These platforms create public event calendars by pulling in events from various 
     <img src="./.wordpress-org/decentralized-event-calenders.gif" alt="Logo" width="250" />
 </p>
 
-Even platforms that don’t yet fully support events, like [Mastodon](https://joinmastodon.org), will still receive a detailed, well-composed summary of your event.
+Even platforms that don't yet fully support events, like [Mastodon](https://joinmastodon.org), will still receive a detailed, well-composed summary of your event.
 The Event Federation plugin ensures that users from those platforms are provided with all important information about an event.
+
+### Features for Your WordPress Events and the Fediverse
+
+**ActivityPub-Enabled Event Sharing:** Your WordPress events are not part of the Fediverse and
+
+**Automatic Event Summaries:** When your event is shared on the Fediverse, platforms like Mastodon that don't fully support events will display a brief HTML summary of key details — such as the event's title, start time, and location. This ensures that even if someone can't view the full event on their platform, they still get the important info at a glance, with a link to your WordPress event page.
+
+**Improved Event Discoverability:** Your custom event categories are mapped to a set of default categories used in the Fediverse, helping your events reach a wider audience. This improves the chances that users searching for similar events on other platforms will find yours.
+
+**Event Reminders for Your Followers:** Often, events are planned well in advance. To keep your followers informed right in time, you can set up reminders that are supposed to trigger the events showing up in their timelines right before the event starts. At the moment this reminder is implemented as a self-boost of your original event post. While this feature may behave differently across various platforms, we are working on a more robust solution that will let you schedule dedicated reminder notes that appear in all followers' timelines.
 
 ## Installation
 
@@ -51,6 +61,10 @@ This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/ac
 * [The Events Calendar](https://de.wordpress.org/plugins/the-events-calendar/)
 * [VS Event List](https://de.wordpress.org/plugins/very-simple-event-list/)
 * [Events Manager](https://de.wordpress.org/plugins/events-manager/)
+* [WP Event Manager](https://de.wordpress.org/plugins/wp-event-manager/)
+* [Eventin](https://de.wordpress.org/plugins/wp-event-solution/)
+* [Modern Events Calendar Lite](https://webnus.net/modern-events-calendar/)
+* [GatherPress](https://gatherpress.org/)
 
 ## Configuration
 

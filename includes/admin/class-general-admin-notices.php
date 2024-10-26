@@ -99,6 +99,24 @@ class General_Admin_Notices {
 	}
 
 	/**
+	 * Warning to fix status issues first.
+	 *
+	 * @return string
+	 */
+	public static function get_admin_notice_status_not_ok(): string {
+		return sprintf(
+			/* translators: 1: An URL to the list of supported event plugins. */
+			_x(
+				'The Plugin <i>ActivityPub Event Bridge</i> is of no use, because you do not have installed and activated a supported Event Plugin.
+				<br> For a list of supported Event Plugins see  <a href="%1$s">here</a>.',
+				'admin notice',
+				'activitypub-event-bridge'
+			),
+			esc_html( self::ACTIVITYPUB_EVENT_BRIDGE_SUPPORTED_EVENT_PLUGINS_URL )
+		);
+	}
+
+	/**
 	 * Warning if the plugin is Active and the ActivityPub plugin is not.
 	 *
 	 * @return void

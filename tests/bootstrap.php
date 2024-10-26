@@ -43,6 +43,10 @@ function _manually_load_plugin() {
 		}
 	}
 
+	// Hot fixes for eventin.
+	update_option( 'purchase_history_table_structure_migration_done', true );
+	update_option( 'etn_wizard', 'active' );
+
 	$plugin_file = null;
 	// See if we want to run integration tests for a specific event-plugin.
 	switch ( $activitypub_event_extension_integration_filter ) {
@@ -55,14 +59,24 @@ function _manually_load_plugin() {
 		case 'events_manager':
 			$plugin_file = 'events-manager/events-manager.php';
 			break;
+		case 'eventin':
+			$plugin_file = 'wp-event-solution/eventin.php';
+			break;
+		case 'modern_events_calendar_lite':
+			$plugin_file = 'modern-events-calendar-lite/modern-events-calendar-lite.php';
+			break;
 		case 'gatherpress':
 			$plugin_file = 'gatherpress/gatherpress.php';
+			break;
+		case 'wp_event_manager':
+			$plugin_file = 'wp-event-manager/wp-event-manager.php';
 			break;
 	}
 
 	if ( $plugin_file ) {
 		// Manually load the event plugin.
 		require_once $plugin_dir . $plugin_file;
+		update_option( 'purchase_history_table_structure_migration_done', true );
 		$current   = get_option( 'active_plugins', array() );
 		$current[] = $plugin_file;
 		sort( $current );
@@ -75,6 +89,12 @@ function _manually_load_plugin() {
 		em_create_events_table();
 		em_create_events_meta_table();
 		em_create_locations_table();
+	}
+
+	if ( 'modern_events_calendar_lite' === $activitypub_event_extension_integration_filter ) {
+		require_once $plugin_dir . 'modern-events-calendar-lite/app/libraries/factory.php';
+		$mec_factory = new MEC_factory();
+		$mec_factory->install();
 	}
 
 	// At last manually load our WordPress plugin.

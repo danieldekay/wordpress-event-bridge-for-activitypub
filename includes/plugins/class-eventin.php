@@ -1,10 +1,10 @@
 <?php
 /**
- * Events Manager.
+ * The Events Calendar.
  *
- * Defines all the necessary meta information for the Events Manager WordPress Plugin.
+ * Defines all the necessary meta information for the events calendar.
  *
- * @link    https://wordpress.org/plugins/events-manager/
+ * @link    https://wordpress.org/plugins/the-events-calendar/
  * @package ActivityPub_Event_Bridge
  * @since   1.0.0
  */
@@ -21,14 +21,14 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class Events_Manager extends Event_Plugin {
+final class Eventin extends Event_plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
 	 * @return string
 	 */
 	public static function get_plugin_file(): string {
-		return 'events-manager/events-manager.php';
+		return 'wp-event-solution/eventin.php';
 	}
 
 	/**
@@ -37,16 +37,16 @@ final class Events_Manager extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_post_type(): string {
-		return defined( 'EM_POST_TYPE_EVENT' ) ? constant( 'EM_POST_TYPE_EVENT' ) : 'event';
+		return 'etn';
 	}
 
 	/**
 	 * Returns the IDs of the admin pages of the plugin.
 	 *
-	 * @return array The settings page urls.
+	 * @return array The settings page url.
 	 */
-	public static function get_settings_page(): array {
-		return array();
+	public static function get_settings_pages(): array {
+		return array( 'eventin' ); // Base always is wp-admin/admin.php?page=eventin.
 	}
 
 	/**
@@ -55,6 +55,6 @@ final class Events_Manager extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_event_category_taxonomy(): string {
-		return defined( 'EM_TAXONOMY_CATEGORY' ) ? constant( 'EM_TAXONOMY_CATEGORY' ) : 'event-categories';
+		return 'etn_category';
 	}
 }

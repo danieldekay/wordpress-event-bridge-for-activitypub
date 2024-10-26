@@ -3,7 +3,7 @@
  * General settings class.
  *
  * This file contains the General class definition, which handles the "General" settings
- * page for the ActivityPub Event Extension Plugin, providing options for configuring various general settings.
+ * page for the Activitypub Event Bridge Plugin, providing options for configuring various general settings.
  *
  * @package ActivityPub_Event_Bridge
  * @since 1.0.0
@@ -59,6 +59,16 @@ class Settings {
 				'description'       => \__( 'Define your own custom post template', 'activitypub' ),
 				'default'           => array(),
 				'sanitize_callback' => array( self::class, 'sanitize_event_category_mappings' ),
+			)
+		);
+
+		\register_setting(
+			'activitypub-event-bridge',
+			'activitypub_event_bridge_initially_activated',
+			array(
+				'type'        => 'boolean',
+				'description' => \__( 'Whether the plugin just got activated for the first time.', 'activitypub' ),
+				'default'     => 1,
 			)
 		);
 	}
