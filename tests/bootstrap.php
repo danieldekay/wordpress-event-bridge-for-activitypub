@@ -71,6 +71,9 @@ function _manually_load_plugin() {
 		case 'wp_event_manager':
 			$plugin_file = 'wp-event-manager/wp-event-manager.php';
 			break;
+		case 'my_calendar':
+			$plugin_file = 'my-calendar/my-calendar.php';
+			break;
 	}
 
 	if ( $plugin_file ) {
@@ -95,6 +98,11 @@ function _manually_load_plugin() {
 		require_once $plugin_dir . 'modern-events-calendar-lite/app/libraries/factory.php';
 		$mec_factory = new MEC_factory();
 		$mec_factory->install();
+	}
+
+	if ( 'my_calendar' === $activitypub_event_extension_integration_filter ) {
+		require_once $plugin_dir . 'my-calendar/my-calendar.php';
+		add_action( 'init', 'mc_default_settings' );
 	}
 
 	// At last manually load our WordPress plugin.

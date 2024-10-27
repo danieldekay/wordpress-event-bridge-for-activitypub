@@ -99,7 +99,7 @@ final class My_Calendar extends Event_Transformer {
 	 * @return Place|null The place/venue if one is set.
 	 */
 	public function get_location(): ?Place {
-		if ( array_key_exists( 'location', $this->mc_event_schema, true ) && 'Place' === $this->mc_event_schema['location']['@type'] ) {
+		if ( array_key_exists( 'location', $this->mc_event_schema ) && 'Place' === $this->mc_event_schema['location']['@type'] ) {
 			$mc_place = $this->mc_event_schema['location'];
 
 			$place = new Place();
@@ -123,5 +123,15 @@ final class My_Calendar extends Event_Transformer {
 	 */
 	public function get_status(): ?string {
 		return 'CONFIRMED'; // My Calendar doesn't implement canceled events.
+	}
+
+	/**
+	 * Extract the external participation url.
+	 *
+	 * @return ?string The external participation URL.
+	 */
+	public function get_external_participation_url(): ?string {
+
+		return $this->mc_event->event_tickets ? $this->mc_event->event_tickets : null;
 	}
 }

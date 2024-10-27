@@ -208,7 +208,7 @@ install_wp_plugin() {
 	fi
 
 	# Get the latest tag.
-    LATEST_TAG=$(svn log https://plugins.svn.wordpress.org/$PLUGIN_NAME/tags --limit 1 | awk 'NR == 4 { print $4 }')
+    LATEST_TAG=$(svn log https://plugins.svn.wordpress.org/$PLUGIN_NAME/tags --limit 1 | awk 'NR == 4 { print $4 }' | sed 's/,$//')
 	if [ -n "$LATEST_TAG" ]; then
 		PLUGIN_FILE="$PLUGIN_NAME.$LATEST_TAG.zip"
 	else
@@ -254,6 +254,7 @@ install_wp_plugins() {
 	install_wp_plugin events-manager
 	install_wp_plugin wp-event-manager
 	install_wp_plugin wp-event-solution
+    install_wp_plugin my-calendar
 	# Mec is not installable via wordpress.org, we use our own mirror.
 	install_wp_plugin_mec
 }
