@@ -285,7 +285,7 @@ class Setup {
 		foreach ( $this->active_event_plugins as $event_plugin ) {
 			if ( ! in_array( $event_plugin->get_post_type(), $activitypub_supported_post_types, true ) ) {
 				$activitypub_supported_post_types[] = $event_plugin->get_post_type();
-				add_post_type_support( $event_plugin->get_post_type(), 'activitypub' );
+				add_post_type_support( $event_plugin->get_post_type(), 'activitypub-event-bridge' );
 			}
 		}
 		update_option( 'activitypub_support_post_types', $activitypub_supported_post_types );
