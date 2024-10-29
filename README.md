@@ -9,6 +9,8 @@
 **License URI:** https://www.gnu.org/licenses/agpl-3.0.html  
 Integrating popular event plugins with the ActivityPub plugin.
 
+![Federate your Events, Expand your Reach!](.wordpress-org/banner-1544x500.jpg)
+
 ## Description ##
 
 Make your events more discoverable, expand your reach effortlessly while being independent of other (commercial) platforms, and be a part of the growing decentralized web (the Fediverse).
@@ -24,12 +26,16 @@ You retain full ownership of your content. By integrating into your existing set
 With the ActivityPub Event Bridge WordPress plugin, sharing your events is effortless and automatic!
 Once you create an event on your WordPress site, it is seamlessly shared across the decentralized web using the ActivityPub protocol.
 
-![](./.wordpress-org/event-activitypub-publishing.gif)
+<p align="center">
+    <img src="./.wordpress-org/event-activitypub-publishing.gif" alt="Logo" width="300"/>
+</p>
 
 Your events can be automatically delivered to platforms that fully support events, such as [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/).
 These platforms create public event calendars by pulling in events from various sources, including your website. Any updates you make to your events are synced across these platforms—so you only need to manage your events on your own site, with no extra work required.
 
-![](./.wordpress-org/decentralized-event-calenders.gif)
+<p align="center">
+    <img src="./.wordpress-org/decentralized-event-calenders.gif" alt="Logo" width="250"/>
+</p>
 
 Even platforms that don't yet fully support events, like [Mastodon](https://joinmastodon.org), will still receive a detailed, well-composed summary of your event.
 The Event Federation plugin ensures that users from those platforms are provided with all important information about an event.
