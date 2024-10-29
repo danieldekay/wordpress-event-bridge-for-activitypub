@@ -20,3 +20,5 @@ src  export-ignore
 tests  export-ignore
 vendor  export-ignore
 .distignore  export-ignore
+.forgejo  export-ignore
+.gitattributes  export-ignore
