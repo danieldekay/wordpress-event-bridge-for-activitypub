@@ -1,4 +1,3 @@
-.distignore
 .git
 .gitignore
 .php_cs
@@ -32,3 +31,4 @@ SECURITY.md
 src
 tests
 vendor
+.distignore
