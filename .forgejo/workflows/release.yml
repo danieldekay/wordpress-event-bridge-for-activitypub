@@ -12,7 +12,10 @@ jobs:
         run: ls -la
 
       - name: Remove Files Listed in .distignore
-        run: rm -r tests
+        run: rm -r tests/
+
+      - name: Remove Files Listed in .distignore
+        run: ls -la
 
       - uses: https://code.forgejo.org/actions/forgejo-release@v2
         with:
