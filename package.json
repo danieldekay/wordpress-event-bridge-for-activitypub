@@ -21,6 +21,9 @@
       "@wordpress/env": "^10.10.0",
       "@wordpress/scripts": "^30.0.2",
       "classnames": "^2.3.2",
+      "grunt": "^1.1.0",
+      "grunt-checktextdomain": "^1.0.1",
+      "grunt-wp-i18n": "^1.0.3",
       "grunt-wp-readme-to-markdown": "^2.0.1"
   }
 }
