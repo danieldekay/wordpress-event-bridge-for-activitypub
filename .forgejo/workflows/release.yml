@@ -12,5 +12,5 @@ jobs:
         with:
           direction: upload
           url: https://code.event-federation.eu
-          release-notes: "MY RELEASE NOTES"
+          release-notes: ${{ TAG }}
           token: ${{ secrets.GITHUB_TOKEN }}
