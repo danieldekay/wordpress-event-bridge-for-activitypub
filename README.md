@@ -93,6 +93,6 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 
 ## Changelog ##
 
-### [0.1.0] 2024-09-01 ###
+### [0.2.0] 2024-10-29 ###
 
-* Initial alpha release on WordPress.org
+* Initial release on https://wordpress.org/
