@@ -3,7 +3,7 @@ Contributors: andremenrath
 Tags: events, fediverse, activitypub, calendar
 Requires at least: 6.5
 Tested up to: 6.6
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 Requires PHP: 8.1
 License: AGPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/agpl-3.0.html
@@ -31,6 +31,8 @@ These platforms create public event calendars by pulling in events from various 
 
 ![](./.wordpress-org/decentralized-event-calenders.gif)
 
+Even platforms that don't yet fully support events, like [Mastodon](https://joinmastodon.org), will still receive a detailed, well-composed summary of your event.
+The Event Federation plugin ensures that users from those platforms are provided with all important information about an event.
 
 = Features for Your WordPress Events and the Fediverse =
 
@@ -58,17 +60,16 @@ This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/ac
 
 == Configuration ==
 
-If you’re new to the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/), it’s recommended to spend a few minutes reading through its documentation to familiarize yourself with its setup and functionality.
+If you're new to the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/), it’s recommended to spend a few minutes reading through its documentation to familiarize yourself with its setup and functionality.
 
 == Frequently Asked Questions ==
 
 = Do I need to install another event plugin to use the Event Federation Plugin? =
 
-Yes, this plugin works as an add-on and requires both the ActivityPub plugin and a supported event plugin such as The Events Calendar, VS Event List, or Events Manager to manage your events.
-
+Yes, this plugin works as an add-on and requires both the ActivityPub plugin and a supported event plugin such as The Events Calendar, VS Event List, or Events Manager to manage your events. It just fills the missing gap between event plugins and the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/).
 = What platforms can follow my events? =
 
-Your events can be followed on platforms that support ActivityPub like [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/). Even other applications like [Mastodon](https://joinmastodon.org), which don’t fully support events yet, will display all important information about the events.
+Your events can be followed on platforms that support ActivityPub like [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/). Even other applications like [Mastodon](https://joinmastodon.org), which don't fully support events yet, will display all important information about the events.
 
 = How much extra work is required to maintain my events across the decentralized Web? =
 
@@ -92,6 +93,6 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 
 == Changelog ==
 
-= [0.1.0] 2024-09-01 =
+= [0.2.0] 2024-10-29 =
 
-* Initial alpha release on WordPress.org
+* Initial release on https://wordpress.org/
