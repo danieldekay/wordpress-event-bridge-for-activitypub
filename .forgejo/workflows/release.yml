@@ -21,7 +21,7 @@ jobs:
         run: mkdir -p dist/release
 
       - name: Move Release Files
-        run: mv * dist/release
+        run: shopt -s extglob && mv !(dist) dist/release
 
       - uses: https://code.forgejo.org/actions/forgejo-release@v2
         with:
