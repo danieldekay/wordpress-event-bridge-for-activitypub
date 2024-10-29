@@ -14,4 +14,4 @@ jobs:
           url: https://code.event-federation.eu
           release-dir: dist/release
           release-notes: "MY RELEASE NOTES"
-          token: ${{ GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
