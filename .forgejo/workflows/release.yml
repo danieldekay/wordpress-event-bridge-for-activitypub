@@ -14,7 +14,7 @@ jobs:
       - name: Remove Files Listed in .distignore
         run: rm -r tests
 
-      - uses: https://code.forgejo.org/actions/forgejo-release@v2s
+      - uses: https://code.forgejo.org/actions/forgejo-release@v2
         with:
           direction: upload
           url: https://code.event-federation.eu
