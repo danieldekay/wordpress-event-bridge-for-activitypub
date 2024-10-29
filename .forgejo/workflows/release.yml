@@ -9,14 +9,7 @@ jobs:
       - uses: https://code.forgejo.org/actions/checkout@v4
 
       - name: Remove Files Listed in .distignore
-        run: |
-          if [ -f .distignore ]; then
-            while IFS= read -r line; do
-              if [ -n "$line" ] && [ "${line:0:1}" != "#" ]; then
-                rm -rf "$line"
-              fi
-            done < .distignore
-          fi
+        run: rm -r tests
 
       - uses: https://code.forgejo.org/actions/forgejo-release@v2
         with:
