@@ -1,3 +1,4 @@
+.distignore
 .git
 .gitignore
 .wordpress-org
@@ -7,18 +8,17 @@ CHANGELOG.md
 CODE_OF_CONDUCT.md
 composer.json
 composer.lock
+docker-compose.yml
 Dockerfile
 docs
-docker-compose.yml
 FEDERATION.md
 Gruntfile.js
 node_modules
-package-lock.json
 package.json
+package-lock.json
 phpcs.xml
 phpunit.xml
 README.md
 src
 tests
 vendor
-.distignore
