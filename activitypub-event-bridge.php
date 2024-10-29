@@ -8,7 +8,7 @@
  * Author URI:   https://graz.social/@linos
  * Text Domain:  activitypub-event-bridge
  * License:      AGPL-3.0-or-later
- * License URI:  https://www.gnu.org/licenses/agpl-3.0.de.html
+ * License URI:  https://www.gnu.org/licenses/agpl-3.0.html
  * Requires PHP: 8.1
  *
  * Requires at least ActivityPub plugin with version >= 3.2.2. ActivityPub plugin tested up to: 4.0.1.
