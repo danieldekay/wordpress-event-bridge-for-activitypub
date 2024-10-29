@@ -8,26 +8,9 @@ jobs:
     steps:
       - uses: https://code.forgejo.org/actions/checkout@v4
 
-      - name: Remove Files Listed in .distignore
-        run: ls -la
-
-      - name: Remove Files Listed in .distignore
-        run: rm -r tests/
-
-      - name: Remove Files Listed in .distignore
-        run: ls -la
-
-      - name: Create Release Directory
-        run: mkdir -p dist/release
-
-      - name: Move Release Files
-        run: find . -maxdepth 1 -mindepth 1 -not -name dist -exec mv {} dist/release/ \;
-
       - uses: https://code.forgejo.org/actions/forgejo-release@v2
         with:
           direction: upload
           url: https://code.event-federation.eu
-          release-dir: dist/release
           release-notes: "MY RELEASE NOTES"
           token: ${{ secrets.GITHUB_TOKEN }}
-          repo: Event-Federation/wordpress-activitypub-event-bridge
