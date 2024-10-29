@@ -6,7 +6,7 @@ jobs:
   upload-release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: https://code.forgejo.org/actions/checkout@v4
 
       - name: Remove Files Listed in .distignore
         run: |
@@ -18,7 +18,7 @@ jobs:
             done < .distignore
           fi
 
-      - uses: actions/forgejo-release@v1
+      - uses: https://code.forgejo.org/actions/forgejo-release@v1
         with:
           direction: upload
           url: https://code.forgejo.org
