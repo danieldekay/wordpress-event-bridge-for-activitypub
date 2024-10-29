@@ -22,4 +22,4 @@ jobs:
         with:
           direction: upload
           url: https://code.forgejo.org
-          token: ${{ FORGEJO_TOKEN  }}
+          token: ${{ FORGEJO_TOKEN }}
