@@ -30,3 +30,4 @@ jobs:
           release-dir: dist/release
           release-notes: "MY RELEASE NOTES"
           token: ${{ secrets.GITHUB_TOKEN }}
+          repo: Event-Federation/wordpress-activitypub-event-bridge
