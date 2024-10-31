@@ -121,9 +121,9 @@ final class The_Events_Calendar extends Event {
 	/**
 	 * Get the event location.
 	 *
-	 * @return Place|array The place/venue if one is set.
+	 * @return ?Place The place/venue if one is set.
 	 */
-	public function get_location(): Place|null {
+	public function get_location(): ?Place {
 		// Get short handle for the venues.
 		$venues = $this->tribe_event->venues;
 
