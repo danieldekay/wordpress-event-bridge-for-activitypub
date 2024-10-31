@@ -45,7 +45,7 @@ jobs:
         with:
           path: |
             ./vendor/
-          key: cache-composer-phpunit-1
+          key: cache-composer-phpunit-2
 
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
