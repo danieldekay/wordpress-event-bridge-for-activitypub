@@ -4,7 +4,7 @@ Tags: events, fediverse, activitypub, calendar
 Requires at least: 6.5
 Tested up to: 6.6
 Stable tag: 0.2.0
-Requires PHP: 8.1
+Requires PHP: 7.4
 License: AGPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/agpl-3.0.html
 Integrating popular event plugins with the ActivityPub plugin.
