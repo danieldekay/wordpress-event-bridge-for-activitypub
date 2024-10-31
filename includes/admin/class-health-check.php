@@ -47,7 +47,7 @@ class Health_Check {
 	 */
 	public static function test_event_transformation() {
 		$result = array(
-			'label'       => \__( 'Transformation of Events to a valid ActivityStreams representation.', 'activitypub' ),
+			'label'       => \__( 'Transformation of Events to a valid ActivityStreams representation.', 'activitypub-event-bridge' ),
 			'status'      => 'good',
 			'badge'       => array(
 				'label' => \__( 'ActivityPub Event Bridge', 'activitypub-event-bridge' ),
@@ -172,7 +172,7 @@ class Health_Check {
 			'label'  => __( 'ActivityPub Event Bridge', 'activitypub-event-bridge' ),
 			'fields' => array(
 				'plugin_version'       => array(
-					'label'   => __( 'Plugin Version', 'activitypub' ),
+					'label'   => __( 'Plugin Version', 'activitypub-event-bridge' ),
 					'value'   => ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_VERSION,
 					'private' => true,
 				),
