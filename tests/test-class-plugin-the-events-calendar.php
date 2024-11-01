@@ -91,7 +91,7 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\The_Events_Calendar::class, $transformer );
+		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\Event\The_Events_Calendar::class, $transformer );
 	}
 
 	/**

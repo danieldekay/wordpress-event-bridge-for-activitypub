@@ -6,7 +6,7 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
+namespace ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -62,17 +62,6 @@ abstract class Event extends Post {
 	 */
 	protected function get_post_content_template(): string {
 		return '[ap_content]';
-	}
-
-	/**
-	 * Returns the title of the event.
-	 *
-	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-name
-	 *
-	 * @return string The name.
-	 */
-	protected function get_name(): string {
-		return $this->wp_object->post_title;
 	}
 
 	/**
@@ -213,7 +202,7 @@ abstract class Event extends Post {
 			return '';
 		}
 		$address = $location->get_address();
-		if ( ! $address ) {
+		if ( ! $address && is_string( $location->get_name() ) ) {
 			return $location->get_name();
 		}
 		if ( is_string( $address ) ) {
@@ -370,7 +359,7 @@ abstract class Event extends Post {
 		$activitypub_object->set_to(
 			array(
 				'https://www.w3.org/ns/activitystreams#Public',
-				$this->get_actor_object()->get_followers(), // this fails on my machine.
+				$this->get_actor_object()->get_followers(),
 			)
 		);
 

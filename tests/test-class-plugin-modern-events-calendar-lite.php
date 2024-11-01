@@ -74,7 +74,7 @@ class Test_Modern_Events_Calendar_Lite extends WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\Modern_Events_Calendar_Lite::class, $transformer );
+		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\Event\Modern_Events_Calendar_Lite::class, $transformer );
 	}
 
 	/**

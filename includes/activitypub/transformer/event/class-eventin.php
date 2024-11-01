@@ -8,15 +8,13 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
+namespace ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
-use DateTime;
-use DateTimeZone;
+use ActivityPub_Event_Bridge\Activitypub\Transformer\Event\Event;
 use Etn\Core\Event\Event_Model;
 
 use function Activitypub\esc_hashtag;

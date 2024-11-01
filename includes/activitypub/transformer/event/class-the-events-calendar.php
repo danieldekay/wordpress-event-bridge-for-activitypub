@@ -6,13 +6,14 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
+namespace ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
+use ActivityPub_Event_Bridge\Activitypub\Transformer\Event\Event;
+use ActivityPub_Event_Bridge\Activitypub\Transformer\Location\The_Events_Calendar as The_Events_Calendar_Location;
 use WP_Post;
 
 use function Activitypub\esc_hashtag;
@@ -140,42 +141,9 @@ final class The_Events_Calendar extends Event {
 			return null;
 		}
 
-		// Set the address.
-		$address = array();
-
-		if ( ! empty( $venue->country ) ) {
-			$address['addressCountry'] = $venue->country;
-		}
-
-		if ( ! empty( $venue->city ) ) {
-			$address['addressLocality'] = $venue->city;
-		}
-
-		if ( ! empty( $venue->province ) ) {
-			$address['addressRegion'] = $venue->province;
-		}
-
-		if ( ! empty( $venue->zip ) ) {
-			$address['postalCode'] = $venue->zip;
-		}
-
-		if ( ! empty( $venue->address ) ) {
-			$address['streetAddress'] = $venue->address;
-		}
-		if ( ! empty( $venue->post_title ) ) {
-			$address['name'] = $venue->post_title;
-		}
-		$address['type'] = 'PostalAddress';
-
-		$location = new Place();
-		if ( count( $address ) > 1 ) {
-			$location->set_address( $address );
-		} else {
-			$location->set_address( $venue->post_title );
-		}
-		$location->set_id( $venue->ID );
-		$location->set_name( $venue->post_title );
-
+		$location_transformer = new The_Events_Calendar_Location( $venue );
+		$full_location_object = false;
+		$location             = $location_transformer->to_object( $full_location_object );
 		return $location;
 	}
 

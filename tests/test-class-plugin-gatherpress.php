@@ -65,7 +65,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $event->event );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\GatherPress::class, $transformer );
+		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\Event\GatherPress::class, $transformer );
 	}
 
 	/**

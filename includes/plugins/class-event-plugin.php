@@ -83,6 +83,6 @@ abstract class Event_Plugin {
 	 * Returns the Activitypub transformer for the event plugins event post type.
 	 */
 	public static function get_activitypub_event_transformer_class(): string {
-		return str_replace( 'Plugins', 'Activitypub\Transformer', static::class );
+		return str_replace( 'Plugins', 'Activitypub\Transformer\Event', static::class );
 	}
 }
