@@ -192,6 +192,7 @@ class Test_The_Events_Calendar extends WP_UnitTestCase {
 			->create();
 
 		// Call the transformer.
+
 		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
 
 		// Check that the event ActivityStreams representation contains everything as expected.

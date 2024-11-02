@@ -47,7 +47,7 @@ final class The_Events_Calendar extends Post {
 	 *
 	 * @return array|string|null The place/venue if one is set.
 	 */
-	public function get_address(): mixed {
+	public function get_address() {
 		$address = array();
 
 		if ( ! empty( $this->wp_object->country ) ) {
