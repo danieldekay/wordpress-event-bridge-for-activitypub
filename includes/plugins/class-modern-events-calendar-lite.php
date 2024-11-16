@@ -38,7 +38,7 @@ final class Modern_Events_Calendar_Lite extends Event_plugin {
 	 */
 	public static function get_post_type(): string {
 		// See MEC_feature_events->get_main_post_type().
-		return apply_filters( 'mec_post_type_name', 'mec-events' ); // phpcs:ignore
+		return 'mec-events';
 	}
 
 	/**
