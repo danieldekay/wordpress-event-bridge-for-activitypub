@@ -208,9 +208,15 @@ install_wp_plugin() {
 	fi
 
 	# Get the latest tag.
-    LATEST_TAG=$(svn log https://plugins.svn.wordpress.org/$PLUGIN_NAME/tags --limit 1 | awk 'NR == 4 { print $4 }')
-	if [ -n "$LATEST_TAG" ]; then
-		PLUGIN_FILE="$PLUGIN_NAME.$LATEST_TAG.zip"
+	if [ -z "$2" ]
+		LATEST_TAG=$(svn log https://plugins.svn.wordpress.org/$PLUGIN_NAME/tags --limit 1 | awk 'NR == 4 { print $4 }')
+		PLUGIN_VERSION=$LATEST_TAG
+	else
+		PLUGIN_VERSION=$2
+	fi
+	
+	if [ -n "$PLUGIN_VERSION" ]; then
+		PLUGIN_FILE="$PLUGIN_NAME.$PLUGIN_VERSION.zip"
 	else
 		PLUGIN_FILE="$PLUGIN_NAME.zip"
 	fi
@@ -248,7 +254,7 @@ install_wp_plugins() {
 	# Install the one and only ActivityPub plugin (greetings @pfefferle).
 	install_wp_plugin activitypub
 	# Install (not-activate) all supported event plugins.
-	install_wp_plugin the-events-calendar
+	install_wp_plugin the-events-calendar "6.8.1"
 	install_wp_plugin very-simple-event-list
 	install_wp_plugin gatherpress
 	install_wp_plugin events-manager
