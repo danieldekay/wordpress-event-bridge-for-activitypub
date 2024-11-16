@@ -67,6 +67,7 @@ If you're new to the [ActivityPub plugin](https://wordpress.org/plugins/activity
 = Do I need to install another event plugin to use the Event Federation Plugin? =
 
 Yes, this plugin works as an add-on and requires both the ActivityPub plugin and a supported event plugin such as The Events Calendar, VS Event List, or Events Manager to manage your events. It just fills the missing gap between event plugins and the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/).
+
 = What platforms can follow my events? =
 
 Your events can be followed on platforms that support ActivityPub like [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/). Even other applications like [Mastodon](https://joinmastodon.org), which don't fully support events yet, will display all important information about the events.
