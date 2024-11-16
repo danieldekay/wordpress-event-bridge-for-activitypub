@@ -2,7 +2,7 @@
 Contributors: andremenrath
 Tags: events, fediverse, activitypub, calendar
 Requires at least: 6.5
-Tested up to: 6.6
+Tested up to: 6.7
 Stable tag: 0.2.0
 Requires PHP: 7.4
 License: AGPL-3.0-or-later
