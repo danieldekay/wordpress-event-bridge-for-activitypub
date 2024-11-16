@@ -5,6 +5,9 @@
  * @package ActivityPub_Event_Bridge
  */
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 /* @var array $args Template arguments. */
 $args = wp_parse_args(
 	$args,
