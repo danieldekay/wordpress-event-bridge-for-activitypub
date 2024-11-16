@@ -208,7 +208,7 @@ install_wp_plugin() {
 	fi
 
 	# Get the latest tag.
-	if [ -z "$2" ]
+	if [ -z "$2" ]; then
 		LATEST_TAG=$(svn log https://plugins.svn.wordpress.org/$PLUGIN_NAME/tags --limit 1 | awk 'NR == 4 { print $4 }')
 		PLUGIN_VERSION=$LATEST_TAG
 	else
