@@ -257,8 +257,8 @@ install_wp_plugins() {
 	install_wp_plugin the-events-calendar "6.8.1"
 	install_wp_plugin very-simple-event-list
 	install_wp_plugin gatherpress
-	install_wp_plugin events-manager
-	install_wp_plugin wp-event-manager "6.6.3"
+	install_wp_plugin events-manager "6.6.3"
+	install_wp_plugin wp-event-manager "3.1.45.1"
 	install_wp_plugin wp-event-solution "4.0.14"
 	# Mec is not installable via wordpress.org, we use our own mirror.
 	install_wp_plugin_mec
