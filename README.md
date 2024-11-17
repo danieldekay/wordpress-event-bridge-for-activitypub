@@ -100,6 +100,10 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 
 ## Changelog ##
 
-### [0.2.0] 2024-10-29 ###
+### [0.2.1] 2024-11-16 ###
 
 * Initial release on https://wordpress.org/
+
+### [0.2.0] 2024-10-29 ###
+
+* Initial submission to https://wordpress.org/
