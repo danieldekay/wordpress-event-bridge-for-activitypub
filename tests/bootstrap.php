@@ -35,10 +35,10 @@ function _manually_load_plugin() {
 	require_once $plugin_dir . 'activitypub/activitypub.php';
 
 	// Capture the --filter argument.
-	$activitypub_event_extension_integration_filter = null;
+	$activitypub_event_bridge_integration_filter = null;
 	foreach ( $_SERVER['argv'] as $arg ) {
 		if ( strpos( $arg, '--filter=' ) === 0 ) {
-			$activitypub_event_extension_integration_filter = substr( $arg, strlen( '--filter=' ) );
+			$activitypub_event_bridge_integration_filter = substr( $arg, strlen( '--filter=' ) );
 			break;
 		}
 	}
@@ -49,7 +49,7 @@ function _manually_load_plugin() {
 
 	$plugin_file = null;
 	// See if we want to run integration tests for a specific event-plugin.
-	switch ( $activitypub_event_extension_integration_filter ) {
+	switch ( $activitypub_event_bridge_integration_filter ) {
 		case 'the_events_calendar':
 			$plugin_file = 'the-events-calendar/the-events-calendar.php';
 			break;
@@ -84,14 +84,14 @@ function _manually_load_plugin() {
 	}
 
 	// Hot fix that allows using Events Manager within unit tests, because the em_init() is later not run as admin.
-	if ( 'events_manager' === $activitypub_event_extension_integration_filter ) {
+	if ( 'events_manager' === $activitypub_event_bridge_integration_filter ) {
 		require_once $plugin_dir . 'events-manager/em-install.php';
 		em_create_events_table();
 		em_create_events_meta_table();
 		em_create_locations_table();
 	}
 
-	if ( 'modern_events_calendar_lite' === $activitypub_event_extension_integration_filter ) {
+	if ( 'modern_events_calendar_lite' === $activitypub_event_bridge_integration_filter ) {
 		require_once $plugin_dir . 'modern-events-calendar-lite/app/libraries/factory.php';
 		$mec_factory = new MEC_factory();
 		$mec_factory->install();
