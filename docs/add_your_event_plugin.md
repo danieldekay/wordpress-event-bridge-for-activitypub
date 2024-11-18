@@ -180,7 +180,7 @@ In the pipeline we want to run each event plugins integration tests in a single 
 To activate/load your plugin add it to the switch statement within the function `_manually_load_plugin()` within `tests/bootstrap.php`.
 
 ```php
-	switch ( $activitypub_event_extension_integration_filter ) {
+	switch ( $activitypub_event_bridge_integration_filter ) {
     ...
     case 'my_event_plugin':
 			$plugin_file = 'my-event-plugin/my-event-plugin.php';
