@@ -9,8 +9,9 @@
 $args = wp_parse_args(
 	$args,
 	array(
-		'welcome'  => '',
-		'settings' => '',
+		'welcome'       => '',
+		'settings'      => '',
+		'event-sources' => '',
 	)
 );
 ?>
@@ -27,6 +28,10 @@ $args = wp_parse_args(
 
 		<a href="<?php echo \esc_url( admin_url( 'options-general.php?page=activitypub-event-bridge&tab=settings' ) ); ?>" class="activitypub-event-bridge-settings-tab <?php echo \esc_attr( $args['settings'] ); ?>">
 			<?php \esc_html_e( 'Settings', 'activitypub-event-bridge' ); ?>
+		</a>
+
+		<a href="<?php echo \esc_url( admin_url( 'options-general.php?page=activitypub-event-bridge&tab=event-sources' ) ); ?>" class="activitypub-event-bridge-settings-tab <?php echo \esc_attr( $args['event-sources'] ); ?>">
+			<?php \esc_html_e( 'Event Sources', 'activitypub-event-bridge' ); ?>
 		</a>
 	</nav>
 </div>

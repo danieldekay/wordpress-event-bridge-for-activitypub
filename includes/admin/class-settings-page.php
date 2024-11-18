@@ -116,6 +116,11 @@ class Settings_Page {
 
 				\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/settings.php', true, $args );
 				break;
+			case 'event-sources':
+				wp_enqueue_script( 'thickbox' );
+				wp_enqueue_style( 'thickbox' );
+				\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/event-sources.php', true );
+				break;
 			case 'welcome':
 			default:
 				wp_enqueue_script( 'plugin-install' );
