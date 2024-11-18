@@ -62,13 +62,17 @@ $current_category_mapping        = \get_option( 'activitypub_event_bridge_event_
 			</table>
 
 			<?php if ( ! empty( $event_terms ) ) : ?>
-			<h3> <?php esc_html_e( 'Advanced Event Category Settings', 'activitypub-event-bridge' ); ?> </h3>
-			<p> <?php esc_html_e( 'Take more control by adjusting how your event categories are mapped to the basic category set used in ActivityPub. This option lets you override the default selection above, ensuring more accurate categorization and better visibility for your events.', 'activitypub-event-bridge' ); ?> </p>
+			<h3> <?php esc_html_e( 'Fine-grained Event Category Settings', 'activitypub-event-bridge' ); ?> </h3>
+			<p> <?php esc_html_e( 'For any event category you have created on your WordPress site you can choose an event category which will be used in federation. This option lets you override the default selection above. ', 'activitypub-event-bridge' ); ?> </p>
 			<table class="form-table">
+				<tr>
+					<th> <?php esc_html_e( 'Event category on your site', 'activitypub-event-bridge' ); ?> </th>
+					<th> <?php esc_html_e( 'Fediverse event category', 'activitypub-event-bridge' ); ?> </th>
+				</tr>
 				<?php foreach ( $event_terms as $event_term ) { ?>
 					<tr>
-						<th scope="row"> <?php echo esc_html( $event_term->name ); ?> </th>
-						<td>
+						<td scope="row"> <?php echo esc_html( $event_term->name ); ?> </td>
+						<td class="select-cell">
 							<select name="activitypub_event_bridge_event_category_mappings[<?php echo esc_attr( $event_term->slug ); ?>]">
 								<?php
 								$current_mapping_is_set = false;

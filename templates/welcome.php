@@ -11,6 +11,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 use ActivityPub_Event_Bridge\Setup;
 use ActivityPub_Event_Bridge\Admin\Settings_Page;
 use ActivityPub_Event_Bridge\Admin\Health_Check;
+use ActivityPub_Event_Bridge\Admin\General_Admin_Notices;
 
 \load_template(
 	__DIR__ . '/admin-header.php',
@@ -21,6 +22,11 @@ use ActivityPub_Event_Bridge\Admin\Health_Check;
 );
 
 $active_event_plugins               = Setup::get_instance()->get_active_event_plugins();
+
+if ( empty( $active_event_plugins ) ) {
+	return;
+}
+
 $activitypub_event_bridge_status_ok = true;
 $example_event_post                 = Health_Check::get_most_recent_event_posts();
 
