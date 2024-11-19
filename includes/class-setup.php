@@ -15,6 +15,7 @@ namespace ActivityPub_Event_Bridge;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use ActivityPub_Event_Bridge\ActivityPub\Handler\Join;
 use ActivityPub_Event_Bridge\Admin\Event_Plugin_Admin_Notices;
 use ActivityPub_Event_Bridge\Admin\General_Admin_Notices;
 use ActivityPub_Event_Bridge\Admin\Health_Check;
@@ -187,6 +188,10 @@ class Setup {
 			return;
 		}
 
+		// Register the handler for incoming ActivityPub "Join" activities.
+		add_action( 'init', array( Join::class, 'init' ) );
+
+		// Register the custom ActivityPub transformers.
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
 	}
 
