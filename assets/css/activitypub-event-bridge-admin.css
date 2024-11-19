@@ -177,3 +177,7 @@ code.activitypub-event-bridge-settings-example-url {
 	overflow-x: auto;
 	word-break: break-all;
 }
+
+#activitypub_summary_type_custom-details {
+	display: none;
+}

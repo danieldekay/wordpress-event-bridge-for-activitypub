@@ -11,4 +11,23 @@ jQuery( function( $ ) {
 			$( '#' + $( this ).attr( 'aria-controls' ) ).attr( 'hidden', false );
 		}
 	} );
+
+	// Function to toggle visibility of custom details based on selected radio button.
+	function toggleCustomDetailsForSummary() {
+		if ($("#activitypub_summary_type_custom").is(':checked')) {
+			$("#activitypub_summary_type_custom-details").show();
+		} else {
+			$("#activitypub_summary_type_custom-details").hide();
+		}
+	}
+
+	// Run the toggle function on page load.
+	$(document).ready(function() {
+		toggleCustomDetailsForSummary(); // Set the correct state on load.
+
+		// Listen for changes on the radio buttons
+		$("input[name=activitypub_summary_type]").change(function() {
+			toggleCustomDetailsForSummary(); // Update visibility on change.
+		});
+	});
 } );

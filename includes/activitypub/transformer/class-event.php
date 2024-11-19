@@ -14,6 +14,8 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
 use Activitypub\Transformer\Post;
+use ActivityPub_Event_Bridge\Event_Shortcodes;
+
 use DateTime;
 
 /**
@@ -148,14 +150,14 @@ abstract class Event extends Post {
 	 *
 	 * This is mandatory and must be implemented in the final event transformer class.
 	 */
-	abstract protected function get_start_time(): string;
+	abstract public function get_start_time(): string;
 
 	/**
 	 * Get the end time.
 	 *
 	 * This is not mandatory and therefore just return null by default.
 	 */
-	protected function get_end_time(): ?string {
+	public function get_end_time(): ?string {
 		return null;
 	}
 
@@ -164,14 +166,14 @@ abstract class Event extends Post {
 	 *
 	 * This should be overridden in the actual event transformer.
 	 */
-	protected function get_location(): ?Place {
+	public function get_location(): ?Place {
 		return null;
 	}
 
 	/**
 	 * Default value for the event status.
 	 */
-	protected function get_status(): ?string {
+	public function get_status(): ?string {
 		return 'CONFIRMED';
 	}
 
@@ -255,6 +257,44 @@ abstract class Event extends Post {
 		return '';
 	}
 
+
+
+	/**
+	 * Get the summary.
+	 */
+	public function get_summary(): ?string {
+		if ( 'preset' === get_option( 'activitypub_summary_type', 'preset' ) ) {
+			return $this->get_preset_summary();
+		}
+
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		$post    = $this->wp_object;
+		$summary = $this->get_event_summary_template();
+
+		// It seems that shortcodes are only applied to published posts.
+		if ( is_preview() ) {
+			$post->post_status = 'publish';
+		}
+
+		// Register our shortcodes just in time.
+		Event_Shortcodes::register();
+		// Fill in the shortcodes.
+		\setup_postdata( $post );
+		$summary = \do_shortcode( $summary );
+		\wp_reset_postdata();
+
+		$summary = \wpautop( $summary );
+		$summary = \preg_replace( '/[\n\r\t]/', '', $summary );
+		$summary = \trim( $summary );
+
+		$summary = \apply_filters( 'activitypub_event_bridge_the_summary', $summary, $post );
+
+		// Don't need these anymore, should never appear in a post.
+		Event_Shortcodes::unregister();
+
+		return $summary;
+	}
+
 	/**
 	 * Create a custom summary.
 	 *
@@ -263,7 +303,7 @@ abstract class Event extends Post {
 	 *
 	 * @return string $summary The custom event summary.
 	 */
-	public function get_summary(): ?string {
+	public function get_preset_summary(): ?string {
 		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2, 2 );
 		$excerpt = $this->retrieve_excerpt();
 		// BeforeFirstRelease: decide whether this should be a admin setting.
@@ -306,6 +346,18 @@ abstract class Event extends Post {
 
 		$summary .= $excerpt;
 		return $summary;
+	}
+
+	/**
+	 * Gets the template to use to generate the summary of the ActivityStreams representation of an event post.
+	 *
+	 * @return string The Template.
+	 */
+	protected function get_event_summary_template() {
+		$summary  = \get_option( 'activitypub_event_bridge_custom_summary', ACTIVITYPUB_EVENT_BRIDGE_CUSTOM_SUMMARY );
+		$template = $summary ?? ACTIVITYPUB_EVENT_BRIDGE_CUSTOM_SUMMARY;
+
+		return apply_filters( 'activitypub_event_bridge_summary_template', $template, $this->wp_object );
 	}
 
 	/**
