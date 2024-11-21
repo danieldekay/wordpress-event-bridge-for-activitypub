@@ -323,7 +323,7 @@ abstract class Event extends Post {
 	 * @param array $args    The arguments for which components to include.
 	 * @return string The formatted address.
 	 */
-	protected static function format_address( $address, $args = null) {
+	protected static function format_address( $address, $args = null ) {
 		if ( is_string( $address ) ) {
 			return esc_html( $address );
 		}
