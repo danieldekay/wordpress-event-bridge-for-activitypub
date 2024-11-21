@@ -245,13 +245,13 @@ abstract class Event extends Post {
 		$args = shortcode_atts(
 			array(
 				'icon'  => 'true',
-				'title' => 'true',
+				'label' => 'true',
 			),
 			$atts
 		);
 
 		$args['icon']  = filter_var( $args['icon'], FILTER_VALIDATE_BOOLEAN );
-		$args['title'] = filter_var( $args['title'], FILTER_VALIDATE_BOOLEAN );
+		$args['label'] = filter_var( $args['label'], FILTER_VALIDATE_BOOLEAN );
 
 		$output = array();
 
@@ -259,7 +259,7 @@ abstract class Event extends Post {
 			$output[] = $icon;
 		}
 
-		if ( $args['title'] ) {
+		if ( $args['label'] ) {
 			$output[] = $label . ':';
 		}
 
@@ -278,7 +278,7 @@ abstract class Event extends Post {
 		$args = shortcode_atts(
 			array(
 				'icon'    => 'true',
-				'title'   => 'true',
+				'label'   => 'true',
 				'country' => 'true',
 				'zip'     => 'true',
 				'city'    => 'true',
@@ -306,7 +306,7 @@ abstract class Event extends Post {
 		if ( $args['icon'] ) {
 			$output[] = '📍';
 		}
-		if ( $args['title'] ) {
+		if ( $args['label'] ) {
 			$output[] = esc_html__( 'Location', 'activitypub-event-bridge' ) . ':';
 		}
 
@@ -477,7 +477,10 @@ abstract class Event extends Post {
 		$start_time = $this->get_start_time();
 		$end_time   = $this->get_end_time();
 		$address    = $this->format_address( $this->get_location() );
-		$time_atts  = array( 'icon' => true, 'label' => true);
+		$time_atts  = array(
+			'icon'  => true,
+			'label' => true,
+		);
 
 		$formatted_items = array();
 		if ( ! empty( $category ) ) {

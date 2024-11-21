@@ -58,7 +58,7 @@
         ],
         "test-debug": [
             "@prepare-test",
-            "@test-gatherpress"
+            "@test-activitypub-event-bridge-shortcodes"
         ],
         "test-vs-event-list": "phpunit --filter=vs_event_list",
         "test-the-events-calendar": "phpunit --filter=the_events_calendar",
@@ -67,6 +67,7 @@
         "test-wp-event-manager": "phpunit --filter=wp_event_manager",
         "test-eventin": "phpunit --filter=eventin",
         "test-modern-events-calendar-lite": "phpunit --filter=modern_events_calendar_lite",
+        "test-activitypub-event-bridge-shortcodes": "phpunit --filter=activitypub_event_bridge_shortcodes",
         "test-all": "phpunit"
     }
 }

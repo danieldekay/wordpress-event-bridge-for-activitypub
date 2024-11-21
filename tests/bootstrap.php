@@ -26,6 +26,21 @@ if ( ! file_exists( "{$_tests_dir}/includes/functions.php" ) ) {
 require_once "{$_tests_dir}/includes/functions.php";
 
 /**
+ * Function to manually load an event plugin.
+ *
+ * @param string $plugin_file  The main plugin file of the event plugin.
+ */
+function _manually_load_event_plugin( $plugin_file ) {
+	$plugin_dir = ABSPATH . '/wp-content/plugins/';
+	require_once $plugin_dir . $plugin_file;
+	update_option( 'purchase_history_table_structure_migration_done', true );
+	$current   = get_option( 'active_plugins', array() );
+	$current[] = $plugin_file;
+	sort( $current );
+	update_option( 'active_plugins', $current );
+}
+
+/**
  * Manually load the plugin being tested and its integrations.
  */
 function _manually_load_plugin() {
@@ -74,13 +89,12 @@ function _manually_load_plugin() {
 	}
 
 	if ( $plugin_file ) {
-		// Manually load the event plugin.
-		require_once $plugin_dir . $plugin_file;
-		update_option( 'purchase_history_table_structure_migration_done', true );
-		$current   = get_option( 'active_plugins', array() );
-		$current[] = $plugin_file;
-		sort( $current );
-		update_option( 'active_plugins', $current );
+		_manually_load_event_plugin( $plugin_file );
+	} else {
+		// For all other tests we mainly use the Events Calendar as a reference.
+		_manually_load_event_plugin( 'the-events-calendar/the-events-calendar.php' );
+		_manually_load_event_plugin( 'very-simple-event-list/vsel.php' );
+
 	}
 
 	// Hot fix that allows using Events Manager within unit tests, because the em_init() is later not run as admin.
