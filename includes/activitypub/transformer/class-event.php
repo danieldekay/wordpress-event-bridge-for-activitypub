@@ -13,8 +13,8 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
+use Activitypub\Shortcodes;
 use Activitypub\Transformer\Post;
-use ActivityPub_Event_Bridge\Event_Shortcodes;
 
 use DateTime;
 
@@ -196,7 +196,7 @@ abstract class Event extends Post {
 	 *
 	 * @param ?string $time The time which needs to be formatted.
 	 */
-	private static function format_time( $time ) {
+	protected static function format_time( $time ) {
 		if ( is_null( $time ) ) {
 			return '';
 		}
@@ -207,24 +207,160 @@ abstract class Event extends Post {
 	}
 
 	/**
-	 * Format a human readable address.
+	 * Generates output for the 'ap_start_time' shortcode.
+	 *
+	 * @param ?array $atts  The shortcode's attributes.
+	 * @return string The formatted start date and time of the event.
 	 */
-	protected function format_address(): string {
+	public function shortcode_start_time( $atts ) {
+		$start_timestamp = $this->get_start_time();
+		return $this->generate_time_output( $start_timestamp, $atts, '🗓️', __( 'Start', 'activitypub-event-bridge' ) );
+	}
+
+	/**
+	 * Generates output for the 'ap_end_time' shortcode.
+	 *
+	 * @param ?array $atts  The shortcode's attributes.
+	 * @return string The formatted end date and time of the event.
+	 */
+	public function shortcode_end_time( $atts ) {
+		$end_timestamp = $this->get_end_time();
+		return $this->generate_time_output( $end_timestamp, $atts, '⏳', __( 'End', 'activitypub-event-bridge' ) );
+	}
+
+	/**
+	 * Generates the formatted time output for a shortcode.
+	 *
+	 * @param int|null $timestamp  The timestamp for the event time.
+	 * @param array    $atts       The shortcode attributes.
+	 * @param string   $icon       The icon to display.
+	 * @param string   $label      The label to display (e.g., 'Start', 'End').
+	 * @return string The formatted date and time, or an empty string if the timestamp is invalid.
+	 */
+	private function generate_time_output( $timestamp, $atts, $icon, $label ) {
+		if ( ! $timestamp ) {
+			return '';
+		}
+
+		$args = shortcode_atts(
+			array(
+				'icon'  => 'true',
+				'title' => 'true',
+			),
+			$atts
+		);
+
+		$args['icon']  = filter_var( $args['icon'], FILTER_VALIDATE_BOOLEAN );
+		$args['title'] = filter_var( $args['title'], FILTER_VALIDATE_BOOLEAN );
+
+		$output = array();
+
+		if ( $args['icon'] ) {
+			$output[] = $icon;
+		}
+
+		if ( $args['title'] ) {
+			$output[] = $label . ':';
+		}
+
+		$output[] = self::format_time( $timestamp );
+
+		return implode( ' ', $output );
+	}
+
+	/**
+	 * Generates output for the 'ap_location' shortcode.
+	 *
+	 * @param ?array $atts The shortcode's attributes.
+	 * @return string The formatted location/address of the event.
+	 */
+	public function shortcode_location( $atts ) {
+		$args = shortcode_atts(
+			array(
+				'icon'    => 'true',
+				'title'   => 'true',
+				'country' => 'true',
+				'zip'     => 'true',
+				'city'    => 'true',
+				'street'  => 'true',
+				'name'    => 'true',
+			),
+			$atts,
+			'ap_location'
+		);
+
+		// Convert attributes to booleans.
+		$args = array_map(
+			function ( $value ) {
+				return filter_var( $value, FILTER_VALIDATE_BOOLEAN );
+			},
+			$args
+		);
+
 		$location = $this->get_location();
-		if ( is_null( $location ) ) {
+		if ( ! $location ) {
 			return '';
 		}
-		$address = $location->get_address();
-		if ( ! $address ) {
-			return $location->get_name();
+
+		$output = array();
+		if ( $args['icon'] ) {
+			$output[] = '📍';
 		}
+		if ( $args['title'] ) {
+			$output[] = esc_html__( 'Location', 'activitypub-event-bridge' ) . ':';
+		}
+
+		$output[] = self::format_address( $location->get_address(), $args );
+
+		// Join output array into a single string with spaces and return.
+		return implode( ' ', array_filter( $output ) );
+	}
+
+	/**
+	 * Formats the address based on provided arguments.
+	 *
+	 * @param mixed $address The address data, either as a string or an array.
+	 * @param array $args    The arguments for which components to include.
+	 * @return string The formatted address.
+	 */
+	protected static function format_address( $address, $args = null) {
 		if ( is_string( $address ) ) {
-			return $address;
+			return esc_html( $address );
 		}
-		if ( ! is_array( $address ) ) {
-			return '';
+
+		if ( is_null( $args ) ) {
+			$args = array(
+				'icon'    => 'true',
+				'title'   => 'true',
+				'country' => 'true',
+				'zip'     => 'true',
+				'city'    => 'true',
+				'street'  => 'true',
+				'name'    => 'true',
+			);
 		}
-		return isset( $address['locality'] ) ? $address['locality'] : '';
+
+		if ( is_array( $address ) ) {
+			$address_parts = array();
+
+			$components = array(
+				'name'    => 'name',
+				'street'  => 'streetAddress',
+				'zip'     => 'postalCode',
+				'city'    => 'addressLocality',
+				'country' => 'addressCountry',
+			);
+
+			foreach ( $components as $arg_key => $address_key ) {
+				if ( $args[ $arg_key ] && ! empty( $address[ $address_key ] ) ) {
+					$address_parts[] = esc_html( $address[ $address_key ] );
+				}
+			}
+
+			return implode( ', ', $address_parts );
+		}
+
+		return '';
 	}
 
 	/**
@@ -257,14 +393,34 @@ abstract class Event extends Post {
 		return '';
 	}
 
+	/**
+	 * Register the shortcodes.
+	 */
+	public function register_shortcodes() {
+		foreach ( get_class_methods( self::class ) as $function ) {
+			if ( 'shortcode_' === substr( $function, 0, 10 ) ) {
+				add_shortcode( 'ap_' . substr( $function, 10, strlen( $function ) ), array( $this, $function ) );
+			}
+		}
+	}
 
+	/**
+	 * Register the shortcodes.
+	 */
+	public function unregister_shortcodes() {
+		foreach ( get_class_methods( self::class ) as $function ) {
+			if ( 'shortcode_' === substr( $function, 0, 10 ) ) {
+				remove_shortcode( 'ap_' . substr( $function, 10, strlen( $function ) ), array( $this, $function ) );
+			}
+		}
+	}
 
 	/**
 	 * Get the summary.
 	 */
 	public function get_summary(): ?string {
 		if ( 'preset' === get_option( 'activitypub_summary_type', 'preset' ) ) {
-			return $this->get_preset_summary();
+			return $this->format_preset_summary();
 		}
 
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
@@ -277,7 +433,10 @@ abstract class Event extends Post {
 		}
 
 		// Register our shortcodes just in time.
-		Event_Shortcodes::register();
+
+		Shortcodes::register();
+		$this->register_shortcodes();
+
 		// Fill in the shortcodes.
 		\setup_postdata( $post );
 		$summary = \do_shortcode( $summary );
@@ -289,8 +448,9 @@ abstract class Event extends Post {
 
 		$summary = \apply_filters( 'activitypub_event_bridge_the_summary', $summary, $post );
 
-		// Don't need these anymore, should never appear in a post.
-		Event_Shortcodes::unregister();
+		// Unregister the shortcodes.
+		Shortcodes::unregister();
+		$this->unregister_shortcodes();
 
 		return $summary;
 	}
@@ -303,7 +463,7 @@ abstract class Event extends Post {
 	 *
 	 * @return string $summary The custom event summary.
 	 */
-	public function get_preset_summary(): ?string {
+	public function format_preset_summary(): ?string {
 		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2, 2 );
 		$excerpt = $this->retrieve_excerpt();
 		// BeforeFirstRelease: decide whether this should be a admin setting.
@@ -314,9 +474,10 @@ abstract class Event extends Post {
 		remove_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ) );
 
 		$category   = $this->format_categories();
-		$start_time = $this->format_start_time();
-		$end_time   = $this->format_end_time();
-		$address    = $this->format_address();
+		$start_time = $this->get_start_time();
+		$end_time   = $this->get_end_time();
+		$address    = $this->format_address( $this->get_location() );
+		$time_atts  = array( 'icon' => true, 'label' => true);
 
 		$formatted_items = array();
 		if ( ! empty( $category ) ) {
@@ -324,11 +485,11 @@ abstract class Event extends Post {
 		}
 
 		if ( ! empty( $start_time ) ) {
-			$formatted_items[] = '🗓️ ' . __( 'Start', 'activitypub-event-bridge' ) . ': ' . $start_time;
+			$formatted_items[] = $this->generate_time_output( $start_time, $time_atts, '🗓️', __( 'Start', 'activitypub-event-bridge' ) );
 		}
 
 		if ( ! empty( $end_time ) ) {
-			$formatted_items[] = '⏳ ' . __( 'End', 'activitypub-event-bridge' ) . ': ' . $end_time;
+			$formatted_items[] = $this->generate_time_output( $end_time, $time_atts, '⏳', __( 'End', 'activitypub-event-bridge' ) );
 		}
 
 		if ( ! empty( $address ) ) {
