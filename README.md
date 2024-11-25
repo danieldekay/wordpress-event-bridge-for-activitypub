@@ -63,6 +63,7 @@ This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/ac
 * [Eventin](https://de.wordpress.org/plugins/wp-event-solution/)
 * [Modern Events Calendar Lite](https://webnus.net/modern-events-calendar/)
 * [GatherPress](https://gatherpress.org/)
+* [EventPrime – Events Calendar, Bookings and Tickets](https://wordpress.org/plugins/eventprime-event-calendar-management/)
 
 ## Configuration ##
 
@@ -99,6 +100,12 @@ If you know about coding have a look at the documentation of how to add your plu
 We're always interested in your feedback. Feel free to reach out to us via [E-Mail](https://event-federation.eu/contact/) or create an [issue](https://code.event-federation.eu/Event-Federation/wordpress-activitypub-event-bridge/issues).
 
 ## Changelog ##
+
+## Unreleased
+
+### Added
+
+* Integration for EventPrime – Events Calendar, Bookings and Tickets
 
 ### [0.2.1] 2024-11-16 ###
 
