@@ -71,6 +71,9 @@ function _manually_load_plugin() {
 		case 'wp_event_manager':
 			$plugin_file = 'wp-event-manager/wp-event-manager.php';
 			break;
+		case 'eventprime':
+			$plugin_file = 'eventprime-event-calendar-management/event-prime.php';
+			break;
 	}
 
 	if ( $plugin_file ) {
