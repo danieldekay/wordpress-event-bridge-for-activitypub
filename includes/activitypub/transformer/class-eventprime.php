@@ -11,10 +11,8 @@ namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
 use ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
-use GatherPress\Core\Event as GatherPress_Event;
 
 /**
  * ActivityPub Transformer for VS Event
@@ -44,5 +42,37 @@ final class EventPrime extends Event {
 		} else {
 			return '';
 		}
+	}
+
+	/**
+	 * Get location from the event object.
+	 */
+	protected function get_location(): ?Place {
+		$venue_term_id = get_post_meta( $this->wp_object->ID, 'em_venue', true );
+		if ( ! $venue_term_id ) {
+			return null;
+		}
+
+		$venue = wp_get_post_terms( $this->wp_object->ID, 'em_venue' );
+
+		if ( empty( $venue ) ) {
+			return null;
+		} else {
+			$venue = $venue[0];
+		}
+
+		$place = new Place();
+
+		$place->set_name( $venue->name );
+		$place->set_content( $venue->description );
+
+		$address         = get_term_meta( $venue->term_id, 'em_address', true );
+		$display_address = get_term_meta( $venue->term_id, 'em_display_address_on_frontend', true );
+
+		if ( $address && $display_address ) {
+			$place->set_address( get_term_meta( $venue->term_id, 'em_address', true ) );
+		}
+
+		return $place;
 	}
 }
