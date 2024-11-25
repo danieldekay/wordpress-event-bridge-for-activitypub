@@ -205,8 +205,7 @@ final class EventPrime extends Event_Plugin {
 		if ( $activitypub_template ) {
 			global $post;
 
-			// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
-			$post = get_post( $post_id );
+			$post = get_post( $post_id ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 
 			// Ensure WordPress functions use the new post data.
 			setup_postdata( $post );
