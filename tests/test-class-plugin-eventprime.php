@@ -80,7 +80,7 @@ class Test_EventPrime extends WP_UnitTestCase {
 		$this->assertEquals( 1, count( $active_event_plugins ) );
 
 		// Enable ActivityPub support for the event plugin.
-		$this->assertContains( 'tribe_events', get_option( 'activitypub_support_post_types' ) );
+		$this->assertContains( 'em_event', get_option( 'activitypub_support_post_types' ) );
 
 		$event_data                      = array();
 		$event_data['name']              = 'EventPrime Event title';
