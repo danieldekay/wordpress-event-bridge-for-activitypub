@@ -128,7 +128,7 @@ class Test_EventPrime extends WP_UnitTestCase {
 	 */
 	public function test_transformation_of_minimal_event_with_venue() {
 		// Create an EventPrime Event without content.
-		$ep_functions  = new Eventprime_Basic_Functions();
+		$ep_functions = new Eventprime_Basic_Functions();
 
 		$venue_term_id = wp_insert_term( $this->mockup_venue['name'], 'em_venue' )['term_id'];
 		add_term_meta( $venue_term_id, 'em_address', $this->mockup_venue['address'], true );
@@ -164,7 +164,7 @@ class Test_EventPrime extends WP_UnitTestCase {
 	 */
 	public function test_transformation_of_minimal_event_with_venue_with_hidden_address() {
 		// Create an EventPrime Event without content.
-		$ep_functions  = new Eventprime_Basic_Functions();
+		$ep_functions = new Eventprime_Basic_Functions();
 
 		$venue_term_id = wp_insert_term( $this->mockup_venue['name'], 'em_venue' )['term_id'];
 		add_term_meta( $venue_term_id, 'em_address', $this->mockup_venue['address'], true );
