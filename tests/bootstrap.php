@@ -74,6 +74,9 @@ function _manually_load_plugin() {
 		case 'eventprime':
 			$plugin_file = 'eventprime-event-calendar-management/event-prime.php';
 			break;
+		case 'event-organiser':
+			$plugin_file = 'event-organiser/event-organiser.php';
+			break;
 	}
 
 	if ( $plugin_file ) {
@@ -98,6 +101,11 @@ function _manually_load_plugin() {
 		require_once $plugin_dir . 'modern-events-calendar-lite/app/libraries/factory.php';
 		$mec_factory = new MEC_factory();
 		$mec_factory->install();
+	}
+
+	if ( 'event-organiser' === $activitypub_event_bridge_integration_filter ) {
+		require_once $plugin_dir . 'event-organiser/includes/event-organiser-install.php';
+		eventorganiser_install();
 	}
 
 	// At last manually load our WordPress plugin.
