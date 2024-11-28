@@ -74,7 +74,7 @@ function _manually_load_plugin() {
 		case 'eventprime':
 			$plugin_file = 'eventprime-event-calendar-management/event-prime.php';
 			break;
-		case 'event-organiser':
+		case 'event_organiser':
 			$plugin_file = 'event-organiser/event-organiser.php';
 			break;
 	}
