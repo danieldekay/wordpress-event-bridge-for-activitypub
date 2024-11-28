@@ -41,10 +41,10 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		$this->assertContains( 'event', get_option( 'activitypub_support_post_types' ) );
 
 		$event_data = array(
-			'start'     => new DateTime( '+10 days 15:00:00', eo_get_blog_timezone() ),
-			'end'       => new DateTime( '+10 days 16:00:00', eo_get_blog_timezone() ),
-			'all_day'   => 0,
-			'schedule'  => 'once',
+			'start'    => new DateTime( '+10 days 15:00:00', eo_get_blog_timezone() ),
+			'end'      => new DateTime( '+10 days 16:00:00', eo_get_blog_timezone() ),
+			'all_day'  => 0,
+			'schedule' => 'once',
 		);
 
 		$post_data = array(
@@ -67,10 +67,10 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 	public function test_transform_of_basic_event() {
 		// Mock Event.
 		$event_data = array(
-			'start'     => new DateTime( '+10 days 15:00:00', eo_get_blog_timezone() ),
-			'end'       => new DateTime( '+10 days 16:00:00', eo_get_blog_timezone() ),
-			'all_day'   => 0,
-			'schedule'  => 'once',
+			'start'    => new DateTime( '+10 days 15:00:00', eo_get_blog_timezone() ),
+			'end'      => new DateTime( '+10 days 16:00:00', eo_get_blog_timezone() ),
+			'all_day'  => 0,
+			'schedule' => 'once',
 		);
 
 		$post_data = array(
@@ -81,7 +81,7 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		$post_id = eo_insert_event( $post_data, $event_data );
 
 		// Call the transformer Factory.
-		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $post_id )  )->to_object()->to_array();
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $post_id ) )->to_object()->to_array();
 
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
