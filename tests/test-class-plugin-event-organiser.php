@@ -15,14 +15,11 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 	public function set_up() {
 		parent::set_up();
 
-		if ( ! function_exists( 'eo_get_events' ) ) {
+		if ( ! class_exists( '\EO_Query_Result' ) ) {
 			self::markTestSkipped( 'Event Organiser plugin is not active.' );
 		}
 
-		// Mock the plugin activation.
-		GatherPress\Core\Setup::get_instance()->activate_gatherpress_plugin( false );
-
-		// Make sure that ActivityPub support is enabled for The Events Calendar.
+		// Make sure that ActivityPub support is enabled.
 		$aec = \ActivityPub_Event_Bridge\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
@@ -41,56 +38,50 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		$this->assertEquals( 1, count( $active_event_plugins ) );
 
 		// Enable ActivityPub support for the event plugin.
-		$this->assertContains( 'gatherpress_event', get_option( 'activitypub_support_post_types' ) );
+		$this->assertContains( 'event', get_option( 'activitypub_support_post_types' ) );
 
-		// Mock GatherPress Event.
-		$post_id = wp_insert_post(
-			array(
-				'post_title'   => 'Unit Test Event',
-				'post_type'    => 'gatherpress_event',
-				'post_content' => 'Unit Test description.',
-				'post_status'  => 'publish',
-			)
-		);
-		$event   = new \GatherPress\Core\Event( $post_id );
-		$params  = array(
-			'datetime_start' => '+10 days 15:00:00',
-			'datetime_end'   => '+10 days 16:00:00',
-			'timezone'       => 'America/New_York',
+		$event_data = array(
+			'start'     => new DateTime( '+10 days 15:00:00', eo_get_blog_timezone() ),
+			'end'       => new DateTime( '+10 days 16:00:00', eo_get_blog_timezone() ),
+			'all_day'   => 0,
+			'schedule'  => 'once',
 		);
 
-		$event->save_datetimes( $params );
+		$post_data = array(
+			'post_title'   => 'Unit Test Event',
+			'post_content' => 'Unit Test description.',
+		);
+
+		$post_id = eo_insert_event( $post_data, $event_data );
 
 		// Call the transformer Factory.
-		$transformer = \Activitypub\Transformer\Factory::get_transformer( $event->event );
+		$transformer = \Activitypub\Transformer\Factory::get_transformer( get_post( $post_id ) );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\GatherPress::class, $transformer );
+		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\Event_Organiser::class, $transformer );
 	}
 
 	/**
 	 * Test transformation to ActivityPUb for basic event.
 	 */
 	public function test_transform_of_basic_event() {
-		// Mock GatherPress Event.
-		$post_id = wp_insert_post(
-			array(
-				'post_title'   => 'Unit Test Event',
-				'post_type'    => 'gatherpress_event',
-				'post_content' => 'Unit Test description.',
-				'post_status'  => 'publish',
-			)
+		// Mock Event.
+		$event_data = array(
+			'start'     => new DateTime( '+10 days 15:00:00', eo_get_blog_timezone() ),
+			'end'       => new DateTime( '+10 days 16:00:00', eo_get_blog_timezone() ),
+			'all_day'   => 0,
+			'schedule'  => 'once',
 		);
-		$event   = new \GatherPress\Core\Event( $post_id );
-		$params  = array(
-			'datetime_start' => '+10 days 15:00:00',
-			'datetime_end'   => '+10 days 16:00:00',
-			'timezone'       => 'America/New_York',
+
+		$post_data = array(
+			'post_title'   => 'Unit Test Event',
+			'post_content' => 'Unit Test description.',
 		);
-		$event->save_datetimes( $params );
+
+		$post_id = eo_insert_event( $post_data, $event_data );
 
 		// Call the transformer Factory.
-		$event_array = \Activitypub\Transformer\Factory::get_transformer( $event->event )->to_object()->to_array();
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $post_id )  )->to_object()->to_array();
 
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
