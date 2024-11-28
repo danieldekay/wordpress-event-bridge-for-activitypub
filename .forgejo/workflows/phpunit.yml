@@ -38,7 +38,7 @@ jobs:
           path: |
             ${{ env.WP_CORE_DIR }}
             ${{ env.WP_TESTS_DIR }}
-          key: cache-wordpress-67-2
+          key: cache-wordpress-67-3
 
       - name: Cache Composer
         id: cache-composer-phpunit
@@ -107,5 +107,10 @@ jobs:
 
       - name: Run Integration tests for Modern Events Calendar Lite
         run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=modern_events_calendar_lite
+        env:
+          PHP_VERSION: ${{ matrix.php-version }}
+
+      - name: Run Integration tests for EventPrime
+        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=eventprime
         env:
           PHP_VERSION: ${{ matrix.php-version }}

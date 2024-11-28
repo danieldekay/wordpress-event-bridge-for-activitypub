@@ -1,6 +1,6 @@
 <?php
 /**
- * ActivityPub Transformer for the plugin Very Simple Event List.
+ * ActivityPub Transformer for the GatherPress event plugin.
  *
  * @package ActivityPub_Event_Bridge
  * @license AGPL-3.0-or-later

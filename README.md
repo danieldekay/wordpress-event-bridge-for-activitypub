@@ -63,6 +63,7 @@ This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/ac
 * [Eventin](https://de.wordpress.org/plugins/wp-event-solution/)
 * [Modern Events Calendar Lite](https://webnus.net/modern-events-calendar/)
 * [GatherPress](https://gatherpress.org/)
+* [EventPrime – Events Calendar, Bookings and Tickets](https://wordpress.org/plugins/eventprime-event-calendar-management/)
 
 ## Configuration ##
 
@@ -101,6 +102,10 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 ## Changelog ##
 
 ## Unreleased
+
+### Added
+
+* Integration for EventPrime – Events Calendar, Bookings and Tickets
 
 ### Fixed
 
