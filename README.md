@@ -107,6 +107,10 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 
 * Integration for EventPrime – Events Calendar, Bookings and Tickets
 
+### Fixed
+
+* Fixed that transformer hook function might also return `null`.
+
 ### [0.2.1] 2024-11-16 ###
 
 * Initial release on https://wordpress.org/

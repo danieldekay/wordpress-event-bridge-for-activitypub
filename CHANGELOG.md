@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Integration for EventPrime – Events Calendar, Bookings and Tickets
 
+### Fixed
+
+* Fixed that transformer hook function might also return `null`.
+
 ## [0.2.1] - 2024-11-16
 
 ### Added

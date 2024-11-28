@@ -253,7 +253,7 @@ class Setup {
 	 *
 	 * @return \Activitypub\Transformer\Base|null
 	 */
-	public function register_activitypub_event_transformer( $transformer, $wp_object, $object_class ): \Activitypub\Transformer\Base {
+	public function register_activitypub_event_transformer( $transformer, $wp_object, $object_class ): ?\Activitypub\Transformer\Base {
 		// If the current WordPress object is not a post (e.g., a WP_Comment), don't change the transformer.
 		if ( 'WP_Post' !== $object_class ) {
 			return $transformer;
