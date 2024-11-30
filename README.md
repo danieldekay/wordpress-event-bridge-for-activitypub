@@ -105,6 +105,7 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 
 ### Added
 
+* Integration for Event Organiser
 * Integration for EventPrime – Events Calendar, Bookings and Tickets
 
 ### Fixed
