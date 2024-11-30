@@ -261,6 +261,7 @@ install_wp_plugins() {
 	install_wp_plugin events-manager "6.6.3"
 	install_wp_plugin wp-event-manager "3.1.45.1"
 	install_wp_plugin wp-event-solution "4.0.14"
+	install_wp_plugin event-organiser "3.12.8"
 	# Mec is not installable via wordpress.org, we use our own mirror.
 	install_wp_plugin_mec
 }
