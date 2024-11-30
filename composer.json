@@ -55,11 +55,12 @@
             "@test-wp-event-manager",
             "@test-eventin",
             "@test-modern-events-calendar-lite",
-            "@test-eventprime"
+            "@test-eventprime",
+            "@test-event-organiser"
         ],
         "test-debug": [
             "@prepare-test",
-            "@test-eventprime"
+            "@test-event-organiser"
         ],
         "test-vs-event-list": "phpunit --filter=vs_event_list",
         "test-the-events-calendar": "phpunit --filter=the_events_calendar",
@@ -69,6 +70,7 @@
         "test-eventin": "phpunit --filter=eventin",
         "test-modern-events-calendar-lite": "phpunit --filter=modern_events_calendar_lite",
         "test-eventprime": "phpunit --filter=eventprime",
+        "test-event-organiser": "phpunit --filter=event_organiser",
         "test-all": "phpunit"
     }
 }
