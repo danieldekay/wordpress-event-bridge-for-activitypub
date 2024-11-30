@@ -103,6 +103,11 @@ function _manually_load_plugin() {
 		$mec_factory->install();
 	}
 
+	if ( 'event_organiser' === $activitypub_event_bridge_integration_filter ) {
+		require_once $plugin_dir . 'event-organiser/includes/event-organiser-install.php';
+		eventorganiser_install();
+	}
+
 	// At last manually load our WordPress plugin.
 	require dirname( __DIR__ ) . '/activitypub-event-bridge.php';
 }
