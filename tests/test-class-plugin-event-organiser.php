@@ -23,6 +23,8 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		$aec = \ActivityPub_Event_Bridge\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
+		eventorganiser_install();
+
 		// Delete all posts afterwards.
 		_delete_all_posts();
 	}
