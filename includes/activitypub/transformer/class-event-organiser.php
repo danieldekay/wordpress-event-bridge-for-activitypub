@@ -67,7 +67,7 @@ final class Event_Organiser extends Event {
 
 		$address = eo_get_venue_address( $venue_id );
 
-		$address['name'] = eo_get_venue_name( $this->wp_object->ID );
+		$venue_name = eo_get_venue_name( $venue_id );
 
 		$address['streetAddress'] = $address['address'];
 		unset( $address['address'] );
@@ -88,10 +88,12 @@ final class Event_Organiser extends Event {
 
 		$location = new Place();
 		$location->set_name( eo_get_venue_name( $this->wp_object->ID ) );
-		$location->set_latitude( eo_get_venue_lat( $this->wp_object->ID ) );
-		$location->set_longitude( eo_get_venue_lng( $this->wp_object->ID ) );
+		$location->set_latitude( eo_get_venue_lat( $this->wp_object->ID ) ?? null );
+		$location->set_longitude( eo_get_venue_lng( $this->wp_object->ID ) ?? null );
 		$location->set_address( $address );
+		$location->set_name( $venue_name );
+		$location->set_content( eo_get_venue_description( $venue_id ) );
 
-		return $address;
+		return $location;
 	}
 }
