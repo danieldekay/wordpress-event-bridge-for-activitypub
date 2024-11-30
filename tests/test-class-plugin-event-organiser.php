@@ -15,7 +15,7 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 	public function set_up() {
 		parent::set_up();
 
-		if ( ! class_exists( '\EO_Query_Result' ) ) {
+		if ( ! function_exists( 'eo_get_events' ) ) {
 			self::markTestSkipped( 'Event Organiser plugin is not active.' );
 		}
 
@@ -50,6 +50,7 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		$post_data = array(
 			'post_title'   => 'Unit Test Event',
 			'post_content' => 'Unit Test description.',
+			'post_status'  => 'publish',
 		);
 
 		$post_id = eo_insert_event( $post_data, $event_data );
@@ -59,6 +60,7 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 
 		// Check that we got the right transformer.
 		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\Event_Organiser::class, $transformer );
+
 	}
 
 	/**
@@ -76,6 +78,7 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		$post_data = array(
 			'post_title'   => 'Unit Test Event',
 			'post_content' => 'Unit Test description.',
+			'post_status'  => 'publish',
 		);
 
 		$post_id = eo_insert_event( $post_data, $event_data );
