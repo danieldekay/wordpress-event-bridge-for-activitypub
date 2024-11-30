@@ -60,7 +60,6 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 
 		// Check that we got the right transformer.
 		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\Event_Organiser::class, $transformer );
-
 	}
 
 	/**

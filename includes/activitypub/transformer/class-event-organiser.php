@@ -27,7 +27,7 @@ final class Event_Organiser extends Event {
 	 * also contains attributes specific to the Event organiser plugin like the
 	 * occurrence id.
 	 *
-     * @param WP_Post $wp_object The WordPress object.
+	 * @param WP_Post $wp_object The WordPress object.
 	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
 	 */
 	public function __construct( $wp_object, $wp_taxonomy ) {
