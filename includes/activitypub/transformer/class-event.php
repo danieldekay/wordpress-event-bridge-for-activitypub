@@ -28,7 +28,6 @@ use DateTime;
  * [ ] do add Cancelled reason in the content.
  */
 abstract class Event extends Post {
-
 	/**
 	 * The WordPress event taxonomy.
 	 *
@@ -43,7 +42,7 @@ abstract class Event extends Post {
 	 *
 	 * @return string The Event Object-Type.
 	 */
-	protected function get_type(): string {
+	protected function get_type() {
 		return 'Event';
 	}
 

@@ -134,6 +134,7 @@ class Setup {
 		'\ActivityPub_Event_Bridge\Plugins\Modern_Events_Calendar_Lite',
 		'\ActivityPub_Event_Bridge\Plugins\EventPrime',
 		'\ActivityPub_Event_Bridge\Plugins\Event_Organiser',
+		'\ActivityPub_Event_Bridge\Plugins\Event_Post',
 	);
 
 	/**
