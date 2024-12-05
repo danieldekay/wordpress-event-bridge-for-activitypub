@@ -3,7 +3,7 @@
 **Tags:** events, fediverse, activitypub, calendar  
 **Requires at least:** 6.5  
 **Tested up to:** 6.7  
-**Stable tag:** 0.2.1  
+**Stable tag:** 0.3.0  
 **Requires PHP:** 7.4  
 **License:** AGPL-3.0-or-later  
 **License URI:** https://www.gnu.org/licenses/agpl-3.0.html  
@@ -102,21 +102,8 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 
 ## Changelog ##
 
-## Unreleased
-
-### Added
-
-* Integration for Event Organiser
-* Integration for EventPrime – Events Calendar, Bookings and Tickets
-
-### Fixed
-
-* Fixed that transformer hook function might also return `null`.
-
-### [0.2.1] 2024-11-16 ###
+### [0.3.0] 2024-12-05 ###
 
 * Initial release on https://wordpress.org/
 
-### [0.2.0] 2024-10-29 ###
 
-* Initial submission to https://wordpress.org/
