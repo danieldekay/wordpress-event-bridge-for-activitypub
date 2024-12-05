@@ -1,6 +1,6 @@
 jQuery( function( $ ) {
 	// Accordion handling in various areas.
-	$( '.activitypub-event-bridge-settings-accordion' ).on( 'click', '.activitypub-event-bridge-settings-accordion-trigger', function() {
+	$( '.event-bridge-for-activitypub-settings-accordion' ).on( 'click', '.event-bridge-for-activitypub-settings-accordion-trigger', function() {
 		var isExpanded = ( 'true' === $( this ).attr( 'aria-expanded' ) );
 
 		if ( isExpanded ) {

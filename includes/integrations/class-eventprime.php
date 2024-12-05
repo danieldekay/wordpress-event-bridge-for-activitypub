@@ -3,11 +3,11 @@
  * EventPrime – Events Calendar, Bookings and Tickets
  *
  * @link    https://wordpress.org/plugins/eventprime-event-calendar-management/
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
 
 use Activitypub\Signature;
 use Eventprime_Basic_Functions;

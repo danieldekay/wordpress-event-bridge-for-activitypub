@@ -1,15 +1,15 @@
 <?php
 /**
- * The Events Calendar.
+ * Events Manager.
  *
- * Defines all the necessary meta information for the events calendar.
+ * Defines all the necessary meta information for the Events Manager WordPress Plugin.
  *
- * @link    https://wordpress.org/plugins/the-events-calendar/
- * @package ActivityPub_Event_Bridge
+ * @link    https://wordpress.org/plugins/events-manager/
+ * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -21,14 +21,14 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class The_Events_Calendar extends Event_plugin {
+final class Events_Manager extends Event_Plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
 	 * @return string
 	 */
 	public static function get_plugin_file(): string {
-		return 'the-events-calendar/the-events-calendar.php';
+		return 'events-manager/events-manager.php';
 	}
 
 	/**
@@ -37,7 +37,7 @@ final class The_Events_Calendar extends Event_plugin {
 	 * @return string
 	 */
 	public static function get_post_type(): string {
-		return class_exists( '\Tribe__Events__Main' ) ? \Tribe__Events__Main::POSTTYPE : 'tribe_event';
+		return defined( 'EM_POST_TYPE_EVENT' ) ? constant( 'EM_POST_TYPE_EVENT' ) : 'event';
 	}
 
 	/**
@@ -45,13 +45,8 @@ final class The_Events_Calendar extends Event_plugin {
 	 *
 	 * @return array The settings page urls.
 	 */
-	public static function get_settings_pages(): array {
-		if ( class_exists( '\Tribe\Events\Admin\Settings' ) ) {
-			$page = \Tribe\Events\Admin\Settings::$settings_page_id;
-		} else {
-			$page = 'tec-events-settings';
-		}
-		return array( $page );
+	public static function get_settings_page(): array {
+		return array();
 	}
 
 	/**
@@ -60,6 +55,6 @@ final class The_Events_Calendar extends Event_plugin {
 	 * @return string
 	 */
 	public static function get_event_category_taxonomy(): string {
-		return class_exists( '\Tribe__Events__Main' ) ? \Tribe__Events__Main::TAXONOMY : 'tribe_events_cat';
+		return defined( 'EM_TAXONOMY_CATEGORY' ) ? constant( 'EM_TAXONOMY_CATEGORY' ) : 'event-categories';
 	}
 }

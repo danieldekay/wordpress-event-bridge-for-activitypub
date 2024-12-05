@@ -1,17 +1,17 @@
 <?php
 /**
- * Class responsible for autoloading ActivityPub Event Bridge class files.
+ * Class responsible for autoloading Event Bridge for ActivityPub class files.
  *
  * The Autoloader class is responsible for automatically loading class files as needed
  * to ensure a clean and organized codebase. It maps class names to their corresponding
  * file locations within the GatherPress plugin.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge;
+namespace Event_Bridge_For_ActivityPub;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -34,8 +34,8 @@ class Autoloader {
 	public static function register(): void {
 		spl_autoload_register(
 			function ( $full_class ) {
-				$base_dir = ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . '/includes/';
-				$base     = 'ActivityPub_Event_Bridge\\';
+				$base_dir = EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . '/includes/';
+				$base     = 'Event_Bridge_For_ActivityPub\\';
 
 				if ( strncmp( $full_class, $base, strlen( $base ) ) === 0 ) {
 					$maybe_uppercase = str_replace( $base, '', $full_class );

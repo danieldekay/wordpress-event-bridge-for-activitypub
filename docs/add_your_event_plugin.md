@@ -13,7 +13,7 @@ To make the WordPress ActivityPub plugin use a custom transformer simply add a f
 First you need to add some basic information about your event plugin. Just create a new file in `./includes/plugins/my-event-plugin.php`. Implement at least all abstract functions of the `Event_Plugin` class.
 
 ```php
-  namespace ActivityPub_Event_Bridge\Plugins;
+  namespace Event_Bridge_For_ActivityPub\Integrations;
 
   // Exit if accessed directly.
   defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -28,16 +28,16 @@ First you need to add some basic information about your event plugin. Just creat
   final class My_Event_Plugin extends Event_Plugin {
 ```
 
-Then you need to tell the ActivityPub Event Bridge about that class by adding it to the `EVENT_PLUGIN_CLASSES` constant in the `includes/setup.php` file:
+Then you need to tell the Event Bridge for ActivityPub about that class by adding it to the `EVENT_PLUGIN_CLASSES` constant in the `includes/setup.php` file:
 
 ```php
 	private const EVENT_PLUGIN_CLASSES = array(
 		...
-		'\ActivityPub_Event_Bridge\Plugins\My_Event_Plugin',
+		'\Event_Bridge_For_ActivityPub\Integrations\My_Event_Plugin',
 	);
 ```
 
-The ActivityPub Event Bridge then takes care of applying the transformer, so you can jump right into implementing it.
+The Event Bridge for ActivityPub then takes care of applying the transformer, so you can jump right into implementing it.
 
 ## Writing an event transformer class
 
@@ -48,9 +48,9 @@ If you are writing a transformer for your event post type we recommend to start 
 So create a new file at `./includes/activitypub/transformer/my-event-plugin.php`.
 
 ```php
-namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Activitypub\Transformer;
 
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transformer;
 
 /**
  * ActivityPub Transformer for My Event Plugin' event post type.
@@ -142,7 +142,7 @@ Implement a check whether your event plugin is active in the `set_up` function. 
 		}
 
 		// Make sure that ActivityPub support is enabled for The Events Calendar.
-		$aec = \ActivityPub_Event_Bridge\Setup::get_instance();
+		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
 		// Delete all posts afterwards.
@@ -180,7 +180,7 @@ In the pipeline we want to run each event plugins integration tests in a single 
 To activate/load your plugin add it to the switch statement within the function `_manually_load_plugin()` within `tests/bootstrap.php`.
 
 ```php
-	switch ( $activitypub_event_bridge_integration_filter ) {
+	switch ( $event_bridge_for_activitypub_integration_filter ) {
     ...
     case 'my_event_plugin':
 			$plugin_file = 'my-event-plugin/my-event-plugin.php';
@@ -213,7 +213,7 @@ If you are using Visual Studio Code or VSCodium you can step-debug within the te
       "request": "launch",
       "port": 9003,
       "pathMappings": {
-      "/app/": "${workspaceRoot}/wp-content/plugins/activitypub-event-bridge/",
+      "/app/": "${workspaceRoot}/wp-content/plugins/event-bridge-for-activitypub/",
       "/tmp/wordpress/": "${workspaceRoot}/"
       },
     }

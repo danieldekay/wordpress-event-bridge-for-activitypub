@@ -76,46 +76,46 @@ jobs:
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 ${{ matrix.wordpress-version }} false true true true
 
       - name: Run Integration tests for The Events Calendar
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=the_events_calendar
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=the_events_calendar
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 
       - name: Run Integration tests for VS Event List
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=vs_event_list
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=vs_event_list
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 
       - name: Run Integration tests for GatherPress
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=gatherpress
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=gatherpress
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 
       - name: Run Integration tests for Events Manager
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=events_manager
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=events_manager
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 
       - name: Run Integration tests for WP Event Manager
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=wp_event_manager
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=wp_event_manager
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 
       - name: Run Integration tests for Eventin (WP Event Solution)
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=eventin
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=eventin
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 
       - name: Run Integration tests for Modern Events Calendar Lite
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=modern_events_calendar_lite
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=modern_events_calendar_lite
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 
       - name: Run Integration tests for EventPrime
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=eventprime
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=eventprime
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 
       - name: Run Integration tests for Event Organiser
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=event_organiser
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=event_organiser
         env:
           PHP_VERSION: ${{ matrix.php-version }}

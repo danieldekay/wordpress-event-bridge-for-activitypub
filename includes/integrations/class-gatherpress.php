@@ -5,11 +5,11 @@
  * Defines all the necessary meta information for the GatherPress plugin.
  *
  * @link    https://wordpress.org/plugins/gatherpress/
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
