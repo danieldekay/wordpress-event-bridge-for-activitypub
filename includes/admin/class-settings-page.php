@@ -119,7 +119,7 @@ class Settings_Page {
 			case 'event-sources':
 				wp_enqueue_script( 'thickbox' );
 				wp_enqueue_style( 'thickbox' );
-				\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/event-sources.php', true );
+				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/event-sources.php', true );
 				break;
 			case 'welcome':
 			default:

@@ -183,7 +183,7 @@ class Setup {
 		}
 
 		add_action( 'init', array( Health_Check::class, 'init' ) );
-		add_action( 'init', array( Event_Sources::class, 'register_taxonomy' ) );
+		add_action( 'init', array( Event_Sources::class, 'register_post_type' ) );
 
 		// Check if the minimum required version of the ActivityPub plugin is installed.
 		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {

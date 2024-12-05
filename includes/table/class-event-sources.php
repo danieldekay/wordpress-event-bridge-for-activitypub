@@ -2,14 +2,14 @@
 /**
  * Event Sources Table-Class file.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  */
 
-namespace ActivityPub_Event_Bridge\Table;
+namespace Event_Bridge_For_ActivityPub\Table;
 
 use WP_List_Table;
 use Activitypub\Collection\Followers as FollowerCollection;
-use ActivityPub_Event_Bridge\ActivityPub\Event_Source;
+use Event_Bridge_For_ActivityPub\ActivityPub\Event_Source;
 
 use function Activitypub\object_to_uri;
 

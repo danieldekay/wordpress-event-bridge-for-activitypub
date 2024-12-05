@@ -2,7 +2,7 @@
 /**
  * Health_Check class.
  *
- * @package Activitypub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  */
 
 namespace Event_Bridge_For_ActivityPub\Admin;

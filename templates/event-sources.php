@@ -2,7 +2,7 @@
 /**
  * Event Sources management page for the ActivityPub Event Bridge.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  */
 
 // Exit if accessed directly.
@@ -17,24 +17,24 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 );
 
 
-$table = new \ActivityPub_Event_Bridge\Table\Event_Sources();
+$table = new \Event_Bridge_For_ActivityPub\Table\Event_Sources();
 ?>
 
-<div class="activitypub-event-bridge-settings activitypub-event-bridge-settings-page hide-if-no-js">
+<div class="event-bridge-for-activitypub-settings event-bridge-for-activitypub-settings-page hide-if-no-js">
 
 	<div class="box">
-		<h2> <?php esc_html_e( 'Federated event sources', 'activitypub-event-bridge' ); ?> </h2>
-		<p> <?php esc_html_e( 'Here you can add any Fediverse Account.', 'activitypub-event-bridge' ); ?> </p>
+		<h2> <?php esc_html_e( 'Federated event sources', 'event-bridge-for-activitypub' ); ?> </h2>
+		<p> <?php esc_html_e( 'Here you can add any Fediverse Account.', 'event-bridge-for-activitypub' ); ?> </p>
 
 	<!-- Button that triggers ThickBox -->
-	<a href="#TB_inline?width=600&height=400&inlineId=activitypub_event_bridge_add_new_source" class="thickbox button button-primary">
-		<?php esc_html_e( 'Add new', 'activitypub-event-bridge' ); ?>
+	<a href="#TB_inline?width=600&height=400&inlineId=Event_Bridge_For_ActivityPub_add_new_source" class="thickbox button button-primary">
+		<?php esc_html_e( 'Add new', 'event-bridge-for-activitypub' ); ?>
 	</a>
 
 	<!-- ThickBox content (hidden initially) -->
-	<div id="activitypub_event_bridge_add_new_source" style="display:none;">
-		<h2><?php esc_html_e( 'Add new ActivityPub follow', 'activitypub-event-bridge' ); ?> </h2>
-		<p> <?php esc_html_e( 'Here you can enter either a handle or instance URL.', 'activitypub-event-bridge' ); ?> </p>
+	<div id="Event_Bridge_For_ActivityPub_add_new_source" style="display:none;">
+		<h2><?php esc_html_e( 'Add new ActivityPub follow', 'event-bridge-for-activitypub' ); ?> </h2>
+		<p> <?php esc_html_e( 'Here you can enter either a handle or instance URL.', 'event-bridge-for-activitypub' ); ?> </p>
 	</div>
 </div>
 

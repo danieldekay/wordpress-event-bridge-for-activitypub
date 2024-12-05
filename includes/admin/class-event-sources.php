@@ -2,10 +2,10 @@
 /**
  * Event Sources.
  *
- * @package Activitypub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  */
 
-namespace ActivityPub_Event_Bridge\Admin;
+namespace Event_Bridge_For_ActivityPub\Admin;
 
 use Activitypub\Collection\Actors;
 use Activitypub\Activity\Extended_Object\Event;
@@ -67,7 +67,7 @@ class Event_Sources {
 	 * Respond to the Ajax request to fetch feeds
 	 */
 	public function ajax_fetch_events() {
-		if ( ! isset( $_POST['activitypub_event_bridge'] ) ) {
+		if ( ! isset( $_POST['Event_Bridge_For_ActivityPub'] ) ) {
 			wp_send_json_error( 'missing-parameters' );
 		}
 

@@ -2,14 +2,14 @@
 /**
  * Event-Source (=ActivityPub Actor that is followed) model.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\ActivityPub;
+namespace Event_Bridge_For_ActivityPub\ActivityPub;
 
 use Activitypub\Activity\Actor;
-use ActivityPub_Event_Bridge\ActivityPub\Collection\Event_Sources;
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use WP_Error;
 
 /**
@@ -36,10 +36,10 @@ class Event_Source extends Actor {
 	}
 
 	/**
-	 * Convert a Custom-Post-Type input to an \ActivityPub_Event_Bridge\ActivityPub\Model\Event_Source.
+	 * Convert a Custom-Post-Type input to an \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source.
 	 *
 	 * @param \WP_Post $post The post object.
-	 * @return \ActivityPub_Event_Bridge\ActivityPub\Event_Source|WP_Error
+	 * @return \Event_Bridge_For_ActivityPub\ActivityPub\Event_Source|WP_Error
 	 */
 	public static function init_from_cpt( $post ) {
 		if ( Event_Sources::POST_TYPE !== $post->post_type ) {

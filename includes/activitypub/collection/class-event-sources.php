@@ -2,15 +2,15 @@
 /**
  * Event sources collection file.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\ActivityPub\Collection;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Collection;
 
 use WP_Error;
 use WP_Query;
-use ActivityPub_Event_Bridge\ActivityPub\Event_Source;
+use Event_Bridge_For_ActivityPub\ActivityPub\Event_Source;
 
 use function Activitypub\is_tombstone;
 use function Activitypub\get_remote_metadata_by_actor;
@@ -22,7 +22,7 @@ class Event_Sources {
 	/**
 	 * The custom post type.
 	 */
-	const POST_TYPE = 'activitypub_event_bridge_follow';
+	const POST_TYPE = 'Event_Bridge_For_ActivityPub_follow';
 
 	/**
 	 * Register the post type used to store the external event sources (i.e., followed ActivityPub actors).

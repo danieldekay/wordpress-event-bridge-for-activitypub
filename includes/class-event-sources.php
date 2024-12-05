@@ -2,10 +2,10 @@
 /**
  * Class for handling and saving the ActivityPub event sources (i.e. follows).
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  */
 
-namespace ActivityPub_Event_Bridge;
+namespace Event_Bridge_For_ActivityPub;
 
 use Activitypub\Http;
 use Exception;
@@ -15,13 +15,13 @@ use function register_post_type;
 /**
  * Class for handling and saving the ActivityPub event sources (i.e. follows).
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  */
 class Event_Sources {
 	/**
 	 * The custom post type.
 	 */
-	const POST_TYPE = 'activitypub_event_bridge_follow';
+	const POST_TYPE = 'event_bridge_follow';
 
 	/**
 	 * Register the post type used to store the external event sources (i.e., followed ActivityPub actors).
