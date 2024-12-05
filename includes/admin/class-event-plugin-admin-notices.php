@@ -4,17 +4,17 @@
  *
  * Notices for guiding to proper configuration of ActivityPub with event plugins.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Admin;
+namespace Event_Bridge_For_ActivityPub\Admin;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
+use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
 
 /**
  * Class responsible for Event Plugin related admin notices.
@@ -76,7 +76,7 @@ class Event_Plugin_Admin_Notices {
 			_x(
 				'You have installed the <i>%1$s</i> plugin, but the event post type of the plugin <i>%2$s</i> is <b>not enabled</b> in the <a href="%3$s">%1$s settings</a>.',
 				'admin notice',
-				'activitypub-event-bridge'
+				'event-bridge-for-activitypub'
 			),
 			esc_html( $activitypub_plugin_data['Name'] ),
 			esc_html( $event_plugin_data['Name'] ),

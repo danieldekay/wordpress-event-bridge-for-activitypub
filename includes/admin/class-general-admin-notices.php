@@ -4,12 +4,12 @@
  *
  * Notices for guiding to proper configuration of this plugin.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Admin;
+namespace Event_Bridge_For_ActivityPub\Admin;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -29,7 +29,7 @@ class General_Admin_Notices {
 	 */
 	const ACTIVITYPUB_PLUGIN_URL = 'https://wordpress.org/plugins/activitypub';
 
-	const ACTIVITYPUB_EVENT_BRIDGE_SUPPORTED_EVENT_PLUGINS_URL = 'https://code.event-federation.eu/Event-Federation/wordpress-activitypub-event-bridge#events-plugin-that-will-be-supported-at-first';
+	const EVENT_BRIDGE_FOR_ACTIVITYPUB_SUPPORTED_EVENT_PLUGINS_URL = 'https://code.event-federation.eu/Event-Federation/wordpress-event-bridge-for-activitypub#events-plugin-that-will-be-supported-at-first';
 
 	/**
 	 * Allowed HTML for admin notices.
@@ -54,9 +54,9 @@ class General_Admin_Notices {
 		return sprintf(
 			/* translators: 1: An URL that points to the ActivityPub plugin. */
 			_x(
-				'For the ActivityPub Event Bridge to work, you will need to install and activate the <a href="%1$s">ActivityPub</a> plugin.',
+				'For the Event Bridge for ActivityPub to work, you will need to install and activate the <a href="%1$s">ActivityPub</a> plugin.',
 				'admin notice',
-				'activitypub-event-bridge'
+				'event-bridge-for-activitypub'
 			),
 			esc_html( self::ACTIVITYPUB_PLUGIN_URL )
 		);
@@ -71,12 +71,12 @@ class General_Admin_Notices {
 		return sprintf(
 			/* translators: 1: The name of the ActivityPub plugin. 2: The minimum required version number of the ActivityPub plugin. */
 			_x(
-				'Please upgrade your <a href="%1$s">ActivityPub</a> plugin. At least version %2$s is required for the ActivityPub Event Bridge to work.',
+				'Please upgrade your <a href="%1$s">ActivityPub</a> plugin. At least version %2$s is required for the Event Bridge for ActivityPub to work.',
 				'admin notice',
-				'activitypub-event-bridge'
+				'event-bridge-for-activitypub'
 			),
 			esc_html( self::ACTIVITYPUB_PLUGIN_URL ),
-			esc_html( ACTIVITYPUB_EVENT_BRIDGE_ACTIVITYPUB_PLUGIN_MIN_VERSION )
+			esc_html( EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION )
 		);
 	}
 
@@ -89,12 +89,12 @@ class General_Admin_Notices {
 		return sprintf(
 			/* translators: 1: An URL to the list of supported event plugins. */
 			_x(
-				'The Plugin <i>ActivityPub Event Bridge</i> is of no use, because you do not have installed and activated a supported Event Plugin.
+				'The Plugin <i>Event Bridge for ActivityPub</i> is of no use, because you do not have installed and activated a supported Event Plugin.
 				<br> For a list of supported Event Plugins see  <a href="%1$s">here</a>.',
 				'admin notice',
-				'activitypub-event-bridge'
+				'event-bridge-for-activitypub'
 			),
-			esc_html( self::ACTIVITYPUB_EVENT_BRIDGE_SUPPORTED_EVENT_PLUGINS_URL )
+			esc_html( self::EVENT_BRIDGE_FOR_ACTIVITYPUB_SUPPORTED_EVENT_PLUGINS_URL )
 		);
 	}
 
@@ -107,12 +107,12 @@ class General_Admin_Notices {
 		return sprintf(
 			/* translators: 1: An URL to the list of supported event plugins. */
 			_x(
-				'The Plugin <i>ActivityPub Event Bridge</i> is of no use, because you do not have installed and activated a supported Event Plugin.
+				'The Plugin <i>Event Bridge for ActivityPub</i> is of no use, because you do not have installed and activated a supported Event Plugin.
 				<br> For a list of supported Event Plugins see  <a href="%1$s">here</a>.',
 				'admin notice',
-				'activitypub-event-bridge'
+				'event-bridge-for-activitypub'
 			),
-			esc_html( self::ACTIVITYPUB_EVENT_BRIDGE_SUPPORTED_EVENT_PLUGINS_URL )
+			esc_html( self::EVENT_BRIDGE_FOR_ACTIVITYPUB_SUPPORTED_EVENT_PLUGINS_URL )
 		);
 	}
 

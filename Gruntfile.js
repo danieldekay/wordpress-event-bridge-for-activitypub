@@ -4,7 +4,7 @@ module.exports = function (grunt) {
 		{
 			checktextdomain: {
 				options:{
-					text_domain: 'activitypub-event-bridge',
+					text_domain: 'event-bridge-for-activitypub',
 					keywords: [
 					'__:1,2d',
 					'_e:1,2d',
