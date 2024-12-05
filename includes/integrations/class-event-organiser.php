@@ -1,18 +1,15 @@
 <?php
 /**
- * VS Events LIst.
+ * Event Organiser.
  *
- * Defines all the necessary meta information for the WordPress event plugin
- * "Very Simple Events List".
+ * Defines all the necessary meta information for the Event Organiser plugin.
  *
- * @link    https://de.wordpress.org/plugins/very-simple-event-list/
- * @package ActivityPub_Event_Bridge
+ * @link    https://wordpress.org/plugins/event-organiser/
+ * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
-
-use ActivityPub_Event_Bridge\Event_Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -24,14 +21,14 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class VS_Event_List extends Event_Plugin {
+final class Event_Organiser extends Event_Plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
 	 * @return string
 	 */
 	public static function get_plugin_file(): string {
-		return 'very-simple-event-list/vsel.php';
+		return 'event-organiser/event-organiser.php';
 	}
 
 	/**
@@ -49,7 +46,7 @@ final class VS_Event_List extends Event_Plugin {
 	 * @return array The settings page urls.
 	 */
 	public static function get_settings_pages(): array {
-		return array( 'settings_page_vsel' );
+		return array( 'event-organiser' );
 	}
 
 	/**
@@ -58,7 +55,7 @@ final class VS_Event_List extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_activitypub_transformer_class_name(): string {
-		return 'VS_Event';
+		return 'Event_Organiser';
 	}
 
 	/**
@@ -67,6 +64,6 @@ final class VS_Event_List extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_event_category_taxonomy(): string {
-		return 'event_cat';
+		return 'event-category';
 	}
 }

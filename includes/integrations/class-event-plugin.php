@@ -4,13 +4,13 @@
  *
  * Basic information that each supported event needs for this plugin to work.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
 
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -83,6 +83,6 @@ abstract class Event_Plugin {
 	 * Returns the Activitypub transformer for the event plugins event post type.
 	 */
 	public static function get_activitypub_event_transformer_class(): string {
-		return str_replace( 'Plugins', 'Activitypub\Transformer', static::class );
+		return str_replace( 'Integrations', 'Activitypub\Transformer', static::class );
 	}
 }

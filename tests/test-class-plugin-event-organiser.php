@@ -2,7 +2,7 @@
 /**
  * Test class for the integration of the Event Organiser.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  */
 
 /**
@@ -20,7 +20,7 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		}
 
 		// Make sure that ActivityPub support is enabled.
-		$aec = \ActivityPub_Event_Bridge\Setup::get_instance();
+		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
 		// Run the install script just in time which makes sure the custom tables exist and more.
@@ -37,7 +37,7 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		// We only test for one event plugin being active at the same time,
 		// even though we support multiple onces in theory.
 		// But testing all combinations is beyond scope.
-		$active_event_plugins = \ActivityPub_Event_Bridge\Setup::get_instance()->get_active_event_plugins();
+		$active_event_plugins = \Event_Bridge_For_ActivityPub\Setup::get_instance()->get_active_event_plugins();
 		$this->assertEquals( 1, count( $active_event_plugins ) );
 
 		// Enable ActivityPub support for the event plugin.
@@ -62,7 +62,7 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( get_post( $post_id ) );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\Event_Organiser::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event_Organiser::class, $transformer );
 	}
 
 	/**
