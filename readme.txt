@@ -3,7 +3,7 @@ Contributors: andremenrath
 Tags: events, fediverse, activitypub, calendar
 Requires at least: 6.5
 Tested up to: 6.7
-Stable tag: 0.3.0
+Stable tag: 0.3.1
 Requires PHP: 7.4
 License: AGPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/agpl-3.0.html
@@ -96,6 +96,6 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 
 == Changelog ==
 
-= [0.3.0] 2024-12-05 =
+= [0.3.1] 2024-12-05 =
 
 * Initial release on https://wordpress.org/
