@@ -1,15 +1,15 @@
 <?php
 /**
- * Events Manager.
+ * Modern Events Calendar (Lite)
  *
- * Defines all the necessary meta information for the Events Manager WordPress Plugin.
+ * Defines all the necessary meta information for the Modern Events Calendar (Lite).
  *
- * @link    https://wordpress.org/plugins/events-manager/
- * @package ActivityPub_Event_Bridge
+ * @link    https://webnus.net/modern-events-calendar/
+ * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -21,14 +21,14 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class Events_Manager extends Event_Plugin {
+final class Modern_Events_Calendar_Lite extends Event_plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
 	 * @return string
 	 */
 	public static function get_plugin_file(): string {
-		return 'events-manager/events-manager.php';
+		return 'modern-events-calendar-lite/modern-events-calendar-lite.php';
 	}
 
 	/**
@@ -37,7 +37,8 @@ final class Events_Manager extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_post_type(): string {
-		return defined( 'EM_POST_TYPE_EVENT' ) ? constant( 'EM_POST_TYPE_EVENT' ) : 'event';
+		// See MEC_feature_events->get_main_post_type().
+		return 'mec-events';
 	}
 
 	/**
@@ -45,8 +46,8 @@ final class Events_Manager extends Event_Plugin {
 	 *
 	 * @return array The settings page urls.
 	 */
-	public static function get_settings_page(): array {
-		return array();
+	public static function get_settings_pages(): array {
+		return array( 'MEC-settings', 'MEC-support', 'MEC-ix', 'MEC-wizard', 'MEC-addons', 'mec-intro' );
 	}
 
 	/**
@@ -55,6 +56,6 @@ final class Events_Manager extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_event_category_taxonomy(): string {
-		return defined( 'EM_TAXONOMY_CATEGORY' ) ? constant( 'EM_TAXONOMY_CATEGORY' ) : 'event-categories';
+		return 'mec_category';
 	}
 }

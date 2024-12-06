@@ -2,11 +2,11 @@
 /**
  * Replace the default ActivityPub Transformer
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Activitypub\Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -120,7 +120,7 @@ abstract class Event extends Post {
 		if ( is_null( $this->wp_taxonomy ) ) {
 			return null;
 		}
-		$current_category_mapping = \get_option( 'activitypub_event_bridge_event_category_mappings', array() );
+		$current_category_mapping = \get_option( 'event_bridge_for_activitypub_event_category_mappings', array() );
 		$terms                    = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
 
 		// Check if the event has a category set and if that category has a specific mapping return that one.
@@ -128,7 +128,7 @@ abstract class Event extends Post {
 			return sanitize_text_field( $current_category_mapping[ $terms[0]->slug ] );
 		} else {
 			// Return the default event category.
-			return sanitize_text_field( \get_option( 'activitypub_event_bridge_default_event_category', 'MEETING' ) );
+			return sanitize_text_field( \get_option( 'event_bridge_for_activitypub_default_event_category', 'MEETING' ) );
 		}
 	}
 
@@ -214,7 +214,7 @@ abstract class Event extends Post {
 	 */
 	public function shortcode_start_time( $atts ) {
 		$start_timestamp = $this->get_start_time();
-		return $this->generate_time_output( $start_timestamp, $atts, '🗓️', __( 'Start', 'activitypub-event-bridge' ) );
+		return $this->generate_time_output( $start_timestamp, $atts, '🗓️', __( 'Start', 'event-bridge-for-activitypub' ) );
 	}
 
 	/**
@@ -225,7 +225,7 @@ abstract class Event extends Post {
 	 */
 	public function shortcode_end_time( $atts ) {
 		$end_timestamp = $this->get_end_time();
-		return $this->generate_time_output( $end_timestamp, $atts, '⏳', __( 'End', 'activitypub-event-bridge' ) );
+		return $this->generate_time_output( $end_timestamp, $atts, '⏳', __( 'End', 'event-bridge-for-activitypub' ) );
 	}
 
 	/**
@@ -307,7 +307,7 @@ abstract class Event extends Post {
 			$output[] = '📍';
 		}
 		if ( $args['label'] ) {
-			$output[] = esc_html__( 'Location', 'activitypub-event-bridge' ) . ':';
+			$output[] = esc_html__( 'Location', 'event-bridge-for-activitypub' ) . ':';
 		}
 
 		$output[] = self::format_address( $location->get_address(), $args );
@@ -373,10 +373,10 @@ abstract class Event extends Post {
 		$categories = array();
 
 		// Add the federated category string.
-		require_once ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . '/includes/event-categories.php';
+		require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . '/includes/event-categories.php';
 		$federated_category = $this->get_category();
-		if ( array_key_exists( $federated_category, ACTIVITYPUB_EVENT_BRIDGE_EVENT_CATEGORIES ) ) {
-			$categories[] = ACTIVITYPUB_EVENT_BRIDGE_EVENT_CATEGORIES[ $federated_category ];
+		if ( array_key_exists( $federated_category, EVENT_BRIDGE_FOR_ACTIVITYPUB_EVENT_CATEGORIES ) ) {
+			$categories[] = EVENT_BRIDGE_FOR_ACTIVITYPUB_EVENT_CATEGORIES[ $federated_category ];
 		}
 
 		// Add all category terms.
@@ -484,19 +484,19 @@ abstract class Event extends Post {
 
 		$formatted_items = array();
 		if ( ! empty( $category ) ) {
-			$formatted_items[] = '🏷️ ' . __( 'Category', 'activitypub-event-bridge' ) . ': ' . $category;
+			$formatted_items[] = '🏷️ ' . __( 'Category', 'event-bridge-for-activitypub' ) . ': ' . $category;
 		}
 
 		if ( ! empty( $start_time ) ) {
-			$formatted_items[] = $this->generate_time_output( $start_time, $time_atts, '🗓️', __( 'Start', 'activitypub-event-bridge' ) );
+			$formatted_items[] = $this->generate_time_output( $start_time, $time_atts, '🗓️', __( 'Start', 'event-bridge-for-activitypub' ) );
 		}
 
 		if ( ! empty( $end_time ) ) {
-			$formatted_items[] = $this->generate_time_output( $end_time, $time_atts, '⏳', __( 'End', 'activitypub-event-bridge' ) );
+			$formatted_items[] = $this->generate_time_output( $end_time, $time_atts, '⏳', __( 'End', 'event-bridge-for-activitypub' ) );
 		}
 
 		if ( ! empty( $address ) ) {
-			$formatted_items[] = '📍 ' . __( 'Address', 'activitypub-event-bridge' ) . ': ' . $address;
+			$formatted_items[] = '📍 ' . __( 'Address', 'event-bridge-for-activitypub' ) . ': ' . $address;
 		}
 
 		// Compose the summary based on the number of meta items.

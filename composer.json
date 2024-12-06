@@ -1,7 +1,7 @@
 {
-    "name": "menrath/wordpress-activitypub-event-bridge",
+    "name": "menrath/wordpress-event-bridge-for-activitypub",
     "version": "1.0.0",
-    "description": "The ActivityPub Event Bridge help for event custom post types to federate properly.",
+    "description": "The Event Bridge for ActivityPub help for event custom post types to federate properly.",
     "type": "wordpress-plugin",
     "require": {
         "php": ">=7.4.0",
@@ -33,7 +33,7 @@
         }
     ],
     "extra": {
-        "installer-name": "activitypub-event-bridge"
+        "installer-name": "event-bridge-for-activitypub"
     },
     "scripts": {
         "lint": [
@@ -54,7 +54,9 @@
             "@test-events-manager",
             "@test-wp-event-manager",
             "@test-eventin",
-            "@test-modern-events-calendar-lite"
+            "@test-modern-events-calendar-lite",
+            "@test-eventprime",
+            "@test-event-organiser"
         ],
         "test-debug": [
             "@prepare-test",
@@ -68,6 +70,8 @@
         "test-eventin": "phpunit --filter=eventin",
         "test-modern-events-calendar-lite": "phpunit --filter=modern_events_calendar_lite",
         "test-activitypub-event-bridge-shortcodes": "phpunit --filter=activitypub_event_bridge_shortcodes",
+        "test-eventprime": "phpunit --filter=eventprime",
+        "test-event-organiser": "phpunit --filter=event_organiser",
         "test-all": "phpunit"
     }
 }

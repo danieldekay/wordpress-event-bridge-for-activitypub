@@ -1,15 +1,18 @@
 <?php
 /**
- * The Events Calendar.
+ * VS Events LIst.
  *
- * Defines all the necessary meta information for the events calendar.
+ * Defines all the necessary meta information for the WordPress event plugin
+ * "Very Simple Events List".
  *
- * @link    https://wordpress.org/plugins/the-events-calendar/
- * @package ActivityPub_Event_Bridge
+ * @link    https://de.wordpress.org/plugins/very-simple-event-list/
+ * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
+
+use Event_Bridge_For_ActivityPub\Event_Plugins;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -21,14 +24,14 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class Eventin extends Event_plugin {
+final class VS_Event_List extends Event_Plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
 	 * @return string
 	 */
 	public static function get_plugin_file(): string {
-		return 'wp-event-solution/eventin.php';
+		return 'very-simple-event-list/vsel.php';
 	}
 
 	/**
@@ -37,16 +40,25 @@ final class Eventin extends Event_plugin {
 	 * @return string
 	 */
 	public static function get_post_type(): string {
-		return 'etn';
+		return 'event';
 	}
 
 	/**
 	 * Returns the IDs of the admin pages of the plugin.
 	 *
-	 * @return array The settings page url.
+	 * @return array The settings page urls.
 	 */
 	public static function get_settings_pages(): array {
-		return array( 'eventin' ); // Base always is wp-admin/admin.php?page=eventin.
+		return array( 'settings_page_vsel' );
+	}
+
+	/**
+	 * Returns the ActivityPub transformer class.
+	 *
+	 * @return string
+	 */
+	public static function get_activitypub_transformer_class_name(): string {
+		return 'VS_Event';
 	}
 
 	/**
@@ -55,6 +67,6 @@ final class Eventin extends Event_plugin {
 	 * @return string
 	 */
 	public static function get_event_category_taxonomy(): string {
-		return 'etn_category';
+		return 'event_cat';
 	}
 }

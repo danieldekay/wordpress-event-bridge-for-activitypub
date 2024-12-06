@@ -4,17 +4,17 @@
  *
  * @link https://support.themewinter.com/docs/plugins/docs-category/eventin/
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Activitypub\Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
+use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event;
 use DateTime;
 use DateTimeZone;
 use Etn\Core\Event\Event_Model;

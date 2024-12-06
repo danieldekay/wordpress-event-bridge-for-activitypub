@@ -1,9 +1,9 @@
-=== ActivityPub Event Bridge ===
+=== Event Bridge for ActivityPub ===
 Contributors: andremenrath
 Tags: events, fediverse, activitypub, calendar
 Requires at least: 6.5
 Tested up to: 6.7
-Stable tag: 0.2.1
+Stable tag: 0.3.1
 Requires PHP: 7.4
 License: AGPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/agpl-3.0.html
@@ -12,7 +12,7 @@ Integrating popular event plugins with the ActivityPub plugin.
 == Description ==
 
 Make your events more discoverable, expand your reach effortlessly while being independent of other (commercial) platforms, and be a part of the growing decentralized web (the Fediverse).
-With the ActivityPub Event Bridge Plugin for WordPress, your events can be automatically followed, aggregated and displayed across decentralized platforms like [Mastodon](https://joinmastodon.org) or [Gancio](https://gancio.org), without any extra work.
+With the Event Bridge for ActivityPub Plugin for WordPress, your events can be automatically followed, aggregated and displayed across decentralized platforms like [Mastodon](https://joinmastodon.org) or [Gancio](https://gancio.org), without any extra work.
 Forget the hassle of managing multiple social media accounts just to keep your audience informed.
 
 This plugin is not an event managing plugin but an add-on to popular event plugins. It extends their functionality to fully support the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/).
@@ -21,7 +21,7 @@ You retain full ownership of your content. By integrating into your existing set
 
 = How It Works =
 
-With the ActivityPub Event Bridge WordPress plugin, sharing your events is effortless and automatic!
+With the Event Bridge for ActivityPub WordPress plugin, sharing your events is effortless and automatic!
 Once you create an event on your WordPress site, it is seamlessly shared across the decentralized web using the ActivityPub protocol.
 
 ![](./.wordpress-org/event-activitypub-publishing.gif)
@@ -57,6 +57,8 @@ This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/ac
 * [Eventin](https://de.wordpress.org/plugins/wp-event-solution/)
 * [Modern Events Calendar Lite](https://webnus.net/modern-events-calendar/)
 * [GatherPress](https://gatherpress.org/)
+* [EventPrime – Events Calendar, Bookings and Tickets](https://wordpress.org/plugins/eventprime-event-calendar-management/)
+* [Event Organiser](https://wordpress.org/plugins/event-organiser/)
 
 == Configuration ==
 
@@ -86,18 +88,14 @@ No, the Event Federation Plugin depends on the [ActivityPub plugin](https://word
 
 = My event plugin is not supported, what can I do? =
 
-If you know about coding have a look at the documentation of how to add your plugin or open an [issue](https://code.event-federation.eu/Event-Federation/wordpress-activitypub-event-bridge/issues), if we can spare some free hours we might add it.
+If you know about coding have a look at the documentation of how to add your plugin or open an [issue](https://code.event-federation.eu/Event-Federation/wordpress-event-bridge-for-activitypub/issues), if we can spare some free hours we might add it.
 
 = What if I experience problems? =
 
-We're always interested in your feedback. Feel free to reach out to us via [E-Mail](https://event-federation.eu/contact/) or create an [issue](https://code.event-federation.eu/Event-Federation/wordpress-activitypub-event-bridge/issues).
+We're always interested in your feedback. Feel free to reach out to us via [E-Mail](https://event-federation.eu/contact/) or create an [issue](https://code.event-federation.eu/Event-Federation/wordpress-event-bridge-for-activitypub/issues).
 
 == Changelog ==
 
-= [0.2.1] 2024-11-16 =
+= [0.3.1] 2024-12-05 =
 
 * Initial release on https://wordpress.org/
-
-= [0.2.0] 2024-10-29 =
-
-* Initial submission to https://wordpress.org/
