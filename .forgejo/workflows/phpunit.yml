@@ -77,7 +77,7 @@ jobs:
 
 
       - name: Run General Tests
-        run: cd /workspace/Event-Federation/wordpress-activitypub-event-bridge/ && ./vendor/bin/phpunit --filter=event_bridge_for_activitypub
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=event_bridge_for_activitypub
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 

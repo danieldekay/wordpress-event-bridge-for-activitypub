@@ -419,7 +419,7 @@ abstract class Event extends Post {
 	 * Get the summary.
 	 */
 	public function get_summary(): ?string {
-		if ( 'preset' === get_option( 'activitypub_summary_type', 'preset' ) ) {
+		if ( 'preset' === get_option( 'event_bridge_for_activitypub_summary_type', 'preset' ) ) {
 			return $this->format_preset_summary();
 		}
 

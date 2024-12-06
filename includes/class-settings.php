@@ -73,22 +73,22 @@ class Settings {
 		);
 
 		\register_setting(
-			'activitypub-event-bridge',
-			'activitypub_summary_type',
+			'event-bridge-for-activitypub',
+			'event_bridge_activitypub_summary_type',
 			array(
 				'type'         => 'string',
-				'description'  => \__( 'Summary type to use for ActivityStreams', 'activitypub-event-bridge' ),
+				'description'  => \__( 'Summary type to use for ActivityStreams', 'event-bridge-for-activitypub' ),
 				'show_in_rest' => true,
 				'default'      => 'preset',
 			)
 		);
 
 		\register_setting(
-			'activitypub-event-bridge',
+			'event-bridge-for-activitypub',
 			'event_bridge_for_activitypub_custom_summary',
 			array(
 				'type'         => 'string',
-				'description'  => \__( 'Define your own custom summary template for events', 'activitypub-event-bridge' ),
+				'description'  => \__( 'Define your own custom summary template for events', 'event-bridge-for-activitypub' ),
 				'show_in_rest' => true,
 				'default'      => EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY,
 			)

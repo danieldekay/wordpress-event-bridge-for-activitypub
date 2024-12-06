@@ -46,8 +46,8 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 			<h2> <?php esc_html_e( 'Event Summary Text', 'event-bridge-for-activitypub' ); ?> </h2>
 			<p><?php esc_html_e( 'Many Fediverse applications (e.g., Mastodon) don\'t fully support events, instead they will show a summary text along with the events title and the URL to your Website.', 'event-bridge-for-activitypub' ); ?></p>
 			<p>
-				<label for="activitypub_summary_type_preset">
-					<input type="radio" name="activitypub_summary_type" id="activitypub_summary_type_preset" value="preset" <?php echo \checked( 'preset', \get_option( 'activitypub_summary_type', EVENT_BRIDGE_FOR_ACTIVITYPUB_DEFAULT_SUMMARY_TYPE ) ); ?> />
+				<label for="event_bridge_activitypub_summary_type_preset">
+					<input type="radio" name="event_bridge_activitypub_summary_type" id="event_bridge_activitypub_summary_type_preset" value="preset" <?php echo \checked( 'preset', \get_option( 'event_bridge_for_activitypub_summary_type', EVENT_BRIDGE_FOR_ACTIVITYPUB_DEFAULT_SUMMARY_TYPE ) ); ?> />
 					<?php \esc_html_e( 'Automatic (default)', 'activitypub' ); ?>
 					-
 					<span class="description">
@@ -56,8 +56,8 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 				</label>
 			</p>
 			<p>
-				<label for="activitypub_summary_type_custom">
-					<input type="radio" name="activitypub_summary_type" id="activitypub_summary_type_custom" value="custom" <?php echo \checked( 'custom', \get_option( 'activitypub_summary_type', EVENT_BRIDGE_FOR_ACTIVITYPUB_DEFAULT_SUMMARY_TYPE ) ); ?> />
+				<label for="event_bridge_activitypub_summary_type_custom">
+					<input type="radio" name="event_bridge_activitypub_summary_type" id="event_bridge_activitypub_summary_type_custom" value="custom" <?php echo \checked( 'custom', \get_option( 'event_bridge_for_activitypub_summary_type', EVENT_BRIDGE_FOR_ACTIVITYPUB_DEFAULT_SUMMARY_TYPE ) ); ?> />
 					<?php \esc_html_e( 'Custom', 'event-bridge-for-activitypub' ); ?>
 					-
 					<span class="description">
@@ -65,7 +65,7 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 					</span>
 				</label>
 			</p>
-			<div id="activitypub_summary_type_custom-details">
+			<div id="event_bridge_activitypub_summary_type_custom-details">
 				<textarea name="event_bridge_for_activitypub_custom_summary" id="event_bridge_for_activitypub_custom_summary" rows="10" cols="50" class="large-text" placeholder="<?php echo wp_kses( EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY, 'post' ); ?>"><?php echo esc_textarea( wp_kses( \get_option( 'event_bridge_for_activitypub_custom_summary', EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY ), 'post' ) ); ?></textarea>
 				<details>
 					<summary><?php esc_html_e( 'See a list Template Tags available for the summary.', 'activitypub' ); ?></summary>
