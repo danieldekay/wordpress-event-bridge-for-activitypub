@@ -102,6 +102,12 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 
 ## Changelog ##
 
+### Unreleased
+
+#### Added
+
+* Add custom summary via shortcodes
+
 ### [0.3.1] 2024-12-05 ###
 
 * Initial release on https://wordpress.org/
