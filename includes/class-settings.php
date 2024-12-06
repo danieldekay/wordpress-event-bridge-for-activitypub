@@ -85,12 +85,12 @@ class Settings {
 
 		\register_setting(
 			'activitypub-event-bridge',
-			'activitypub_event_bridge_custom_summary',
+			'event_bridge_for_activitypub_custom_summary',
 			array(
 				'type'         => 'string',
 				'description'  => \__( 'Define your own custom summary template for events', 'activitypub-event-bridge' ),
 				'show_in_rest' => true,
-				'default'      => ACTIVITYPUB_EVENT_BRIDGE_CUSTOM_SUMMARY,
+				'default'      => EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY,
 			)
 		);
 	}

@@ -446,7 +446,7 @@ abstract class Event extends Post {
 		$summary = \preg_replace( '/[\n\r\t]/', '', $summary );
 		$summary = \trim( $summary );
 
-		$summary = \apply_filters( 'activitypub_event_bridge_the_summary', $summary, $post );
+		$summary = \apply_filters( 'event_bridge_for_activitypub_the_summary', $summary, $post );
 
 		// Unregister the shortcodes.
 		Shortcodes::unregister();
@@ -518,10 +518,10 @@ abstract class Event extends Post {
 	 * @return string The Template.
 	 */
 	protected function get_event_summary_template() {
-		$summary  = \get_option( 'activitypub_event_bridge_custom_summary', ACTIVITYPUB_EVENT_BRIDGE_CUSTOM_SUMMARY );
-		$template = $summary ?? ACTIVITYPUB_EVENT_BRIDGE_CUSTOM_SUMMARY;
+		$summary  = \get_option( 'event_bridge_for_activitypub_custom_summary', EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY );
+		$template = $summary ?? EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY;
 
-		return apply_filters( 'activitypub_event_bridge_summary_template', $template, $this->wp_object );
+		return apply_filters( 'event_bridge_for_activitypub_summary_template', $template, $this->wp_object );
 	}
 
 	/**

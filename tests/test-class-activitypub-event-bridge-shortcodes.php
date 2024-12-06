@@ -2,7 +2,7 @@
 /**
  * Test file for Activitypub Shortcodes.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
  */
 
@@ -25,7 +25,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		}
 
 		// Make sure that ActivityPub support is enabled for The Events Calendar.
-		$aec = \ActivityPub_Event_Bridge\Setup::get_instance();
+		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
 		// Delete all posts afterwards.
@@ -44,7 +44,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \ActivityPub_Event_Bridge\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
 			return;
 		}
 
@@ -77,7 +77,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \ActivityPub_Event_Bridge\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
 			return;
 		}
 
@@ -110,7 +110,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \ActivityPub_Event_Bridge\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
 			return;
 		}
 
@@ -138,7 +138,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \ActivityPub_Event_Bridge\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
 			return;
 		}
 
@@ -174,7 +174,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \ActivityPub_Event_Bridge\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
 			return;
 		}
 
