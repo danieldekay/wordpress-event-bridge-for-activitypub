@@ -44,21 +44,21 @@ final class Event_Organiser extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_end_time(): ?string {
+	public function get_end_time(): ?string {
 		return eo_get_the_end( 'Y-m-d\TH:i:s\Z', $this->wp_object->ID, $this->wp_object->occurrence_id );
 	}
 
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_start_time(): string {
+	public function get_start_time(): string {
 		return eo_get_the_start( 'Y-m-d\TH:i:s\Z', $this->wp_object->ID, $this->wp_object->occurrence_id );
 	}
 
 	/**
 	 * Get location from the event object.
 	 */
-	protected function get_location(): ?Place {
+	public function get_location(): ?Place {
 		$venue_id = eo_get_venue( $this->wp_object->ID );
 
 		if ( ! $venue_id ) {
