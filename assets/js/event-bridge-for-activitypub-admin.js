@@ -14,10 +14,10 @@ jQuery( function( $ ) {
 
 	// Function to toggle visibility of custom details based on selected radio button.
 	function toggleCustomDetailsForSummary() {
-		if ($("#event_bridge_activitypub_summary_type_custom").is(':checked')) {
-			$("#event_bridge_activitypub_summary_type_custom-details").show();
+		if ($("#event_bridge_for_activitypub_summary_type_custom").is(':checked')) {
+			$("#event_bridge_for_activitypub_summary_type_custom-details").show();
 		} else {
-			$("#event_bridge_activitypub_summary_type_custom-details").hide();
+			$("#event_bridge_for_activitypub_summary_type_custom-details").hide();
 		}
 	}
 
@@ -27,7 +27,7 @@ jQuery( function( $ ) {
 		toggleCustomDetailsForSummary(); // Set the correct state on load.
 
 		// Listen for changes on the radio buttons
-		$("input[name=event_bridge_activitypub_summary_type]").change(function() {
+		$("input[name=event_bridge_for_activitypub_summary_type]").change(function() {
 			toggleCustomDetailsForSummary(); // Update visibility on change.
 		});
 	});

@@ -74,7 +74,7 @@ class Settings {
 
 		\register_setting(
 			'event-bridge-for-activitypub',
-			'event_bridge_activitypub_summary_type',
+			'event_bridge_for_activitypub_summary_type',
 			array(
 				'type'         => 'string',
 				'description'  => \__( 'Summary type to use for ActivityStreams', 'event-bridge-for-activitypub' ),
