@@ -10,7 +10,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Collection;
 
 use WP_Error;
 use WP_Query;
-use Event_Bridge_For_ActivityPub\ActivityPub\Event_Source;
+use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 
 use function Activitypub\is_tombstone;
 use function Activitypub\get_remote_metadata_by_actor;
@@ -32,8 +32,8 @@ class Event_Sources {
 			self::POST_TYPE,
 			array(
 				'labels'           => array(
-					'name'          => _x( 'Event Sources', 'post_type plural name', 'activitypub' ),
-					'singular_name' => _x( 'Event Source', 'post_type single name', 'activitypub' ),
+					'name'          => _x( 'Event Sources', 'post_type plural name', 'event-bridge-for-activitypub' ),
+					'singular_name' => _x( 'Event Source', 'post_type single name', 'event-bridge-for-activitypub' ),
 				),
 				'public'           => false,
 				'hierarchical'     => false,
@@ -63,7 +63,7 @@ class Event_Sources {
 				'single'            => false,
 				'sanitize_callback' => function ( $value ) {
 					if ( ! is_string( $value ) ) {
-						throw new Exception( 'Error message is no valid string' );
+						throw new \Exception( 'Error message is no valid string' );
 					}
 
 					return esc_sql( $value );
@@ -111,7 +111,7 @@ class Event_Sources {
 		}
 
 		if ( empty( $meta ) || ! is_array( $meta ) || is_wp_error( $meta ) ) {
-			return new WP_Error( 'activitypub_invalid_follower', __( 'Invalid Follower', 'activitypub' ), array( 'status' => 400 ) );
+			return new WP_Error( 'activitypub_invalid_actor', __( 'Invalid ActivityPub Actor', 'event-bridge-for-activitypub' ), array( 'status' => 400 ) );
 		}
 
 		$event_source = new Event_Source();
@@ -139,9 +139,9 @@ class Event_Sources {
 	}
 
 	/**
-	 * Get all Followers.
+	 * Get all Event-Sources.
 	 *
-	 * @return array The Term list of Followers.
+	 * @return array The Term list of Event Sources.
 	 */
 	public static function get_all_followers() {
 		$args = array(
@@ -159,6 +159,6 @@ class Event_Sources {
 				),
 			),
 		);
-		return self::get_followers( null, null, null, $args );
+		return self::get_event_sources( null, null, null, $args );
 	}
 }

@@ -27,8 +27,8 @@ class Event_Sources extends WP_List_Table {
 	public function __construct() {
 		parent::__construct(
 			array(
-				'singular' => \__( 'Event Source', 'activitypub' ),
-				'plural'   => \__( 'Event Sources', 'activitypub' ),
+				'singular' => \__( 'Event Source', 'event-bridge-for-activitypub' ),
+				'plural'   => \__( 'Event Sources', 'event-bridge-for-activitypub' ),
 				'ajax'     => false,
 			)
 		);
@@ -42,12 +42,12 @@ class Event_Sources extends WP_List_Table {
 	public function get_columns() {
 		return array(
 			'cb'         => '<input type="checkbox" />',
-			'avatar'     => \__( 'Avatar', 'activitypub' ),
-			'post_title' => \__( 'Name', 'activitypub' ),
-			'username'   => \__( 'Username', 'activitypub' ),
-			'url'        => \__( 'URL', 'activitypub' ),
-			'published'  => \__( 'Followed', 'activitypub' ),
-			'modified'   => \__( 'Last updated', 'activitypub' ),
+			'avatar'     => \__( 'Avatar', 'event-bridge-for-activitypub' ),
+			'post_title' => \__( 'Name', 'event-bridge-for-activitypub' ),
+			'username'   => \__( 'Username', 'event-bridge-for-activitypub' ),
+			'url'        => \__( 'URL', 'event-bridge-for-activitypub' ),
+			'published'  => \__( 'Followed', 'event-bridge-for-activitypub' ),
+			'modified'   => \__( 'Last updated', 'event-bridge-for-activitypub' ),
 		);
 	}
 
@@ -146,7 +146,7 @@ class Event_Sources extends WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		return array(
-			'delete' => __( 'Delete', 'activitypub' ),
+			'delete' => __( 'Delete', 'event-bridge-for-activitypub' ),
 		);
 	}
 
@@ -159,7 +159,7 @@ class Event_Sources extends WP_List_Table {
 	 */
 	public function column_default( $item, $column_name ) {
 		if ( ! array_key_exists( $column_name, $item ) ) {
-			return __( 'None', 'activitypub' );
+			return __( 'None', 'event-bridge-for-activitypub' );
 		}
 		return $item[ $column_name ];
 	}
@@ -224,7 +224,7 @@ class Event_Sources extends WP_List_Table {
 				$followers = array( $followers );
 			}
 			foreach ( $followers as $follower ) {
-				FollowerCollection::remove_follower( $this->user_id, $follower );
+				Event_Source::remove( $this->user_id, $follower );
 			}
 		}
 	}
