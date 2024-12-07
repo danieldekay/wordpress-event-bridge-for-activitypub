@@ -60,7 +60,7 @@
         ],
         "test-debug": [
             "@prepare-test",
-            "@test-event-organiser"
+            "@test-event-bridge-for-activitypub-shortcodes"
         ],
         "test-vs-event-list": "phpunit --filter=vs_event_list",
         "test-the-events-calendar": "phpunit --filter=the_events_calendar",
@@ -71,6 +71,7 @@
         "test-modern-events-calendar-lite": "phpunit --filter=modern_events_calendar_lite",
         "test-eventprime": "phpunit --filter=eventprime",
         "test-event-organiser": "phpunit --filter=event_organiser",
+        "test-event-bridge-for-activitypub-shortcodes": "phpunit --filter=event_bridge_for_activitypub_shortcodes",
         "test-all": "phpunit"
     }
 }

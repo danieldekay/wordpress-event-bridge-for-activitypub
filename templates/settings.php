@@ -42,6 +42,52 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 <div class="event-bridge-for-activitypub-settings event-bridge-for-activitypub-settings-page hide-if-no-js">
 	<form method="post" action="options.php">
 		<?php \settings_fields( 'event-bridge-for-activitypub' ); ?>
+		<div class="box">
+			<h2> <?php esc_html_e( 'Event Summary Text', 'event-bridge-for-activitypub' ); ?> </h2>
+			<p><?php esc_html_e( 'Many Fediverse applications (e.g., Mastodon) don\'t fully support events, instead they will show a summary text along with the events title and the URL to your Website.', 'event-bridge-for-activitypub' ); ?></p>
+			<p>
+				<label for="event_bridge_for_activitypub_summary_type_preset">
+					<input type="radio" name="event_bridge_for_activitypub_summary_type" id="event_bridge_for_activitypub_summary_type_preset" value="preset" <?php echo \checked( 'preset', \get_option( 'event_bridge_for_activitypub_summary_type', EVENT_BRIDGE_FOR_ACTIVITYPUB_DEFAULT_SUMMARY_TYPE ) ); ?> />
+					<?php \esc_html_e( 'Automatic (default)', 'activitypub' ); ?>
+					-
+					<span class="description">
+						<?php \esc_html_e( 'Let the plugin compose a summary for you.	', 'event-bridge-for-activitypub' ); ?>
+					</span>
+				</label>
+			</p>
+			<p>
+				<label for="event_bridge_for_activitypub_summary_type_custom">
+					<input type="radio" name="event_bridge_for_activitypub_summary_type" id="event_bridge_for_activitypub_summary_type_custom" value="custom" <?php echo \checked( 'custom', \get_option( 'event_bridge_for_activitypub_summary_type', EVENT_BRIDGE_FOR_ACTIVITYPUB_DEFAULT_SUMMARY_TYPE ) ); ?> />
+					<?php \esc_html_e( 'Custom', 'event-bridge-for-activitypub' ); ?>
+					-
+					<span class="description">
+						<?php \esc_html_e( 'For advanced users: compose your custom summary via shortcodes.', 'event-bridge-for-activitypub' ); ?>
+					</span>
+				</label>
+			</p>
+			<div id="event_bridge_for_activitypub_summary_type_custom-details">
+				<textarea name="event_bridge_for_activitypub_custom_summary" id="event_bridge_for_activitypub_custom_summary" rows="10" cols="50" class="large-text" placeholder="<?php echo wp_kses( EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY, 'post' ); ?>"><?php echo esc_textarea( wp_kses( \get_option( 'event_bridge_for_activitypub_custom_summary', EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY ), 'post' ) ); ?></textarea>
+				<details>
+					<summary><?php esc_html_e( 'See a list Template Tags available for the summary.', 'activitypub' ); ?></summary>
+					<div class="description">
+						<dl>
+							<dt><code>[ap_start_time]</code><dt>
+							<dd><?php \esc_html_e( 'The events title.', 'event-bridge-for-activitypub' ); ?></dd>
+							<dt><code>[ap_end_time]</code><dt>
+							<dd><?php \esc_html_e( 'The events content.', 'event-bridge-for-activitypub' ); ?></dd>
+							<dt><code>[ap_location]</code><dt>
+							<dd><?php \esc_html_e( 'The events location.', 'event-bridge-for-activitypub' ); ?></dd>
+							<dt><code>[ap_hashtags]</code><dt>
+							<dd><?php \esc_html_e( 'The events tags as hashtags.', 'event-bridge-for-activitypub' ); ?></dd>
+							<dt><code>[ap_excerpt]</code><dt>
+							<dd><?php \esc_html_e( 'The events excerpt (may be truncated).', 'event-bridge-for-activitypub' ); ?></dd>
+							<dt><code>[ap_content]</code><dt>
+							<dd><?php \esc_html_e( 'The events description.', 'event-bridge-for-activitypub' ); ?></dd>
+						</dl>
+					</div>
+				</details>
+			</div>
+		</div>
 
 		<div class="box">
 			<h2> <?php esc_html_e( 'ActivityPub Event Category', 'event-bridge-for-activitypub' ); ?> </h2>

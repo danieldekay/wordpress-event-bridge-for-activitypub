@@ -3,7 +3,7 @@
  * Plugin Name:  Event Bridge for ActivityPub
  * Description:  Integrating popular event plugins with the ActivityPub plugin.
  * Plugin URI:   https://event-federation.eu/
- * Version:      0.3.0
+ * Version:      0.3.1.1
  * Author:       André Menrath
  * Author URI:   https://graz.social/@linos
  * Text Domain:  event-bridge-for-activitypub
@@ -27,6 +27,8 @@ define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_VERSION', current( get_file_data( __FILE__, array( 'Version' ), 'plugin' ) ) );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_DOMAIN', 'event-bridge-for-activitypub' );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION', '3.2.2' );
+define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY', "<ul>\n  <li>[ap_start_time]</li>\n  <li>[ap_end_time]</li>\n  <li>[ap_location]</li>\n</ul>\n[ap_hashcats] [ap_hashtags]" );
+define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_DEFAULT_SUMMARY_TYPE', 'preset' );
 
 // Include and register the autoloader class for automatic loading of plugin classes.
 require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . '/includes/class-autoloader.php';

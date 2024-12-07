@@ -9,25 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Integration for Event Organiser
-* Integration for EventPrime – Events Calendar, Bookings and Tickets
+* Add custom summary via shortcodes
 
-### Fixed
-
-* Fixed that transformer hook function might also return `null`.
-
-## [0.2.1] - 2024-11-16
-
-### Added
+## [0.3.1] - 2024-11-16
 
 * Initial release on WordPress.org
 
-### Fixed
-
-* Applied some WordPress best practices
-
-## [0.2.0] - 2024-10-20
-
-### Added
-
-* Initial submission to WordPress.org

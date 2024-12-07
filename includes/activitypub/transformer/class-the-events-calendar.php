@@ -72,7 +72,7 @@ final class The_Events_Calendar extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_end_time(): ?string {
+	public function get_end_time(): ?string {
 		if ( empty( $this->tribe_event->end_date ) ) {
 			return null;
 		}
@@ -83,7 +83,7 @@ final class The_Events_Calendar extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_start_time(): string {
+	public function get_start_time(): string {
 		$date = date_create( $this->tribe_event->start_date, wp_timezone() );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $date->getTimestamp() );
 	}

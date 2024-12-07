@@ -23,7 +23,7 @@ final class EventPrime extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_end_time(): ?string {
+	public function get_end_time(): ?string {
 		$timestamp = get_post_meta( $this->wp_object->ID, 'em_end_date', true );
 		if ( $timestamp ) {
 			return \gmdate( 'Y-m-d\TH:i:s\Z', $timestamp );
@@ -35,7 +35,7 @@ final class EventPrime extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_start_time(): string {
+	public function get_start_time(): string {
 		$timestamp = get_post_meta( $this->wp_object->ID, 'em_start_date', true );
 		if ( $timestamp ) {
 			return \gmdate( 'Y-m-d\TH:i:s\Z', $timestamp );
@@ -47,7 +47,7 @@ final class EventPrime extends Event {
 	/**
 	 * Get location from the event object.
 	 */
-	protected function get_location(): ?Place {
+	public function get_location(): ?Place {
 		$venue_term_id = get_post_meta( $this->wp_object->ID, 'em_venue', true );
 		if ( ! $venue_term_id ) {
 			return null;
