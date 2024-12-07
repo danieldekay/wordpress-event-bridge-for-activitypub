@@ -6,7 +6,7 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\ActivityPub;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Model;
 
 use Activitypub\Activity\Actor;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
