@@ -144,7 +144,7 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 			<?php endif; ?>
 		</div>
 		<!-- This disables the setup wizard. -->
-		<div class="hidden">
+		<div class="hidden" aria-hidden="true">
 			<input type="checkbox" id="event_bridge_for_activitypub_initially_activated" name="event_bridge_for_activitypub_initially_activated"/>
 		</div>
 		<?php \submit_button(); ?>

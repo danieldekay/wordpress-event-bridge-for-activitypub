@@ -8,8 +8,7 @@
 namespace Event_Bridge_For_ActivityPub\Table;
 
 use WP_List_Table;
-use Activitypub\Collection\Followers as FollowerCollection;
-use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 
 use function Activitypub\object_to_uri;
 
@@ -18,7 +17,7 @@ if ( ! \class_exists( '\WP_List_Table' ) ) {
 }
 
 /**
- * Followers Table-Class.
+ * Event Sources Table-Class.
  */
 class Event_Sources extends WP_List_Table {
 	/**
@@ -42,9 +41,9 @@ class Event_Sources extends WP_List_Table {
 	public function get_columns() {
 		return array(
 			'cb'         => '<input type="checkbox" />',
-			'avatar'     => \__( 'Avatar', 'event-bridge-for-activitypub' ),
-			'post_title' => \__( 'Name', 'event-bridge-for-activitypub' ),
-			'username'   => \__( 'Username', 'event-bridge-for-activitypub' ),
+			'icon'       => \__( 'Icon', 'event-bridge-for-activitypub' ),
+			'name'       => \__( 'Name', 'event-bridge-for-activitypub' ),
+			'active'     => \__( 'Active', 'event-bridge-for-activitypub' ),
 			'url'        => \__( 'URL', 'event-bridge-for-activitypub' ),
 			'published'  => \__( 'Followed', 'event-bridge-for-activitypub' ),
 			'modified'   => \__( 'Last updated', 'event-bridge-for-activitypub' ),
@@ -58,7 +57,7 @@ class Event_Sources extends WP_List_Table {
 	 */
 	public function get_sortable_columns() {
 		return array(
-			'post_title' => array( 'post_title', true ),
+			'name' => array( 'name', true ),
 			'modified'   => array( 'modified', false ),
 			'published'  => array( 'published', false ),
 		);
@@ -96,22 +95,7 @@ class Event_Sources extends WP_List_Table {
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
-		$dummy_event_sources = array(
-			'total'  => 1,
-			'actors' => array(
-				Event_Source::init_from_array(
-					array(
-						'id'                => 'https://graz.social/@linos',
-						'url'               => 'https://graz.social/@linos',
-						'preferredUsername' => 'linos',
-						'name'              => 'André Menrath',
-						'icon'              => 'https://graz.social/system/accounts/avatars/000/000/001/original/fe1c795256720361.jpeg',
-					)
-				),
-			),
-		);
-
-		$event_sources = $dummy_event_sources;
+		$event_sources = Event_Sources_Collection::get_event_sources_with_count($per_page, $page_num, $args );
 		$actors        = $event_sources['actors'];
 		$counter       = $event_sources['total'];
 
@@ -127,9 +111,9 @@ class Event_Sources extends WP_List_Table {
 		foreach ( $actors as $actor ) {
 			$item = array(
 				'icon'       => esc_attr( $actor->get_icon_url() ),
-				'post_title' => esc_attr( $actor->get_name() ),
-				'username'   => esc_attr( $actor->get_preferred_username() ),
-				'url'        => esc_attr( object_to_uri( $actor->get_url() ) ),
+				'name'       => esc_attr( $actor->get_name() ),
+				'url'        => esc_attr( object_to_uri( $actor->get_id() ) ),
+				'active'     => esc_attr( get_post_meta( $actor->get__id(), 'event_source_active', true) ),
 				'identifier' => esc_attr( $actor->get_id() ),
 				'published'  => esc_attr( $actor->get_published() ),
 				'modified'   => esc_attr( $actor->get_updated() ),
@@ -170,7 +154,7 @@ class Event_Sources extends WP_List_Table {
 	 * @param array $item Item.
 	 * @return string
 	 */
-	public function column_avatar( $item ) {
+	public function column_icon( $item ) {
 		return sprintf(
 			'<img src="%s" width="25px;" />',
 			$item['icon']
@@ -198,14 +182,32 @@ class Event_Sources extends WP_List_Table {
 	 * @return string
 	 */
 	public function column_cb( $item ) {
-		return sprintf( '<input type="checkbox" name="followers[]" value="%s" />', esc_attr( $item['identifier'] ) );
+		return sprintf( '<input type="checkbox" name="event_sources[]" value="%s" />', esc_attr( $item['identifier'] ) );
+	}
+
+	/**
+	 * Column action.
+	 *
+	 * @param array $item Item.
+	 * @return string
+	 */
+	public function column_active( $item ) {
+		if ( $item['active'] ) {
+			$action = 'true';
+		} else {
+			$action = 'false';
+		}
+		return sprintf(
+			'%s',
+			$action
+		);
 	}
 
 	/**
 	 * Process action.
 	 */
 	public function process_action() {
-		if ( ! isset( $_REQUEST['followers'] ) || ! isset( $_REQUEST['_wpnonce'] ) ) {
+		if ( ! isset( $_REQUEST['event_sources'] ) || ! isset( $_REQUEST['_wpnonce'] ) ) {
 			return;
 		}
 		$nonce = sanitize_text_field( wp_unslash( $_REQUEST['_wpnonce'] ) );
@@ -213,28 +215,19 @@ class Event_Sources extends WP_List_Table {
 			return;
 		}
 
-		if ( ! current_user_can( 'edit_user', $this->user_id ) ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
-		$followers = $_REQUEST['followers']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		$event_sources = $_REQUEST['event_sources']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 
-		if ( $this->current_action() === 'delete' ) {
-			if ( ! is_array( $followers ) ) {
-				$followers = array( $followers );
+		if ( 'delete' === $this->current_action() ) {
+			if ( ! is_array( $event_sources ) ) {
+				$event_sources = array( $event_sources );
 			}
-			foreach ( $followers as $follower ) {
-				Event_Source::remove( $this->user_id, $follower );
+			foreach ( $event_sources as $event_source ) {
+				Event_Sources_Collection::remove( $event_source );
 			}
 		}
-	}
-
-	/**
-	 * Returns user count.
-	 *
-	 * @return int
-	 */
-	public function get_user_count() {
-		return FollowerCollection::count_followers( $this->user_id );
 	}
 }

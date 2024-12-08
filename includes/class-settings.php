@@ -93,6 +93,16 @@ class Settings {
 				'default'      => EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY,
 			)
 		);
+
+		\register_setting(
+			'event-bridge-for-activitypub-event-sources',
+			'event_bridge_for_activitypub_event_sources_active',
+			array(
+				'type'        => 'boolean',
+				'description' => \__( 'Whether the event sources feature is activated.', 'event-bridge-for-activitypub' ),
+				'default'     => 1,
+			)
+		);
 	}
 
 	/**
