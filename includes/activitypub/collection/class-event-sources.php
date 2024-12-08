@@ -3,6 +3,7 @@
  * Event sources collection file.
  *
  * @package Event_Bridge_For_ActivityPub
+ * @since 1.0.0
  * @license AGPL-3.0-or-later
  */
 
@@ -87,8 +88,8 @@ class Event_Sources {
 			self::POST_TYPE,
 			'event_source_active',
 			array(
-				'type'              => 'bool',
-				'single'            => true,
+				'type'   => 'bool',
+				'single' => true,
 			)
 		);
 
@@ -294,7 +295,7 @@ class Event_Sources {
 
 		$actor = Event_Source::init_from_cpt( get_post( $post_id ) );
 
-		if ( is_wp_error( $actor ) ) {
+		if ( ! $actor instanceof Event_Source ) {
 			return $actor;
 		}
 
@@ -309,7 +310,7 @@ class Event_Sources {
 		$activity->set_cc( null );
 		$activity->set_actor( $application->get_id() );
 		$activity->set_object( $to );
-		$activity->set_id( $actor . '#follow-' . \preg_replace( '~^https?://~', '', $to ) );
+		$activity->set_id( $application->get_id() . '#follow-' . \preg_replace( '~^https?://~', '', $to ) );
 		$activity = $activity->to_json();
 		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::APPLICATION_USER_ID );
 	}
@@ -345,7 +346,7 @@ class Event_Sources {
 
 		$actor = Event_Source::init_from_cpt( get_post( $post_id ) );
 
-		if ( is_wp_error( $actor ) ) {
+		if ( ! $actor instanceof Event_Source ) {
 			return $actor;
 		}
 

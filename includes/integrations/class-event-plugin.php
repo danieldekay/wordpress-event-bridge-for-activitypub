@@ -6,6 +6,7 @@
  *
  * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
+ * @license AGPL-3.0-or-later
  */
 
 namespace Event_Bridge_For_ActivityPub\Integrations;

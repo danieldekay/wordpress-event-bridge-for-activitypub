@@ -15,12 +15,13 @@ namespace Event_Bridge_For_ActivityPub;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
+use Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 use Event_Bridge_For_ActivityPub\Admin\Event_Plugin_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\Health_Check;
 use Event_Bridge_For_ActivityPub\Admin\Settings_Page;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
-use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
@@ -177,6 +178,8 @@ class Setup {
 			'plugin_action_links_' . EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_BASENAME,
 			array( Settings_Page::class, 'settings_link' )
 		);
+
+		add_action( 'activitypub_register_handlers', array( Handler::class, 'register_activitypub_handlers' ) ) ;
 
 		// If we don't have any active event plugins, or the ActivityPub plugin is not enabled, abort here.
 		if ( empty( $this->active_event_plugins ) || ! $this->activitypub_plugin_is_active ) {

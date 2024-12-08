@@ -3,6 +3,8 @@
  * Event Sources Table-Class file.
  *
  * @package Event_Bridge_For_ActivityPub
+ * @since 1.0.0
+ * @license AGPL-3.0-or-later
  */
 
 namespace Event_Bridge_For_ActivityPub\Table;
@@ -40,13 +42,13 @@ class Event_Sources extends WP_List_Table {
 	 */
 	public function get_columns() {
 		return array(
-			'cb'         => '<input type="checkbox" />',
-			'icon'       => \__( 'Icon', 'event-bridge-for-activitypub' ),
-			'name'       => \__( 'Name', 'event-bridge-for-activitypub' ),
-			'active'     => \__( 'Active', 'event-bridge-for-activitypub' ),
-			'url'        => \__( 'URL', 'event-bridge-for-activitypub' ),
-			'published'  => \__( 'Followed', 'event-bridge-for-activitypub' ),
-			'modified'   => \__( 'Last updated', 'event-bridge-for-activitypub' ),
+			'cb'        => '<input type="checkbox" />',
+			'icon'      => \__( 'Icon', 'event-bridge-for-activitypub' ),
+			'name'      => \__( 'Name', 'event-bridge-for-activitypub' ),
+			'active'    => \__( 'Active', 'event-bridge-for-activitypub' ),
+			'url'       => \__( 'URL', 'event-bridge-for-activitypub' ),
+			'published' => \__( 'Followed', 'event-bridge-for-activitypub' ),
+			'modified'  => \__( 'Last updated', 'event-bridge-for-activitypub' ),
 		);
 	}
 
@@ -57,9 +59,9 @@ class Event_Sources extends WP_List_Table {
 	 */
 	public function get_sortable_columns() {
 		return array(
-			'name' => array( 'name', true ),
-			'modified'   => array( 'modified', false ),
-			'published'  => array( 'published', false ),
+			'name'      => array( 'name', true ),
+			'modified'  => array( 'modified', false ),
+			'published' => array( 'published', false ),
 		);
 	}
 
@@ -113,7 +115,7 @@ class Event_Sources extends WP_List_Table {
 				'icon'       => esc_attr( $actor->get_icon_url() ),
 				'name'       => esc_attr( $actor->get_name() ),
 				'url'        => esc_attr( object_to_uri( $actor->get_id() ) ),
-				'active'     => esc_attr( get_post_meta( $actor->get__id(), 'event_source_active', true) ),
+				'active'     => esc_attr( get_post_meta( $actor->get__id(), 'event_source_active', true ) ),
 				'identifier' => esc_attr( $actor->get_id() ),
 				'published'  => esc_attr( $actor->get_published() ),
 				'modified'   => esc_attr( $actor->get_updated() ),

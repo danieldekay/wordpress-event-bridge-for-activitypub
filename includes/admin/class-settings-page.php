@@ -77,19 +77,17 @@ class Settings_Page {
 
 		if ( isset( $url['path'] ) && isset( $url['host'] ) && isset( $url['scheme'] ) ) {
 			$actor_url = $event_source;
+		} elseif ( preg_match( '/^@?' . Event_Source::ACTIVITYPUB_USER_HANDLE_REGEXP . '$/i', $event_source ) ) {
+			$actor_url = Webfinger::resolve( $event_source );
+			if ( is_wp_error( $actor_url ) ) {
+				return;
+			}
 		} else {
-			if ( preg_match( '/^@?' . Event_Source::ACTIVITYPUB_USER_HANDLE_REGEXP . '$/i', $event_source ) ) {
-				$actor_url = Webfinger::resolve( $event_source );
-				if ( is_wp_error( $actor_url ) ) {
-					return;
-				}
-			} else {
-				if ( ! isset( $url['path'] ) && isset( $url['host'] ) ) {
-					$actor_url = Event_Sources::get_application_actor( $url['host'] );
-				}
-				if ( self::is_domain( $event_source ) ) {
-					$actor_url = Event_Sources::get_application_actor( $event_source );
-				}
+			if ( ! isset( $url['path'] ) && isset( $url['host'] ) ) {
+				$actor_url = Event_Sources::get_application_actor( $url['host'] );
+			}
+			if ( self::is_domain( $event_source ) ) {
+				$actor_url = Event_Sources::get_application_actor( $event_source );
 			}
 		}
 
