@@ -103,6 +103,42 @@ class Settings {
 				'default'     => 1,
 			)
 		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_plugin_used_for_event_source_feature',
+			array(
+				'type'              => 'array',
+				'description'       => \__( 'Define which plugin/integration is used for the event sources feature', 'event-bridge-for-activitypub' ),
+				'default'           => array(),
+				'sanitize_callback' => array( self::class, 'sanitize_plugin_used_for_event_sources' ),
+			)
+		);
+	}
+
+	/**
+	 * Sanitize the option which event plugin.
+	 *
+	 * @param string $plugin The setting.
+	 * @return string
+	 */
+	public static function sanitize_plugin_used_for_event_sources( $plugin ) {
+		if ( ! is_string( $plugin ) ) {
+			return '';
+		}
+		$setup                = Setup::get_instance();
+		$active_event_plugins = $setup->get_active_event_plugins();
+
+		$valid_options = array();
+		foreach ( $active_event_plugins as $active_event_plugin ) {
+			if ( $active_event_plugin->supports_event_sources() ) {
+				$valid_options[] = $active_event_plugin::class;
+			}
+		}
+		if ( in_array( $plugin, $valid_options, true ) ) {
+			return $plugin;
+		}
+		return '';
 	}
 
 	/**

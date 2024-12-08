@@ -18,12 +18,19 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 	)
 );
 
+if ( ! isset( $args ) || ! array_key_exists( 'supports_event_sources', $args ) ) {
+	return;
+}
+
+if ( ! current_user_can( 'manage_options' ) ) {
+	return;
+}
 
 $table = new \Event_Bridge_For_ActivityPub\Table\Event_Sources();
 ?>
 
 <div class="event-bridge-for-activitypub-settings event-bridge-for-activitypub-settings-page hide-if-no-js">
-
+	<?php var_dump( $args['supports_event_sources'] ); ?>
 	<div class="box">
 		<h2> <?php esc_html_e( 'Federated event sources', 'event-bridge-for-activitypub' ); ?> </h2>
 		<p> <?php esc_html_e( 'Here you can add any Fediverse Account.', 'event-bridge-for-activitypub' ); ?> </p>

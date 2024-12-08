@@ -66,4 +66,13 @@ final class GatherPress extends Event_Plugin {
 	public static function get_event_category_taxonomy(): string {
 		return class_exists( '\GatherPress\Core\Topic' ) ? \GatherPress\Core\Topic::TAXONOMY : 'gatherpress_topic';
 	}
+
+	/**
+	 * GatherPress supports the Event Sources feature.
+	 *
+	 * @return bool True if event sources are supported.
+	 */
+	public static function supports_event_sources(): bool {
+		return true;
+	}
 }

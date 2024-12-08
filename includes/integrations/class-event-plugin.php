@@ -55,6 +55,15 @@ abstract class Event_Plugin {
 	}
 
 	/**
+	 * By default event sources are not supported by an event plugin integration.
+	 *
+	 * @return bool True if event sources are supported.
+	 */
+	public static function supports_event_sources(): bool {
+		return false;
+	}
+
+	/**
 	 * Get the plugins name from the main plugin-file's top-level-file-comment.
 	 */
 	final public static function get_plugin_name(): string {

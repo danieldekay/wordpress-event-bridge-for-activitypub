@@ -179,8 +179,6 @@ class Setup {
 			array( Settings_Page::class, 'settings_link' )
 		);
 
-		add_action( 'activitypub_register_handlers', array( Handler::class, 'register_activitypub_handlers' ) );
-
 		// If we don't have any active event plugins, or the ActivityPub plugin is not enabled, abort here.
 		if ( empty( $this->active_event_plugins ) || ! $this->activitypub_plugin_is_active ) {
 			return;
