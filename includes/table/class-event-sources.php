@@ -95,7 +95,7 @@ class Event_Sources extends WP_List_Table {
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
-		$event_sources = Event_Sources_Collection::get_event_sources_with_count($per_page, $page_num, $args );
+		$event_sources = Event_Sources_Collection::get_event_sources_with_count( $per_page, $page_num, $args );
 		$actors        = $event_sources['actors'];
 		$counter       = $event_sources['total'];
 

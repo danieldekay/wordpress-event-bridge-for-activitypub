@@ -20,6 +20,7 @@ use Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\Health_Check;
 use Event_Bridge_For_ActivityPub\Admin\Settings_Page;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
@@ -183,7 +184,7 @@ class Setup {
 		}
 
 		add_action( 'init', array( Health_Check::class, 'init' ) );
-		add_action( 'init', array( Event_Sources::class, 'register_post_type' ) );
+		add_action( 'init', array( Event_Sources_Collection::class, 'register_post_type' ) );
 
 		// Check if the minimum required version of the ActivityPub plugin is installed.
 		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {

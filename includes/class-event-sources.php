@@ -9,11 +9,8 @@ namespace Event_Bridge_For_ActivityPub;
 
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Collection\Actors;
-use Activitypub\Http;
-use Exception;
 
 use function Activitypub\get_remote_metadata_by_actor;
-use function register_post_type;
 
 /**
  * Class for handling and saving the ActivityPub event sources (i.e. follows).
@@ -30,81 +27,7 @@ class Event_Sources {
 	 * Constructor.
 	 */
 	public function __construct() {
-		\add_action( 'init', array( $this, 'register_post_meta' ) );
-
 		\add_action( 'activitypub_inbox', array( $this, 'handle_activitypub_inbox' ), 15, 3 );
-	}
-
-	/**
-	 * Register the post type used to store the external event sources (i.e., followed ActivityPub actors).
-	 */
-	public static function register_post_type() {
-		register_post_type(
-			self::POST_TYPE,
-			array(
-				'labels'           => array(
-					'name'          => _x( 'Event Sources', 'post_type plural name', 'activitypub' ),
-					'singular_name' => _x( 'Event Source', 'post_type single name', 'activitypub' ),
-				),
-				'public'           => false,
-				'hierarchical'     => false,
-				'rewrite'          => false,
-				'query_var'        => false,
-				'delete_with_user' => false,
-				'can_export'       => true,
-				'supports'         => array(),
-			)
-		);
-
-		\register_post_meta(
-			self::POST_TYPE,
-			'activitypub_inbox',
-			array(
-				'type'              => 'string',
-				'single'            => true,
-				'sanitize_callback' => 'sanitize_url',
-			)
-		);
-
-		\register_post_meta(
-			self::POST_TYPE,
-			'activitypub_errors',
-			array(
-				'type'              => 'string',
-				'single'            => false,
-				'sanitize_callback' => function ( $value ) {
-					if ( ! is_string( $value ) ) {
-						throw new Exception( 'Error message is no valid string' );
-					}
-
-					return esc_sql( $value );
-				},
-			)
-		);
-
-		\register_post_meta(
-			self::POST_TYPE,
-			'activitypub_user_id',
-			array(
-				'type'              => 'string',
-				'single'            => false,
-				'sanitize_callback' => function ( $value ) {
-					return esc_sql( $value );
-				},
-			)
-		);
-
-		\register_post_meta(
-			self::POST_TYPE,
-			'activitypub_actor_json',
-			array(
-				'type'              => 'string',
-				'single'            => true,
-				'sanitize_callback' => function ( $value ) {
-					return sanitize_text_field( $value );
-				},
-			)
-		);
 	}
 
 	/**

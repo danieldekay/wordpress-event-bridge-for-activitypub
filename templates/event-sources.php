@@ -28,7 +28,7 @@ $table = new \Event_Bridge_For_ActivityPub\Table\Event_Sources();
 
 	<!-- Button that triggers ThickBox -->
 	<a href="#TB_inline?width=600&height=400&inlineId=Event_Bridge_For_ActivityPub_add_new_source" class="thickbox button button-primary">
-		<?php esc_html_e( 'Add new', 'event-bridge-for-activitypub' ); ?>
+		<?php esc_html_e( 'Add Event Source', 'event-bridge-for-activitypub' ); ?>
 	</a>
 
 	<!-- ThickBox content (hidden initially) -->
@@ -37,8 +37,8 @@ $table = new \Event_Bridge_For_ActivityPub\Table\Event_Sources();
 		<p> <?php esc_html_e( 'Here you can enter either a Fediverse handle (@username@example.social), URL of an ActivityPub Account (https://example.social/user/username) or instance URL.', 'event-bridge-for-activitypub' ); ?> </p>
 		<form method="post" action="options.php">
 			<?php \settings_fields( 'event-bridge-for-activitypub-event-sources' ); ?>
-			<input type="text" name="event_bridge_for_activitypub_event_source" id="event_bridge_for_activitypub_event_source" value="test">
-			<?php \submit_button(); ?>
+			<input type="text" name="event_bridge_for_activitypub_event_source" id="event_bridge_for_activitypub_event_source" value="">
+			<?php \submit_button( __( 'Add Event Source', 'event-bridge-for-activitypub' ) ); ?>
 		</form>
 	</div>
 </div>

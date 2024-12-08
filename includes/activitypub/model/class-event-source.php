@@ -9,7 +9,6 @@
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Model;
 
 use Activitypub\Activity\Actor;
-use Activitypub\Webfinger;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use WP_Error;
 
@@ -116,6 +115,32 @@ class Event_Source extends Actor {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Update the post meta.
+	 */
+	protected function get_post_meta_input() {
+		$meta_input                           = array();
+		$meta_input['activitypub_inbox']      = $this->get_shared_inbox();
+		$meta_input['activitypub_actor_json'] = $this->to_json();
+
+		return $meta_input;
+	}
+
+	/**
+	 * Get the shared inbox, with a fallback to the inbox.
+	 *
+	 * @return string|null The URL to the shared inbox, the inbox or null.
+	 */
+	public function get_shared_inbox() {
+		if ( ! empty( $this->get_endpoints()['sharedInbox'] ) ) {
+			return $this->get_endpoints()['sharedInbox'];
+		} elseif ( ! empty( $this->get_inbox() ) ) {
+			return $this->get_inbox();
+		}
+
+		return null;
 	}
 
 	/**

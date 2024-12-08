@@ -94,6 +94,16 @@ class Event_Sources {
 
 		\register_post_meta(
 			self::POST_TYPE,
+			'activitypub_inbox',
+			array(
+				'type'              => 'string',
+				'single'            => true,
+				'sanitize_callback' => 'sanitize_url',
+			)
+		);
+
+		\register_post_meta(
+			self::POST_TYPE,
 			'event_source_utilize_announces',
 			array(
 				'type'              => 'string',
@@ -228,5 +238,141 @@ class Event_Sources {
 	public static function remove( $event_source ) {
 		$post_id = Event_Source::get_wp_post_from_activitypub_actor_id( $event_source );
 		return wp_delete_post( $post_id, true );
+	}
+
+	/**
+	 * Queue a hook to run async.
+	 *
+	 * @param string $hook The hook name.
+	 * @param array  $args The arguments to pass to the hook.
+	 * @param string $unqueue_hook Optional a hook to unschedule before queuing.
+	 * @return void|bool Whether the hook was queued.
+	 */
+	public static function queue( $hook, $args, $unqueue_hook = null ) {
+		if ( $unqueue_hook ) {
+			$hook_timestamp = wp_next_scheduled( $unqueue_hook, $args );
+			if ( $hook_timestamp ) {
+				wp_unschedule_event( $hook_timestamp, $unqueue_hook, $args );
+			}
+		}
+
+		if ( wp_next_scheduled( $hook, $args ) ) {
+			return;
+		}
+
+		return \wp_schedule_single_event( \time(), $hook, $args );
+	}
+
+	/**
+	 * Prepare to follow an ActivityPub actor via a scheduled event.
+	 *
+	 * @param      string $actor  The ActivityPub actor.
+	 *
+	 * @return     bool|WP_Error  Whether the event was queued.
+	 */
+	public static function queue_follow_actor( $actor ) {
+		$queued = self::queue(
+			'event_bridge_for_activitypub_follow',
+			$actor,
+			'event_bridge_for_activitypub_unfollow'
+		);
+
+		return $queued;
+	}
+
+	/**
+	 * Follow an ActivityPub actor via the Application user.
+	 *
+	 * @param string $actor_id The ID/URL of the Actor.
+	 */
+	public static function activitypub_follow_actor( $actor_id ) {
+		$post_id = Event_Source::get_wp_post_from_activitypub_actor_id( $actor_id );
+
+		if ( ! $post_id ) {
+			return;
+		}
+
+		$actor = Event_Source::init_from_cpt( get_post( $post_id ) );
+
+		if ( is_wp_error( $actor ) ) {
+			return $actor;
+		}
+
+		$inbox = $actor->get_shared_inbox();
+		$to    = $actor->get_id();
+
+		$application = new \Activitypub\Model\Application();
+
+		$activity = new \Activitypub\Activity\Activity();
+		$activity->set_type( 'Follow' );
+		$activity->set_to( null );
+		$activity->set_cc( null );
+		$activity->set_actor( $application->get_id() );
+		$activity->set_object( $to );
+		$activity->set_id( $actor . '#follow-' . \preg_replace( '~^https?://~', '', $to ) );
+		$activity = $activity->to_json();
+		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::APPLICATION_USER_ID );
+	}
+
+	/**
+	 * Prepare to unfollow an actor via a scheduled event.
+	 *
+	 * @param      string $actor  The ActivityPub actor ID.
+	 *
+	 * @return     bool|WP_Error              Whether the event was queued.
+	 */
+	public static function queue_unfollow_actor( $actor ) {
+		$queued = self::queue(
+			'event_bridge_for_activitypub_unfollow',
+			$actor,
+			'event_bridge_for_activitypub_follow'
+		);
+
+		return $queued;
+	}
+
+	/**
+	 * Unfollow an ActivityPub actor.
+	 *
+	 * @param      string $actor_id  The ActivityPub actor ID.
+	 */
+	public static function activitypub_unfollow_actor( $actor_id ) {
+		$post_id = Event_Source::get_wp_post_from_activitypub_actor_id( $actor_id );
+
+		if ( ! $post_id ) {
+			return;
+		}
+
+		$actor = Event_Source::init_from_cpt( get_post( $post_id ) );
+
+		if ( is_wp_error( $actor ) ) {
+			return $actor;
+		}
+
+		$inbox = $actor->get_shared_inbox();
+		$to    = $actor->get_id();
+
+		$application = new \Activitypub\Model\Application();
+
+		if ( is_wp_error( $inbox ) ) {
+			return $inbox;
+		}
+
+		$activity = new \Activitypub\Activity\Activity();
+		$activity->set_type( 'Undo' );
+		$activity->set_to( null );
+		$activity->set_cc( null );
+		$activity->set_actor( $application->get_id() );
+		$activity->set_object(
+			array(
+				'type'   => 'Follow',
+				'actor'  => $actor,
+				'object' => $to,
+				'id'     => $to,
+			)
+		);
+		$activity->set_id( $actor . '#unfollow-' . \preg_replace( '~^https?://~', '', $to ) );
+		$activity = $activity->to_json();
+		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::APPLICATION_USER_ID );
 	}
 }
