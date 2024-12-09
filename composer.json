@@ -56,11 +56,12 @@
             "@test-eventin",
             "@test-modern-events-calendar-lite",
             "@test-eventprime",
-            "@test-event-organiser"
+            "@test-event-organiser",
+            "@test-event-bridge-for-activitypub-event-sources"
         ],
         "test-debug": [
             "@prepare-test",
-            "@test-event-bridge-for-activitypub-shortcodes"
+            "@test-event-bridge-for-activitypub-event-sources"
         ],
         "test-vs-event-list": "phpunit --filter=vs_event_list",
         "test-the-events-calendar": "phpunit --filter=the_events_calendar",
@@ -72,6 +73,7 @@
         "test-eventprime": "phpunit --filter=eventprime",
         "test-event-organiser": "phpunit --filter=event_organiser",
         "test-event-bridge-for-activitypub-shortcodes": "phpunit --filter=event_bridge_for_activitypub_shortcodes",
+        "test-event-bridge-for-activitypub-event-sources": "phpunit --filter=event_bridge_for_activitypub_event_sources",
         "test-all": "phpunit"
     }
 }

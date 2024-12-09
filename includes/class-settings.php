@@ -98,14 +98,15 @@ class Settings {
 			'event-bridge-for-activitypub-event-sources',
 			'event_bridge_for_activitypub_event_sources_active',
 			array(
-				'type'        => 'boolean',
-				'description' => \__( 'Whether the event sources feature is activated.', 'event-bridge-for-activitypub' ),
-				'default'     => 1,
+				'type'         => 'boolean',
+				'show_in_rest' => true,
+				'description'  => \__( 'Whether the event sources feature is activated.', 'event-bridge-for-activitypub' ),
+				'default'      => 0,
 			)
 		);
 
 		\register_setting(
-			'event-bridge-for-activitypub',
+			'event-bridge-for-activitypub-event-sources',
 			'event_bridge_for_activitypub_plugin_used_for_event_source_feature',
 			array(
 				'type'              => 'array',

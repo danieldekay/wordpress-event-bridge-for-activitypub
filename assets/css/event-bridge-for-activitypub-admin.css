@@ -185,3 +185,12 @@ code.event-bridge-for-activitypub-settings-example-url {
 #event_bridge_for_activitypub_summary_type_custom-details > details {
 	padding: 0.5em;
 }
+
+.event_bridge_for_activitypub-list {
+	list-style: disc;
+	padding-left: 22px;
+}
+
+.event_bridge_for_activitypub-admin-table-container {
+	padding-left: 22px;
+}

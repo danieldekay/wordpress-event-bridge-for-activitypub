@@ -6,6 +6,7 @@
  *
  * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
+ * @license AGPL-3.0-or-later
  *
  * @param array  $args An array of arguments for the settings page.
  */
@@ -41,7 +42,7 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 
 <div class="event-bridge-for-activitypub-settings event-bridge-for-activitypub-settings-page hide-if-no-js">
 	<form method="post" action="options.php">
-		<?php \settings_fields( 'event-bridge-for-activitypub' ); ?>
+		<?php \settings_fields( 'event-bridge-for-activitypub-event-sources' ); ?>
 		<div class="box">
 			<h2> <?php esc_html_e( 'Event Summary Text', 'event-bridge-for-activitypub' ); ?> </h2>
 			<p><?php esc_html_e( 'Many Fediverse applications (e.g., Mastodon) don\'t fully support events, instead they will show a summary text along with the events title and the URL to your Website.', 'event-bridge-for-activitypub' ); ?></p>

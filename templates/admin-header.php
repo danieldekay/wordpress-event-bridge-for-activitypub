@@ -3,6 +3,8 @@
  * Template for the header and navigation of the admin pages.
  *
  * @package Event_Bridge_For_ActivityPub
+ * @since   1.0.0
+ * @license AGPL-3.0-or-later
  */
 
 // Exit if accessed directly.

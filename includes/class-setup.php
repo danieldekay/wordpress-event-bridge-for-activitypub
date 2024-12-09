@@ -159,6 +159,25 @@ class Setup {
 	}
 
 	/**
+	 * Function that checks which event plugins support the event sources feature.
+	 *
+	 * @return array List of supported event plugins as keys from the SUPPORTED_EVENT_PLUGINS const.
+	 */
+	public static function detect_event_plugins_supporting_event_sources(): array {
+		$plugins_supporting_event_sources = array();
+
+		foreach ( self::EVENT_PLUGIN_CLASSES as $event_plugin_class ) {
+			if ( ! class_exists( $event_plugin_class ) || ! method_exists( $event_plugin_class, 'get_plugin_file' ) ) {
+				continue;
+			}
+			if ( call_user_func( array( $event_plugin_class, 'supports_event_sources' ) ) ) {
+				$plugins_supporting_event_sources[] = new $event_plugin_class();
+			}
+		}
+		return $plugins_supporting_event_sources;
+	}
+
+	/**
 	 * Set up hooks for various purposes.
 	 *
 	 * This method adds hooks for different purposes as needed.
