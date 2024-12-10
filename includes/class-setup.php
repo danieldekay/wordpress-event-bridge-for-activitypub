@@ -366,8 +366,10 @@ class Setup {
 			return;
 		}
 		$active_event_plugins = $setup->get_active_event_plugins();
-		if ( array_key_exists( $event_plugin, $active_event_plugins ) ) {
-			return $active_event_plugins[ $event_plugin ]->get_transmogrifier_class();
+		foreach ( $active_event_plugins as $active_event_plugin ) {
+			if ( strrpos( $active_event_plugin::class, $event_plugin ) ) {
+				return $active_event_plugin::get_transmogrifier_class();
+			}
 		}
 	}
 }

@@ -22,7 +22,15 @@ class Create {
 	public static function init() {
 		\add_action(
 			'activitypub_inbox_create',
-			array( self::class, 'handle_create' )
+			array( self::class, 'handle_create' ),
+			15,
+			2
+		);
+		\add_filter(
+			'activitypub_validate_object',
+			array( self::class, 'validate_object' ),
+			12,
+			3
 		);
 	}
 
@@ -44,7 +52,7 @@ class Create {
 		}
 
 		// Check if an object is set.
-		if ( ! isset( $activity['object']['type'] ) || 'Event' !== isset( $activity['object']['type'] ) ) {
+		if ( ! isset( $activity['object']['type'] ) || 'Event' !== $activity['object']['type'] ) {
 			return;
 		}
 
@@ -56,5 +64,49 @@ class Create {
 
 		$transmogrifier = new $transmogrifier_class( $activity['object'] );
 		$transmogrifier->create();
+	}
+
+	/**
+	 * Validate the object.
+	 *
+	 * @param bool             $valid   The validation state.
+	 * @param string           $param   The object parameter.
+	 * @param \WP_REST_Request $request The request object.
+	 *
+	 * @return bool The validation state: true if valid, false if not.
+	 */
+	public static function validate_object( $valid, $param, $request ) {
+		$json_params = $request->get_json_params();
+
+		if ( isset( $json_params['object']['type'] ) && 'Event' === $json_params['object']['type'] ) {
+			$valid = true;
+		}
+
+		if ( empty( $json_params['type'] ) ) {
+			return false;
+		}
+
+		if (
+			'Create' !== $json_params['type'] ||
+			is_wp_error( $request )
+		) {
+			return $valid;
+		}
+
+		$object = $json_params['object'];
+
+		if ( ! is_array( $object ) ) {
+			return false;
+		}
+
+		$required = array(
+			'id',
+		);
+
+		if ( array_intersect( $required, array_keys( $object ) ) !== $required ) {
+			return false;
+		}
+
+		return $valid;
 	}
 }

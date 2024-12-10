@@ -100,7 +100,7 @@ abstract class Event_Plugin {
 	 * Returns the class used for transmogrifying an Event (ActivityStreams to Event plugin transformation).
 	 */
 	public static function get_transmogrifier_class(): ?string {
-		if ( ! self::supports_event_sources() ) {
+		if ( ! static::supports_event_sources() ) {
 			return null;
 		}
 		return str_replace( 'Integrations', 'Activitypub\Transmogrifier', static::class );

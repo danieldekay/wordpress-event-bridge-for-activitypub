@@ -144,7 +144,8 @@ class Settings {
 		$valid_options = array();
 		foreach ( $active_event_plugins as $active_event_plugin ) {
 			if ( $active_event_plugin->supports_event_sources() ) {
-				$valid_options[] = $active_event_plugin::class;
+				$full_class      = $active_event_plugin::class;
+				$valid_options[] = substr( $full_class, strrpos( $full_class, '\\' ) + 1 );
 			}
 		}
 		if ( in_array( $plugin, $valid_options, true ) ) {

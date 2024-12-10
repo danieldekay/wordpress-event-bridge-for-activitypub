@@ -55,7 +55,7 @@ class GatherPress {
 	/**
 	 * Save the ActivityPub event object as GatherPress Event.
 	 */
-	public function save() {
+	public function create() {
 		// Insert new GatherPress Event post.
 		$post_id = wp_insert_post(
 			array(
