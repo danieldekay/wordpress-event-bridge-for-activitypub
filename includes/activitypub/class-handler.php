@@ -26,7 +26,6 @@ class Handler {
 	 * Register all ActivityPub handlers.
 	 */
 	public static function register_handlers() {
-
 		Accept::init();
 		Announce::init();
 		Update::init();

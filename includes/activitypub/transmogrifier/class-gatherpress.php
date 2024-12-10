@@ -9,7 +9,7 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\Activitypub\Transmogrify;
+namespace Event_Bridge_For_ActivityPub\Activitypub\Transmogrifier;
 
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
@@ -20,7 +20,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 use GatherPress\Core\Event as GatherPress_Event;
 
 /**
- * ActivityPub Transmogrify for the GatherPress event plugin.
+ * ActivityPub Transmogrifier for the GatherPress event plugin.
  *
  * Handles converting incoming external ActivityPub events to GatherPress Events.
  *
@@ -56,6 +56,27 @@ class GatherPress {
 	 * Save the ActivityPub event object as GatherPress Event.
 	 */
 	public function save() {
-		// Insert GatherPress Event here.
+		// Insert new GatherPress Event post.
+		$post_id = wp_insert_post(
+			array(
+				'post_title'   => $this->activitypub_event->get_name(),
+				'post_type'    => 'gatherpress_event',
+				'post_content' => $this->activitypub_event->get_content(),
+				'post_excerpt' => $this->activitypub_event->get_summary(),
+				'post_status'  => 'publish',
+			)
+		);
+
+		if ( ! $post_id || is_wp_error( $post_id ) ) {
+			return;
+		}
+
+		$event  = new \GatherPress\Core\Event( $post_id );
+		$params = array(
+			'datetime_start' => $this->activitypub_event->get_start_time(),
+			'datetime_end'   => $this->activitypub_event->get_end_time(),
+			'timezone'       => $this->activitypub_event->get_timezone(),
+		);
+		$event->save_datetimes( $params );
 	}
 }

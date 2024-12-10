@@ -173,14 +173,6 @@ class Settings_Page {
 					$event_terms = array_merge( $event_terms, self::get_event_terms( $event_plugin ) );
 				}
 
-				$args = array(
-					'slug'        => self::SETTINGS_SLUG,
-					'event_terms' => $event_terms,
-				);
-
-				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/settings.php', true, $args );
-				break;
-			case 'event-sources':
 				$supports_event_sources = array();
 
 				foreach ( $event_plugins as $event_plugin ) {
@@ -188,13 +180,19 @@ class Settings_Page {
 						$supports_event_sources[ $event_plugin::class ] = $event_plugin->get_plugin_name();
 					}
 				}
+
 				$args = array(
+					'slug'                   => self::SETTINGS_SLUG,
+					'event_terms'            => $event_terms,
 					'supports_event_sources' => $supports_event_sources,
 				);
 
+				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/settings.php', true, $args );
+				break;
+			case 'event-sources':
 				wp_enqueue_script( 'thickbox' );
 				wp_enqueue_style( 'thickbox' );
-				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/event-sources.php', true, $args );
+				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/event-sources.php', true );
 				break;
 			case 'welcome':
 			default:

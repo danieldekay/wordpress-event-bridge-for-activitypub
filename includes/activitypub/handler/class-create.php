@@ -7,8 +7,10 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
-use Activitypub\Notification;
 use Activitypub\Collection\Actors;
+use Event_Bridge_For_ActivityPub\Setup;
+
+use function Activitypub\is_activity_public;
 
 /**
  * Handle Create requests.
@@ -27,23 +29,32 @@ class Create {
 	/**
 	 * Handle "Create" requests.
 	 *
-	 * @param array $activity The activity object.
+	 * @param array $activity The activity-object.
+	 * @param int   $user_id  The id of the local blog-user.
 	 */
-	public static function handle_create( $activity ) {
-		if ( ! isset( $activity['object'] ) ) {
+	public static function handle_create( $activity, $user_id ) {
+		// We only process activities that are target the application user.
+		if ( Actors::APPLICATION_USER_ID !== $user_id ) {
 			return;
 		}
 
-		$object = Actors::get_by_resource( $activity['object'] );
-
-		if ( ! $object || is_wp_error( $object ) ) {
-			// If we can not find a actor, we handle the `create` activity.
+		// Check if Activity is public or not.
+		if ( ! is_activity_public( $activity ) ) {
 			return;
 		}
 
-		// We only expect `create` activities being answers to follow requests by the application actor.
-		if ( Actors::APPLICATION_USER_ID !== $object->get__id() ) {
+		// Check if an object is set.
+		if ( ! isset( $activity['object']['type'] ) || 'Event' !== isset( $activity['object']['type'] ) ) {
 			return;
 		}
+
+		$transmogrifier_class = Setup::get_transmogrifier();
+
+		if ( ! $transmogrifier_class ) {
+			return;
+		}
+
+		$transmogrifier = new $transmogrifier_class( $activity['object'] );
+		$transmogrifier->create();
 	}
 }

@@ -26,6 +26,15 @@ class Event_Sources {
 	const POST_TYPE = 'ebap_event_source';
 
 	/**
+	 * Init.
+	 */
+	public static function init() {
+		self::register_post_type();
+		\add_action( 'event_bridge_for_activitypub_follow', array( self::class, 'activitypub_follow_actor' ), 10, 2 );
+		\add_action( 'event_bridge_for_activitypub_unfollow', array( self::class, 'activitypub_unfollow_actor' ), 10, 2 );
+	}
+
+	/**
 	 * Register the post type used to store the external event sources (i.e., followed ActivityPub actors).
 	 */
 	public static function register_post_type() {
@@ -145,6 +154,8 @@ class Event_Sources {
 		if ( is_wp_error( $post_id ) ) {
 			return $post_id;
 		}
+
+		self::queue_follow_actor( $actor );
 
 		return $event_source;
 	}

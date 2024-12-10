@@ -204,11 +204,15 @@ class Setup {
 		}
 
 		add_action( 'init', array( Health_Check::class, 'init' ) );
-		add_action( 'init', array( Event_Sources_Collection::class, 'register_post_type' ) );
 
 		// Check if the minimum required version of the ActivityPub plugin is installed.
 		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
 			return;
+		}
+
+		if ( get_option( 'event_bridge_for_activitypub_event_sources_active' ) ) {
+			add_action( 'init', array( Event_Sources_Collection::class, 'init' ) );
+			add_action( 'init', array( Handler::class, 'register_handlers' ) );
 		}
 
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
@@ -347,5 +351,23 @@ class Setup {
 		}
 
 		self::activate_activitypub_support_for_active_event_plugins();
+	}
+
+	/**
+	 * Get the transmogrifier.
+	 */
+	public static function get_transmogrifier() {
+		$setup = self::get_instance();
+
+		$event_sources_active = get_option( 'event_bridge_for_activitypub_event_sources_active', false );
+		$event_plugin         = get_option( 'event_bridge_for_activitypub_plugin_used_for_event_source_feature', '' );
+
+		if ( ! $event_sources_active || ! $event_plugin ) {
+			return;
+		}
+		$active_event_plugins = $setup->get_active_event_plugins();
+		if ( array_key_exists( $event_plugin, $active_event_plugins ) ) {
+			return $active_event_plugins[ $event_plugin ]->get_transmogrifier_class();
+		}
 	}
 }

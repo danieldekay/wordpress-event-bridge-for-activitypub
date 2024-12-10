@@ -9,6 +9,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
 use Activitypub\Notification;
 use Activitypub\Collection\Actors;
+use Activitypub\Http;
 
 /**
  * Handle Update requests.

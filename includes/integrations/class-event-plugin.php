@@ -95,4 +95,14 @@ abstract class Event_Plugin {
 	public static function get_activitypub_event_transformer_class(): string {
 		return str_replace( 'Integrations', 'Activitypub\Transformer', static::class );
 	}
+
+	/**
+	 * Returns the class used for transmogrifying an Event (ActivityStreams to Event plugin transformation).
+	 */
+	public static function get_transmogrifier_class(): ?string {
+		if ( ! self::supports_event_sources() ) {
+			return null;
+		}
+		return str_replace( 'Integrations', 'Activitypub\Transmogrifier', static::class );
+	}
 }
