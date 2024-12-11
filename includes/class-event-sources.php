@@ -13,6 +13,7 @@ use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Collection\Actors;
 
 use function Activitypub\get_remote_metadata_by_actor;
+use function Activitypub\is_activitypub_request;
 
 /**
  * Class for handling and saving the ActivityPub event sources (i.e. follows).
@@ -135,6 +136,10 @@ class Event_Sources {
 			return $template;
 		}
 
+		if ( ! is_activitypub_request() ) {
+			return $template;
+		}
+
 		if ( ! \is_singular() ) {
 			return $template;
 		}
@@ -146,7 +151,8 @@ class Event_Sources {
 		}
 
 		if ( ! str_starts_with( \get_site_url(), $post->guid ) ) {
-			\wp_safe_redirect( $post->guid, 301 );
+			\wp_redirect( $post->guid, 301 );
+			exit;
 		}
 
 		return $template;
