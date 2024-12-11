@@ -21,6 +21,7 @@ use Event_Bridge_For_ActivityPub\Admin\Event_Plugin_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\Health_Check;
 use Event_Bridge_For_ActivityPub\Admin\Settings_Page;
+use Event_Bridge_For_ActivityPub\Admin\User_Interface;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
 
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -212,7 +213,8 @@ class Setup {
 
 		if ( get_option( 'event_bridge_for_activitypub_event_sources_active' ) ) {
 			add_action( 'init', array( Event_Sources_Collection::class, 'init' ) );
-			add_action( 'init', array( Handler::class, 'register_handlers' ) );
+			add_action( 'activitypub_register_handlers', array( Handler::class, 'register_handlers' ) );
+			add_action( 'admin_init', array( User_Interface::class, 'init' ) );
 		}
 
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );

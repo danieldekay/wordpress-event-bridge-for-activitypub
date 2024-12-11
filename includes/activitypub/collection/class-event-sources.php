@@ -34,6 +34,8 @@ class Event_Sources {
 		\add_action( 'event_bridge_for_activitypub_unfollow', array( self::class, 'activitypub_unfollow_actor' ), 10, 2 );
 	}
 
+
+
 	/**
 	 * Register the post type used to store the external event sources (i.e., followed ActivityPub actors).
 	 */

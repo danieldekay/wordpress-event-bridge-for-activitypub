@@ -41,7 +41,7 @@ class Create {
 	 * @param int   $user_id  The id of the local blog-user.
 	 */
 	public static function handle_create( $activity, $user_id ) {
-		// We only process activities that are target the application user.
+		// We only process activities that are target to the application user.
 		if ( Actors::APPLICATION_USER_ID !== $user_id ) {
 			return;
 		}
@@ -80,6 +80,8 @@ class Create {
 
 		if ( isset( $json_params['object']['type'] ) && 'Event' === $json_params['object']['type'] ) {
 			$valid = true;
+		} else {
+			return $valid;
 		}
 
 		if ( empty( $json_params['type'] ) ) {
@@ -87,7 +89,7 @@ class Create {
 		}
 
 		if (
-			'Create' !== $json_params['type'] ||
+			'Create' !== $json_params['type'] || 'Update' !== $json_params['type'] ||
 			is_wp_error( $request )
 		) {
 			return $valid;
@@ -103,10 +105,22 @@ class Create {
 			'id',
 		);
 
+		// Limit this as a safety measure.
+		add_filter( 'wp_revisions_to_keep', array( 'revisions_to_keep' ) );
+
 		if ( array_intersect( $required, array_keys( $object ) ) !== $required ) {
 			return false;
 		}
 
 		return $valid;
+	}
+
+	/**
+	 * Return the number of revisions to keep.
+	 *
+	 * @return     int   The number of revisions to keep.
+	 */
+	public static function revisions_to_keep() {
+		return 3;
 	}
 }

@@ -53,6 +53,15 @@ class GatherPress {
 	}
 
 	/**
+	 * Get post.
+	 */
+	private function get_post_id_from_activitypub_id() {
+		global $wpdb;
+		$id = $this->activitypub_event->get_id();
+		return $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE guid=%s AND post_type=%s", $id, 'gatherpress_event' ) );
+	}
+
+	/**
 	 * Save the ActivityPub event object as GatherPress Event.
 	 */
 	public function create() {
@@ -64,6 +73,39 @@ class GatherPress {
 				'post_content' => $this->activitypub_event->get_content(),
 				'post_excerpt' => $this->activitypub_event->get_summary(),
 				'post_status'  => 'publish',
+				'guid'         => $this->activitypub_event->get_id(),
+			)
+		);
+
+		if ( ! $post_id || is_wp_error( $post_id ) ) {
+			return;
+		}
+
+		$event  = new \GatherPress\Core\Event( $post_id );
+		$params = array(
+			'datetime_start' => $this->activitypub_event->get_start_time(),
+			'datetime_end'   => $this->activitypub_event->get_end_time(),
+			'timezone'       => $this->activitypub_event->get_timezone(),
+		);
+		$event->save_datetimes( $params );
+	}
+
+	/**
+	 * Save the ActivityPub event object as GatherPress Event.
+	 */
+	public function update() {
+		$post_id = $this->get_post_id_from_activitypub_id();
+
+		// Insert new GatherPress Event post.
+		$post_id = wp_update_post(
+			array(
+				'ID'           => $post_id,
+				'post_title'   => $this->activitypub_event->get_name(),
+				'post_type'    => 'gatherpress_event',
+				'post_content' => $this->activitypub_event->get_content(),
+				'post_excerpt' => $this->activitypub_event->get_summary(),
+				'post_status'  => 'publish',
+				'guid'         => $this->activitypub_event->get_id(),
 			)
 		);
 
