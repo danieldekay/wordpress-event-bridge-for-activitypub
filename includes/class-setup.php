@@ -216,6 +216,7 @@ class Setup {
 			add_action( 'activitypub_register_handlers', array( Handler::class, 'register_handlers' ) );
 			add_action( 'admin_init', array( User_Interface::class, 'init' ) );
 		}
+		\add_filter( 'template_include', array( \Event_Bridge_For_ActivityPub\Event_Sources::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
 
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
 	}

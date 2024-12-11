@@ -123,4 +123,32 @@ class Event_Sources {
 		// Return false if no application actor is found.
 		return false;
 	}
+
+	/**
+	 * Add the ActivityPub template for EventPrime.
+	 *
+	 * @param  string $template The path to the template object.
+	 * @return string The new path to the JSON template.
+	 */
+	public static function redirect_activitypub_requests_for_cached_external_events( $template ) {
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+			return $template;
+		}
+
+		if ( ! \is_singular() ) {
+			return $template;
+		}
+
+		global $post;
+
+		if ( 'gatherpress_event' !== $post->post_type ) {
+			return $template;
+		}
+
+		if ( ! str_starts_with( \get_site_url(), $post->guid ) ) {
+			\wp_safe_redirect( $post->guid, 301 );
+		}
+
+		return $template;
+	}
 }
