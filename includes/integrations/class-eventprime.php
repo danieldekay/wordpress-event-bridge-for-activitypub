@@ -195,7 +195,7 @@ final class EventPrime extends Event_Plugin {
 		 * @see https://www.w3.org/wiki/SocialCG/ActivityPub/Primer/Authentication_Authorization#Authorized_fetch
 		 * @see https://swicg.github.io/activitypub-http-signature/#authorized-fetch
 		 */
-		if ( $activitypub_template && defined( 'ACTIVITYPUB_AUTHORIZED_FETCH') && constant( 'ACTIVITYPUB_AUTHORIZED_FETCH' ) ) {
+		if ( $activitypub_template && defined( 'ACTIVITYPUB_AUTHORIZED_FETCH' ) && constant( 'ACTIVITYPUB_AUTHORIZED_FETCH' ) ) {
 			$verification = Signature::verify_http_signature( $_SERVER );
 			if ( \is_wp_error( $verification ) ) {
 				header( 'HTTP/1.1 401 Unauthorized' );

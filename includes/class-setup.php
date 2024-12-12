@@ -188,7 +188,7 @@ class Setup {
 	 * @return void
 	 */
 	public function setup_hooks(): void {
- 		$this->detect_active_event_plugins();
+		$this->detect_active_event_plugins();
 
 		register_activation_hook( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE, array( $this, 'activate' ) );
 
