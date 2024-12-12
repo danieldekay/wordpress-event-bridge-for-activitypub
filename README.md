@@ -3,7 +3,7 @@
 **Tags:** events, fediverse, activitypub, calendar  
 **Requires at least:** 6.5  
 **Tested up to:** 6.7  
-**Stable tag:** 0.3.1  
+**Stable tag:** 0.3.2  
 **Requires PHP:** 7.4  
 **License:** AGPL-3.0-or-later  
 **License URI:** https://www.gnu.org/licenses/agpl-3.0.html  

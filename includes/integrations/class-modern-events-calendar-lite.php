@@ -27,7 +27,7 @@ final class Modern_Events_Calendar_Lite extends Event_plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
+	public static function get_relative_plugin_file(): string {
 		return 'modern-events-calendar-lite/modern-events-calendar-lite.php';
 	}
 

@@ -27,7 +27,7 @@ final class GatherPress extends Event_Plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
+	public static function get_relative_plugin_file(): string {
 		return 'gatherpress/gatherpress.php';
 	}
 

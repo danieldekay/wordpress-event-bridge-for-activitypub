@@ -24,11 +24,11 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  */
 abstract class Event_Plugin {
 	/**
-	 * Returns the full plugin file.
+	 * Returns the plugin file relative to the plugins dir.
 	 *
 	 * @return string
 	 */
-	abstract public static function get_plugin_file(): string;
+	abstract public static function get_relative_plugin_file(): string;
 
 	/**
 	 * Returns the event post type of the plugin.
@@ -57,9 +57,9 @@ abstract class Event_Plugin {
 	 * Get the plugins name from the main plugin-file's top-level-file-comment.
 	 */
 	final public static function get_plugin_name(): string {
-		$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . static::get_plugin_file() );
-		if ( isset( $plugin_data['Name'] ) ) {
-			return $plugin_data['Name'];
+		$all_plugins = array_merge( get_plugins(), get_mu_plugins() );
+		if ( isset( $all_plugins[ static::get_relative_plugin_file() ]['Name'] ) ) {
+			return $all_plugins[ static::get_relative_plugin_file() ]['Name'];
 		} else {
 			return '';
 		}

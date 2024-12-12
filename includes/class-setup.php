@@ -67,9 +67,8 @@ class Setup {
 		// deactivate_plugins( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE );
 		// return;
 		// }.
-		$this->active_event_plugins       = self::detect_active_event_plugins();
 		$this->activitypub_plugin_version = self::get_activitypub_plugin_version();
-		$this->setup_hooks();
+		add_action( 'plugins_loaded', array( $this, 'setup_hooks' ) );
 	}
 
 	/**
@@ -106,8 +105,7 @@ class Setup {
 		if ( defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) ) {
 			return constant( 'ACTIVITYPUB_PLUGIN_VERSION' );
 		}
-		$version = get_file_data( WP_PLUGIN_DIR . '/activitypub/activitypub.php', array( 'Version' ) )[0];
-		return $version ?? '0.0.0';
+		return '0.0.0';
 	}
 
 	/**
@@ -137,22 +135,46 @@ class Setup {
 	);
 
 	/**
+	 * Force the re-scan for active event plugins without using the cached transient.
+	 *
+	 * @return void
+	 */
+	public function redetect_active_event_plugins(): void {
+		delete_transient( 'event_bridge_for_activitypub_active_event_plugins' );
+		$this->detect_active_event_plugins();
+	}
+
+	/**
 	 * Function that checks for supported activated event plugins.
 	 *
 	 * @return array List of supported event plugins as keys from the SUPPORTED_EVENT_PLUGINS const.
 	 */
-	public static function detect_active_event_plugins(): array {
-		$active_event_plugins = array();
+	public function detect_active_event_plugins(): array {
+		$active_event_plugins = get_transient( 'event_bridge_for_activitypub_active_event_plugins' );
 
+		if ( $active_event_plugins ) {
+			$this->active_event_plugins = $active_event_plugins;
+			return $active_event_plugins;
+		}
+
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$all_plugins = array_merge( get_plugins(), get_mu_plugins() );
+
+		$active_event_plugins = array();
 		foreach ( self::EVENT_PLUGIN_CLASSES as $event_plugin_class ) {
-			if ( ! class_exists( $event_plugin_class ) || ! method_exists( $event_plugin_class, 'get_plugin_file' ) ) {
+			$event_plugin_file = call_user_func( array( $event_plugin_class, 'get_relative_plugin_file' ) );
+			if ( ! $event_plugin_file ) {
 				continue;
 			}
-			$event_plugin_file = call_user_func( array( $event_plugin_class, 'get_plugin_file' ) );
-			if ( \is_plugin_active( $event_plugin_file ) ) {
-				$active_event_plugins[] = new $event_plugin_class();
+			if ( array_key_exists( $event_plugin_file, $all_plugins ) && \is_plugin_active( $event_plugin_file ) ) {
+				$active_event_plugins[ $event_plugin_file ] = new $event_plugin_class();
 			}
 		}
+		set_transient( 'event_bridge_for_activitypub_active_event_plugins', $active_event_plugins );
+		$this->active_event_plugins = $active_event_plugins;
 		return $active_event_plugins;
 	}
 
@@ -165,8 +187,13 @@ class Setup {
 	 *
 	 * @return void
 	 */
-	protected function setup_hooks(): void {
+	public function setup_hooks(): void {
+		$this->detect_active_event_plugins();
+
 		register_activation_hook( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE, array( $this, 'activate' ) );
+
+		add_action( 'activated_plugin', array( $this, 'redetect_active_event_plugins' ) );
+		add_action( 'deactivated_plugin', array( $this, 'redetect_active_event_plugins' ) );
 
 		add_action( 'admin_init', array( $this, 'do_admin_notices' ) );
 		add_action( 'admin_init', array( Settings::class, 'register_settings' ) );
@@ -303,6 +330,7 @@ class Setup {
 	 * @return void
 	 */
 	public function activate(): void {
+		$this->redetect_active_event_plugins();
 		// Don't allow plugin activation, when the ActivityPub plugin is not activated yet.
 		if ( ! $this->activitypub_plugin_is_active ) {
 			deactivate_plugins( plugin_basename( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE ) );

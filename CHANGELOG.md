@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Add custom summary via shortcodes
 
-## [0.3.1] - 2024-11-16
+## [0.3.2] - 2024-12-12
 
 * Initial release on WordPress.org
 

@@ -33,7 +33,7 @@ final class EventPrime extends Event_Plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
+	public static function get_relative_plugin_file(): string {
 		return 'eventprime-event-calendar-management/event-prime.php';
 	}
 
@@ -75,6 +75,9 @@ final class EventPrime extends Event_Plugin {
 
 	/**
 	 * Determine whether the current request is an EventPrime ActivityPub request.
+	 *
+	 * Forked from https://github.com/Automattic/wordpress-activitypub/blob/trunk/includes/functions.php
+	 * the function is_activitypub_request.
 	 */
 	private static function is_eventprime_activitypub_request() {
 		global $wp_query;
@@ -192,7 +195,7 @@ final class EventPrime extends Event_Plugin {
 		 * @see https://www.w3.org/wiki/SocialCG/ActivityPub/Primer/Authentication_Authorization#Authorized_fetch
 		 * @see https://swicg.github.io/activitypub-http-signature/#authorized-fetch
 		 */
-		if ( $activitypub_template && ACTIVITYPUB_AUTHORIZED_FETCH ) {
+		if ( $activitypub_template && defined( 'ACTIVITYPUB_AUTHORIZED_FETCH' ) && constant( 'ACTIVITYPUB_AUTHORIZED_FETCH' ) ) {
 			$verification = Signature::verify_http_signature( $_SERVER );
 			if ( \is_wp_error( $verification ) ) {
 				header( 'HTTP/1.1 401 Unauthorized' );
