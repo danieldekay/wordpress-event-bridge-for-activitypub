@@ -97,6 +97,9 @@ class Settings_Page {
 			$tab = sanitize_key( $_GET['tab'] );
 		}
 
+		// Fallback to always re-scan active event plugins, when user visits admin area of this plugin.
+		Setup::get_instance()->redetect_active_event_plugins();
+
 		switch ( $tab ) {
 			case 'settings':
 				$plugin_setup = Setup::get_instance();

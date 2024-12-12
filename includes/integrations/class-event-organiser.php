@@ -27,7 +27,7 @@ final class Event_Organiser extends Event_Plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
+	public static function get_relative_plugin_file(): string {
 		return 'event-organiser/event-organiser.php';
 	}
 

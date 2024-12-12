@@ -30,7 +30,7 @@ final class VS_Event_List extends Event_Plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
+	public static function get_relative_plugin_file(): string {
 		return 'very-simple-event-list/vsel.php';
 	}
 

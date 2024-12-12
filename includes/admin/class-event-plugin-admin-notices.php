@@ -69,7 +69,15 @@ class Event_Plugin_Admin_Notices {
 	 * @return void
 	 */
 	private function do_admin_notice_post_type_not_activitypub_enabled(): void {
-		$event_plugin_data       = get_plugin_data( WP_PLUGIN_DIR . '/' . $this->event_plugin::get_plugin_file() );
+		$all_plugins       = get_plugins();
+		$event_plugin_file = $this->event_plugin::get_relative_plugin_file();
+		if ( isset( $all_plugins[ $event_plugin_file ]['Name'] ) ) {
+			$event_plugin_name = $all_plugins[ $event_plugin_file ]['Name'];
+		} elseif ( isset( get_mu_plugins()[ $event_plugin_file ]['Name'] ) ) {
+			$event_plugin_name = get_mu_plugins()[ $event_plugin_file ]['Name'];
+		} else {
+			return;
+		}
 		$activitypub_plugin_data = get_plugin_data( ACTIVITYPUB_PLUGIN_FILE );
 		$notice                  = sprintf(
 			/* translators: 1: the name of the event plugin a admin notice is shown. 2: The name of the ActivityPub plugin. */
@@ -79,7 +87,7 @@ class Event_Plugin_Admin_Notices {
 				'event-bridge-for-activitypub'
 			),
 			esc_html( $activitypub_plugin_data['Name'] ),
-			esc_html( $event_plugin_data['Name'] ),
+			esc_html( $event_plugin_name ),
 			admin_url( 'options-general.php?page=activitypub&tab=settings' )
 		);
 		$allowed_html = array(
