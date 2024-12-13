@@ -109,7 +109,6 @@
 		<properties>
 			<property name="text_domain" type="array">
 				<element value="event-bridge-for-activitypub"/>
-				<element value="activitypub"/>
 			</property>
 		</properties>
 	</rule>

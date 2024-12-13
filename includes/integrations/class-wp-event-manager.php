@@ -30,7 +30,7 @@ final class WP_Event_Manager extends Event_Plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
+	public static function get_relative_plugin_file(): string {
 		return 'wp-event-manager/wp-event-manager.php';
 	}
 

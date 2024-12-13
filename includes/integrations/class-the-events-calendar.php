@@ -27,7 +27,7 @@ final class The_Events_Calendar extends Event_plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
+	public static function get_relative_plugin_file(): string {
 		return 'the-events-calendar/the-events-calendar.php';
 	}
 

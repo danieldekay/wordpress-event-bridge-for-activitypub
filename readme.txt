@@ -3,7 +3,7 @@ Contributors: andremenrath
 Tags: events, fediverse, activitypub, calendar
 Requires at least: 6.5
 Tested up to: 6.7
-Stable tag: 0.3.1
+Stable tag: 0.3.2
 Requires PHP: 7.4
 License: AGPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/agpl-3.0.html
@@ -38,7 +38,7 @@ The Event Federation plugin ensures that users from those platforms are provided
 
 **ActivityPub-Enabled Event Sharing:** Your WordPress events are now compatible with the Fediverse, using the ActivityStreams format. This means your events can be easily discovered and followed by users on platforms like Mastodon and other ActivityPub-compatible services.
 
-**Automatic Event Summaries:** When your event is shared on the Fediverse, platforms like Mastodon that don't fully support events will display a brief HTML summary of key details — such as the event's title, start time, and location. This ensures that even if someone can't view the full event on their platform, they still get the important info at a glance, with a link to your WordPress event page.
+**Automatic Event Summaries:** When your event is shared on the Fediverse, platforms like Mastodon that don't fully support events will display a brief HTML summary of key details — such as the event's title, start time, and location. This ensures that even if someone can't view the full event on their platform, they still get the important info at a glance, with a link to your WordPress event page. Advanced users can create custom summaries via a set of shortcodes.
 
 **Improved Event Discoverability:** Your custom event categories are mapped to a set of default categories used in the Fediverse, helping your events reach a wider audience. This improves the chances that users searching for similar events on other platforms will find yours.
 
@@ -96,6 +96,6 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 
 == Changelog ==
 
-= [0.3.1] 2024-12-05 =
+= [0.3.2] 2024-12-12 =
 
 * Initial release on https://wordpress.org/

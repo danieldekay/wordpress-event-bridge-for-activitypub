@@ -114,7 +114,9 @@ class Health_Check {
 	 */
 	public static function get_most_recent_event_posts( $event_post_type = null, $number_of_posts = 5 ) {
 		if ( ! $event_post_type ) {
-			$event_post_type = Setup::get_instance()->get_active_event_plugins()[0]->get_post_type();
+			$active_event_plugins = Setup::get_instance()->get_active_event_plugins();
+			$active_event_plugin  = reset( $active_event_plugins );
+			$event_post_type      = $active_event_plugin->get_post_type();
 		}
 
 		$args = array(
@@ -148,7 +150,7 @@ class Health_Check {
 		$active_event_plugins = Setup::get_instance()->get_active_event_plugins();
 		$info                 = array();
 		foreach ( $active_event_plugins as $active_event_plugin ) {
-			$event_plugin_file    = $active_event_plugin->get_plugin_file();
+			$event_plugin_file    = $active_event_plugin->get_relative_plugin_file();
 			$event_plugin_data    = \get_plugin_data( $event_plugin_file );
 			$event_plugin_name    = isset( $event_plugin_data['Plugin Name'] ) ? $event_plugin_data['Plugin Name'] : 'Name not found';
 			$event_plugin_version = isset( $event_plugin_version['Plugin Version'] ) ? $event_plugin_version['Plugin Version'] : 'Version not found';

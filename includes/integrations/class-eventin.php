@@ -27,7 +27,7 @@ final class Eventin extends Event_plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
+	public static function get_relative_plugin_file(): string {
 		return 'wp-event-solution/eventin.php';
 	}
 

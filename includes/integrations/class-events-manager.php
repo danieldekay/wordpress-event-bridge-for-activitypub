@@ -27,7 +27,7 @@ final class Events_Manager extends Event_Plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
+	public static function get_relative_plugin_file(): string {
 		return 'events-manager/events-manager.php';
 	}
 
