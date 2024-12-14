@@ -15,6 +15,7 @@ namespace Event_Bridge_For_ActivityPub;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Activitypub\Activity\Extended_Object\Event;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 use Event_Bridge_For_ActivityPub\Admin\Event_Plugin_Admin_Notices;
@@ -241,7 +242,9 @@ class Setup {
 		if ( get_option( 'event_bridge_for_activitypub_event_sources_active' ) ) {
 			add_action( 'init', array( Event_Sources_Collection::class, 'init' ) );
 			add_action( 'activitypub_register_handlers', array( Handler::class, 'register_handlers' ) );
-			add_action( 'admin_init', array( User_Interface::class, 'init' ) );
+			// add_action( 'admin_init', array( User_Interface::class, 'init' ) );
+			add_filter( 'allowed_redirect_hosts', array( Event_Sources_Collection::class, 'add_event_sources_hosts_to_allowed_redirect_hosts' ) );
+			add_filter( 'activitypub_is_post_disabled', array( Event_Sources::class, 'is_cached_external_post' ), 10, 2 );
 		}
 		\add_filter( 'template_include', array( \Event_Bridge_For_ActivityPub\Event_Sources::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
 

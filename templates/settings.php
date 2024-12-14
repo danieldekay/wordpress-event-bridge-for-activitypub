@@ -100,7 +100,7 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 		</div>
 
 		<div class="box">
-			<h3><?php \esc_html_e( 'Configuration of the Event Sources feature', 'activitypub' ); ?></h3>
+			<h2><?php \esc_html_e( 'Event Sources', 'event-bridge-for-activitypub' ); ?></h2>
 			<?php
 			if ( count( $event_plugins_supporting_event_sources ) ) {
 				?>

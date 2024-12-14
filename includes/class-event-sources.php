@@ -11,6 +11,7 @@ namespace Event_Bridge_For_ActivityPub;
 
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Collection\Actors;
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 
 use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\is_activitypub_request;
@@ -21,38 +22,6 @@ use function Activitypub\is_activitypub_request;
  * @package Event_Bridge_For_ActivityPub
  */
 class Event_Sources {
-	/**
-	 * The custom post type.
-	 */
-	const POST_TYPE = 'event_bridge_follow';
-
-	/**
-	 * Constructor.
-	 */
-	public function __construct() {
-		\add_action( 'activitypub_inbox', array( $this, 'handle_activitypub_inbox' ), 15, 3 );
-	}
-
-	/**
-	 * Handle the ActivityPub Inbox.
-	 *
-	 * @param array  $data     The raw post data JSON object as an associative array.
-	 * @param int    $user_id  The target user id.
-	 * @param string $type     The activity type.
-	 */
-	public static function handle_activitypub_inbox( $data, $user_id, $type ) {
-		if ( Actors::APPLICATION_USER_ID !== $user_id ) {
-			return;
-		}
-
-		if ( ! in_array( $type, array( 'Create', 'Delete', 'Announce', 'Undo Announce' ), true ) ) {
-			return;
-		}
-
-		$event = Event::init_from_array( $data );
-		return $event;
-	}
-
 	/**
 	 * Get metadata of ActivityPub Actor by ID/URL.
 	 *
@@ -69,26 +38,6 @@ class Event_Sources {
 			}
 		}
 		return get_remote_metadata_by_actor( $url );
-	}
-
-	/**
-	 * Respond to the Ajax request to fetch feeds
-	 */
-	public function ajax_fetch_events() {
-		if ( ! isset( $_POST['Event_Bridge_For_ActivityPub'] ) ) {
-			wp_send_json_error( 'missing-parameters' );
-		}
-
-		check_ajax_referer( 'fetch-events-' . sanitize_user( wp_unslash( $_POST['actor'] ) ) );
-
-		$actor = Actors::get_by_resource( sanitize_user( wp_unslash( $_POST['actor'] ) ) );
-		if ( ! $actor ) {
-			wp_send_json_error( 'unknown-actor' );
-		}
-
-		$actor->retrieve();
-
-		wp_send_json_success();
 	}
 
 	/**
@@ -126,6 +75,39 @@ class Event_Sources {
 	}
 
 	/**
+	 * Filter that cached external posts are not scheduled via the ActivityPub plugin.
+	 *
+	 * Posts that are actually just external events are treated as cache. They are displayed in
+	 * the frontend HTML view and redirected via ActivityPub request, but we do not own them.
+	 *
+	 * @param bool    $disabled If it is disabled already by others (the upstream ActivityPub plugin).
+	 * @param WP_Post $post The WordPress post object.
+	 * @return bool True if the post can be federated via ActivityPub.
+	 */
+	public static function is_cached_external_post( $disabled, $post = null ): bool {
+		if ( $disabled || ! $post ) {
+			return $disabled;
+		}
+		if ( ! str_starts_with( \get_site_url(), $post->guid ) ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Determine whether a WP post is a cached external event.
+	 *
+	 * @param WP_Post $post The WordPress post object.
+	 * @return bool
+	 */
+	public static function is_cached_external_event( $post ): bool {
+		if ( ! str_starts_with( \get_site_url(), $post->guid ) ) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Add the ActivityPub template for EventPrime.
 	 *
 	 * @param  string $template The path to the template object.
@@ -150,8 +132,8 @@ class Event_Sources {
 			return $template;
 		}
 
-		if ( ! str_starts_with( \get_site_url(), $post->guid ) ) {
-			\wp_redirect( $post->guid, 301 );
+		if ( self::is_cached_external_event( $post ) ) {
+			\wp_safe_redirect( $post->guid, 301 );
 			exit;
 		}
 

@@ -12,6 +12,8 @@ use Activitypub\Activity\Actor;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use WP_Error;
 
+use function Activitypub\sanitize_url;
+
 /**
  * Event-Source (=ActivityPub Actor that is followed) model.
  */
@@ -122,7 +124,7 @@ class Event_Source extends Actor {
 	 */
 	protected function get_post_meta_input() {
 		$meta_input                           = array();
-		$meta_input['activitypub_inbox']      = $this->get_shared_inbox();
+		$meta_input['activitypub_inbox']      = sanitize_url( $this->get_shared_inbox() );
 		$meta_input['activitypub_actor_json'] = $this->to_json();
 
 		return $meta_input;
@@ -150,7 +152,7 @@ class Event_Source extends Actor {
 	 */
 	public function save() {
 		if ( ! $this->is_valid() ) {
-			return new WP_Error( 'activitypub_invalid_follower', __( 'Invalid Follower', 'activitypub' ), array( 'status' => 400 ) );
+			return new WP_Error( 'activitypub_invalid_follower', __( 'Invalid Follower', 'event-bridge-for-activitypub' ), array( 'status' => 400 ) );
 		}
 
 		if ( ! $this->get__id() ) {
@@ -215,7 +217,7 @@ class Event_Source extends Actor {
 		$icon = $this->get_icon();
 
 		if ( isset( $icon['url'] ) ) {
-			$image = media_sideload_image( $icon['url'], $post_id, null, 'id' );
+			$image = media_sideload_image( sanitize_url( $icon['url'] ), $post_id, null, 'id' );
 		}
 		if ( isset( $image ) && ! is_wp_error( $image ) ) {
 			set_post_thumbnail( $post_id, $image );

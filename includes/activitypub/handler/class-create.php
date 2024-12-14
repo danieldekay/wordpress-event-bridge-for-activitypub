@@ -8,6 +8,7 @@
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
 use Activitypub\Collection\Actors;
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use Event_Bridge_For_ActivityPub\Setup;
 
 use function Activitypub\is_activity_public;
@@ -43,6 +44,10 @@ class Create {
 	public static function handle_create( $activity, $user_id ) {
 		// We only process activities that are target to the application user.
 		if ( Actors::APPLICATION_USER_ID !== $user_id ) {
+			return;
+		}
+
+		if ( ! self::actor_is_event_source( $activity['actor'] ) ) {
 			return;
 		}
 
@@ -88,10 +93,11 @@ class Create {
 			return false;
 		}
 
-		if (
-			'Create' !== $json_params['type'] || 'Update' !== $json_params['type'] ||
-			is_wp_error( $request )
-		) {
+		if ( empty( $json_params['actor'] ) ) {
+			return false;
+		}
+
+		if ( ! in_array( $json_params['type'], array( 'Create', 'Update', 'Delete', 'Announce' ), true ) || is_wp_error( $request ) ) {
 			return $valid;
 		}
 
@@ -103,10 +109,9 @@ class Create {
 
 		$required = array(
 			'id',
+			'startTime',
+			'name',
 		);
-
-		// Limit this as a safety measure.
-		add_filter( 'wp_revisions_to_keep', array( 'revisions_to_keep' ) );
 
 		if ( array_intersect( $required, array_keys( $object ) ) !== $required ) {
 			return false;
@@ -116,11 +121,18 @@ class Create {
 	}
 
 	/**
-	 * Return the number of revisions to keep.
+	 * Check if an ActivityPub actor is an event source.
 	 *
-	 * @return     int   The number of revisions to keep.
+	 * @param string $actor_id The actor ID.
+	 * @return bool
 	 */
-	public static function revisions_to_keep() {
-		return 3;
+	public static function actor_is_event_source( $actor_id ) {
+		$event_sources = Event_Sources::get_event_sources();
+		foreach ( $event_sources as $event_source ) {
+			if ( $actor_id === $event_source->get_id() ) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

@@ -13,7 +13,6 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Accept;
-use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Announce;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Update;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Create;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Delete;
@@ -27,7 +26,6 @@ class Handler {
 	 */
 	public static function register_handlers() {
 		Accept::init();
-		Announce::init();
 		Update::init();
 		Create::init();
 		Delete::init();

@@ -34,8 +34,6 @@ class Event_Sources {
 		\add_action( 'event_bridge_for_activitypub_unfollow', array( self::class, 'activitypub_unfollow_actor' ), 10, 2 );
 	}
 
-
-
 	/**
 	 * Register the post type used to store the external event sources (i.e., followed ActivityPub actors).
 	 */
@@ -159,7 +157,20 @@ class Event_Sources {
 
 		self::queue_follow_actor( $actor );
 
+		self::delete_event_source_transients();
+
 		return $event_source;
+	}
+
+	/**
+	 * Delete all transients related to the event sources.
+	 *
+	 * @return void
+	 */
+	public static function delete_event_source_transients(): void {
+		delete_transient( 'event_bridge_for_activitypub_event_sources' );
+		delete_transient( 'event_bridge_for_activitypub_event_sources_hosts' );
+		delete_transient( 'event_bridge_for_activitypub_event_sources_ids' );
 	}
 
 	/**
@@ -171,7 +182,59 @@ class Event_Sources {
 	 */
 	public static function remove_event_source( $actor ) {
 		$actor = true;
+		self::delete_event_source_transients();
 		return $actor;
+	}
+
+	/**
+	 * Get an array will all unique hosts of all Event-Sources.
+	 *
+	 * @return array The Term list of Event Sources.
+	 */
+	public static function get_event_sources_hosts() {
+		$hosts = get_transient( 'event_bridge_for_activitypub_event_sources_hosts' );
+
+		if ( $hosts ) {
+			return $hosts;
+		}
+
+		$actors = self::get_event_sources_with_count()['actors'];
+
+		$hosts = array();
+		foreach ( $actors as $actor ) {
+			$url = wp_parse_url( $actor->get_id() );
+			if ( isset( $url['host'] ) ) {
+				$hosts[] = $url['host'];
+			}
+		}
+
+		set_transient( 'event_bridge_for_activitypub_event_sources_hosts', $hosts );
+
+		return array_unique( $hosts );
+	}
+
+	/**
+	 * Get add Event Sources ActivityPub IDs.
+	 *
+	 * @return array The Term list of Event Sources.
+	 */
+	public static function get_event_sources_ids() {
+		$ids = get_transient( 'event_bridge_for_activitypub_event_sources_ids' );
+
+		if ( $ids ) {
+			return $ids;
+		}
+
+		$actors = self::get_event_sources_with_count()['actors'];
+
+		$ids = array();
+		foreach ( $actors as $actor ) {
+			$ids[] = $actor->get_id();
+		}
+
+		set_transient( 'event_bridge_for_activitypub_event_sources_ids', $ids );
+
+		return $ids;
 	}
 
 	/**
@@ -180,30 +243,7 @@ class Event_Sources {
 	 * @return array The Term list of Event Sources.
 	 */
 	public static function get_event_sources() {
-		$args = array(
-			'post_type'      => self::POST_TYPE,
-			'posts_per_page' => -1,
-			'orderby'        => 'ID',
-			'order'          => 'DESC',
-			// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-			'meta_query'     => array(
-				array(
-					'key'     => 'activitypub_actor_id',
-					'compare' => 'EXISTS',
-				),
-			),
-		);
-
-		$query = new WP_Query( $args );
-
-		$event_sources = array_map(
-			function ( $post ) {
-				return Event_Source::init_from_cpt( $post );
-			},
-			$query->get_posts()
-		);
-
-		return $event_sources;
+		return self::get_event_sources_with_count()['actors'];
 	}
 
 	/**
@@ -221,6 +261,12 @@ class Event_Sources {
 	 *  }
 	 */
 	public static function get_event_sources_with_count( $number = -1, $page = null, $args = array() ) {
+		$event_sources = get_transient( 'event_bridge_for_activitypub_event_sources' );
+
+		if ( $event_sources ) {
+			return $event_sources;
+		}
+
 		$defaults = array(
 			'post_type'      => self::POST_TYPE,
 			'posts_per_page' => $number,
@@ -239,7 +285,11 @@ class Event_Sources {
 			$query->get_posts()
 		);
 
-		return compact( 'actors', 'total' );
+		$event_sources = compact( 'actors', 'total' );
+
+		set_transient( 'event_bridge_for_activitypub_event_sources', $event_sources );
+
+		return $event_sources;
 	}
 
 	/**
@@ -388,5 +438,16 @@ class Event_Sources {
 		$activity->set_id( $actor . '#unfollow-' . \preg_replace( '~^https?://~', '', $to ) );
 		$activity = $activity->to_json();
 		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::APPLICATION_USER_ID );
+	}
+
+	/**
+	 * Add Event Sources hosts to allowed hosts used by safe redirect.
+	 *
+	 * @param array $hosts The hosts before the filter.
+	 * @return array
+	 */
+	public static function add_event_sources_hosts_to_allowed_redirect_hosts( $hosts ) {
+		$event_sources_hosts = self::get_event_sources_hosts();
+		return array_merge( $hosts, $event_sources_hosts );
 	}
 }

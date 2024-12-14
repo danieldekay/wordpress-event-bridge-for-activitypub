@@ -20,12 +20,14 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 ?>
 
 <div class="wrap event_bridge_for_activitypub-admin-table-container">
-
-		<h2> <?php esc_html_e( 'List of Event Sources', 'event-bridge-for-activitypub' ); ?> </h2>
+	<!-- Table title with add new button like on post edit pages -->
+	<div class="event_bridge_for_activitypub-admin-table-top">
+		<h2 class="wp-heading-inline"> <?php esc_html_e( 'List of Event Sources', 'event-bridge-for-activitypub' ); ?> </h2>
 		<!-- Button that triggers ThickBox -->
 		<a href="#TB_inline?width=600&height=400&inlineId=Event_Bridge_For_ActivityPub_add_new_source" class="thickbox page-title-action">
 			<?php esc_html_e( 'Add Event Source', 'event-bridge-for-activitypub' ); ?>
 		</a>
+	</div>
 
 	<!-- ThickBox content (hidden initially) -->
 	<div id="Event_Bridge_For_ActivityPub_add_new_source" style="display:none;">
