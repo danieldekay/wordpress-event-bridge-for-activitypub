@@ -74,7 +74,7 @@ class Create {
 		}
 
 		$transmogrifier = new $transmogrifier_class( $activity['object'] );
-		$transmogrifier->create();
+		$transmogrifier->save();
 	}
 
 	/**

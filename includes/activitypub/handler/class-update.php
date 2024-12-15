@@ -57,6 +57,6 @@ class Update {
 		}
 
 		$transmogrifier = new $transmogrifier_class( $activity['object'] );
-		$transmogrifier->update();
+		$transmogrifier->save();
 	}
 }

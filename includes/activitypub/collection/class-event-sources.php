@@ -9,9 +9,10 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Collection;
 
+use Activitypub\Model\Blog;
+use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 use WP_Error;
 use WP_Query;
-use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 
 use function Activitypub\is_tombstone;
 use function Activitypub\get_remote_metadata_by_actor;
@@ -30,8 +31,8 @@ class Event_Sources {
 	 */
 	public static function init() {
 		self::register_post_type();
-		\add_action( 'event_bridge_for_activitypub_follow', array( self::class, 'activitypub_follow_actor' ), 10, 2 );
-		\add_action( 'event_bridge_for_activitypub_unfollow', array( self::class, 'activitypub_unfollow_actor' ), 10, 2 );
+		\add_action( 'event_bridge_for_activitypub_follow', array( self::class, 'activitypub_follow_actor' ), 10, 1 );
+		\add_action( 'event_bridge_for_activitypub_unfollow', array( self::class, 'activitypub_unfollow_actor' ), 10, 1 );
 	}
 
 	/**
@@ -155,7 +156,7 @@ class Event_Sources {
 			return $post_id;
 		}
 
-		self::queue_follow_actor( $actor );
+		$success = self::queue_follow_actor( $actor );
 
 		self::delete_event_source_transients();
 
@@ -181,10 +182,22 @@ class Event_Sources {
 	 * @return WP_Post|false|null Post data on success, false or null on failure.
 	 */
 	public static function remove_event_source( $actor ) {
-		$post_id = Event_Source::get_wp_post_from_activitypub_actor_id( $actor );
+		$actor = Event_Source::get_by_id( $actor );
+
+		if ( ! $actor ) {
+			return;
+		}
+
+		$post_id = $actor->get__id();
 
 		if ( ! $post_id ) {
 			return;
+		}
+
+		$thumbnail_id = get_post_thumbnail_id( $post_id );
+
+		if ( $thumbnail_id ) {
+			wp_delete_attachment( $thumbnail_id, true );
 		}
 
 		$result = wp_delete_post( $post_id, true );
@@ -336,7 +349,7 @@ class Event_Sources {
 	public static function queue_follow_actor( $actor ) {
 		$queued = self::queue(
 			'event_bridge_for_activitypub_follow',
-			$actor,
+			array( $actor ),
 			'event_bridge_for_activitypub_unfollow'
 		);
 
@@ -344,27 +357,21 @@ class Event_Sources {
 	}
 
 	/**
-	 * Follow an ActivityPub actor via the Application user.
+	 * Follow an ActivityPub actor via the Blog user.
 	 *
 	 * @param string $actor_id The ID/URL of the Actor.
 	 */
 	public static function activitypub_follow_actor( $actor_id ) {
-		$post_id = Event_Source::get_wp_post_from_activitypub_actor_id( $actor_id );
+		$actor = Event_Source::get_by_id( $actor_id );
 
-		if ( ! $post_id ) {
-			return;
-		}
-
-		$actor = Event_Source::init_from_cpt( get_post( $post_id ) );
-
-		if ( ! $actor instanceof Event_Source ) {
+		if ( ! $actor ) {
 			return $actor;
 		}
 
 		$inbox = $actor->get_shared_inbox();
 		$to    = $actor->get_id();
 
-		$application = new \Activitypub\Model\Application();
+		$application = new Blog();
 
 		$activity = new \Activitypub\Activity\Activity();
 		$activity->set_type( 'Follow' );
@@ -387,7 +394,7 @@ class Event_Sources {
 	public static function queue_unfollow_actor( $actor ) {
 		$queued = self::queue(
 			'event_bridge_for_activitypub_unfollow',
-			$actor,
+			array( $actor ),
 			'event_bridge_for_activitypub_follow'
 		);
 
@@ -400,22 +407,16 @@ class Event_Sources {
 	 * @param      string $actor_id  The ActivityPub actor ID.
 	 */
 	public static function activitypub_unfollow_actor( $actor_id ) {
-		$post_id = Event_Source::get_wp_post_from_activitypub_actor_id( $actor_id );
+		$actor = Event_Source::get_by_id( $actor_id );
 
-		if ( ! $post_id ) {
-			return;
-		}
-
-		$actor = Event_Source::init_from_cpt( get_post( $post_id ) );
-
-		if ( ! $actor instanceof Event_Source ) {
+		if ( ! $actor ) {
 			return $actor;
 		}
 
 		$inbox = $actor->get_shared_inbox();
 		$to    = $actor->get_id();
 
-		$application = new \Activitypub\Model\Application();
+		$application = new Blog();
 
 		if ( is_wp_error( $inbox ) ) {
 			return $inbox;

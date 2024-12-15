@@ -52,7 +52,7 @@ class Event_Source extends Actor {
 	 * @param string $actor_id The ActivityPub actor ID.
 	 * @return ?int The WordPress post ID if the actor is found, null if not.
 	 */
-	public static function get_wp_post_from_activitypub_actor_id( $actor_id ) {
+	private static function get_wp_post_by_activitypub_actor_id( $actor_id ) {
 		global $wpdb;
 		$post_id = $wpdb->get_var(
 			$wpdb->prepare(
@@ -61,7 +61,22 @@ class Event_Source extends Actor {
 				Event_Sources::POST_TYPE
 			)
 		);
-		return $post_id ? intval( $post_id ) : null;
+		return $post_id ? get_post( $post_id ) : null;
+	}
+
+	/**
+	 * Get the WordPress post which stores the Event Source by the ActivityPub actor id of the event source.
+	 *
+	 * @param string $actor_id The ActivityPub actor ID.
+	 * @return ?Event_Source The WordPress post ID if the actor is found, null if not.
+	 */
+	public static function get_by_id( $actor_id ) {
+		$post = self::get_wp_post_by_activitypub_actor_id( $actor_id );
+
+		if ( $post ) {
+			$actor = self::init_from_cpt( $post );
+		}
+		return $actor ?? null;
 	}
 
 	/**
