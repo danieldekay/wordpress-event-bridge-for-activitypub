@@ -12,6 +12,9 @@ namespace Event_Bridge_For_ActivityPub;
 use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Collection\Actors;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
+use Event_Bridge_For_ActivityPub\Activitypub\Transformer\GatherPress as TransformerGatherPress;
+use Event_Bridge_For_ActivityPub\Activitypub\Transmogrifier\GatherPress;
+use Event_Bridge_For_ActivityPub\Integrations\GatherPress as IntegrationsGatherPress;
 
 use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\is_activitypub_request;
@@ -138,5 +141,22 @@ class Event_Sources {
 		}
 
 		return $template;
+	}
+
+	/**
+	 * Delete old cached events that took place in the past.
+	 */
+	public static function clear_cache() {
+		$cache_retention_period = get_option( 'event_bridge_for_activitypub_event_source_cache_retention', WEEK_IN_SECONDS );
+
+		$past_event_ids = GatherPress::get_past_events( $cache_retention_period );
+
+		foreach ( $past_event_ids as $post_id ) {
+			if ( has_post_thumbnail( $post_id ) ) {
+				$attachment_id = get_post_thumbnail_id( $post_id );
+				wp_delete_attachment( $attachment_id, true );
+			}
+			wp_delete_post( $post_id, true );
+		}
 	}
 }

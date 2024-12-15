@@ -12,8 +12,8 @@
 namespace Event_Bridge_For_ActivityPub\Activitypub\Transmogrifier;
 
 use Activitypub\Activity\Extended_Object\Event;
-use Activitypub\Activity\Extended_Object\Place;
 use DateTime;
+use Exception;
 
 use function Activitypub\object_to_uri;
 use function Activitypub\sanitize_url;
@@ -54,6 +54,51 @@ class GatherPress {
 		}
 
 		$this->activitypub_event = $activitypub_event;
+	}
+
+	/**
+	 * Validate a time string if it is according to the ActivityPub specification.
+	 *
+	 * @param string $time_string The time string.
+	 * @return bool
+	 */
+	public static function is_valid_activitypub_time_string( $time_string ) {
+		// Try to create a DateTime object from the input string.
+		try {
+			$date = new DateTime( $time_string );
+		} catch ( Exception $e ) {
+			// If parsing fails, it's not valid.
+			return false;
+		}
+
+		// Ensure the timezone is correctly formatted (e.g., 'Z' or a valid offset).
+		$timezone           = $date->getTimezone();
+		$formatted_timezone = $timezone->getName();
+
+		// Return true only if the time string includes 'Z' or a valid timezone offset.
+		$valid = 'Z' === $formatted_timezone || preg_match( '/^[+-]\d{2}:\d{2}$/ ', $formatted_timezone );
+		return $valid;
+	}
+
+	/**
+	 * Get a list of Post IDs of events that have ended.
+	 *
+	 * @param int $cache_retention_period Additional time buffer in seconds.
+	 * @return int[]
+	 */
+	public static function get_past_events( $cache_retention_period = 0 ) {
+		global $wpdb;
+
+		$time_limit = gmdate( 'Y-m-d H:i:s', time() - $cache_retention_period );
+
+		$results = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT post_id FROM {$wpdb->prefix}gatherpress_events WHERE datetime_end < %s",
+				$time_limit
+			)
+		);
+
+		return $results;
 	}
 
 	/**
@@ -233,6 +278,25 @@ class GatherPress {
 	}
 
 	/**
+	 * Returns the URL of the online event link.
+	 *
+	 * @return ?string
+	 */
+	protected function get_online_event_link_from_attachments() {
+		$attachments = $this->activitypub_event->get_attachment();
+
+		if ( ! is_array( $attachments ) || empty( $attachments ) ) {
+			return;
+		}
+
+		foreach ( $attachments as $attachment ) {
+			if ( array_key_exists( 'type', $attachment ) && 'Link' === $attachment['type'] && isset( $attachment['href'] ) ) {
+				return $attachment['href'];
+			}
+		}
+	}
+
+	/**
 	 * Add venue.
 	 *
 	 * @param int $post_id The post ID.
@@ -245,6 +309,17 @@ class GatherPress {
 		}
 
 		if ( ! isset( $location['name'] ) ) {
+			return;
+		}
+
+		// Fallback for Gancio instances.
+		if ( 'online' === $location['name'] ) {
+			$online_event_link = $this->get_online_event_link_from_attachments();
+			if ( ! $online_event_link ) {
+				return;
+			}
+			update_post_meta( $post_id, 'gatherpress_online_event_link', sanitize_url( $online_event_link ) );
+			wp_set_object_terms( $post_id, 'online-event', '_gatherpress_venue', false );
 			return;
 		}
 
@@ -276,14 +351,14 @@ class GatherPress {
 
 		update_post_meta( $venue_id, 'gatherpress_venue_information', $venue_json );
 
-		wp_set_object_terms( $post_id, $venue_slug, '_gatherpress_venue', true ); // 'true' appends to existing terms.
+		wp_set_object_terms( $post_id, $venue_slug, '_gatherpress_venue', false ); // 'true' appends to existing terms.
 	}
 
 	/**
 	 * Save the ActivityPub event object as GatherPress Event.
 	 */
 	public function create() {
-		// Insert new GatherPress Event post.
+		// Insert new GatherPress event post.
 		$post_id = wp_insert_post(
 			array(
 				'post_title'   => sanitize_text_field( $this->activitypub_event->get_name() ),
@@ -292,6 +367,10 @@ class GatherPress {
 				'post_excerpt' => wp_kses_post( $this->activitypub_event->get_summary() ),
 				'post_status'  => 'publish',
 				'guid'         => sanitize_url( $this->activitypub_event->get_id() ),
+				'meta_input'   => array(
+					'event_bridge_for_activitypub_is_cached' => 'GatherPress',
+					'activitypub_content_visibility' => ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL,
+				),
 			)
 		);
 
@@ -299,7 +378,7 @@ class GatherPress {
 			return;
 		}
 
-		// Insert the Dates.
+		// Insert the dates.
 		$event      = new GatherPress_Event( $post_id );
 		$start_time = $this->activitypub_event->get_start_time();
 		$end_time   = $this->activitypub_event->get_end_time();
@@ -313,18 +392,17 @@ class GatherPress {
 			'datetime_end'   => $end_time,
 			'timezone'       => $this->activitypub_event->get_timezone(),
 		);
+		// Sanitization of the params is done in the save_datetimes function just in time.
+		$event->save_datetimes( $params );
 
 		// Insert featured image.
 		$image = $this->get_featured_image();
 		self::set_featured_image_with_alt( $post_id, $image['url'], $image['alt'] );
 
-		// Add hashtags as terms.
+		// Add hashtags.
 		$this->add_tags_to_post( $post_id );
 
 		$this->add_venue( $post_id );
-
-		// Sanitization of the params is done in the save_datetimes function just in time.
-		$event->save_datetimes( $params );
 	}
 
 	/**
@@ -346,6 +424,10 @@ class GatherPress {
 				'post_excerpt' => wp_kses_post( $this->activitypub_event->get_summary() ),
 				'post_status'  => 'publish',
 				'guid'         => sanitize_url( $this->activitypub_event->get_id() ),
+				'meta_input'   => array(
+					'event_bridge_for_activitypub_is_cached' => 'GatherPress',
+					'activitypub_content_visibility' => ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL,
+				),
 			)
 		);
 

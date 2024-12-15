@@ -107,6 +107,18 @@ class Settings {
 
 		\register_setting(
 			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_event_source_cache_retention',
+			array(
+				'type'              => 'int',
+				'show_in_rest'      => true,
+				'description'       => \__( 'The cache retention period for external event sources.', 'event-bridge-for-activitypub' ),
+				'default'           => WEEK_IN_SECONDS,
+				'sanitize_callback' => 'absint',
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
 			'event_bridge_for_activitypub_plugin_used_for_event_source_feature',
 			array(
 				'type'              => 'array',

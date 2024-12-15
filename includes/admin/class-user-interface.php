@@ -12,8 +12,6 @@ namespace Event_Bridge_For_ActivityPub\Admin;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
-
 /**
  * Class responsible for Event Plugin related admin notices.
  *

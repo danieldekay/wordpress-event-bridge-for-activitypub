@@ -242,12 +242,36 @@ class Setup {
 		if ( get_option( 'event_bridge_for_activitypub_event_sources_active' ) ) {
 			add_action( 'init', array( Event_Sources_Collection::class, 'init' ) );
 			add_action( 'activitypub_register_handlers', array( Handler::class, 'register_handlers' ) );
-			// add_action( 'admin_init', array( User_Interface::class, 'init' ) );
+			add_action( 'admin_init', array( User_Interface::class, 'init' ) );
 			add_filter( 'allowed_redirect_hosts', array( Event_Sources_Collection::class, 'add_event_sources_hosts_to_allowed_redirect_hosts' ) );
 			add_filter( 'activitypub_is_post_disabled', array( Event_Sources::class, 'is_cached_external_post' ), 10, 2 );
+			if ( ! wp_next_scheduled( 'event_bridge_for_activitypub_event_sources_clear_cache' ) ) {
+				wp_schedule_event( time(), 'daily', 'event_bridge_for_activitypub_event_sources_clear_cache' );
+			}
+
+			add_action( 'event_bridge_for_activitypub_event_sources_clear_cache', array( Event_Sources::class, 'clear_cache' ) );
+			add_filter(
+				'gatherpress_force_online_event_link',
+				function ( $force_online_event_link ) {
+					// Get the current post object.
+					$post = get_post();
+
+					// Check if we are in a valid context and the post type is 'gatherpress'.
+					if ( $post && 'gatherpress_event' === $post->post_type ) {
+						// Add your custom logic here to decide whether to force the link.
+						// For example, force it only if a specific meta field exists.
+						if ( get_post_meta( $post->ID, 'event_bridge_for_activitypub_is_cached', true ) ) {
+							return true; // Force the online event link.
+						}
+					}
+
+					return $force_online_event_link; // Default behavior.
+				},
+				10,
+				1
+			);
 		}
 		\add_filter( 'template_include', array( \Event_Bridge_For_ActivityPub\Event_Sources::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
-
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
 	}
 

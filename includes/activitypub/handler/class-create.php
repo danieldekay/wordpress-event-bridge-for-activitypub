@@ -8,6 +8,8 @@
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
 use Activitypub\Collection\Actors;
+use DateTime;
+use DateTimeZone;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use Event_Bridge_For_ActivityPub\Setup;
 
@@ -58,6 +60,10 @@ class Create {
 
 		// Check if an object is set.
 		if ( ! isset( $activity['object']['type'] ) || 'Event' !== $activity['object']['type'] ) {
+			return;
+		}
+
+		if ( self::is_time_passed( $activity['object']['startTime'] ) ) {
 			return;
 		}
 
@@ -118,6 +124,23 @@ class Create {
 		}
 
 		return $valid;
+	}
+
+	/**
+	 * Check if a given DateTime is already passed.
+	 *
+	 * @param string $time_string The ActivityPub like time string.
+	 * @return bool
+	 */
+	private static function is_time_passed( $time_string ) {
+		// Create a DateTime object from the ActivityPub time string.
+		$time = new DateTime( $time_string, new DateTimeZone( 'UTC' ) );
+
+		// Get the current time in UTC.
+		$current_time = new DateTime( 'now', new DateTimeZone( 'UTC' ) );
+
+		// Compare the event time with the current time.
+		return $time < $current_time;
 	}
 
 	/**

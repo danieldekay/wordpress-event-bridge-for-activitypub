@@ -31,15 +31,16 @@ if ( ! isset( $args ) || ! array_key_exists( 'event_terms', $args ) ) {
 if ( ! current_user_can( 'manage_options' ) ) {
 	return;
 }
-
+\get_option( 'event_bridge_for_activitypub_event_sources_active', false );
 if ( ! isset( $args ) || ! array_key_exists( 'supports_event_sources', $args ) ) {
 	return;
 }
 
 $event_plugins_supporting_event_sources = $args['supports_event_sources'];
 
-$selected_plugin      = \get_option( 'event_bridge_for_activitypub_plugin_used_for_event_source_feature', '' );
-$event_sources_active = \get_option( 'event_bridge_for_activitypub_event_sources_active', false );
+$selected_plugin        = \get_option( 'event_bridge_for_activitypub_plugin_used_for_event_source_feature', '' );
+$event_sources_active   = \get_option( 'event_bridge_for_activitypub_event_sources_active', false );
+$cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_source_cache_retention', DAY_IN_SECONDS );
 
 $event_terms = $args['event_terms'];
 
@@ -143,6 +144,33 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 							?>
 							</select>
 							<p id="event-sources-used-plugin-description"><?php esc_html_e( 'In case you have multiple event plugins installed you might choose which event plugin is utilized.', 'event-bridge-for-activitypub' ); ?></p>
+						</td>
+					<tr>
+					<tr>
+						<th scope="row">
+							<label for="event_bridge_for_activitypub_event_source_cache"><?php \esc_html_e( 'Retention Period for External Events', 'event-bridge-for-activitypub' ); ?></label>
+						</th>
+						<td>
+							<select
+								name="event_bridge_for_activitypub_event_source_cache_retention"
+								id="event_bridge_for_activitypub_event_source_cache_retention"
+								value="0"
+								aria-describedby="event_bridge_for_activitypub_event-sources-cache-clear-time-frame"
+							>
+							<?php
+							$choices = array(
+								0                => __( 'Immediately', 'event-bridge-for-activitypub' ),
+								DAY_IN_SECONDS   => __( 'One Day', 'event-bridge-for-activitypub' ),
+								WEEK_IN_SECONDS  => __( 'One Week', 'event-bridge-for-activitypub' ),
+								MONTH_IN_SECONDS => __( 'One Month', 'event-bridge-for-activitypub' ),
+								YEAR_IN_SECONDS  => __( 'One Year', 'event-bridge-for-activitypub' ),
+							);
+							foreach ( $choices as $time => $string ) {
+								echo '<option value="' . esc_attr( $time ) . '" ' . selected( $cache_retention_period, $time, true ) . '>' . esc_attr( $string ) . '</option>';
+							}
+							?>
+							</select>
+							<p id="event_bridge_for_activitypub_event-sources-cache-clear-time-frame"><?php esc_html_e( 'External events from your event sources will be automatically removed from your site after the selected time period has passed since the event ended. Choose a time frame that works best for your needs.', 'event-bridge-for-activitypub' ); ?></p>
 						</td>
 					<tr>
 					<?php
