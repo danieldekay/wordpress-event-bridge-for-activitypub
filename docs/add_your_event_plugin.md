@@ -28,10 +28,10 @@ First you need to add some basic information about your event plugin. Just creat
   final class My_Event_Plugin extends Event_Plugin {
 ```
 
-Then you need to tell the Event Bridge for ActivityPub about that class by adding it to the `EVENT_PLUGIN_CLASSES` constant in the `includes/setup.php` file:
+Then you need to tell the Event Bridge for ActivityPub about that class by adding it to the `EVENT_PLUGIN_INTEGRATIONS` constant in the `includes/setup.php` file:
 
 ```php
-	private const EVENT_PLUGIN_CLASSES = array(
+	private const EVENT_PLUGIN_INTEGRATIONS = array(
 		...
 		'\Event_Bridge_For_ActivityPub\Integrations\My_Event_Plugin',
 	);

@@ -15,6 +15,7 @@ namespace Event_Bridge_For_ActivityPub;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event;
+use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
 
 /**
  * Class responsible for the ActivityPui Event Extension related Settings.
@@ -155,7 +156,7 @@ class Settings {
 
 		$valid_options = array();
 		foreach ( $active_event_plugins as $active_event_plugin ) {
-			if ( $active_event_plugin->supports_event_sources() ) {
+			if ( $active_event_plugin instanceof Feature_Event_Sources ) {
 				$full_class      = $active_event_plugin::class;
 				$valid_options[] = substr( $full_class, strrpos( $full_class, '\\' ) + 1 );
 			}

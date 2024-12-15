@@ -11,6 +11,8 @@
 
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Modern_Events_Calendar_Lite as Modern_Events_Calendar_Lite_Transformer;
+
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
@@ -21,7 +23,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class Modern_Events_Calendar_Lite extends Event_plugin {
+final class Modern_Events_Calendar_Lite extends Event_Plugin_Integration {
 	/**
 	 * Returns the full plugin file.
 	 *
@@ -57,5 +59,15 @@ final class Modern_Events_Calendar_Lite extends Event_plugin {
 	 */
 	public static function get_event_category_taxonomy(): string {
 		return 'mec_category';
+	}
+
+	/**
+	 * Returns the ActivityPub transformer for a Modern_Events_Calendar_Lite event post.
+	 *
+	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @return Modern_Events_Calendar_Lite_Transformer
+	 */
+	public static function get_activitypub_event_transformer( $post ): Modern_Events_Calendar_Lite_Transformer {
+		return new Modern_Events_Calendar_Lite_Transformer( $post, self::get_event_category_taxonomy() );
 	}
 }

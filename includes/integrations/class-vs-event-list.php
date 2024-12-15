@@ -12,7 +12,7 @@
 
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
-use Event_Bridge_For_ActivityPub\Event_Plugins;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\VS_Event_List as VS_Event_List_Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -24,7 +24,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class VS_Event_List extends Event_Plugin {
+final class VS_Event_List extends Event_Plugin_Integration {
 	/**
 	 * Returns the full plugin file.
 	 *
@@ -53,20 +53,21 @@ final class VS_Event_List extends Event_Plugin {
 	}
 
 	/**
-	 * Returns the ActivityPub transformer class.
-	 *
-	 * @return string
-	 */
-	public static function get_activitypub_transformer_class_name(): string {
-		return 'VS_Event';
-	}
-
-	/**
 	 * Returns the taxonomy used for the plugin's event categories.
 	 *
 	 * @return string
 	 */
 	public static function get_event_category_taxonomy(): string {
 		return 'event_cat';
+	}
+
+	/**
+	 * Returns the ActivityPub transformer for a VS_Event_List event post.
+	 *
+	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @return VS_Event_List_Transformer
+	 */
+	public static function get_activitypub_event_transformer( $post ): VS_Event_List_Transformer {
+		return new VS_Event_List_Transformer( $post, self::get_event_category_taxonomy() );
 	}
 }

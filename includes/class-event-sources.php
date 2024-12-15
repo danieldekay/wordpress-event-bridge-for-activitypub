@@ -12,6 +12,9 @@ namespace Event_Bridge_For_ActivityPub;
 use Activitypub\Model\Blog;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 use Event_Bridge_For_ActivityPub\Activitypub\Transmogrifier\GatherPress;
+use Event_Bridge_For_ActivityPub\Activitypub\Handler;
+use Event_Bridge_For_ActivityPub\Admin\User_Interface;
+
 
 use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\is_activitypub_request;
@@ -22,6 +25,22 @@ use function Activitypub\is_activitypub_request;
  * @package Event_Bridge_For_ActivityPub
  */
 class Event_Sources {
+	/**
+	 * Init.
+	 */
+	public static function init() {
+		\add_action( 'init', array( Event_Sources_Collection::class, 'init' ) );
+		\add_action( 'activitypub_register_handlers', array( Handler::class, 'register_handlers' ) );
+		\add_action( 'admin_init', array( User_Interface::class, 'init' ) );
+		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'is_cached_external_post' ), 10, 2 );
+		if ( ! \wp_next_scheduled( 'event_bridge_for_activitypub_event_sources_clear_cache' ) ) {
+			\wp_schedule_event( time(), 'daily', 'event_bridge_for_activitypub_event_sources_clear_cache' );
+		}
+		\add_action( 'event_bridge_for_activitypub_event_sources_clear_cache', array( self::class, 'clear_cache' ) );
+		\add_filter( 'activitypub_rest_following', array( self::class, 'add_event_sources_to_following_collection' ), 10, 2 );
+		\add_filter( 'template_include', array( self::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
+	}
+
 	/**
 	 * Get metadata of ActivityPub Actor by ID/URL.
 	 *
@@ -88,10 +107,7 @@ class Event_Sources {
 		if ( $disabled || ! $post ) {
 			return $disabled;
 		}
-		if ( ! str_starts_with( \get_site_url(), $post->guid ) ) {
-			return true;
-		}
-		return false;
+		return ! self::is_cached_external_event_post( $post );
 	}
 
 	/**
@@ -101,13 +117,10 @@ class Event_Sources {
 	 * @return bool
 	 */
 	public static function is_cached_external_event_post( $post ): bool {
-		if ( 'gatherpress_event' !== $post->post_type ) {
-			return false;
-		}
-
-		if ( ! str_starts_with( \get_site_url(), $post->guid ) ) {
+		if ( get_post_meta( $post->id, 'event_bridge_for_activitypub_is_cached', true ) ) {
 			return true;
 		}
+
 		return false;
 	}
 

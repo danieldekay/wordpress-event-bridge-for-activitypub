@@ -9,6 +9,8 @@
 
 namespace Event_Bridge_For_ActivityPub\Admin;
 
+use Event_Bridge_For_ActivityPub\Event_Sources;
+
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
@@ -59,7 +61,7 @@ class User_Interface {
 	 */
 	public static function row_actions( $actions, $post ) {
 		// check if the post is enabled for ActivityPub.
-		if ( ! self::post_is_external_event_post( $post ) ) {
+		if ( ! Event_Sources::is_cached_external_event_post( $post ) ) {
 			return $actions;
 		}
 
@@ -70,19 +72,6 @@ class User_Interface {
 		);
 
 		return $actions;
-	}
-
-	/**
-	 * Check if a post is both an event post and external (from ActivityPub federation).
-	 *
-	 * @param WP_Post $post The post.
-	 * @return bool
-	 */
-	private static function post_is_external_event_post( $post ) {
-		if ( 'gatherpress_event' !== $post->post_type ) {
-			return false;
-		}
-		return str_starts_with( $post->guid, 'https://ga.lan' ) ? true : false;
 	}
 
 	/**
@@ -99,7 +88,7 @@ class User_Interface {
 		if ( 'edit_post' === $cap && isset( $args[0] ) ) {
 			$post_id = $args[0];
 			$post    = get_post( $post_id );
-			if ( $post && self::post_is_external_event_post( $post ) ) {
+			if ( $post && Event_Sources::is_cached_external_event_post( $post ) ) {
 				// Deny editing by returning 'do_not_allow'.
 				return array( 'do_not_allow' );
 			}

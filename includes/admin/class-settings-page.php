@@ -19,6 +19,8 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 use Event_Bridge_For_ActivityPub\Event_Sources;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Source_Collection;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
+use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration;
+use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
 use Event_Bridge_For_ActivityPub\Setup;
 
 /**
@@ -171,15 +173,15 @@ class Settings_Page {
 			case 'settings':
 				$event_terms = array();
 
-				foreach ( $event_plugins as $event_plugin ) {
-					$event_terms = array_merge( $event_terms, self::get_event_terms( $event_plugin ) );
+				foreach ( $event_plugins as $event_plugin_integration ) {
+					$event_terms = array_merge( $event_terms, self::get_event_terms( $event_plugin_integration ) );
 				}
 
 				$supports_event_sources = array();
 
-				foreach ( $event_plugins as $event_plugin ) {
-					if ( $event_plugin->supports_event_sources() ) {
-						$supports_event_sources[ $event_plugin::class ] = $event_plugin->get_plugin_name();
+				foreach ( $event_plugins as $event_plugin_integration ) {
+					if ( $event_plugin_integration instanceof Feature_Event_Sources && $event_plugin_integration instanceof Event_Plugin_Integration ) {
+						$supports_event_sources[ $event_plugin_integration::class ] = $event_plugin_integration::get_plugin_name();
 					}
 				}
 

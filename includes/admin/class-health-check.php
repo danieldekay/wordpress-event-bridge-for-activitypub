@@ -97,7 +97,7 @@ class Health_Check {
 		// Call the transformer Factory.
 		$transformer = Transformer_Factory::get_transformer( $event_posts[0] );
 		// Check that we got the right transformer.
-		$desired_transformer_class = $event_plugin::get_activitypub_event_transformer_class();
+		$desired_transformer_class = $event_plugin::get_activitypub_event_transformer( $event_posts[0] );
 		if ( $transformer instanceof $desired_transformer_class ) {
 			return true;
 		}

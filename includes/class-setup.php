@@ -15,14 +15,14 @@ namespace Event_Bridge_For_ActivityPub;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
-use Event_Bridge_For_ActivityPub\ActivityPub\Handler;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Base as Transmogrifier_Base;
 use Event_Bridge_For_ActivityPub\Admin\Event_Plugin_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\Health_Check;
 use Event_Bridge_For_ActivityPub\Admin\Settings_Page;
 use Event_Bridge_For_ActivityPub\Admin\User_Interface;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
+use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
 
 use function Activitypub\is_user_type_disabled;
 
@@ -127,16 +127,16 @@ class Setup {
 	 *
 	 * @var array
 	 */
-	private const EVENT_PLUGIN_CLASSES = array(
-		'\Event_Bridge_For_ActivityPub\Integrations\Events_Manager',
-		'\Event_Bridge_For_ActivityPub\Integrations\GatherPress',
-		'\Event_Bridge_For_ActivityPub\Integrations\The_Events_Calendar',
-		'\Event_Bridge_For_ActivityPub\Integrations\VS_Event_List',
-		'\Event_Bridge_For_ActivityPub\Integrations\WP_Event_Manager',
-		'\Event_Bridge_For_ActivityPub\Integrations\Eventin',
-		'\Event_Bridge_For_ActivityPub\Integrations\Modern_Events_Calendar_Lite',
-		'\Event_Bridge_For_ActivityPub\Integrations\EventPrime',
-		'\Event_Bridge_For_ActivityPub\Integrations\Event_Organiser',
+	private const EVENT_PLUGIN_INTEGRATIONS = array(
+		\Event_Bridge_For_ActivityPub\Integrations\Events_Manager::class,
+		\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class,
+		\Event_Bridge_For_ActivityPub\Integrations\The_Events_Calendar::class,
+		\Event_Bridge_For_ActivityPub\Integrations\VS_Event_List::class,
+		\Event_Bridge_For_ActivityPub\Integrations\WP_Event_Manager::class,
+		\Event_Bridge_For_ActivityPub\Integrations\Eventin::class,
+		\Event_Bridge_For_ActivityPub\Integrations\Modern_Events_Calendar_Lite::class,
+		\Event_Bridge_For_ActivityPub\Integrations\EventPrime::class,
+		\Event_Bridge_For_ActivityPub\Integrations\Event_Organiser::class,
 	);
 
 	/**
@@ -169,13 +169,18 @@ class Setup {
 		$all_plugins = array_merge( get_plugins(), get_mu_plugins() );
 
 		$active_event_plugins = array();
-		foreach ( self::EVENT_PLUGIN_CLASSES as $event_plugin_class ) {
-			$event_plugin_file = call_user_func( array( $event_plugin_class, 'get_relative_plugin_file' ) );
+		foreach ( self::EVENT_PLUGIN_INTEGRATIONS as $event_plugin_integration ) {
+			// Get the filename of the main plugin file of the event plugin (relative to the plugin dir).
+			$event_plugin_file = $event_plugin_integration::get_relative_plugin_file();
+
+			// This check should not be needed, but does not hurt.
 			if ( ! $event_plugin_file ) {
 				continue;
 			}
+
+			// Check if plugin is present on disk and is activated.
 			if ( array_key_exists( $event_plugin_file, $all_plugins ) && \is_plugin_active( $event_plugin_file ) ) {
-				$active_event_plugins[ $event_plugin_file ] = new $event_plugin_class();
+				$active_event_plugins[ $event_plugin_file ] = new $event_plugin_integration();
 			}
 		}
 		set_transient( 'event_bridge_for_activitypub_active_event_plugins', $active_event_plugins );
@@ -191,12 +196,9 @@ class Setup {
 	public static function detect_event_plugins_supporting_event_sources(): array {
 		$plugins_supporting_event_sources = array();
 
-		foreach ( self::EVENT_PLUGIN_CLASSES as $event_plugin_class ) {
-			if ( ! class_exists( $event_plugin_class ) || ! method_exists( $event_plugin_class, 'get_plugin_file' ) ) {
-				continue;
-			}
-			if ( call_user_func( array( $event_plugin_class, 'supports_event_sources' ) ) ) {
-				$plugins_supporting_event_sources[] = new $event_plugin_class();
+		foreach ( self::EVENT_PLUGIN_INTEGRATIONS as $event_plugin_integration ) {
+			if ( $event_plugin_integration instanceof Feature_Event_Sources ) {
+				$plugins_supporting_event_sources[] = new $event_plugin_integration();
 			}
 		}
 		return $plugins_supporting_event_sources;
@@ -241,39 +243,8 @@ class Setup {
 		}
 
 		if ( ! is_user_type_disabled( 'blog' ) && get_option( 'event_bridge_for_activitypub_event_sources_active' ) ) {
-			add_action( 'init', array( Event_Sources_Collection::class, 'init' ) );
-			add_action( 'activitypub_register_handlers', array( Handler::class, 'register_handlers' ) );
-			add_action( 'admin_init', array( User_Interface::class, 'init' ) );
-			add_filter( 'allowed_redirect_hosts', array( Event_Sources_Collection::class, 'add_event_sources_hosts_to_allowed_redirect_hosts' ) );
-			add_filter( 'activitypub_is_post_disabled', array( Event_Sources::class, 'is_cached_external_post' ), 10, 2 );
-			if ( ! wp_next_scheduled( 'event_bridge_for_activitypub_event_sources_clear_cache' ) ) {
-				wp_schedule_event( time(), 'daily', 'event_bridge_for_activitypub_event_sources_clear_cache' );
-			}
-
-			add_action( 'event_bridge_for_activitypub_event_sources_clear_cache', array( Event_Sources::class, 'clear_cache' ) );
-			add_filter( 'activitypub_rest_following', array( Event_Sources::class, 'add_event_sources_to_following_collection' ), 10, 2 );
-			add_filter(
-				'gatherpress_force_online_event_link',
-				function ( $force_online_event_link ) {
-					// Get the current post object.
-					$post = get_post();
-
-					// Check if we are in a valid context and the post type is 'gatherpress'.
-					if ( $post && 'gatherpress_event' === $post->post_type ) {
-						// Add your custom logic here to decide whether to force the link.
-						// For example, force it only if a specific meta field exists.
-						if ( get_post_meta( $post->ID, 'event_bridge_for_activitypub_is_cached', true ) ) {
-							return true; // Force the online event link.
-						}
-					}
-
-					return $force_online_event_link; // Default behavior.
-				},
-				10,
-				1
-			);
+			Event_Sources::init();
 		}
-		\add_filter( 'template_include', array( \Event_Bridge_For_ActivityPub\Event_Sources::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
 	}
 
@@ -348,10 +319,7 @@ class Setup {
 		// Get the transformer for a specific event plugins event-post type.
 		foreach ( $this->active_event_plugins as $event_plugin ) {
 			if ( $wp_object->post_type === $event_plugin->get_post_type() ) {
-				$transformer_class = $event_plugin::get_activitypub_event_transformer_class();
-				if ( class_exists( $transformer_class ) ) {
-					return new $transformer_class( $wp_object, $event_plugin::get_event_category_taxonomy() );
-				}
+				return $event_plugin::get_activitypub_event_transformer( $wp_object, $event_plugin::get_event_category_taxonomy() );
 			}
 		}
 
@@ -416,9 +384,9 @@ class Setup {
 	/**
 	 * Get the transmogrifier class.
 	 *
-	 * Retrieves the appropriate transmogrifier class based on the active event plugin.
+	 * Retrieves the appropriate transmogrifier class based on the active event plugins and settings.
 	 *
-	 * @return string|null The transmogrifier class name or null if not available.
+	 * @return Transmogrifier_Base|null The transmogrifier class name or null if not available.
 	 */
 	public static function get_transmogrifier() {
 		// Retrieve singleton instance.
@@ -428,7 +396,7 @@ class Setup {
 		$event_sources_active = (bool) get_option( 'event_bridge_for_activitypub_event_sources_active', false );
 		$event_plugin         = get_option( 'event_bridge_for_activitypub_plugin_used_for_event_source_feature', '' );
 
-		// Bail out if event sources are not active or no plugin is specified.
+		// Exit if event sources are not active or no plugin is specified.
 		if ( ! $event_sources_active || empty( $event_plugin ) ) {
 			return null;
 		}
@@ -439,12 +407,12 @@ class Setup {
 		// Loop through active plugins to find a match.
 		foreach ( $active_event_plugins as $active_event_plugin ) {
 			// Retrieve the class name of the active plugin.
-			$active_plugin_class = get_class( $active_event_plugin );
+			$active_plugin_class_name = get_class( $active_event_plugin );
 
 			// Check if the active plugin class name contains the specified event plugin name.
-			if ( false !== strpos( $active_plugin_class, $event_plugin ) ) {
+			if ( false !== strpos( $active_plugin_class_name, $event_plugin ) ) {
 				// Return the transmogrifier class provided by the plugin.
-				return $active_event_plugin->get_transmogrifier_class();
+				return $active_event_plugin->get_transmogrifier();
 			}
 		}
 

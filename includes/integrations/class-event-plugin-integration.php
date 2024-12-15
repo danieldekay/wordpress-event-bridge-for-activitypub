@@ -11,10 +11,12 @@
 
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
-use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as ActivityPub_Event_Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
+require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'includes/integrations/interface-feature-event-sources.php';
 
 /**
  * Interface for a supported event plugin.
@@ -23,7 +25,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-abstract class Event_Plugin {
+abstract class Event_Plugin_Integration {
 	/**
 	 * Returns the plugin file relative to the plugins dir.
 	 *
@@ -46,6 +48,14 @@ abstract class Event_Plugin {
 	abstract public static function get_event_category_taxonomy(): string;
 
 	/**
+	 * Returns the Activitypub transformer for the event plugins event post type.
+	 *
+	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @return ActivityPub_Event_Transformer
+	 */
+	abstract public static function get_activitypub_event_transformer( $post ): ActivityPub_Event_Transformer;
+
+	/**
 	 * Returns the IDs of the admin pages of the plugin.
 	 *
 	 * @return array The IDs of one or several admin/settings pages.
@@ -55,18 +65,9 @@ abstract class Event_Plugin {
 	}
 
 	/**
-	 * By default event sources are not supported by an event plugin integration.
-	 *
-	 * @return bool True if event sources are supported.
-	 */
-	public static function supports_event_sources(): bool {
-		return false;
-	}
-
-	/**
 	 * Get the plugins name from the main plugin-file's top-level-file-comment.
 	 */
-	final public static function get_plugin_name(): string {
+	public static function get_plugin_name(): string {
 		$all_plugins = array_merge( get_plugins(), get_mu_plugins() );
 		if ( isset( $all_plugins[ static::get_relative_plugin_file() ]['Name'] ) ) {
 			return $all_plugins[ static::get_relative_plugin_file() ]['Name'];
@@ -87,22 +88,5 @@ abstract class Event_Plugin {
 		$is_event_plugins_settings_page = in_array( $screen->id, static::get_settings_pages(), true );
 
 		return $is_event_plugins_edit_page || $is_event_plugins_settings_page;
-	}
-
-	/**
-	 * Returns the Activitypub transformer for the event plugins event post type.
-	 */
-	public static function get_activitypub_event_transformer_class(): string {
-		return str_replace( 'Integrations', 'Activitypub\Transformer', static::class );
-	}
-
-	/**
-	 * Returns the class used for transmogrifying an Event (ActivityStreams to Event plugin transformation).
-	 */
-	public static function get_transmogrifier_class(): ?string {
-		if ( ! static::supports_event_sources() ) {
-			return null;
-		}
-		return str_replace( 'Integrations', 'Activitypub\Transmogrifier', static::class );
 	}
 }

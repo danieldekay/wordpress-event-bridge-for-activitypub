@@ -9,6 +9,8 @@
 
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\EventPrime as EventPrime_Transformer;
+
 use Activitypub\Signature;
 use Eventprime_Basic_Functions;
 
@@ -20,7 +22,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class EventPrime extends Event_Plugin {
+final class EventPrime extends Event_Plugin_Integration {
 	/**
 	 * Add filter for the template inclusion.
 	 */
@@ -56,12 +58,13 @@ final class EventPrime extends Event_Plugin {
 	}
 
 	/**
-	 * Returns the ActivityPub transformer class.
+	 * Returns the ActivityPub transformer for a EventPrime event post.
 	 *
-	 * @return string
+	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @return EventPrime_Transformer
 	 */
-	public static function get_activitypub_transformer_class_name(): string {
-		return 'EventPrime';
+	public static function get_activitypub_event_transformer( $post ): EventPrime_Transformer {
+		return new EventPrime_Transformer( $post, self::get_event_category_taxonomy() );
 	}
 
 	/**

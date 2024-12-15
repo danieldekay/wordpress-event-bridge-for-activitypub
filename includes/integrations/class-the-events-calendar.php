@@ -11,6 +11,9 @@
 
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\The_Events_Calendar as The_Events_Calendar_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\The_Events_Calendar as The_Events_Calendar_Transmogrifier;
+
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
@@ -21,7 +24,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class The_Events_Calendar extends Event_plugin {
+final class The_Events_Calendar extends Event_plugin_Integration implements Feature_Event_Sources {
 	/**
 	 * Returns the full plugin file.
 	 *
@@ -41,6 +44,25 @@ final class The_Events_Calendar extends Event_plugin {
 	}
 
 	/**
+	 * Returns the taxonomy used for the plugin's event categories.
+	 *
+	 * @return string
+	 */
+	public static function get_event_category_taxonomy(): string {
+		return class_exists( '\Tribe__Events__Main' ) ? \Tribe__Events__Main::TAXONOMY : 'tribe_events_cat';
+	}
+
+	/**
+	 * Returns the ActivityPub transformer for a The_Events_Calendar event post.
+	 *
+	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @return The_Events_Calendar_Transformer
+	 */
+	public static function get_activitypub_event_transformer( $post ): The_Events_Calendar_Transformer {
+		return new The_Events_Calendar_Transformer( $post, self::get_event_category_taxonomy() );
+	}
+
+	/**
 	 * Returns the IDs of the admin pages of the plugin.
 	 *
 	 * @return array The settings page urls.
@@ -55,11 +77,20 @@ final class The_Events_Calendar extends Event_plugin {
 	}
 
 	/**
-	 * Returns the taxonomy used for the plugin's event categories.
-	 *
-	 * @return string
+	 * Returns the Transmogrifier for The_Events_Calendar.
 	 */
-	public static function get_event_category_taxonomy(): string {
-		return class_exists( '\Tribe__Events__Main' ) ? \Tribe__Events__Main::TAXONOMY : 'tribe_events_cat';
+	public static function get_transmogrifier(): The_Events_Calendar_Transmogrifier {
+		return new The_Events_Calendar_Transmogrifier();
+	}
+
+	/**
+	 * Get a list of Post IDs of events that have ended.
+	 *
+	 * @param int $ended_before_time Filter: only get events that ended before that datetime as unix-time.
+	 *
+	 * @return array
+	 */
+	public static function get_cached_remote_events( $ended_before_time ): array {
+		return array();
 	}
 }
