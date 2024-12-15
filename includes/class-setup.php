@@ -414,22 +414,41 @@ class Setup {
 	}
 
 	/**
-	 * Get the transmogrifier.
+	 * Get the transmogrifier class.
+	 *
+	 * Retrieves the appropriate transmogrifier class based on the active event plugin.
+	 *
+	 * @return string|null The transmogrifier class name or null if not available.
 	 */
 	public static function get_transmogrifier() {
+		// Retrieve singleton instance.
 		$setup = self::get_instance();
 
-		$event_sources_active = get_option( 'event_bridge_for_activitypub_event_sources_active', false );
+		// Get plugin options.
+		$event_sources_active = (bool) get_option( 'event_bridge_for_activitypub_event_sources_active', false );
 		$event_plugin         = get_option( 'event_bridge_for_activitypub_plugin_used_for_event_source_feature', '' );
 
-		if ( ! $event_sources_active || ! $event_plugin ) {
-			return;
+		// Bail out if event sources are not active or no plugin is specified.
+		if ( ! $event_sources_active || empty( $event_plugin ) ) {
+			return null;
 		}
+
+		// Get the list of active event plugins.
 		$active_event_plugins = $setup->get_active_event_plugins();
+
+		// Loop through active plugins to find a match.
 		foreach ( $active_event_plugins as $active_event_plugin ) {
-			if ( strrpos( $active_event_plugin::class, $event_plugin ) ) {
-				return $active_event_plugin::get_transmogrifier_class();
+			// Retrieve the class name of the active plugin.
+			$active_plugin_class = get_class( $active_event_plugin );
+
+			// Check if the active plugin class name contains the specified event plugin name.
+			if ( false !== strpos( $active_plugin_class, $event_plugin ) ) {
+				// Return the transmogrifier class provided by the plugin.
+				return $active_event_plugin->get_transmogrifier_class();
 			}
 		}
+
+		// Return null if no matching plugin is found.
+		return null;
 	}
 }
