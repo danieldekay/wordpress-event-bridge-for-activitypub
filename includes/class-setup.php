@@ -24,6 +24,8 @@ use Event_Bridge_For_ActivityPub\Admin\Settings_Page;
 use Event_Bridge_For_ActivityPub\Admin\User_Interface;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
 
+use function Activitypub\is_user_type_disabled;
+
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 /**
@@ -238,7 +240,7 @@ class Setup {
 			return;
 		}
 
-		if ( get_option( 'event_bridge_for_activitypub_event_sources_active' ) ) {
+		if ( ! is_user_type_disabled( 'blog' ) && get_option( 'event_bridge_for_activitypub_event_sources_active' ) ) {
 			add_action( 'init', array( Event_Sources_Collection::class, 'init' ) );
 			add_action( 'activitypub_register_handlers', array( Handler::class, 'register_handlers' ) );
 			add_action( 'admin_init', array( User_Interface::class, 'init' ) );
@@ -249,6 +251,7 @@ class Setup {
 			}
 
 			add_action( 'event_bridge_for_activitypub_event_sources_clear_cache', array( Event_Sources::class, 'clear_cache' ) );
+			add_filter( 'activitypub_rest_following', array( Event_Sources::class, 'add_event_sources_to_following_collection' ), 10, 2 );
 			add_filter(
 				'gatherpress_force_online_event_link',
 				function ( $force_online_event_link ) {

@@ -45,7 +45,7 @@ class Create {
 	 */
 	public static function handle_create( $activity, $user_id ) {
 		// We only process activities that are target to the application user.
-		if ( Actors::APPLICATION_USER_ID !== $user_id ) {
+		if ( Actors::BLOG_USER_ID !== $user_id ) {
 			return;
 		}
 

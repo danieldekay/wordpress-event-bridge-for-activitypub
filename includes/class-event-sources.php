@@ -9,12 +9,9 @@
 
 namespace Event_Bridge_For_ActivityPub;
 
-use Activitypub\Activity\Extended_Object\Event;
-use Activitypub\Collection\Actors;
+use Activitypub\Model\Blog;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
-use Event_Bridge_For_ActivityPub\Activitypub\Transformer\GatherPress as TransformerGatherPress;
 use Event_Bridge_For_ActivityPub\Activitypub\Transmogrifier\GatherPress;
-use Event_Bridge_For_ActivityPub\Integrations\GatherPress as IntegrationsGatherPress;
 
 use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\is_activitypub_request;
@@ -158,5 +155,28 @@ class Event_Sources {
 			}
 			wp_delete_post( $post_id, true );
 		}
+	}
+
+	/**
+	 * Add the Blog Authors to the following list of the Blog Actor
+	 * if Blog not in single mode.
+	 *
+	 * @param array                   $follow_list The array of following urls.
+	 * @param \Activitypub\Model\User $user        The user object.
+	 *
+	 * @return array The array of following urls.
+	 */
+	public static function add_event_sources_to_following_collection( $follow_list, $user ) {
+		if ( ! $user instanceof Blog ) {
+			return $follow_list;
+		}
+
+		$event_sources = Event_Sources_Collection::get_event_sources_ids();
+
+		if ( ! is_array( $event_sources ) ) {
+			return $follow_list;
+		}
+
+		return array_merge( $follow_list, $event_sources );
 	}
 }

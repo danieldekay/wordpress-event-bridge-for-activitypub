@@ -7,9 +7,7 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
-use Activitypub\Notification;
 use Activitypub\Collection\Actors;
-use Activitypub\Http;
 use Event_Bridge_For_ActivityPub\Setup;
 
 use function Activitypub\is_activity_public;
@@ -38,7 +36,7 @@ class Update {
 	 */
 	public static function handle_update( $activity, $user_id ) {
 		// We only process activities that are target the application user.
-		if ( Actors::APPLICATION_USER_ID !== $user_id ) {
+		if ( Actors::BLOG_USER_ID !== $user_id ) {
 			return;
 		}
 

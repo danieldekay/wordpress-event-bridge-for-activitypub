@@ -8,7 +8,6 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
-use Activitypub\Notification;
 use Activitypub\Collection\Actors;
 
 /**
@@ -43,7 +42,7 @@ class Accept {
 		}
 
 		// We only expect `Accept` activities being answers to follow requests by the application actor.
-		if ( Actors::APPLICATION_USER_ID !== $object->get__id() ) {
+		if ( Actors::BLOG_USER_ID !== $object->get__id() ) {
 			return;
 		}
 	}

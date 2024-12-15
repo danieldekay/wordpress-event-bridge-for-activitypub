@@ -16,7 +16,6 @@ use DateTime;
 use Exception;
 use WP_Error;
 
-use function Activitypub\object_to_uri;
 use function Activitypub\sanitize_url;
 
 // Exit if accessed directly.
@@ -406,9 +405,9 @@ class GatherPress {
 
 		$venue_information = array();
 
-		$address = $this->address_to_string();
+		$address_string = isset( $location['address'] ) ? $this->address_to_string( $location['address'] ) : '';
 
-		$venue_information['fullAddress']  = $address;
+		$venue_information['fullAddress']  = $address_string;
 		$venue_information['phone_number'] = '';
 		$venue_information['website']      = '';
 		$venue_information['permalink']    = '';

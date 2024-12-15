@@ -374,7 +374,7 @@ class Event_Sources {
 		$activity->set_object( $to );
 		$activity->set_id( $application->get_id() . '#follow-' . \preg_replace( '~^https?://~', '', $to ) );
 		$activity = $activity->to_json();
-		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::APPLICATION_USER_ID );
+		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::BLOG_USER_ID );
 	}
 
 	/**
@@ -436,7 +436,7 @@ class Event_Sources {
 		);
 		$activity->set_id( $actor . '#unfollow-' . \preg_replace( '~^https?://~', '', $to ) );
 		$activity = $activity->to_json();
-		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::APPLICATION_USER_ID );
+		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::BLOG_USER_ID );
 	}
 
 	/**
