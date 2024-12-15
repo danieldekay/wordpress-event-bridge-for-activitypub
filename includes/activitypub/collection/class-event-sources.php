@@ -178,12 +178,23 @@ class Event_Sources {
 	 *
 	 * @param string $actor  The Actor URL.
 	 *
-	 * @return bool True on success, false on failure.
+     * @return WP_Post|false|null Post data on success, false or null on failure.
 	 */
 	public static function remove_event_source( $actor ) {
-		$actor = true;
-		self::delete_event_source_transients();
-		return $actor;
+		$post_id = Event_Source::get_wp_post_from_activitypub_actor_id( $actor );
+
+		if ( ! $post_id ) {
+			return;
+		}
+
+		$result = wp_delete_post( $post_id, true );
+
+		// If the deletion was successful delete all transients regarding event sources.
+		if ( $result ) {
+			self::delete_event_source_transients();
+		}
+
+		return $result;
 	}
 
 	/**
@@ -290,18 +301,6 @@ class Event_Sources {
 		set_transient( 'event_bridge_for_activitypub_event_sources', $event_sources );
 
 		return $event_sources;
-	}
-
-	/**
-	 * Remove a Follower.
-	 *
-	 * @param string $event_source   The Actor URL.
-	 *
-	 * @return mixed True on success, false on failure.
-	 */
-	public static function remove( $event_source ) {
-		$post_id = Event_Source::get_wp_post_from_activitypub_actor_id( $event_source );
-		return wp_delete_post( $post_id, true );
 	}
 
 	/**

@@ -228,7 +228,7 @@ class Event_Sources extends WP_List_Table {
 				$event_sources = array( $event_sources );
 			}
 			foreach ( $event_sources as $event_source ) {
-				Event_Sources_Collection::remove( $event_source );
+				Event_Sources_Collection::remove_event_source( $event_source );
 			}
 		}
 	}
