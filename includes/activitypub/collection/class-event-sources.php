@@ -178,7 +178,7 @@ class Event_Sources {
 	 *
 	 * @param string $actor  The Actor URL.
 	 *
-     * @return WP_Post|false|null Post data on success, false or null on failure.
+	 * @return WP_Post|false|null Post data on success, false or null on failure.
 	 */
 	public static function remove_event_source( $actor ) {
 		$post_id = Event_Source::get_wp_post_from_activitypub_actor_id( $actor );

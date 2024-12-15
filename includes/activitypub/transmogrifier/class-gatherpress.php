@@ -349,7 +349,7 @@ class GatherPress {
 			$address = (array) $address;
 		}
 
-		if ( ! is_array( $address ) || ! isset( $address['type'] ) ){
+		if ( ! is_array( $address ) || ! isset( $address['type'] ) ) {
 			return '';
 		}
 

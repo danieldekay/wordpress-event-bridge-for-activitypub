@@ -30,7 +30,7 @@ require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 /**
  * Class Setup.
- *
+
  * This class is responsible for initializing Event Bridge for ActivityPub.
  *
  * @since 1.0.0
