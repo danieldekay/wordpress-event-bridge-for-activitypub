@@ -103,7 +103,7 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 		<div class="box">
 			<h2><?php \esc_html_e( 'Event Sources', 'event-bridge-for-activitypub' ); ?></h2>
 			<?php
-			if ( count( $event_plugins_supporting_event_sources ) ) {
+			if ( ! \Activitypub\is_user_type_disabled( 'blog' ) && count( $event_plugins_supporting_event_sources ) ) {
 				?>
 				<table class="form-table">
 				<tbody>
@@ -179,7 +179,7 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 				<tbody>
 				</table>
 				<?php
-			} else {
+			} elseif ( ! \Activitypub\is_user_type_disabled( 'blog' ) ) {
 				?>
 				<p><?php esc_html_e( 'You do not have an Event Plugin installed that supports this feature', 'event-bridge-for-activitypub' ); ?></p>
 				<p><?php esc_html_e( 'The following Event Plugins are supported:', 'event-bridge-for-activitypub' ); ?></p>
@@ -191,6 +191,27 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 				}
 				echo '</ul>';
 				return;
+			} else {
+				$activitypub_plugin_data = get_plugin_data( ACTIVITYPUB_PLUGIN_FILE );
+
+				$notice = sprintf(
+					/* translators: 1: The name of the ActivityPub plugin. */
+					_x(
+						'In order to use this feature your have to enable the Blog-Actor in the the <a href="%1$s">%2$s settings</a>.',
+						'admin notice',
+						'event-bridge-for-activitypub'
+					),
+					admin_url( 'options-general.php?page=activitypub&tab=settings' ),
+					esc_html( $activitypub_plugin_data['Name'] )
+				);
+
+				$allowed_html = array(
+					'a' => array(
+						'href'  => true,
+						'title' => true,
+					),
+				);
+				echo '<div class="notice-warning"><p>' . \wp_kses( $notice, $allowed_html ) . '</p></div>';
 			}
 			?>
 		</div>
