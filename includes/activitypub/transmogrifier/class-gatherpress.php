@@ -450,8 +450,6 @@ class GatherPress {
 			$post_id = wp_insert_post( $args );
 		}
 
-
-
 		if ( ! $post_id || is_wp_error( $post_id ) ) {
 			return;
 		}
