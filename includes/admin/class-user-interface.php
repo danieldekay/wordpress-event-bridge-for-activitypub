@@ -28,15 +28,7 @@ class User_Interface {
 	public static function init() {
 		\add_filter( 'page_row_actions', array( self::class, 'row_actions' ), 10, 2 );
 		\add_filter( 'post_row_actions', array( self::class, 'row_actions' ), 10, 2 );
-		\add_action(
-			'admin_init',
-			\add_filter(
-				'map_meta_cap',
-				array( self::class, 'disable_editing_for_external_events' ),
-				10,
-				4
-			)
-		);
+		\add_filter( 'map_meta_cap', array( self::class, 'disable_editing_for_external_events' ), 10, 4 );
 	}
 
 	/**

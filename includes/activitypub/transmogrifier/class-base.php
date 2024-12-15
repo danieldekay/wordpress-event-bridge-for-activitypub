@@ -34,6 +34,8 @@ abstract class Base {
 
 	/**
 	 * Internal function to actually save the event.
+	 *
+	 * @return false|int Post-ID on success, false on failure.
 	 */
 	abstract protected function save_event();
 
@@ -50,7 +52,13 @@ abstract class Base {
 		}
 
 		$this->activitypub_event = $activitypub_event;
-		$this->save_event();
+
+		$post_id = $this->save_event();
+
+		if ( $post_id ) {
+			update_post_meta( $post_id, 'event_bridge_for_activitypub_is_cached', 'yes' );
+			update_post_meta( $post_id, 'activitypub_content_visibility', constant( 'ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL' ) ?? '' );
+		}
 	}
 
 	/**
@@ -287,9 +295,19 @@ abstract class Base {
 	}
 
 	/**
-	 * Save the ActivityPub event object as GatherPress event.
+	 * Delete a local event in WordPress that is a cached remote one.
+	 *
+	 * @param array $activitypub_event The ActivityPub event as associative array.
 	 */
-	public function delete() {
+	public function delete( $activitypub_event ) {
+		$activitypub_event = Event::init_from_array( $activitypub_event );
+
+		if ( is_wp_error( $activitypub_event ) ) {
+			return;
+		}
+
+		$this->activitypub_event = $activitypub_event;
+
 		$post_id = $this->get_post_id_from_activitypub_id();
 
 		if ( ! $post_id ) {

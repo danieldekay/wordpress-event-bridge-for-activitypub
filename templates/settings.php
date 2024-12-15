@@ -38,7 +38,7 @@ if ( ! isset( $args ) || ! array_key_exists( 'supports_event_sources', $args ) )
 
 $event_plugins_supporting_event_sources = $args['supports_event_sources'];
 
-$selected_plugin        = \get_option( 'event_bridge_for_activitypub_plugin_used_for_event_source_feature', '' );
+$selected_plugin        = \get_option( 'event_bridge_for_activitypub_integration_used_for_event_sources_feature', '' );
 $event_sources_active   = \get_option( 'event_bridge_for_activitypub_event_sources_active', false );
 $cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_source_cache_retention', DAY_IN_SECONDS );
 
@@ -128,18 +128,18 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 					?>
 					<tr>
 						<th scope="row">
-							<label for="event_bridge_for_activitypub_plugin_used_for_event_source_feature"><?php \esc_html_e( 'Event Plugin', 'event-bridge-for-activitypub' ); ?></label>
+							<label for="event_bridge_for_activitypub_integration_used_for_event_sources_feature"><?php \esc_html_e( 'Event Plugin', 'event-bridge-for-activitypub' ); ?></label>
 						</th>
 						<td>
 							<select
-								name="event_bridge_for_activitypub_plugin_used_for_event_source_feature"
-								id="event_bridge_for_activitypub_plugin_used_for_event_source_feature"
+								name="event_bridge_for_activitypub_integration_used_for_event_sources_feature"
+								id="event_bridge_for_activitypub_integration_used_for_event_sources_feature"
 								value="gatherpress"
 								aria-describedby="event-sources-used-plugin-description"
 							>
 							<?php
-							foreach ( $event_plugins_supporting_event_sources as $event_plugin ) {
-								echo '<option value="' . esc_attr( $event_plugin ) . '" ' . selected( $selected_plugin, $event_plugin, true ) . '>' . esc_attr( $event_plugin ) . '</option>';
+							foreach ( $event_plugins_supporting_event_sources as $event_plugin_class_name => $event_plugin_name ) {
+								echo '<option value="' . esc_attr( $event_plugin_class_name ) . '" ' . selected( $event_plugin_class_name, $event_plugin, true ) . '>' . esc_attr( $event_plugin_name ) . '</option>';
 							}
 							?>
 							</select>

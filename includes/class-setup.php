@@ -15,12 +15,11 @@ namespace Event_Bridge_For_ActivityPub;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Base as Transmogrifier_Base;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Base as Transmogrifier;
 use Event_Bridge_For_ActivityPub\Admin\Event_Plugin_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\Health_Check;
 use Event_Bridge_For_ActivityPub\Admin\Settings_Page;
-use Event_Bridge_For_ActivityPub\Admin\User_Interface;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
 use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
 
@@ -382,41 +381,65 @@ class Setup {
 	}
 
 	/**
+	 * Get the event plugin integration class name used for the event sources feature.
+	 *
+	 * @return string The class name of the event plugin integration class.
+	 */
+	public static function get_event_plugin_integration_used_for_event_sources_feature() {
+		// Get plugin option.
+		$event_plugin_integration = get_option( 'event_bridge_for_activitypub_integration_used_for_event_sources_feature', '' );
+
+		// Exit if event sources are not active or no plugin is specified.
+		if ( empty( $event_plugin_integration ) ) {
+			return null;
+		}
+
+		// Validate if setting is actual existing class.
+		if ( ! class_exists( $event_plugin_integration ) ) {
+			return null;
+		}
+
+		return $event_plugin_integration;
+	}
+
+	/**
 	 * Get the transmogrifier class.
 	 *
 	 * Retrieves the appropriate transmogrifier class based on the active event plugins and settings.
 	 *
-	 * @return Transmogrifier_Base|null The transmogrifier class name or null if not available.
+	 * @return ?Transmogrifier The transmogrifier class name or null if not available.
 	 */
-	public static function get_transmogrifier() {
-		// Retrieve singleton instance.
-		$setup = self::get_instance();
+	public static function get_transmogrifier(): ?Transmogrifier {
+		$event_plugin_integration = self::get_event_plugin_integration_used_for_event_sources_feature();
 
-		// Get plugin options.
-		$event_sources_active = (bool) get_option( 'event_bridge_for_activitypub_event_sources_active', false );
-		$event_plugin         = get_option( 'event_bridge_for_activitypub_plugin_used_for_event_source_feature', '' );
-
-		// Exit if event sources are not active or no plugin is specified.
-		if ( ! $event_sources_active || empty( $event_plugin ) ) {
+		if ( ! $event_plugin_integration ) {
 			return null;
 		}
 
-		// Get the list of active event plugins.
-		$active_event_plugins = $setup->get_active_event_plugins();
-
-		// Loop through active plugins to find a match.
-		foreach ( $active_event_plugins as $active_event_plugin ) {
-			// Retrieve the class name of the active plugin.
-			$active_plugin_class_name = get_class( $active_event_plugin );
-
-			// Check if the active plugin class name contains the specified event plugin name.
-			if ( false !== strpos( $active_plugin_class_name, $event_plugin ) ) {
-				// Return the transmogrifier class provided by the plugin.
-				return $active_event_plugin->get_transmogrifier();
-			}
+		// Validate if get_transformer method exists in event plugin integration.
+		if ( ! method_exists( $event_plugin_integration, 'get_transmogrifier' ) ) {
+			return null;
 		}
 
-		// Return null if no matching plugin is found.
-		return null;
+		$transmogrifier = $event_plugin_integration::get_transmogrifier();
+
+		return $transmogrifier;
+	}
+
+	/**
+	 * Get the full class name of the first event plugin integration that is active and supports the event source feature.
+	 *
+	 * @return string The full class name of the event plugin integration.
+	 */
+	public static function get_default_integration_class_name_used_for_event_sources_feature(): string {
+		$setup = self::get_instance();
+
+		$event_plugin_integrations = $setup->get_active_event_plugins();
+		foreach ( $event_plugin_integrations as $event_plugin_integration ) {
+			if ( $event_plugin_integration instanceof Feature_Event_Sources ) {
+				return $event_plugin_integration::class;
+			}
+		}
+		return '';
 	}
 }

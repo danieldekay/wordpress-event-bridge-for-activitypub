@@ -120,9 +120,9 @@ class GatherPress extends Base {
 	/**
 	 * Save the ActivityPub event object as GatherPress Event.
 	 *
-	 * @return void
+	 * @return false|int
 	 */
-	protected function save_event(): void {
+	protected function save_event() {
 		// Limit this as a safety measure.
 		add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
@@ -135,10 +135,6 @@ class GatherPress extends Base {
 			'post_excerpt' => wp_kses_post( $this->activitypub_event->get_summary() ),
 			'post_status'  => 'publish',
 			'guid'         => sanitize_url( $this->activitypub_event->get_id() ),
-			'meta_input'   => array(
-				'event_bridge_for_activitypub_is_cached' => 'GatherPress',
-				'activitypub_content_visibility'         => ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL,
-			),
 		);
 
 		if ( $post_id ) {
@@ -151,7 +147,7 @@ class GatherPress extends Base {
 		}
 
 		if ( ! $post_id || is_wp_error( $post_id ) ) {
-			return;
+			return false;
 		}
 
 		// Insert the dates.
@@ -182,5 +178,7 @@ class GatherPress extends Base {
 
 		// Limit this as a safety measure.
 		remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
+
+		return $post_id;
 	}
 }

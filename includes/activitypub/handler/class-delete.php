@@ -47,13 +47,12 @@ class Delete {
 			return;
 		}
 
-		$transmogrifier_class = Setup::get_transmogrifier();
+		$transmogrifier = Setup::get_transmogrifier();
 
-		if ( ! $transmogrifier_class ) {
+		if ( ! $transmogrifier ) {
 			return;
 		}
 
-		$transmogrifier = new $transmogrifier_class( $activity['object'] );
-		$transmogrifier->delete();
+		$transmogrifier->delete( $activity['object'] );
 	}
 }

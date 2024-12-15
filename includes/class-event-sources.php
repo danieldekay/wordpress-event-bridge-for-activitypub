@@ -14,7 +14,8 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_S
 use Event_Bridge_For_ActivityPub\Activitypub\Transmogrifier\GatherPress;
 use Event_Bridge_For_ActivityPub\Activitypub\Handler;
 use Event_Bridge_For_ActivityPub\Admin\User_Interface;
-
+use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration;
+use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
 
 use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\is_activitypub_request;
@@ -31,7 +32,8 @@ class Event_Sources {
 	public static function init() {
 		\add_action( 'init', array( Event_Sources_Collection::class, 'init' ) );
 		\add_action( 'activitypub_register_handlers', array( Handler::class, 'register_handlers' ) );
-		\add_action( 'admin_init', array( User_Interface::class, 'init' ) );
+		\add_action( 'init', array( User_Interface::class, 'init' ) );
+		\add_action( 'init', array( self::class, 'register_post_meta' ) );
 		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'is_cached_external_post' ), 10, 2 );
 		if ( ! \wp_next_scheduled( 'event_bridge_for_activitypub_event_sources_clear_cache' ) ) {
 			\wp_schedule_event( time(), 'daily', 'event_bridge_for_activitypub_event_sources_clear_cache' );
@@ -39,6 +41,31 @@ class Event_Sources {
 		\add_action( 'event_bridge_for_activitypub_event_sources_clear_cache', array( self::class, 'clear_cache' ) );
 		\add_filter( 'activitypub_rest_following', array( self::class, 'add_event_sources_to_following_collection' ), 10, 2 );
 		\add_filter( 'template_include', array( self::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
+	}
+
+
+	/**
+	 * Register post meta.
+	 */
+	public static function register_post_meta() {
+		$setup = Setup::get_instance();
+
+		foreach ( $setup->get_active_event_plugins() as $event_plugin_integration ) {
+			if ( ! $event_plugin_integration instanceof Feature_Event_Sources && $event_plugin_integration instanceof Event_Plugin_Integration ) {
+				continue;
+			}
+			\register_post_meta(
+				$event_plugin_integration::get_post_type(),
+				'event_bridge_for_activitypub_is_cached',
+				array(
+					'type'              => 'string',
+					'single'            => false,
+					'sanitize_callback' => function ( $value ) {
+						return esc_sql( $value );
+					},
+				)
+			);
+		}
 	}
 
 	/**
@@ -117,7 +144,7 @@ class Event_Sources {
 	 * @return bool
 	 */
 	public static function is_cached_external_event_post( $post ): bool {
-		if ( get_post_meta( $post->id, 'event_bridge_for_activitypub_is_cached', true ) ) {
+		if ( get_post_meta( $post->ID, 'event_bridge_for_activitypub_is_cached', true ) ) {
 			return true;
 		}
 
@@ -157,9 +184,18 @@ class Event_Sources {
 	 * Delete old cached events that took place in the past.
 	 */
 	public static function clear_cache() {
+		// Get the event plugin integration that is used.
+		$event_plugin_integration = Setup::get_event_plugin_integration_used_for_event_sources_feature();
+
+		if ( ! $event_plugin_integration ) {
+			return;
+		}
+
 		$cache_retention_period = get_option( 'event_bridge_for_activitypub_event_source_cache_retention', WEEK_IN_SECONDS );
 
-		$past_event_ids = GatherPress::get_past_events( $cache_retention_period );
+		$ended_before_time = gmdate( 'Y-m-d H:i:s', time() - $cache_retention_period );
+
+		$past_event_ids = $event_plugin_integration::get_cached_remote_events( $ended_before_time );
 
 		foreach ( $past_event_ids as $post_id ) {
 			if ( has_post_thumbnail( $post_id ) ) {

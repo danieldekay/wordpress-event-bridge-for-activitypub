@@ -120,12 +120,12 @@ class Settings {
 
 		\register_setting(
 			'event-bridge-for-activitypub',
-			'event_bridge_for_activitypub_plugin_used_for_event_source_feature',
+			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
 			array(
 				'type'              => 'array',
 				'description'       => \__( 'Define which plugin/integration is used for the event sources feature', 'event-bridge-for-activitypub' ),
 				'default'           => array(),
-				'sanitize_callback' => array( self::class, 'sanitize_plugin_used_for_event_sources' ),
+				'sanitize_callback' => array( self::class, 'sanitize_event_plugin_integration_used_for_event_sources' ),
 			)
 		);
 
@@ -144,11 +144,11 @@ class Settings {
 	/**
 	 * Sanitize the option which event plugin.
 	 *
-	 * @param string $plugin The setting.
+	 * @param string $event_plugin_integration The setting.
 	 * @return string
 	 */
-	public static function sanitize_plugin_used_for_event_sources( $plugin ) {
-		if ( ! is_string( $plugin ) ) {
+	public static function sanitize_event_plugin_integration_used_for_event_sources( $event_plugin_integration ) {
+		if ( ! is_string( $event_plugin_integration ) ) {
 			return '';
 		}
 		$setup                = Setup::get_instance();
@@ -157,14 +157,13 @@ class Settings {
 		$valid_options = array();
 		foreach ( $active_event_plugins as $active_event_plugin ) {
 			if ( $active_event_plugin instanceof Feature_Event_Sources ) {
-				$full_class      = $active_event_plugin::class;
-				$valid_options[] = substr( $full_class, strrpos( $full_class, '\\' ) + 1 );
+				$valid_options[] = $active_event_plugin::class;
 			}
 		}
-		if ( in_array( $plugin, $valid_options, true ) ) {
-			return $plugin;
+		if ( in_array( $event_plugin_integration, $valid_options, true ) ) {
+			return $event_plugin_integration;
 		}
-		return '';
+		return Setup::get_default_integration_class_name_used_for_event_sources_feature();
 	}
 
 	/**
