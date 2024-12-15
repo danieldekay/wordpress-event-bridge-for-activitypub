@@ -442,11 +442,15 @@ class GatherPress {
 		);
 
 		if ( $post_id ) {
+			// Update existing GatherPress event post.
 			$args['ID'] = $post_id;
+			wp_update_post( $args );
+		} else {
+			// Insert new GatherPress event post.
+			$post_id = wp_insert_post( $args );
 		}
 
-		// Insert new GatherPress Event post.
-		$post_id = wp_update_post( $args );
+
 
 		if ( ! $post_id || is_wp_error( $post_id ) ) {
 			return;
