@@ -14,6 +14,7 @@ namespace Event_Bridge_For_ActivityPub\Activitypub\Transmogrifier;
 use Activitypub\Activity\Extended_Object\Event;
 use DateTime;
 use Exception;
+use WP_Error;
 
 use function Activitypub\object_to_uri;
 use function Activitypub\sanitize_url;
@@ -297,6 +298,69 @@ class GatherPress {
 	}
 
 	/**
+	 * Convert a PostalAddress to a string.
+	 *
+	 * @link https://schema.org/PostalAddress
+	 *
+	 * @param array $postal_address The PostalAddress as an associative array.
+	 * @return string
+	 */
+	protected static function postal_address_to_string( $postal_address ) {
+		if ( ! is_array( $postal_address ) || 'PostalAddress' !== $postal_address['type'] ) {
+			_doing_it_wrong(
+				__METHOD__,
+				'The parameter postal_address must be an associate array like schema.org/PostalAddress.',
+				esc_html( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_VERSION )
+			);
+		}
+
+		$address = array();
+
+		$known_attributes = array(
+			'streetAddress',
+			'postalCode',
+			'addressLocality',
+			'addressState',
+			'addressCountry',
+		);
+
+		foreach ( $known_attributes as $attribute ) {
+			if ( isset( $postal_address[ $attribute ] ) && is_string( $postal_address[ $attribute ] ) ) {
+				$address[] = $postal_address[ $attribute ];
+			}
+		}
+
+		$address_string = implode( ' ,', $address );
+
+		return $address_string;
+	}
+
+	/**
+	 * Convert an address to a string.
+	 *
+	 * @param mixed $address The address as an object, string or associative array.
+	 * @return string
+	 */
+	protected static function address_to_string( $address ) {
+		if ( is_string( $address ) ) {
+			return $address;
+		}
+
+		if ( is_object( $address ) ) {
+			$address = (array) $address;
+		}
+
+		if ( ! is_array( $address ) || ! isset( $address['type'] ) ){
+			return '';
+		}
+
+		if ( 'PostalAddress' === $address['type'] ) {
+			return self::postal_address_to_string( $address );
+		}
+		return '';
+	}
+
+	/**
 	 * Add venue.
 	 *
 	 * @param int $post_id The post ID.
@@ -342,8 +406,10 @@ class GatherPress {
 
 		$venue_information = array();
 
-		$venue_information['fullAddress'] = $location['address'] ?? ''; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		$venue_information['phone_number'] = ''; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		$address = $this->address_to_string();
+
+		$venue_information['fullAddress']  = $address;
+		$venue_information['phone_number'] = '';
 		$venue_information['website']      = '';
 		$venue_information['permalink']    = '';
 
@@ -351,85 +417,37 @@ class GatherPress {
 
 		update_post_meta( $venue_id, 'gatherpress_venue_information', $venue_json );
 
-		wp_set_object_terms( $post_id, $venue_slug, '_gatherpress_venue', false ); // 'true' appends to existing terms.
+		wp_set_object_terms( $post_id, $venue_slug, '_gatherpress_venue', false );
 	}
 
 	/**
 	 * Save the ActivityPub event object as GatherPress Event.
 	 */
-	public function create() {
-		// Insert new GatherPress event post.
-		$post_id = wp_insert_post(
-			array(
-				'post_title'   => sanitize_text_field( $this->activitypub_event->get_name() ),
-				'post_type'    => 'gatherpress_event',
-				'post_content' => wp_kses_post( $this->activitypub_event->get_content() ) . '<!-- wp:gatherpress/venue /-->',
-				'post_excerpt' => wp_kses_post( $this->activitypub_event->get_summary() ),
-				'post_status'  => 'publish',
-				'guid'         => sanitize_url( $this->activitypub_event->get_id() ),
-				'meta_input'   => array(
-					'event_bridge_for_activitypub_is_cached' => 'GatherPress',
-					'activitypub_content_visibility' => ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL,
-				),
-			)
-		);
-
-		if ( ! $post_id || is_wp_error( $post_id ) ) {
-			return;
-		}
-
-		// Insert the dates.
-		$event      = new GatherPress_Event( $post_id );
-		$start_time = $this->activitypub_event->get_start_time();
-		$end_time   = $this->activitypub_event->get_end_time();
-		if ( ! $end_time ) {
-			$end_time = new DateTime( $start_time );
-			$end_time->modify( '+1 hour' );
-			$end_time = $end_time->format( 'Y-m-d H:i:s' );
-		}
-		$params = array(
-			'datetime_start' => $start_time,
-			'datetime_end'   => $end_time,
-			'timezone'       => $this->activitypub_event->get_timezone(),
-		);
-		// Sanitization of the params is done in the save_datetimes function just in time.
-		$event->save_datetimes( $params );
-
-		// Insert featured image.
-		$image = $this->get_featured_image();
-		self::set_featured_image_with_alt( $post_id, $image['url'], $image['alt'] );
-
-		// Add hashtags.
-		$this->add_tags_to_post( $post_id );
-
-		$this->add_venue( $post_id );
-	}
-
-	/**
-	 * Save the ActivityPub event object as GatherPress Event.
-	 */
-	public function update() {
+	public function save() {
 		// Limit this as a safety measure.
 		add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
 		$post_id = $this->get_post_id_from_activitypub_id();
 
-		// Insert new GatherPress Event post.
-		$post_id = wp_update_post(
-			array(
-				'ID'           => $post_id,
-				'post_title'   => sanitize_text_field( $this->activitypub_event->get_name() ),
-				'post_type'    => 'gatherpress_event',
-				'post_content' => wp_kses_post( $this->activitypub_event->get_content() ) . '<!-- wp:gatherpress/venue /-->',
-				'post_excerpt' => wp_kses_post( $this->activitypub_event->get_summary() ),
-				'post_status'  => 'publish',
-				'guid'         => sanitize_url( $this->activitypub_event->get_id() ),
-				'meta_input'   => array(
-					'event_bridge_for_activitypub_is_cached' => 'GatherPress',
-					'activitypub_content_visibility' => ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL,
-				),
-			)
+		$args = array(
+			'post_title'   => sanitize_text_field( $this->activitypub_event->get_name() ),
+			'post_type'    => 'gatherpress_event',
+			'post_content' => wp_kses_post( $this->activitypub_event->get_content() ) . '<!-- wp:gatherpress/venue /-->',
+			'post_excerpt' => wp_kses_post( $this->activitypub_event->get_summary() ),
+			'post_status'  => 'publish',
+			'guid'         => sanitize_url( $this->activitypub_event->get_id() ),
+			'meta_input'   => array(
+				'event_bridge_for_activitypub_is_cached' => 'GatherPress',
+				'activitypub_content_visibility'         => ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL,
+			),
 		);
+
+		if ( $post_id ) {
+			$args['ID'] = $post_id;
+		}
+
+		// Insert new GatherPress Event post.
+		$post_id = wp_update_post( $args );
 
 		if ( ! $post_id || is_wp_error( $post_id ) ) {
 			return;
@@ -470,6 +488,14 @@ class GatherPress {
 	 */
 	public function delete() {
 		$post_id = $this->get_post_id_from_activitypub_id();
+
+		if ( ! $post_id ) {
+			return new WP_Error(
+				'event_bridge_for_activitypub_remote_event_not_found',
+				\__( 'Remote event not found in cache', 'event-bridge-for-activitypub' ),
+				array( 'status' => 404 )
+			);
+		}
 
 		$thumbnail_id = get_post_thumbnail_id( $post_id );
 

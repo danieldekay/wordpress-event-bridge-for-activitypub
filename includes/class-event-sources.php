@@ -103,7 +103,11 @@ class Event_Sources {
 	 * @param WP_Post $post The WordPress post object.
 	 * @return bool
 	 */
-	public static function is_cached_external_event( $post ): bool {
+	public static function is_cached_external_event_post( $post ): bool {
+		if ( 'gatherpress_event' !== $post->post_type ) {
+			return false;
+		}
+
 		if ( ! str_starts_with( \get_site_url(), $post->guid ) ) {
 			return true;
 		}
@@ -131,11 +135,7 @@ class Event_Sources {
 
 		global $post;
 
-		if ( 'gatherpress_event' !== $post->post_type ) {
-			return $template;
-		}
-
-		if ( self::is_cached_external_event( $post ) ) {
+		if ( self::is_cached_external_event_post( $post ) ) {
 			\wp_safe_redirect( $post->guid, 301 );
 			exit;
 		}
