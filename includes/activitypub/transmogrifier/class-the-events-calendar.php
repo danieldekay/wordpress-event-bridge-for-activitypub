@@ -18,8 +18,6 @@ use function Activitypub\sanitize_url;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use GatherPress\Core\Event as GatherPress_Event;
-
 /**
  * ActivityPub Transmogrifier for the GatherPress event plugin.
  *
@@ -45,15 +43,56 @@ class The_Events_Calendar extends Base {
 	/**
 	 * Save the ActivityPub event object as GatherPress Event.
 	 *
-	 * @return void
+	 * @return false|int
 	 */
-	public function save_event(): void {
+	public function save_event() {
 		// Limit this as a safety measure.
 		add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
-		$this->get_post_id_from_activitypub_id();
+		$post_id = $this->get_post_id_from_activitypub_id();
+
+		$duration = $this->get_duration();
+
+		$args = array(
+			'title'      => sanitize_text_field( $this->activitypub_event->get_name() ),
+			'content'    => wp_kses_post( $this->activitypub_event->get_content() ),
+			'start_date' => gmdate( 'Y-m-d H:i:s', strtotime( $this->activitypub_event->get_start_time() ) ),
+			'duration'   => $duration,
+			'status'     => 'publish',
+			'guid'       => sanitize_url( $this->activitypub_event->get_id() ),
+		);
+
+		$tribe_event = new The_Events_Calendar_Event_Repository();
+
+		if ( $post_id ) {
+			$args['post_title']   = $args['title'];
+			$args['post_content'] = $args['content'];
+			// Update existing GatherPress event post.
+			$post = \Tribe__Events__API::updateEvent( $post_id, $args );
+		} else {
+			$post = $tribe_event->set_args( $args )->create();
+		}
+
+		if ( ! $post ) {
+			return false;
+		}
 
 		// Limit this as a safety measure.
 		remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
+
+		return $post->ID;
+	}
+
+	/**
+	 * Get the events duration in seconds.
+	 *
+	 * @return int
+	 */
+	private function get_duration() {
+		$end_time = $this->activitypub_event->get_end_time();
+		if ( ! $end_time ) {
+			return 2 * HOUR_IN_SECONDS;
+		}
+		return abs( strtotime( $end_time ) - strtotime( $this->activitypub_event->get_start_time() ) );
 	}
 }
