@@ -245,6 +245,7 @@ class Setup {
 			Event_Sources::init();
 		}
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
+		self::get_default_integration_class_name_used_for_event_sources_feature();
 	}
 
 	/**
@@ -437,7 +438,7 @@ class Setup {
 		$event_plugin_integrations = $setup->get_active_event_plugins();
 		foreach ( $event_plugin_integrations as $event_plugin_integration ) {
 			if ( $event_plugin_integration instanceof Feature_Event_Sources ) {
-				return $event_plugin_integration::class;
+				get_class( $event_plugin_integration );
 			}
 		}
 		return '';
