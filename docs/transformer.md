@@ -2,42 +2,11 @@
 
 > **_NOTE:_** This documentation is also likely to be useful for content types other than events.
 
-The ActivityPub plugin offers a basic support for all post types out of the box, but it also allows the registration of external transformers. A transformer is a class that implements the [abstract transformer class](https://github.com/Automattic/wordpress-activitypub/blob/fb0e23e8854d149fdedaca7a9ea856f5fd965ec9/includes/transformer/class-base.php) and is responsible for generating the ActivityPub JSON representation of an WordPress post or comment object. 
+The ActivityPub plugin offers a basic support for all post types out of the box, but it also allows the registration of external transformers. A transformer is a class that implements the [abstract transformer class](https://github.com/Automattic/wordpress-activitypub/blob/fb0e23e8854d149fdedaca7a9ea856f5fd965ec9/includes/transformer/class-base.php) and is responsible for generating the ActivityPub JSON representation of an WordPress post or comment object.
 
 ## How it works
 
 To make the WordPress ActivityPub plugin use a custom transformer simply add a filter to the `activitypub_transformer` hook which provides access to the transformer factory. The [transformer factory](https://github.com/Automattic/wordpress-activitypub/blob/master/includes/transformer/class-factory.php#L12) determines which transformer is used to transform a WordPress object to ActivityPub. We provide a parent event transformer, that comes with common tasks needed for events. Furthermore, we provide admin notices, to prevent users from misconfiguration issues.
-
-## Add your event plugin
-
-First you need to add some basic information about your event plugin. Just create a new file in `./includes/plugins/my-event-plugin.php`. Implement at least all abstract functions of the `Event_Plugin` class.
-
-```php
-  namespace Event_Bridge_For_ActivityPub\Integrations;
-
-  // Exit if accessed directly.
-  defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
-
-  /**
-   * Integration information for My Event Plugin
-   *
-   * This class defines necessary meta information is for the integration of My Event Plugin with the ActivityPub plugin.
-   *
-   * @since 1.0.0
-   */
-  final class My_Event_Plugin extends Event_Plugin {
-```
-
-Then you need to tell the Event Bridge for ActivityPub about that class by adding it to the `EVENT_PLUGIN_INTEGRATIONS` constant in the `includes/setup.php` file:
-
-```php
-	private const EVENT_PLUGIN_INTEGRATIONS = array(
-		...
-		'\Event_Bridge_For_ActivityPub\Integrations\My_Event_Plugin',
-	);
-```
-
-The Event Bridge for ActivityPub then takes care of applying the transformer, so you can jump right into implementing it.
 
 ## Writing an event transformer class
 
@@ -48,9 +17,9 @@ If you are writing a transformer for your event post type we recommend to start 
 So create a new file at `./includes/activitypub/transformer/my-event-plugin.php`.
 
 ```php
-namespace Event_Bridge_For_ActivityPub\Activitypub\Transformer;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer;
 
-use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event as Event_Transformer;
 
 /**
  * ActivityPub Transformer for My Event Plugin' event post type.

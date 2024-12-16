@@ -44,7 +44,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event ) {
 			return;
 		}
 
@@ -77,7 +77,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event ) {
 			return;
 		}
 
@@ -110,7 +110,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event ) {
 			return;
 		}
 
@@ -138,7 +138,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event ) {
 			return;
 		}
 
@@ -174,7 +174,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event ) {
 			return;
 		}
 

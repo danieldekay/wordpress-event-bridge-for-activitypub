@@ -2,7 +2,8 @@
 /**
  * The Events Calendar.
  *
- * Defines all the necessary meta information for the events calendar.
+ * Defines all the necessary meta information for the integration of the
+ * WordPress plugin "The Events Calendar".
  *
  * @link    https://wordpress.org/plugins/the-events-calendar/
  * @package Event_Bridge_For_ActivityPub
@@ -18,9 +19,10 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\The_Events_Calendar 
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
- * Interface for a supported event plugin.
+ * The Events Calendar.
  *
- * This interface defines which information is necessary for a supported event plugin.
+ * Defines all the necessary meta information for the integration of the
+ * WordPress plugin "The Events Calendar".
  *
  * @since 1.0.0
  */

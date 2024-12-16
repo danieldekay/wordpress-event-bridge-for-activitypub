@@ -2,7 +2,7 @@
 /**
  * VS Events LIst.
  *
- * Defines all the necessary meta information for the WordPress event plugin
+ * Defines all the necessary meta information for the integration of the WordPress event plugin
  * "Very Simple Events List".
  *
  * @link    https://de.wordpress.org/plugins/very-simple-event-list/
@@ -18,9 +18,10 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\VS_Event_List as VS_Eve
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
- * Interface for a supported event plugin.
+ * VS Events LIst.
  *
- * This interface defines which information is necessary for a supported event plugin.
+ * Defines all the necessary meta information for the integration of the WordPress event plugin
+ * "Very Simple Events List".
  *
  * @since 1.0.0
  */

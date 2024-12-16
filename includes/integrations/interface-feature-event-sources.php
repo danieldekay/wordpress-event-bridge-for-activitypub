@@ -1,8 +1,10 @@
 <?php
 /**
- * Interface for defining supported Event Plugins.
+ * Interface for defining Methods needed for the Event Sources feature.
  *
- * Basic information that each supported event needs for this plugin to work.
+ * The Event Sources feature is about following other ActivityPub actors and
+ * importing their events. That means treating them as cache and listing them.
+ * Events should be deleted some time after they have ended.
  *
  * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0

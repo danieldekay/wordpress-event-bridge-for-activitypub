@@ -2,7 +2,8 @@
 /**
  * GatherPress.
  *
- * Defines all the necessary meta information for the GatherPress plugin.
+ * Defines all the necessary meta information and methods for the integration
+ * of the WordPress event plugin "GatherPress".
  *
  * @link    https://wordpress.org/plugins/gatherpress/
  * @package Event_Bridge_For_ActivityPub
@@ -18,9 +19,10 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\GatherPress as Gathe
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
- * Interface for a supported event plugin.
+ * GatherPress.
  *
- * This interface defines which information is necessary for a supported event plugin.
+ * Defines all the necessary meta information and methods for the integration
+ * of the WordPress event plugin "GatherPress".
  *
  * @since 1.0.0
  */

@@ -2,7 +2,8 @@
 /**
  * Event Organiser.
  *
- * Defines all the necessary meta information for the Event Organiser plugin.
+ * Defines all the necessary meta information and methods for the integration
+ * of the WordPress "Event Organiser" plugin.
  *
  * @link    https://wordpress.org/plugins/event-organiser/
  * @package Event_Bridge_For_ActivityPub
@@ -17,9 +18,10 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event_Organiser as Even
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
- * Interface for a supported event plugin.
+ * Event Organiser.
  *
- * This interface defines which information is necessary for a supported event plugin.
+ * Defines all the necessary meta information and methods for the integration
+ * of the WordPress "Event Organiser" plugin.
  *
  * @since 1.0.0
  */

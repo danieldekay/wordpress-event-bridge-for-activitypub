@@ -6,13 +6,13 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\Activitypub\Transformer;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
 
 /**
  * ActivityPub Transformer for VS Event

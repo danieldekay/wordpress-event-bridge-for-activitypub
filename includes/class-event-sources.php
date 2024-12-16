@@ -11,8 +11,7 @@ namespace Event_Bridge_For_ActivityPub;
 
 use Activitypub\Model\Blog;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
-use Event_Bridge_For_ActivityPub\Activitypub\Transmogrifier\GatherPress;
-use Event_Bridge_For_ActivityPub\Activitypub\Handler;
+use Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 use Event_Bridge_For_ActivityPub\Admin\User_Interface;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration;
 use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
@@ -30,17 +29,30 @@ class Event_Sources {
 	 * Init.
 	 */
 	public static function init() {
+		// Register the Event Sources Collection which takes care of managing the event sources.
 		\add_action( 'init', array( Event_Sources_Collection::class, 'init' ) );
+
+		// Register handlers for incoming activities to the ActivityPub plugin, e.g. incoming `Event` objects.
 		\add_action( 'activitypub_register_handlers', array( Handler::class, 'register_handlers' ) );
+
+		// Apply modifications to the UI, e.g. disable editing of remote event posts.
 		\add_action( 'init', array( User_Interface::class, 'init' ) );
+
+		// Register post meta to the event plugins post types needed for easier handling of this feature.
 		\add_action( 'init', array( self::class, 'register_post_meta' ) );
+
+		// Register filters that prevent cached remote events from being federated again.
 		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'is_cached_external_post' ), 10, 2 );
+		\add_filter( 'template_include', array( self::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
+
+		// Register daily schedule to cleanup cached remote events that have ended.
 		if ( ! \wp_next_scheduled( 'event_bridge_for_activitypub_event_sources_clear_cache' ) ) {
 			\wp_schedule_event( time(), 'daily', 'event_bridge_for_activitypub_event_sources_clear_cache' );
 		}
 		\add_action( 'event_bridge_for_activitypub_event_sources_clear_cache', array( self::class, 'clear_cache' ) );
+
+		// Add the actors followed by the event sources feature to the `follow` collection of the used ActivityPub actor.
 		\add_filter( 'activitypub_rest_following', array( self::class, 'add_event_sources_to_following_collection' ), 10, 2 );
-		\add_filter( 'template_include', array( self::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
 	}
 
 

@@ -58,7 +58,7 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\Activitypub\Transformer\WP_Event_Manager::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\WP_Event_Manager::class, $transformer );
 	}
 
 	/**

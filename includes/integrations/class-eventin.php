@@ -1,10 +1,11 @@
 <?php
 /**
- * The Events Calendar.
+ * Eventin.
  *
- * Defines all the necessary meta information for the events calendar.
+ * Defines all the necessary meta information and methods for the integration of the
+ * WordPress plugin "Eventin".
  *
- * @link    https://wordpress.org/plugins/the-events-calendar/
+ * @link    https://wordpress.org/plugins/eventin/
  * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */
@@ -17,9 +18,10 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Eventin as Eventin_Tran
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
- * Interface for a supported event plugin.
+ * Eventin.
  *
- * This interface defines which information is necessary for a supported event plugin.
+ * Defines all the necessary meta information and methods for the integration of the
+ * WordPress plugin "Eventin".
  *
  * @since 1.0.0
  */

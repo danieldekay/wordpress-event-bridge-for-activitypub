@@ -1,6 +1,17 @@
 <?php
 /**
- * Event sources collection file.
+ * ActivityPub Event Sources (=Followed Actors) Collection.
+ *
+ * The Event Sources are nothing else than follows in the ActivityPub world.
+ * However, this plugins currently only listens to Event object being created,
+ * updated or deleted by a follow.
+ *
+ * For the ActivityPub `Follow` the Blog-Actor from the ActivityPub plugin is used.
+ *
+ * This class is responsible for defining a custom post type in WordPress along
+ * with post-meta fields and methods to easily manage event sources. This includes
+ * handling side effects, like when an event source is added a follow request is sent
+ * or adding them to the `follow` collection o the blog-actor profile.
  *
  * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
@@ -19,6 +30,17 @@ use function Activitypub\get_remote_metadata_by_actor;
 
 /**
  * ActivityPub Event Sources (=Followed Actors) Collection.
+ *
+ * The Event Sources are nothing else than follows in the ActivityPub world.
+ * However, this plugins currently only listens to Event object being created,
+ * updated or deleted by a follow.
+ *
+ * For the ActivityPub `Follow` the Blog-Actor from the ActivityPub plugin is used.
+ *
+ * This class is responsible for defining a custom post type in WordPress along
+ * with post-meta fields and methods to easily manage event sources. This includes
+ * handling side effects, like when an event source is added a follow request is sent
+ * or adding them to the `follow` collection o the blog-actor profile.
  */
 class Event_Sources {
 	/**

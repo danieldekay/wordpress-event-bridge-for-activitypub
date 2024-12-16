@@ -7,7 +7,7 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\Activitypub\Transmogrifier;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 
 use Activitypub\Activity\Extended_Object\Event;
 use DateTime;

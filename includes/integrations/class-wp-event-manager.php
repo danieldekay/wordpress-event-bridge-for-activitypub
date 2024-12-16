@@ -2,8 +2,8 @@
 /**
  * WP Event Manager.
  *
- * Defines all the necessary meta information for the WordPress event plugin
- * "WP Event Manager"
+ * Defines all the necessary meta information for the Integration of the
+ * WordPress event plugin "WP Event Manager".
  *
  * @link    https://de.wordpress.org/plugins/wp-event-manager
  * @package Event_Bridge_For_ActivityPub

@@ -93,7 +93,7 @@ class Test_EventPrime extends WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\Activitypub\Transformer\EventPrime::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\EventPrime::class, $transformer );
 	}
 
 	/**

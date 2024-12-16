@@ -2,6 +2,9 @@
 /**
  * Event Sources Table-Class file.
  *
+ * This table display the event sources (=followed ActivityPub actors) that are used for
+ * importing (caching and displaying) remote events to the WordPress site.
+ *
  * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  * @license AGPL-3.0-or-later

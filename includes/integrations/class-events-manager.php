@@ -2,7 +2,8 @@
 /**
  * Events Manager.
  *
- * Defines all the necessary meta information for the Events Manager WordPress Plugin.
+ * Defines all the necessary meta information and methods for the integration of the
+ * WordPress plugin "Events Manager".
  *
  * @link    https://wordpress.org/plugins/events-manager/
  * @package Event_Bridge_For_ActivityPub
@@ -17,9 +18,10 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Events_Manager as Event
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
- * Interface for a supported event plugin.
+ * Events Manager.
  *
- * This interface defines which information is necessary for a supported event plugin.
+ * Defines all the necessary meta information and methods for the integration of the
+ * WordPress plugin "Events Manager".
  *
  * @since 1.0.0
  */

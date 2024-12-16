@@ -1,6 +1,9 @@
 <?php
 /**
- * EventPrime – Events Calendar, Bookings and Tickets
+ * EventPrime – Events Calendar, Bookings and Tickets.
+ *
+ * Defines all the necessary meta information and methods for the integration of the
+ * WordPress plugin "EventPrime – Events Calendar, Bookings and Tickets".
  *
  * @link    https://wordpress.org/plugins/eventprime-event-calendar-management/
  * @package Event_Bridge_For_ActivityPub
@@ -18,7 +21,10 @@ use Eventprime_Basic_Functions;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
- * This class defines which information is necessary for the EventPrime event plugin.
+ * EventPrime – Events Calendar, Bookings and Tickets.
+ *
+ * Defines all the necessary meta information and methods for the integration of the
+ * WordPress plugin "EventPrime – Events Calendar, Bookings and Tickets".
  *
  * @since 1.0.0
  */

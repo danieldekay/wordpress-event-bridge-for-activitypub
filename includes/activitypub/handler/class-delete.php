@@ -9,13 +9,14 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
 use Activitypub\Collection\Actors;
 use Event_Bridge_For_ActivityPub\Setup;
+use Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
 /**
  * Handle Delete requests.
  */
 class Delete {
 	/**
-	 * Initialize the class, registering WordPress hooks.
+	 * Initialize the class, registering the handler for incoming `Delete` activities to the ActivityPub plugin.
 	 */
 	public static function init() {
 		\add_action(
@@ -38,12 +39,16 @@ class Delete {
 			return;
 		}
 
-		if ( ! Create::actor_is_event_source( $activity['actor'] ) ) {
+		if ( ! Handler::actor_is_event_source( $activity['actor'] ) ) {
 			return;
 		}
 
 		// Check if an object is set.
 		if ( ! isset( $activity['object']['type'] ) || 'Event' !== $activity['object']['type'] ) {
+			return;
+		}
+
+		if ( Handler::is_time_passed( $activity['object']['startTime'] ) ) {
 			return;
 		}
 

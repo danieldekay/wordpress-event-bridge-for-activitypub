@@ -2,7 +2,8 @@
 /**
  * Modern Events Calendar (Lite)
  *
- * Defines all the necessary meta information for the Modern Events Calendar (Lite).
+ * Defines all the necessary meta information for the integration of the
+ * WordPress plugin "Modern Events Calendar (Lite)".
  *
  * @link    https://webnus.net/modern-events-calendar/
  * @package Event_Bridge_For_ActivityPub
@@ -17,9 +18,10 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Modern_Events_Calendar_
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
- * Interface for a supported event plugin.
+ * Modern Events Calendar (Lite)
  *
- * This interface defines which information is necessary for a supported event plugin.
+ * Defines all the necessary meta information for the integration of the
+ * WordPress plugin "Modern Events Calendar (Lite)".
  *
  * @since 1.0.0
  */

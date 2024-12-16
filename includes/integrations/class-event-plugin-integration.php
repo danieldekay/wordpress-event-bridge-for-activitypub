@@ -1,8 +1,8 @@
 <?php
 /**
- * Interface for defining supported Event Plugins.
+ * Abstract base class for a basic integration of a WordPress event plugin.
  *
- * Basic information that each supported event needs for this plugin to work.
+ * Basic information and methods that each supported event needs for this plugin to work.
  *
  * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
@@ -11,7 +11,7 @@
 
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
-use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as ActivityPub_Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event as ActivityPub_Event_Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -19,9 +19,9 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'includes/integrations/interface-feature-event-sources.php';
 
 /**
- * Interface for a supported event plugin.
+ * Abstract base class for a basic integration of a WordPress event plugin.
  *
- * This interface defines which information is necessary for a supported event plugin.
+ * Basic information and methods that each supported event needs for this plugin to work.
  *
  * @since 1.0.0
  */

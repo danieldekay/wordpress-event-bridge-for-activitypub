@@ -2,6 +2,10 @@
 /**
  * Event-Source (=ActivityPub Actor that is followed) model.
  *
+ * This class holds methods needed for relating an ActivityPub actor
+ * that is followed with the custom post type structure how it is
+ * stored within WordPress.
+ *
  * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
  */
@@ -16,6 +20,10 @@ use function Activitypub\sanitize_url;
 
 /**
  * Event-Source (=ActivityPub Actor that is followed) model.
+ *
+ * This class holds methods needed for relating an ActivityPub actor
+ * that is followed with the custom post type structure how it is
+ * stored within WordPress.
  */
 class Event_Source extends Actor {
 	const ACTIVITYPUB_USER_HANDLE_REGEXP = '(?:([A-Za-z0-9_.-]+)@((?:[A-Za-z0-9_-]+\.)+[A-Za-z]+))';

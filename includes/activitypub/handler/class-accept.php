@@ -15,7 +15,7 @@ use Activitypub\Collection\Actors;
  */
 class Accept {
 	/**
-	 * Initialize the class, registering WordPress hooks.
+	 * Initialize the class, registering the handler for incoming `Accept` activities to the ActivityPub plugin.
 	 */
 	public static function init() {
 		\add_action(
@@ -25,7 +25,7 @@ class Accept {
 	}
 
 	/**
-	 * Handle "Follow" requests.
+	 * Handle incoming "Accept" activities.
 	 *
 	 * @param array $activity The activity object.
 	 */

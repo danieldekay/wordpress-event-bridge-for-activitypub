@@ -1,6 +1,6 @@
 <?php
 /**
- * Status page for the Event Bridge for ActivityPub.
+ * Status/Welcome page for the Event Bridge for ActivityPub admin interface.
  *
  * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
