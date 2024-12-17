@@ -107,7 +107,7 @@ class Setup {
 	/**
 	 * Getter function for the active event plugins.
 	 *
-	 * @return Event_Plugin[]
+	 * @return \Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration[]
 	 */
 	public function get_active_event_plugins() {
 		return $this->active_event_plugins;
@@ -116,7 +116,7 @@ class Setup {
 	/**
 	 * Holds all the classes for the supported event plugins.
 	 *
-	 * @var array
+	 * @var \Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration[]
 	 */
 	private const EVENT_PLUGIN_INTEGRATIONS = array(
 		\Event_Bridge_For_ActivityPub\Integrations\Events_Manager::class,
@@ -164,11 +164,6 @@ class Setup {
 			// Get the filename of the main plugin file of the event plugin (relative to the plugin dir).
 			$event_plugin_file = $event_plugin_integration::get_relative_plugin_file();
 
-			// This check should not be needed, but does not hurt.
-			if ( ! $event_plugin_file ) {
-				continue;
-			}
-
 			// Check if plugin is present on disk and is activated.
 			if ( array_key_exists( $event_plugin_file, $all_plugins ) && \is_plugin_active( $event_plugin_file ) ) {
 				$active_event_plugins[ $event_plugin_file ] = new $event_plugin_integration();
@@ -212,7 +207,7 @@ class Setup {
 		// Detect active supported event plugins.
 		$this->detect_active_event_plugins();
 
-		// Register self-activation hook.
+		// Register hook that runs when this plugin gets activated.
 		register_activation_hook( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE, array( $this, 'activate' ) );
 
 		// Register listeners whenever any plugin gets activated or deactivated.
@@ -222,13 +217,13 @@ class Setup {
 		// Add hook that takes care of all notices in the Admin UI.
 		add_action( 'admin_init', array( $this, 'do_admin_notices' ) );
 
-		// Add hook that registers all settings to WordPress.
+		// Add hook that registers all settings of this plugin to WordPress.
 		add_action( 'admin_init', array( Settings::class, 'register_settings' ) );
 
-		// Add hook that loads CSS and JavaScript files fr the Admin UI.
+		// Add hook that loads CSS and JavaScript files for the Admin UI.
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_styles' ) );
 
-		// Register the settings page(s) of this plugin to WordPress.
+		// Register the settings page(s) of this plugin to the WordPress admin menu.
 		add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
 		add_filter(
 			'plugin_action_links_' . EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_BASENAME,
