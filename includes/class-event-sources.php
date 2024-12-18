@@ -52,7 +52,7 @@ class Event_Sources {
 		\add_action( 'event_bridge_for_activitypub_event_sources_clear_cache', array( self::class, 'clear_cache' ) );
 
 		// Add the actors followed by the event sources feature to the `follow` collection of the used ActivityPub actor.
-		\add_filter( 'activitypub_rest_following', array( self::class, 'add_event_sources_to_following_collection' ), 10, 2 );
+		\add_filter( 'activitypub_rest_following', array( self::class, 'add_event_sources_to_follow_collection' ), 10, 2 );
 	}
 
 
@@ -227,17 +227,81 @@ class Event_Sources {
 	 *
 	 * @return array The array of following urls.
 	 */
-	public static function add_event_sources_to_following_collection( $follow_list, $user ) {
+	public static function add_event_sources_to_follow_collection( $follow_list, $user ) {
 		if ( ! $user instanceof Blog ) {
 			return $follow_list;
 		}
 
-		$event_sources = Event_Sources_Collection::get_event_sources_ids();
+		$event_sources = self::get_event_sources_ids();
 
 		if ( ! is_array( $event_sources ) ) {
 			return $follow_list;
 		}
 
 		return array_merge( $follow_list, $event_sources );
+	}
+
+	/**
+	 * Get an array will all unique hosts of all Event-Sources.
+	 *
+	 * @return array The Term list of Event Sources.
+	 */
+	public static function get_event_sources_hosts() {
+		$hosts = get_transient( 'event_bridge_for_activitypub_event_sources_hosts' );
+
+		if ( $hosts ) {
+			return $hosts;
+		}
+
+		$actors = Event_Sources_Collection::get_event_sources_with_count()['actors'];
+
+		$hosts = array();
+		foreach ( $actors as $actor ) {
+			$url = wp_parse_url( $actor->get_id() );
+			if ( isset( $url['host'] ) ) {
+				$hosts[] = $url['host'];
+			}
+		}
+
+		$hosts = array_unique( $hosts );
+
+		set_transient( 'event_bridge_for_activitypub_event_sources_hosts', $hosts );
+
+		return $hosts;
+	}
+
+	/**
+	 * Get add Event Sources ActivityPub IDs.
+	 *
+	 * @return array The Term list of Event Sources.
+	 */
+	public static function get_event_sources_ids() {
+		$ids = get_transient( 'event_bridge_for_activitypub_event_sources_ids' );
+
+		if ( $ids ) {
+			return $ids;
+		}
+
+		$actors = Event_Sources_Collection::get_event_sources_with_count()['actors'];
+
+		$ids = array();
+		foreach ( $actors as $actor ) {
+			$ids[] = $actor->get_id();
+		}
+
+		set_transient( 'event_bridge_for_activitypub_event_sources_ids', $ids );
+
+		return $ids;
+	}
+
+	/**
+	 * Add Event Sources hosts to allowed hosts used by safe redirect.
+	 *
+	 * @param array $hosts The hosts before the filter.
+	 * @return array
+	 */
+	public static function add_event_sources_hosts_to_allowed_redirect_hosts( $hosts ) {
+		$event_sources_hosts = self::get_event_sources_hosts();
+		return array_merge( $hosts, $event_sources_hosts );
 	}
 }

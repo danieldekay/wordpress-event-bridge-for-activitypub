@@ -234,57 +234,6 @@ class Event_Sources {
 	}
 
 	/**
-	 * Get an array will all unique hosts of all Event-Sources.
-	 *
-	 * @return array The Term list of Event Sources.
-	 */
-	public static function get_event_sources_hosts() {
-		$hosts = get_transient( 'event_bridge_for_activitypub_event_sources_hosts' );
-
-		if ( $hosts ) {
-			return $hosts;
-		}
-
-		$actors = self::get_event_sources_with_count()['actors'];
-
-		$hosts = array();
-		foreach ( $actors as $actor ) {
-			$url = wp_parse_url( $actor->get_id() );
-			if ( isset( $url['host'] ) ) {
-				$hosts[] = $url['host'];
-			}
-		}
-
-		set_transient( 'event_bridge_for_activitypub_event_sources_hosts', $hosts );
-
-		return array_unique( $hosts );
-	}
-
-	/**
-	 * Get add Event Sources ActivityPub IDs.
-	 *
-	 * @return array The Term list of Event Sources.
-	 */
-	public static function get_event_sources_ids() {
-		$ids = get_transient( 'event_bridge_for_activitypub_event_sources_ids' );
-
-		if ( $ids ) {
-			return $ids;
-		}
-
-		$actors = self::get_event_sources_with_count()['actors'];
-
-		$ids = array();
-		foreach ( $actors as $actor ) {
-			$ids[] = $actor->get_id();
-		}
-
-		set_transient( 'event_bridge_for_activitypub_event_sources_ids', $ids );
-
-		return $ids;
-	}
-
-	/**
 	 * Get all Event-Sources.
 	 *
 	 * @return array The Term list of Event Sources.
@@ -461,16 +410,5 @@ class Event_Sources {
 		$activity->set_id( $actor . '#unfollow-' . \preg_replace( '~^https?://~', '', $to ) );
 		$activity = $activity->to_json();
 		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::BLOG_USER_ID );
-	}
-
-	/**
-	 * Add Event Sources hosts to allowed hosts used by safe redirect.
-	 *
-	 * @param array $hosts The hosts before the filter.
-	 * @return array
-	 */
-	public static function add_event_sources_hosts_to_allowed_redirect_hosts( $hosts ) {
-		$event_sources_hosts = self::get_event_sources_hosts();
-		return array_merge( $hosts, $event_sources_hosts );
 	}
 }
