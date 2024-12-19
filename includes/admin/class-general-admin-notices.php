@@ -38,8 +38,8 @@ class General_Admin_Notices {
 	 */
 	const ALLOWED_HTML = array(
 		'a' => array(
-			'href'  => true,
-			'title' => true,
+			'href'   => true,
+			'title'  => true,
 			'target' => true,
 		),
 		'br',
