@@ -130,7 +130,6 @@ class Setup {
 		'\Event_Bridge_For_ActivityPub\Integrations\WP_Event_Manager',
 		'\Event_Bridge_For_ActivityPub\Integrations\Eventin',
 		'\Event_Bridge_For_ActivityPub\Integrations\Modern_Events_Calendar_Lite',
-		'\Event_Bridge_For_ActivityPub\Integrations\EventPrime',
 		'\Event_Bridge_For_ActivityPub\Integrations\Event_Organiser',
 	);
 
