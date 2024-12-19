@@ -56,7 +56,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 		$params  = array(
 			'datetime_start' => '+10 days 15:00:00',
 			'datetime_end'   => '+10 days 16:00:00',
-			'timezone'       => 'America/New_York',
+			'timezone'       => \wp_timezone_string(),
 		);
 
 		$event->save_datetimes( $params );
@@ -85,7 +85,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 		$params  = array(
 			'datetime_start' => '+10 days 15:00:00',
 			'datetime_end'   => '+10 days 16:00:00',
-			'timezone'       => 'America/New_York',
+			'timezone'       => \wp_timezone_string(),
 		);
 		$event->save_datetimes( $params );
 

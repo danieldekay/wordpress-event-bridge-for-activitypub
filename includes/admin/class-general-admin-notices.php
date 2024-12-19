@@ -29,7 +29,7 @@ class General_Admin_Notices {
 	 */
 	const ACTIVITYPUB_PLUGIN_URL = 'https://wordpress.org/plugins/activitypub';
 
-	const EVENT_BRIDGE_FOR_ACTIVITYPUB_SUPPORTED_EVENT_PLUGINS_URL = 'https://code.event-federation.eu/Event-Federation/wordpress-event-bridge-for-activitypub#events-plugin-that-will-be-supported-at-first';
+	const EVENT_BRIDGE_FOR_ACTIVITYPUB_SUPPORTED_EVENT_PLUGINS_URL = 'https://code.event-federation.eu/Event-Federation/wordpress-event-bridge-for-activitypub#supported-event-plugins';
 
 	/**
 	 * Allowed HTML for admin notices.
@@ -38,8 +38,9 @@ class General_Admin_Notices {
 	 */
 	const ALLOWED_HTML = array(
 		'a' => array(
-			'href'  => true,
-			'title' => true,
+			'href'   => true,
+			'title'  => true,
+			'target' => true,
 		),
 		'br',
 		'i',
@@ -90,11 +91,11 @@ class General_Admin_Notices {
 			/* translators: 1: An URL to the list of supported event plugins. */
 			_x(
 				'The Plugin <i>Event Bridge for ActivityPub</i> is of no use, because you do not have installed and activated a supported Event Plugin.
-				<br> For a list of supported Event Plugins see  <a href="%1$s">here</a>.',
+				<br> For a list of supported Event Plugins see  <a href="%1$s" target="_blank">here</a>.',
 				'admin notice',
 				'event-bridge-for-activitypub'
 			),
-			esc_html( self::EVENT_BRIDGE_FOR_ACTIVITYPUB_SUPPORTED_EVENT_PLUGINS_URL )
+			esc_url( self::EVENT_BRIDGE_FOR_ACTIVITYPUB_SUPPORTED_EVENT_PLUGINS_URL )
 		);
 	}
 

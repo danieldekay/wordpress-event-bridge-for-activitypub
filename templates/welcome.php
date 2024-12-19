@@ -9,6 +9,7 @@
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Event_Bridge_For_ActivityPub\Setup;
+use Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\Settings_Page;
 use Event_Bridge_For_ActivityPub\Admin\Health_Check;
 
@@ -41,6 +42,12 @@ WP_Filesystem();
 	<div class="box">
 		<h2><?php \esc_html_e( 'Status', 'event-bridge-for-activitypub' ); ?></h2>
 		<p><?php \esc_html_e( 'The Event Bridge for ActivityPub detected the following (activated) event plugins:', 'event-bridge-for-activitypub' ); ?></p>
+			<?php
+			if ( empty( $active_event_plugins ) ) {
+				$notice = General_Admin_Notices::get_admin_notice_no_supported_event_plugin_active();
+			}
+			echo '<p>⚠' . \wp_kses( $notice, General_Admin_Notices::ALLOWED_HTML ) . '</p>';
+			?>
 			<?php foreach ( $active_event_plugins as $active_event_plugin ) { ?>
 			<h3><?php echo esc_html( $active_event_plugin->get_plugin_name() ); ?>:</h3>
 			<ul class="event-bridge-for-activitypub-list">
