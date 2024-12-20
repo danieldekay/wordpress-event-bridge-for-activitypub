@@ -8,8 +8,8 @@
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
 use Activitypub\Collection\Actors;
+use Event_Bridge_For_ActivityPub\Event_Sources;
 use Event_Bridge_For_ActivityPub\Setup;
-use Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
 use function Activitypub\is_activity_public;
 
@@ -36,12 +36,12 @@ class Create {
 	 * @param int   $user_id  The id of the local blog-user.
 	 */
 	public static function handle_create( $activity, $user_id ) {
-		// We only process activities that are target to the application user.
+		// We only process activities that are target to the blog actor.
 		if ( Actors::BLOG_USER_ID !== $user_id ) {
 			return;
 		}
 
-		if ( ! Handler::actor_is_event_source( $activity['actor'] ) ) {
+		if ( ! Event_Sources::actor_is_event_source( $activity['actor'] ) ) {
 			return;
 		}
 
@@ -55,8 +55,12 @@ class Create {
 			return;
 		}
 
-		if ( Handler::is_time_passed( $activity['object']['startTime'] ) ) {
-			return;
+		if ( Event_Sources::is_time_passed( $activity['object']['startTime'] ) ) {
+			return new \WP_Error(
+				'event_bridge_for_activitypub_not_accepting_events_from_the_past',
+				__( 'We do not accept this event because it took place in the past.', 'event-bridge-for-activitypub' ),
+				array( 'status' => 403 )
+			);
 		}
 
 		$transmogrifier = Setup::get_transmogrifier();

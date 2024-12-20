@@ -5,10 +5,12 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+
 /**
  * Sample test case.
  */
-class Test_Modern_Events_Calendar_Lite extends WP_UnitTestCase {
+class Test_Modern_Events_Calendar_Lite extends \WP_UnitTestCase {
 	/**
 	 * The MEC main instance.
 	 *

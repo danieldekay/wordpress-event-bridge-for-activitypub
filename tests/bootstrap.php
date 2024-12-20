@@ -5,6 +5,11 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
+// Defined here because setting them in .wp-env.json doesn't work for some reason.
+\define( 'WP_TESTS_DOMAIN', 'example.org' );
+\define( 'WP_SITEURL', 'http://example.org' );
+\define( 'WP_HOME', 'http://example.org' );
+
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
 if ( ! $_tests_dir ) {
@@ -96,9 +101,12 @@ function _manually_load_plugin() {
 
 	if ( $plugin_file ) {
 		_manually_load_event_plugin( $plugin_file );
-	} elseif ( 'event_bridge_for_activitypub_event_sources' === $event_bridge_for_activitypub_integration_filter ) {
+	} elseif ( 'event_sources' === $event_bridge_for_activitypub_integration_filter ) {
 		// For the Event Sources feature we currently only test with GatherPress.
 		_manually_load_event_plugin( 'gatherpress/gatherpress.php' );
+		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+		\update_option( 'event_bridge_for_activitypub_plugin_used_for_event_source_feature', 'GatherPress' );
+		\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 	} else {
 		// For all other tests we mainly use the Events Calendar as a reference.
 		_manually_load_event_plugin( 'the-events-calendar/the-events-calendar.php' );
@@ -121,6 +129,9 @@ function _manually_load_plugin() {
 
 	// At last manually load our WordPress plugin.
 	require dirname( __DIR__ ) . '/event-bridge-for-activitypub.php';
+
+	// Always manually load the ActivityPub plugin.
+	require_once $plugin_dir . 'activitypub/activitypub.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );

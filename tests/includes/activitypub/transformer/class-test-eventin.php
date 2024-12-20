@@ -5,10 +5,12 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+
 /**
  * Test cases for WP Event Solution.
  */
-class Test_Eventin extends WP_UnitTestCase {
+class Test_Eventin extends \WP_UnitTestCase {
 	/**
 	 * Basic Mock-up event.
 	 */

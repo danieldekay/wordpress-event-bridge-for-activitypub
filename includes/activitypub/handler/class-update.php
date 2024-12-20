@@ -8,8 +8,8 @@
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
 use Activitypub\Collection\Actors;
+use Event_Bridge_For_ActivityPub\Event_Sources;
 use Event_Bridge_For_ActivityPub\Setup;
-use Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
 use function Activitypub\is_activity_public;
 
@@ -41,7 +41,7 @@ class Update {
 			return;
 		}
 
-		if ( ! Handler::actor_is_event_source( $activity['actor'] ) ) {
+		if ( ! Event_Sources::actor_is_event_source( $activity['actor'] ) ) {
 			return;
 		}
 
@@ -55,7 +55,7 @@ class Update {
 			return;
 		}
 
-		if ( Handler::is_time_passed( $activity['object']['startTime'] ) ) {
+		if ( Event_Sources::is_time_passed( $activity['object']['startTime'] ) ) {
 			return;
 		}
 

@@ -5,10 +5,14 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+
+use DateTime;
+
 /**
  * Sample test case.
  */
-class Test_Event_Organiser extends WP_UnitTestCase {
+class Test_Event_Organiser extends \WP_UnitTestCase {
 	/**
 	 * Override the setup function, so that tests don't run if the Events Calendar is not active.
 	 */

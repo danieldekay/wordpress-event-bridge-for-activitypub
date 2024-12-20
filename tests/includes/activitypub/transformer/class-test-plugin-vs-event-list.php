@@ -5,18 +5,20 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+
 /**
  * Sample test case.
  */
-class Test_WP_Event_Manager extends WP_UnitTestCase {
+class Test_VS_Event_List extends \WP_UnitTestCase {
 	/**
 	 * Override the setup function, so that tests don't run if the Events Calendar is not active.
 	 */
 	public function set_up() {
 		parent::set_up();
 
-		if ( ! function_exists( 'wp_event_manager_notify_new_user' ) ) {
-			self::markTestSkipped( 'WP Event Manager plugin is not active.' );
+		if ( ! function_exists( 'vsel_custom_post_type' ) ) {
+			self::markTestSkipped( 'VS Event List plugin is not active.' );
 		}
 
 		// Make sure that ActivityPub support is enabled for The Events Calendar.
@@ -38,14 +40,14 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		$this->assertEquals( 1, count( $active_event_plugins ) );
 
 		// Enable ActivityPub support for the event plugin.
-		$this->assertContains( 'event_listing', get_option( 'activitypub_support_post_types' ) );
+		$this->assertContains( 'event', get_option( 'activitypub_support_post_types' ) );
 
 		// Insert a new Event.
 		$wp_post_id = wp_insert_post(
 			array(
-				'post_title'  => 'WP Event Manager TestEvent',
+				'post_title'  => 'VSEL Test Event',
 				'post_status' => 'publish',
-				'post_type'   => 'event_listing',
+				'post_type'   => 'event',
 				'meta_input'  => array(
 					'event-start-date' => strtotime( '+10 days 15:00:00' ),
 				),
@@ -58,7 +60,7 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\WP_Event_Manager::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\VS_Event_List::class, $transformer );
 	}
 
 	/**
@@ -68,12 +70,11 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		// Insert a new Event.
 		$wp_post_id = wp_insert_post(
 			array(
-				'post_title'   => 'WP Event Manager TestEvent',
-				'post_status'  => 'publish',
-				'post_type'    => 'event_listing',
-				'post_content' => 'Come to my WP Event Manager event!',
-				'meta_input'   => array(
-					'_event_start_date' => strtotime( '+10 days 15:00:00' ),
+				'post_title'  => 'VSEL Test Event',
+				'post_status' => 'publish',
+				'post_type'   => 'event',
+				'meta_input'  => array(
+					'event-start-date' => strtotime( '+10 days 15:00:00' ),
 				),
 			)
 		);
@@ -83,8 +84,8 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
-		$this->assertEquals( 'WP Event Manager TestEvent', $event_array['name'] );
-		$this->assertEquals( 'Come to my WP Event Manager event!', wp_strip_all_tags( $event_array['content'] ) );
+		$this->assertEquals( 'VSEL Test Event', $event_array['name'] );
+		$this->assertEquals( '', $event_array['content'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertArrayNotHasKey( 'endTime', $event_array );
 		$this->assertEquals( comments_open( $wp_post_id ), $event_array['commentsEnabled'] );
@@ -98,19 +99,18 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 	/**
 	 * Test the transformation to ActivityStreams of minimal event.
 	 */
-	public function test_transform_of_full_online_event() {
+	public function test_transform_of_full_event() {
 		// Insert a new Event.
 		$wp_post_id = wp_insert_post(
 			array(
-				'post_title'   => 'WP Event Manager TestEvent',
-				'post_status'  => 'publish',
-				'post_type'    => 'event_listing',
-				'post_content' => 'Come to my WP Event Manager event!',
-				'meta_input'   => array(
-					'_event_start_date' => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 15:00:00' ) ),
-					'_event_end_date'   => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 16:00:00' ) ),
-					'_event_video_url'  => 'https://event-federation.eu/meeting-room',
-					'_event_online'     => 'yes',
+				'post_title'  => 'VSEL Test Event',
+				'post_status' => 'publish',
+				'post_type'   => 'event',
+				'meta_input'  => array(
+					'event-start-date' => strtotime( '+10 days 15:00:00' ),
+					'event-date'       => strtotime( '+10 days 16:00:00' ),
+					'event-link'       => 'https://event-federation.eu/vsel-test-event',
+					'event-link-label' => 'Website',
 				),
 			)
 		);
@@ -120,22 +120,21 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
-		$this->assertEquals( 'WP Event Manager TestEvent', $event_array['name'] );
-		$this->assertEquals( 'Come to my WP Event Manager event!', wp_strip_all_tags( $event_array['content'] ) );
+		$this->assertEquals( 'VSEL Test Event', $event_array['name'] );
+		$this->assertEquals( '', $event_array['content'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
 		$this->assertEquals( comments_open( $wp_post_id ), $event_array['commentsEnabled'] );
 		$this->assertEquals( comments_open( $wp_post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
-		$this->assertEquals( true, $event_array['isOnline'] );
 		$this->assertEquals( esc_url( get_permalink( $wp_post_id ) ), $event_array['externalParticipationUrl'] );
 		$this->assertArrayNotHasKey( 'location', $event_array );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
 		$this->assertContains(
 			array(
 				'type'      => 'Link',
-				'name'      => __( 'Video URL', 'event-bridge-for-activitypub' ),
-				'href'      => 'https://event-federation.eu/meeting-room',
+				'name'      => 'Website',
+				'href'      => 'https://event-federation.eu/vsel-test-event',
 				'mediaType' => 'text/html',
 			),
 			$event_array['attachment']
@@ -143,21 +142,19 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test the transformation to ActivityStreams of minimal event.
+	 * Test the transformation to ActivityStreams of event with hidden end time.
 	 */
-	public function test_transform_of_event_with_location() {
+	public function test_transform_of_event_with_hidden_end_time() {
 		// Insert a new Event.
 		$wp_post_id = wp_insert_post(
 			array(
-				'post_title'   => 'WP Event Manager TestEvent',
-				'post_status'  => 'publish',
-				'post_type'    => 'event_listing',
-				'post_content' => 'Come to my WP Event Manager event!',
-				'meta_input'   => array(
-					'_event_start_date' => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 15:00:00' ) ),
-					'_event_end_date'   => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 16:00:00' ) ),
-					'_event_location'   => 'Some text location',
-					'_event_online'     => 'no',
+				'post_title'  => 'VSEL Test Event',
+				'post_status' => 'publish',
+				'post_type'   => 'event',
+				'meta_input'  => array(
+					'event-start-date'    => strtotime( '+10 days 15:00:00' ),
+					'event-date'          => strtotime( '+10 days 16:00:00' ),
+					'event-hide-end-time' => 'yes',
 				),
 			)
 		);
@@ -166,17 +163,51 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $wp_post_id ) )->to_object()->to_array();
 
 		// Check that the event ActivityStreams representation contains everything as expected.
-		$this->assertEquals( 'Event', $event_array['type'] );
-		$this->assertEquals( 'WP Event Manager TestEvent', $event_array['name'] );
-		$this->assertEquals( 'Come to my WP Event Manager event!', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
-		$this->assertEquals( comments_open( $wp_post_id ), $event_array['commentsEnabled'] );
-		$this->assertEquals( comments_open( $wp_post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
-		$this->assertEquals( 'external', $event_array['joinMode'] );
-		$this->assertEquals( false, $event_array['isOnline'] );
-		$this->assertEquals( esc_url( get_permalink( $wp_post_id ) ), $event_array['externalParticipationUrl'] );
-		$this->assertArrayHasKey( 'location', $event_array );
-		$this->assertEquals( 'Some text location', $event_array['location']['address'] );
+		$this->assertArrayNotHasKey( 'endTime', $event_array );
+	}
+
+	/**
+	 * Test transformation of event with mapped category.
+	 */
+	public function test_transform_event_with_mapped_categories() {
+		// Create category.
+		$category_id_music   = wp_insert_term( 'Music', 'event_cat', array( 'slug' => 'music' ) );
+		$category_id_theatre = wp_insert_term( 'Theatre', 'event_cat', array( 'slug' => 'theatre' ) );
+
+		// Set default mapping for event categories.
+		update_option( 'event_bridge_for_activitypub_default_event_category', 'MUSIC' );
+
+		// Set an override for the category with the slug theatre.
+		update_option( 'event_bridge_for_activitypub_event_category_mappings', array( 'theatre' => 'THEATRE' ) );
+
+		// Create a VS Event List event with the music category.
+		$wp_post_id = wp_insert_post(
+			array(
+				'post_title'  => 'VSEL Test Event',
+				'post_status' => 'publish',
+				'post_type'   => 'event',
+				'meta_input'  => array(
+					'event-start-date'    => strtotime( '+10 days 15:00:00' ),
+					'event-date'          => strtotime( '+10 days 16:00:00' ),
+					'event-hide-end-time' => 'yes',
+				),
+			)
+		);
+		wp_set_post_terms( $wp_post_id, $category_id_music['term_id'], 'event_cat' );
+
+		// Call the transformer.
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $wp_post_id ) )->to_object()->to_array();
+
+		// See if the default category mapping is applied.
+		$this->assertEquals( 'MUSIC', $event_array['category'] );
+
+		// Change the event category to theatre.
+		wp_set_post_terms( $wp_post_id, $category_id_theatre['term_id'], 'event_cat', false );
+
+		// Call the transformer.
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $wp_post_id ) )->to_object()->to_array();
+
+		// See if the default category mapping is applied.
+		$this->assertEquals( 'THEATRE', $event_array['category'] );
 	}
 }

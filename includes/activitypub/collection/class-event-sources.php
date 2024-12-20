@@ -236,7 +236,7 @@ class Event_Sources {
 	/**
 	 * Get all Event-Sources.
 	 *
-	 * @return array The Term list of Event Sources.
+	 * @return Event_Source[] A List of all Event Sources (follows).
 	 */
 	public static function get_event_sources() {
 		return self::get_event_sources_with_count()['actors'];

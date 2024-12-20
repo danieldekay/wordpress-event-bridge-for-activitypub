@@ -75,30 +75,6 @@ abstract class Base {
 	}
 
 	/**
-	 * Validate a time string if it is according to the ActivityPub specification.
-	 *
-	 * @param string $time_string The time string.
-	 * @return bool
-	 */
-	public static function is_valid_activitypub_time_string( $time_string ) {
-		// Try to create a DateTime object from the input string.
-		try {
-			$date = new DateTime( $time_string );
-		} catch ( Exception $e ) {
-			// If parsing fails, it's not valid.
-			return false;
-		}
-
-		// Ensure the timezone is correctly formatted (e.g., 'Z' or a valid offset).
-		$timezone           = $date->getTimezone();
-		$formatted_timezone = $timezone->getName();
-
-		// Return true only if the time string includes 'Z' or a valid timezone offset.
-		$valid = 'Z' === $formatted_timezone || preg_match( '/^[+-]\d{2}:\d{2}$/ ', $formatted_timezone );
-		return $valid;
-	}
-
-	/**
 	 * Get the image URL and alt-text of an ActivityPub object.
 	 *
 	 * @param array $data The ActivityPub object as ann associative array.

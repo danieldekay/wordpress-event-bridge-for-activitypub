@@ -48,20 +48,20 @@
         ],
         "test": [
             "@prepare-test",
-            "@test-vs-event-list",
-            "@test-the-events-calendar",
-            "@test-gatherpress",
-            "@test-events-manager",
-            "@test-wp-event-manager",
-            "@test-eventin",
-            "@test-modern-events-calendar-lite",
-            "@test-eventprime",
-            "@test-event-organiser",
-            "@test-event-bridge-for-activitypub-event-sources"
+            "@test-integration-vs-event-list",
+            "@test-integration-the-events-calendar",
+            "@test-integration-gatherpress",
+            "@test-integration- events-manager",
+            "@test-integration-wp-event-manager",
+            "@test-integration-eventin",
+            "@test-integration-modern-events-calendar-lite",
+            "@test-integration-eventprime",
+            "@test-integration-event-organiser",
+            "@test-event-sources"
         ],
         "test-debug": [
             "@prepare-test",
-            "@test-the-events-calendar"
+            "@test-event-sources"
         ],
         "test-vs-event-list": "phpunit --filter=vs_event_list",
         "test-the-events-calendar": "phpunit --filter=the_events_calendar",
@@ -72,8 +72,8 @@
         "test-modern-events-calendar-lite": "phpunit --filter=modern_events_calendar_lite",
         "test-eventprime": "phpunit --filter=eventprime",
         "test-event-organiser": "phpunit --filter=event_organiser",
-        "test-event-bridge-for-activitypub-shortcodes": "phpunit --filter=event_bridge_for_activitypub_shortcodes",
-        "test-event-bridge-for-activitypub-event-sources": "phpunit --filter=event_bridge_for_activitypub_event_sources",
+        "test-event-bridge-for-activitypub-shortcodes": "phpunit --filter=shortcodes",
+        "test-event-sources": "phpunit --filter=event_sources",
         "test-all": "phpunit"
     }
 }

@@ -6,14 +6,12 @@
  * @license AGPL-3.0-or-later
  */
 
-use Activitypub\Shortcodes;
+namespace Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer;
 
 /**
- * Test class for Activitypub Shortcodes.
- *
- * @coversDefaultClass \Activitypub\Shortcodes
+ * Test class for Shortcodes.
  */
-class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
+class Test_Event extends \WP_UnitTestCase {
 	/**
 	 * Override the setup function, so that tests don't run if the Events Calendar is not active.
 	 */

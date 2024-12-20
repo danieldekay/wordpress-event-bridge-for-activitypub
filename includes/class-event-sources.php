@@ -10,11 +10,14 @@
 namespace Event_Bridge_For_ActivityPub;
 
 use Activitypub\Model\Blog;
+use DateTime;
+use DateTimeZone;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 use Event_Bridge_For_ActivityPub\Admin\User_Interface;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration;
 use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
+use Exception;
 
 use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\is_activitypub_request;
@@ -244,7 +247,7 @@ class Event_Sources {
 	/**
 	 * Get an array will all unique hosts of all Event-Sources.
 	 *
-	 * @return array The Term list of Event Sources.
+	 * @return array A list with all unique hosts of all Event Sources' ActivityPub IDs.
 	 */
 	public static function get_event_sources_hosts() {
 		$hosts = get_transient( 'event_bridge_for_activitypub_event_sources_hosts' );
@@ -253,7 +256,7 @@ class Event_Sources {
 			return $hosts;
 		}
 
-		$actors = Event_Sources_Collection::get_event_sources_with_count()['actors'];
+		$actors = Event_Sources_Collection::get_event_sources();
 
 		$hosts = array();
 		foreach ( $actors as $actor ) {
@@ -273,7 +276,7 @@ class Event_Sources {
 	/**
 	 * Get add Event Sources ActivityPub IDs.
 	 *
-	 * @return array The Term list of Event Sources.
+	 * @return array A list with the ActivityPub IDs of all Event Sources (follows).
 	 */
 	public static function get_event_sources_ids() {
 		$ids = get_transient( 'event_bridge_for_activitypub_event_sources_ids' );
@@ -282,7 +285,7 @@ class Event_Sources {
 			return $ids;
 		}
 
-		$actors = Event_Sources_Collection::get_event_sources_with_count()['actors'];
+		$actors = Event_Sources_Collection::get_event_sources();
 
 		$ids = array();
 		foreach ( $actors as $actor ) {
@@ -303,5 +306,116 @@ class Event_Sources {
 	public static function add_event_sources_hosts_to_allowed_redirect_hosts( $hosts ) {
 		$event_sources_hosts = self::get_event_sources_hosts();
 		return array_merge( $hosts, $event_sources_hosts );
+	}
+
+
+	/**
+	 * Validate the event object.
+	 *
+	 * @param bool             $valid   The validation state.
+	 * @param string           $param   The object parameter.
+	 * @param \WP_REST_Request $request The request object.
+	 *
+	 * @return bool|WP_Error The validation state: true if valid, false if not.
+	 */
+	public static function validate_event_object( $valid, $param, $request ) {
+		$json_params = $request->get_json_params();
+
+		if ( isset( $json_params['object']['type'] ) && 'Event' === $json_params['object']['type'] ) {
+			$valid = true;
+		} else {
+			return $valid;
+		}
+
+		if ( empty( $json_params['type'] ) ) {
+			return false;
+		}
+
+		if ( empty( $json_params['actor'] ) ) {
+			return false;
+		}
+
+		if ( ! in_array( $json_params['type'], array( 'Create', 'Update', 'Delete', 'Announce' ), true ) || is_wp_error( $request ) ) {
+			return $valid;
+		}
+
+		$object = $json_params['object'];
+
+		if ( ! is_array( $object ) ) {
+			return false;
+		}
+
+		$required = array(
+			'id',
+			'startTime',
+			'name',
+		);
+
+		if ( array_intersect( $required, array_keys( $object ) ) !== $required ) {
+			return false;
+		}
+
+		if ( ! self::is_valid_activitypub_time_string( $object['startTime'] ) ) {
+			return false;
+		}
+
+		return $valid;
+	}
+
+	/**
+	 * Validate a time string if it is according to the ActivityPub specification.
+	 *
+	 * @param string $time_string The time string.
+	 * @return bool
+	 */
+	public static function is_valid_activitypub_time_string( $time_string ) {
+		// Try to create a DateTime object from the input string.
+		try {
+			$date = new DateTime( $time_string );
+		} catch ( Exception $e ) {
+			// If parsing fails, it's not valid.
+			return false;
+		}
+
+		// Ensure the timezone is correctly formatted (e.g., 'Z' or a valid offset).
+		$timezone           = $date->getTimezone();
+		$formatted_timezone = $timezone->getName();
+
+		// Return true only if the time string includes 'Z' or a valid timezone offset.
+		$valid = 'Z' === $formatted_timezone || preg_match( '/^[+-]\d{2}:\d{2}$/ ', $formatted_timezone );
+		return $valid;
+	}
+
+	/**
+	 * Check if a given DateTime is already passed.
+	 *
+	 * @param string $time_string The ActivityPub like time string.
+	 * @return bool
+	 */
+	public static function is_time_passed( $time_string ) {
+		// Create a DateTime object from the ActivityPub time string.
+		$time = new DateTime( $time_string, new DateTimeZone( 'UTC' ) );
+
+		// Get the current time in UTC.
+		$current_time = new DateTime( 'now', new DateTimeZone( 'UTC' ) );
+
+		// Compare the event time with the current time.
+		return $time < $current_time;
+	}
+
+	/**
+	 * Check that an ActivityPub actor is an event source (i.e. it is followed by the ActivityPub blog actor).
+	 *
+	 * @param string $actor_id The actor ID.
+	 * @return bool True if the ActivityPub actor ID is followed, false otherwise.
+	 */
+	public static function actor_is_event_source( $actor_id ) {
+		$event_sources = Event_Sources_Collection::get_event_sources();
+		foreach ( $event_sources as $event_source ) {
+			if ( $actor_id === $event_source->get_id() ) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
