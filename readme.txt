@@ -3,7 +3,7 @@ Contributors: andremenrath
 Tags: events, fediverse, activitypub, calendar
 Requires at least: 6.5
 Tested up to: 6.7
-Stable tag: 0.3.2
+Stable tag: 0.3.3
 Requires PHP: 7.4
 License: AGPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/agpl-3.0.html
@@ -57,7 +57,6 @@ This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/ac
 * [Eventin](https://de.wordpress.org/plugins/wp-event-solution/)
 * [Modern Events Calendar Lite](https://webnus.net/modern-events-calendar/)
 * [GatherPress](https://gatherpress.org/)
-* [EventPrime – Events Calendar, Bookings and Tickets](https://wordpress.org/plugins/eventprime-event-calendar-management/)
 * [Event Organiser](https://wordpress.org/plugins/event-organiser/)
 
 == Configuration ==
@@ -96,6 +95,6 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 
 == Changelog ==
 
-= [0.3.2] 2024-12-12 =
+= [0.3.3] 2024-12-19 =
 
 * Initial release on https://wordpress.org/

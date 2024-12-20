@@ -116,7 +116,10 @@ class Health_Check {
 		if ( ! $event_post_type ) {
 			$active_event_plugins = Setup::get_instance()->get_active_event_plugins();
 			$active_event_plugin  = reset( $active_event_plugins );
-			$event_post_type      = $active_event_plugin->get_post_type();
+			if ( ! $active_event_plugin ) {
+				return false;
+			}
+			$event_post_type = $active_event_plugin->get_post_type();
 		}
 
 		$args = array(
