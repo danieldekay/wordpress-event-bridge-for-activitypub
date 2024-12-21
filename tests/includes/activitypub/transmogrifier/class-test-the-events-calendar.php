@@ -72,9 +72,6 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 
 		\Activitypub\Rest\Server::add_hooks();
 
-		// Mock the plugin activation.
-		\GatherPress\Core\Setup::get_instance()->activate_gatherpress_plugin( false );
-
 		// Make sure that ActivityPub support is enabled for The Events Calendar.
 		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();

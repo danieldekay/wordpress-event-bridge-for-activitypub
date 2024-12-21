@@ -130,7 +130,7 @@ class Test_GatherPress extends \WP_UnitTestCase {
 
 		// Check if post has been created.
 		$event_query = Event_Query::get_instance();
-		$the_query = $event_query->get_upcoming_events();
+		$the_query   = $event_query->get_upcoming_events();
 
 		$this->assertEquals( true, $the_query->have_posts() );
 		$this->assertEquals( 1, $the_query->post_count );
