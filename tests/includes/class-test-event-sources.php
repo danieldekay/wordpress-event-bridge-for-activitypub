@@ -13,7 +13,7 @@ use WP_REST_Request;
 use WP_REST_Server;
 
 /**
- * Test class for Activitypub Rest Inbox.
+ * Test class for the Event Sources Feature.
  *
  * @coversDefaultClass \Event_Bridge_For_ActivityPub\Event_Sources
  */
@@ -48,9 +48,9 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 	 */
 	public static function wpSetUpBeforeClass( $factory ) {
 		// Follow actor.
-		$event_source = new \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source();
-		$event_source->from_array( self::FOLLOWED_ACTOR );
-		$post_id     = $event_source->save();
+		$event_source = \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source::init_from_array( self::FOLLOWED_ACTOR );
+		$post_id      = $event_source->save();
+
 		self::$event_source_post_id = $post_id;
 	}
 

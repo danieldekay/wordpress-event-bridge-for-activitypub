@@ -71,7 +71,7 @@ class Event_Sources {
 			}
 			\register_post_meta(
 				$event_plugin_integration::get_post_type(),
-				'event_bridge_for_activitypub_is_cached',
+				'_event_bridge_for_activitypub_is_cached',
 				array(
 					'type'              => 'string',
 					'single'            => false,
@@ -159,7 +159,7 @@ class Event_Sources {
 	 * @return bool
 	 */
 	public static function is_cached_external_event_post( $post ): bool {
-		if ( get_post_meta( $post->ID, 'event_bridge_for_activitypub_is_cached', true ) ) {
+		if ( get_post_meta( $post->ID, '_event_bridge_for_activitypub_is_cached', true ) ) {
 			return true;
 		}
 

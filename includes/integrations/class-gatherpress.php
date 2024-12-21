@@ -116,7 +116,7 @@ final class GatherPress extends Event_Plugin_Integration implements Feature_Even
 				if ( $post && 'gatherpress_event' === $post->post_type ) {
 					// Add your custom logic here to decide whether to force the link.
 					// For example, force it only if a specific meta field exists.
-					if ( get_post_meta( $post->ID, 'event_bridge_for_activitypub_is_cached', true ) ) {
+					if ( get_post_meta( $post->ID, '_event_bridge_for_activitypub_is_cached', true ) ) {
 						return true; // Force the online event link.
 					}
 				}

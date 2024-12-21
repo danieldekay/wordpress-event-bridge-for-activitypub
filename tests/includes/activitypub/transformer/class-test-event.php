@@ -8,6 +8,8 @@
 
 namespace Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer;
 
+use Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer\Test_The_Events_Calendar;
+
 /**
  * Test class for Shortcodes.
  */
@@ -49,15 +51,15 @@ class Test_Event extends \WP_UnitTestCase {
 		$transformer->register_shortcodes();
 
 		$summary = '[ap_start_time]';
-		$summary = do_shortcode( $summary );
+		$summary = \do_shortcode( $summary );
 		$this->assertEquals( '🗓️ Start: December 1, 2024 3:00 pm', $summary );
 
 		$summary = '[ap_start_time icon="false"]';
-		$summary = do_shortcode( $summary );
+		$summary = \do_shortcode( $summary );
 		$this->assertEquals( 'Start: December 1, 2024 3:00 pm', $summary );
 
 		$summary = '[ap_start_time icon="false" label="false"]';
-		$summary = do_shortcode( $summary );
+		$summary = \do_shortcode( $summary );
 		$this->assertEquals( 'December 1, 2024 3:00 pm', $summary );
 
 		$transformer->unregister_shortcodes();
@@ -82,15 +84,15 @@ class Test_Event extends \WP_UnitTestCase {
 		$transformer->register_shortcodes();
 
 		$summary = '[ap_end_time]';
-		$summary = do_shortcode( $summary );
+		$summary = \do_shortcode( $summary );
 		$this->assertEquals( '⏳ End: December 1, 2024 4:00 pm', $summary );
 
 		$summary = '[ap_end_time icon="false"]';
-		$summary = do_shortcode( $summary );
+		$summary = \do_shortcode( $summary );
 		$this->assertEquals( 'End: December 1, 2024 4:00 pm', $summary );
 
 		$summary = '[ap_end_time icon="false" label="false"]';
-		$summary = do_shortcode( $summary );
+		$summary = \do_shortcode( $summary );
 		$this->assertEquals( 'December 1, 2024 4:00 pm', $summary );
 
 		$transformer->unregister_shortcodes();

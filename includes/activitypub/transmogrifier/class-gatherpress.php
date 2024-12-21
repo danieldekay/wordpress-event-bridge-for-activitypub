@@ -131,8 +131,8 @@ class GatherPress extends Base {
 		$args = array(
 			'post_title'   => sanitize_text_field( $this->activitypub_event->get_name() ),
 			'post_type'    => 'gatherpress_event',
-			'post_content' => wp_kses_post( $this->activitypub_event->get_content() ) . '<!-- wp:gatherpress/venue /-->',
-			'post_excerpt' => wp_kses_post( $this->activitypub_event->get_summary() ),
+			'post_content' => wp_kses_post( $this->activitypub_event->get_content() ?? '' ) . '<!-- wp:gatherpress/venue /-->',
+			'post_excerpt' => wp_kses_post( $this->activitypub_event->get_summary() ?? '' ),
 			'post_status'  => 'publish',
 			'guid'         => sanitize_url( $this->activitypub_event->get_id() ),
 		);

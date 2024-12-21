@@ -6,9 +6,9 @@
  */
 
 // Defined here because setting them in .wp-env.json doesn't work for some reason.
-\define( 'WP_TESTS_DOMAIN', 'example.org' );
-\define( 'WP_SITEURL', 'http://example.org' );
-\define( 'WP_HOME', 'http://example.org' );
+\defined( 'WP_TESTS_DOMAIN' ) ?? \define( 'WP_TESTS_DOMAIN', 'example.org' );
+\defined( 'WP_SITEURL' ) ?? \define( 'WP_SITEURL', 'http://example.org' );
+\defined( 'WP_HOME' ) ?? \define( 'WP_HOME', 'http://example.org' );
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
@@ -87,6 +87,9 @@ function _manually_load_plugin() {
 			break;
 		case 'gatherpress':
 			$plugin_file = 'gatherpress/gatherpress.php';
+			\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+			\update_option( 'event_bridge_for_activitypub_integration_used_for_event_sources_feature', \Event_Bridge_For_ActivityPub\Integrations\GatherPress::class );
+			\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 			break;
 		case 'wp_event_manager':
 			$plugin_file = 'wp-event-manager/wp-event-manager.php';
@@ -105,7 +108,7 @@ function _manually_load_plugin() {
 		// For the Event Sources feature we currently only test with GatherPress.
 		_manually_load_event_plugin( 'gatherpress/gatherpress.php' );
 		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
-		\update_option( 'event_bridge_for_activitypub_plugin_used_for_event_source_feature', 'GatherPress' );
+		\update_option( 'event_bridge_for_activitypub_integration_used_for_event_sources_feature', 'GatherPress' );
 		\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 	} else {
 		// For all other tests we mainly use the Events Calendar as a reference.

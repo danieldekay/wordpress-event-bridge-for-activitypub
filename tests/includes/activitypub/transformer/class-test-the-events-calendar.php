@@ -5,7 +5,7 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
-namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer;
 
 /**
  * Sample test case.
@@ -126,28 +126,28 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 	 */
 	public function test_transform_event_with_mapped_categories() {
 		// Create category.
-		$category_id_music   = wp_insert_term( 'Music', Tribe__Events__Main::TAXONOMY, array( 'slug' => 'music' ) );
-		$category_id_theatre = wp_insert_term( 'Theatre', Tribe__Events__Main::TAXONOMY, array( 'slug' => 'theatre' ) );
+		$category_id_music   = wp_insert_term( 'Music', \Tribe__Events__Main::TAXONOMY, array( 'slug' => 'music' ) );
+		$category_id_theatre = wp_insert_term( 'Theatre', \Tribe__Events__Main::TAXONOMY, array( 'slug' => 'theatre' ) );
 
 		// Set default mapping for event categories.
-		update_option( 'event_bridge_for_activitypub_default_event_category', 'MUSIC' );
+		\update_option( 'event_bridge_for_activitypub_default_event_category', 'MUSIC' );
 
 		// Set an override for the category with the slug theatre.
-		update_option( 'event_bridge_for_activitypub_event_category_mappings', array( 'theatre' => 'THEATRE' ) );
+		\update_option( 'event_bridge_for_activitypub_event_category_mappings', array( 'theatre' => 'THEATRE' ) );
 
 		// Create a The Events Calendar event with the music category.
 		$wp_object = tribe_events()
 			->set_args( self::MOCKUP_EVENTS['minimal_event'] )
 			->create();
 		// Set the post term music to the event.
-		wp_set_post_terms( $wp_object->ID, $category_id_music['term_id'], Tribe__Events__Main::TAXONOMY );
+		wp_set_post_terms( $wp_object->ID, $category_id_music['term_id'], \Tribe__Events__Main::TAXONOMY );
 		// Call the transformer.
 		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
 		// See if the default category mapping is applied.
 		$this->assertEquals( 'MUSIC', $event_array['category'] );
 
 		// Set the post term theatre to the event.
-		wp_set_post_terms( $wp_object->ID, $category_id_theatre['term_id'], Tribe__Events__Main::TAXONOMY, false );
+		wp_set_post_terms( $wp_object->ID, $category_id_theatre['term_id'], \Tribe__Events__Main::TAXONOMY, false );
 		// Call the transformer.
 		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
 		// See if the default category mapping is applied.
