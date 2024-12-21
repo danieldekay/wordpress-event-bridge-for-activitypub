@@ -45,18 +45,6 @@ class Test_GatherPress extends \WP_UnitTestCase {
 	protected $server;
 
 	/**
-	 * Create fake data before tests run.
-	 */
-	public static function wpSetUpBeforeClass() {
-		// Follow actor.
-		$event_source = Event_Source::init_from_array( self::FOLLOWED_ACTOR );
-		$post_id      = $event_source->save();
-
-		// Save the post ID for usage in tests.
-		self::$event_source_post_id = $post_id;
-	}
-
-	/**
 	 * Set up the test.
 	 */
 	public function set_up() {
@@ -81,6 +69,10 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
+		// Add event source (ActivityPub follower).
+		_delete_all_posts();
+		\Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source::init_from_array( self::FOLLOWED_ACTOR )->save();
+
 		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
 		\update_option(
 			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
@@ -94,7 +86,7 @@ class Test_GatherPress extends \WP_UnitTestCase {
 	 */
 	public function tear_down() {
 		\delete_option( 'permalink_structure' );
-		\add_filter( 'activitypub_defer_signature_verification', '__return_false' );
+		_delete_all_posts();
 	}
 
 	/**

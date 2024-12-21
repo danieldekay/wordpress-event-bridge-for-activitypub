@@ -9,6 +9,7 @@
 
 namespace Event_Bridge_For_ActivityPub\Tests;
 
+use GatherPress\Core\Event_Query;
 use WP_REST_Request;
 use WP_REST_Server;
 
@@ -28,31 +29,11 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 	);
 
 	/**
-	 * Post ID.
-	 *
-	 * @var int
-	 */
-	protected static $event_source_post_id;
-
-	/**
 	 * REST Server.
 	 *
 	 * @var WP_REST_Server
 	 */
 	protected $server;
-
-	/**
-	 * Create fake data before tests run.
-	 *
-	 * @param WP_UnitTest_Factory $factory Helper that creates fake data.
-	 */
-	public static function wpSetUpBeforeClass( $factory ) {
-		// Follow actor.
-		$event_source = \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source::init_from_array( self::FOLLOWED_ACTOR );
-		$post_id      = $event_source->save();
-
-		self::$event_source_post_id = $post_id;
-	}
 
 	/**
 	 * Set up the test.
@@ -79,6 +60,10 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
+		// Add event source (ActivityPub follower).
+		_delete_all_posts();
+		\Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source::init_from_array( self::FOLLOWED_ACTOR )->save();
+
 		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
 		\update_option(
 			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
@@ -92,13 +77,12 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 	 */
 	public function tear_down() {
 		\delete_option( 'permalink_structure' );
-		\add_filter( 'activitypub_defer_signature_verification', '__return_false' );
 	}
 
 	/**
 	 * Test receiving event from followed actor.
 	 */
-	public function test_incoming_event() {
+	public function test_incoming_valid_event_returns_202() {
 		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
 
 		$json = array(
@@ -109,7 +93,7 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 				'id'        => 'https://remote.example/@organizer/events/new-year-party',
 				'type'      => 'Event',
 				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS ),
-				'name'      => 'New Years Party 50/51',
+				'name'      => 'Fediverse Party [valid]',
 				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
 				'published' => '2020-01-01T00:00:00Z',
 			),
@@ -122,6 +106,8 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		// Dispatch the request.
 		$response = \rest_do_request( $request );
 		$this->assertEquals( 202, $response->get_status() );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
 
 	/**
@@ -137,7 +123,7 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 			'object' => array(
 				'id'        => 'https://remote.example/@organizer/events/new-year-party',
 				'type'      => 'Event',
-				'name'      => 'New Years Party 50/51',
+				'name'      => 'Fediverse Party [missing start time]',
 				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
 				'published' => '2020-01-01T00:00:00Z',
 			),
@@ -150,6 +136,8 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		// Dispatch the request.
 		$response = \rest_do_request( $request );
 		$this->assertEquals( 400, $response->get_status() );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
 
 	/**
@@ -165,8 +153,8 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 			'object' => array(
 				'id'        => 'https://remote.example/@organizer/events/new-year-party',
 				'type'      => 'Event',
-				'name'      => 'New Years Party 50/51',
-				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS ),
+				'name'      => 'Fediverse Party [faulty start time]',
+				'startTime' => \gmdate( 'Y-m-d H:i:s', time() + WEEK_IN_SECONDS ),
 				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
 				'published' => '2020-01-01T00:00:00Z',
 			),
@@ -178,7 +166,9 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 
 		// Dispatch the request.
 		$response = \rest_do_request( $request );
-		$this->assertEquals( 401, $response->get_status() );
+		$this->assertEquals( 400, $response->get_status() );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
 
 	/**
@@ -194,7 +184,7 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 			'object' => array(
 				'id'        => 'https://remote.example/@organizer/events/new-year-party',
 				'type'      => 'Event',
-				'name'      => 'New Years Party 50/51',
+				'name'      => 'Fediverse Event [took place in past]',
 				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() - WEEK_IN_SECONDS ),
 				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
 				'published' => '2020-01-01T00:00:00Z',
@@ -207,8 +197,16 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 
 		// Dispatch the request.
 		$response = \rest_do_request( $request );
+
 		// This should be 403 but it is not possible without lots of hacks at the moment.
-		$this->assertEquals( 401, $response->get_status() );
+		$this->assertEquals( 202, $response->get_status() );
+
+		// Verify that event did not get cached and added.
+		$event_query = Event_Query::get_instance();
+		$the_query   = $event_query->get_upcoming_events();
+		$this->assertEquals( false, $the_query->have_posts() );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
 
 
@@ -226,7 +224,7 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 				'id'        => 'https://remote.example/@another_organizer/events/new-year-party',
 				'type'      => 'Event',
 				'startTime' => '2050-12-31T18:00:00Z',
-				'name'      => 'New Years Party 50/51',
+				'name'      => 'Fediverse Party [from non-follower actor]',
 				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
 				'published' => '2020-01-01T00:00:00Z',
 			),
@@ -238,6 +236,13 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 
 		// Dispatch the request.
 		$response = \rest_do_request( $request );
-		$this->assertEquals( 401, $response->get_status() );
+		$this->assertEquals( 202, $response->get_status() );
+
+		// Verify that event did not get cached and added.
+		$event_query = Event_Query::get_instance();
+		$the_query   = $event_query->get_upcoming_events();
+		$this->assertEquals( false, $the_query->have_posts() );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
 }

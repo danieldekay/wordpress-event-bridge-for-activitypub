@@ -30,11 +30,5 @@ class Handler {
 		Update::init();
 		Create::init();
 		Delete::init();
-		\add_filter(
-			'activitypub_validate_object',
-			array( Event_Sources::class, 'validate_event_object' ),
-			12,
-			3
-		);
 	}
 }

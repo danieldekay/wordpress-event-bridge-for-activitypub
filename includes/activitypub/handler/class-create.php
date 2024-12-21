@@ -42,7 +42,7 @@ class Create {
 		}
 
 		if ( ! Event_Sources::actor_is_event_source( $activity['actor'] ) ) {
-			return;
+			return false;
 		}
 
 		// Check if Activity is public or not.

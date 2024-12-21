@@ -18,6 +18,7 @@ use Event_Bridge_For_ActivityPub\Admin\User_Interface;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration;
 use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
 use Exception;
+use WP_Error;
 
 use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\is_activitypub_request;
@@ -37,6 +38,14 @@ class Event_Sources {
 
 		// Register handlers for incoming activities to the ActivityPub plugin, e.g. incoming `Event` objects.
 		\add_action( 'activitypub_register_handlers', array( Handler::class, 'register_handlers' ) );
+
+		// Add validation filter, so that only plausible event objects reach the handlers above.
+		\add_filter(
+			'activitypub_validate_object',
+			array( self::class, 'validate_event_object' ),
+			12,
+			3
+		);
 
 		// Apply modifications to the UI, e.g. disable editing of remote event posts.
 		\add_action( 'init', array( User_Interface::class, 'init' ) );
@@ -352,11 +361,17 @@ class Event_Sources {
 		);
 
 		if ( array_intersect( $required, array_keys( $object ) ) !== $required ) {
-			return false;
+			return new WP_Error(
+				'event_bridge_for_activitypub_invalid_event_object',
+				__( 'The Event object is missing a required attribute.', 'event-bridge-for-activitypub' )
+			);
 		}
 
 		if ( ! self::is_valid_activitypub_time_string( $object['startTime'] ) ) {
-			return false;
+			return new WP_Error(
+				'event_bridge_for_activitypub_event_object_is_not_in_the_future',
+				__( 'Ignoring event that has already started.', 'event-bridge-for-activitypub' )
+			);
 		}
 
 		return $valid;

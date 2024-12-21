@@ -71,7 +71,7 @@ class Test_Events_Manager extends \WP_UnitTestCase {
 	 */
 	public function test_transform_of_minimal_event() {
 		// Create mockup event.
-		$event                   = new EM_Event();
+		$event                   = new \EM_Event();
 		$event->event_name       = 'Events Manager Test event';
 		$event->post_content     = 'Event description';
 		$event->event_start_date = gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) );

@@ -214,7 +214,7 @@ install_wp_plugin() {
 	else
 		PLUGIN_VERSION=$2
 	fi
-	
+
 	if [ -n "$PLUGIN_VERSION" ]; then
 		PLUGIN_FILE="$PLUGIN_NAME.$PLUGIN_VERSION.zip"
 	else
