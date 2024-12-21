@@ -79,7 +79,7 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		// even though we support multiple onces in theory.
 		// But testing all combinations is beyond scope.
 		$active_event_plugins = \Event_Bridge_For_ActivityPub\Setup::get_instance()->get_active_event_plugins();
-		$this->assertEquals( 1, count( $active_event_plugins ) );
+		$this->assertArrayHasKey( 'the-events-calendar/the-events-calendar.php', $active_event_plugins );
 
 		// Enable ActivityPub support for the event plugin.
 		$this->assertContains( 'tribe_events', get_option( 'activitypub_support_post_types' ) );

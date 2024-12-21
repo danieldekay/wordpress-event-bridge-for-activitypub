@@ -104,16 +104,10 @@ function _manually_load_plugin() {
 
 	if ( $plugin_file ) {
 		_manually_load_event_plugin( $plugin_file );
-	} elseif ( 'event_sources' === $event_bridge_for_activitypub_integration_filter ) {
-		// For the Event Sources feature we currently only test with GatherPress.
-		_manually_load_event_plugin( 'gatherpress/gatherpress.php' );
-		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
-		\update_option( 'event_bridge_for_activitypub_integration_used_for_event_sources_feature', 'GatherPress' );
-		\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 	} else {
-		// For all other tests we mainly use the Events Calendar as a reference.
+		// For all other tests we mainly use the Events Calendar and GatherPress as reference.
 		_manually_load_event_plugin( 'the-events-calendar/the-events-calendar.php' );
-		_manually_load_event_plugin( 'very-simple-event-list/vsel.php' );
+		_manually_load_event_plugin( 'gatherpress/gatherpress.php' );
 	}
 
 	// Hot fix that allows using Events Manager within unit tests, because the em_init() is later not run as admin.

@@ -41,6 +41,28 @@ class The_Events_Calendar extends Base {
 	}
 
 	/**
+	 * Add venue.
+	 *
+	 * @param int $post_id The post ID.
+	 */
+	private function add_venue( $post_id ) {
+		$location = $this->activitypub_event->get_location();
+
+		if ( ! $location ) {
+			return;
+		}
+
+		if ( ! isset( $location['name'] ) ) {
+			return;
+		}
+
+		// Fallback for Gancio instances.
+		if ( 'online' === $location['name'] ) {
+			return;
+		}
+	}
+
+	/**
 	 * Save the ActivityPub event object as GatherPress Event.
 	 *
 	 * @return false|int
@@ -76,6 +98,8 @@ class The_Events_Calendar extends Base {
 		if ( ! $post ) {
 			return false;
 		}
+
+		$this->add_venue( $post->ID );
 
 		// Limit this as a safety measure.
 		remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );

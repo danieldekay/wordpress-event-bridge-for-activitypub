@@ -61,6 +61,12 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 	public function set_up() {
 		\add_option( 'permalink_structure', '/%postname%/' );
 
+		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+		\update_option(
+			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+			\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class );
+		\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
+
 		global $wp_rest_server;
 		$wp_rest_server = new WP_REST_Server();
 		$this->server   = $wp_rest_server;

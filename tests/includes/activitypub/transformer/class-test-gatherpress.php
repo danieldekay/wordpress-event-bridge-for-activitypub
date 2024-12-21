@@ -40,7 +40,7 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		// even though we support multiple onces in theory.
 		// But testing all combinations is beyond scope.
 		$active_event_plugins = \Event_Bridge_For_ActivityPub\Setup::get_instance()->get_active_event_plugins();
-		$this->assertEquals( 1, count( $active_event_plugins ) );
+		$this->assertArrayHasKey( 'gatherpress/gatherpress.php', $active_event_plugins );
 
 		// Enable ActivityPub support for the event plugin.
 		$this->assertContains( 'gatherpress_event', get_option( 'activitypub_support_post_types' ) );
