@@ -36,9 +36,11 @@ class Test_Event extends \WP_UnitTestCase {
 	 * Test the shortcode for rendering the events start time.
 	 */
 	public function test_start_time() {
+		$event = Test_The_Events_Calendar::MOCKUP_EVENTS['minimal_event'];
+
 		// Create a The Events Calendar Event without content.
 		$wp_object = tribe_events()
-			->set_args( Test_The_Events_Calendar::MOCKUP_EVENTS['minimal_event'] )
+			->set_args( $event )
 			->create();
 
 		// Call the transformer Factory.
@@ -48,19 +50,22 @@ class Test_Event extends \WP_UnitTestCase {
 			return;
 		}
 
+		$datetime_format = \get_option( 'date_format' ) . ' ' . \get_option( 'time_format' );
+		$time_string     = \wp_date( $datetime_format, \strtotime( $event['start_date'] ) );
+
 		$transformer->register_shortcodes();
 
 		$summary = '[ap_start_time]';
 		$summary = \do_shortcode( $summary );
-		$this->assertEquals( '🗓️ Start: December 1, 2024 3:00 pm', $summary );
+		$this->assertEquals( "🗓️ Start: {$time_string}", $summary );
 
 		$summary = '[ap_start_time icon="false"]';
 		$summary = \do_shortcode( $summary );
-		$this->assertEquals( 'Start: December 1, 2024 3:00 pm', $summary );
+		$this->assertEquals( "Start: {$time_string}", $summary );
 
 		$summary = '[ap_start_time icon="false" label="false"]';
 		$summary = \do_shortcode( $summary );
-		$this->assertEquals( 'December 1, 2024 3:00 pm', $summary );
+		$this->assertEquals( $time_string, $summary );
 
 		$transformer->unregister_shortcodes();
 	}
@@ -69,9 +74,11 @@ class Test_Event extends \WP_UnitTestCase {
 	 * Test the shortcode for rendering the events end time.
 	 */
 	public function test_end_time() {
+		$event = Test_The_Events_Calendar::MOCKUP_EVENTS['minimal_event'];
+
 		// Create a The Events Calendar Event without content.
 		$wp_object = tribe_events()
-			->set_args( Test_The_Events_Calendar::MOCKUP_EVENTS['minimal_event'] )
+			->set_args( $event )
 			->create();
 
 		// Call the transformer Factory.
@@ -81,19 +88,22 @@ class Test_Event extends \WP_UnitTestCase {
 			return;
 		}
 
+		$datetime_format = \get_option( 'date_format' ) . ' ' . \get_option( 'time_format' );
+		$time_string     = \wp_date( $datetime_format, \strtotime( $event['start_date'] ) + $event['duration'] );
+
 		$transformer->register_shortcodes();
 
 		$summary = '[ap_end_time]';
 		$summary = \do_shortcode( $summary );
-		$this->assertEquals( '⏳ End: December 1, 2024 4:00 pm', $summary );
+		$this->assertEquals( "⏳ End: {$time_string}", $summary );
 
 		$summary = '[ap_end_time icon="false"]';
 		$summary = \do_shortcode( $summary );
-		$this->assertEquals( 'End: December 1, 2024 4:00 pm', $summary );
+		$this->assertEquals( "End: {$time_string}", $summary );
 
 		$summary = '[ap_end_time icon="false" label="false"]';
 		$summary = \do_shortcode( $summary );
-		$this->assertEquals( 'December 1, 2024 4:00 pm', $summary );
+		$this->assertEquals( $time_string, $summary );
 
 		$transformer->unregister_shortcodes();
 	}

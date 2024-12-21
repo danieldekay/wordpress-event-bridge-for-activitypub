@@ -82,7 +82,10 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
 		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
-		\update_option( 'event_bridge_for_activitypub_integration_used_for_event_sources_feature', \Event_Bridge_For_ActivityPub\Integrations\GatherPress::class );
+		\update_option(
+			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+			\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class
+		);
 		\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 	}
 

@@ -61,7 +61,7 @@
         ],
         "test-debug": [
             "@prepare-test",
-            "@test-gatherpress"
+            "@test-general"
         ],
         "test-vs-event-list": "phpunit --filter=vs_event_list",
         "test-the-events-calendar": "phpunit --filter=the_events_calendar",
@@ -74,6 +74,6 @@
         "test-event-organiser": "phpunit --filter=event_organiser",
         "test-event-bridge-for-activitypub-shortcodes": "phpunit --filter=shortcodes",
         "test-event-sources": "phpunit --filter=event_sources",
-        "test-all": "phpunit"
+        "test-general": "phpunit"
     }
 }

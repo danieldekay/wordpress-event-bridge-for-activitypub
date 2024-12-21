@@ -72,6 +72,12 @@ function _manually_load_plugin() {
 	switch ( $event_bridge_for_activitypub_integration_filter ) {
 		case 'the_events_calendar':
 			$plugin_file = 'the-events-calendar/the-events-calendar.php';
+			\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+			\update_option(
+				'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+				\Event_Bridge_For_ActivityPub\Integrations\The_Events_Calendar::class
+			);
+			\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 			break;
 		case 'vs_event_list':
 			$plugin_file = 'very-simple-event-list/vsel.php';
@@ -88,7 +94,10 @@ function _manually_load_plugin() {
 		case 'gatherpress':
 			$plugin_file = 'gatherpress/gatherpress.php';
 			\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
-			\update_option( 'event_bridge_for_activitypub_integration_used_for_event_sources_feature', \Event_Bridge_For_ActivityPub\Integrations\GatherPress::class );
+			\update_option(
+				'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+				\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class
+			);
 			\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 			break;
 		case 'wp_event_manager':
@@ -106,6 +115,12 @@ function _manually_load_plugin() {
 		_manually_load_event_plugin( $plugin_file );
 	} else {
 		// For all other tests we mainly use the Events Calendar and GatherPress as reference.
+		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+		\update_option(
+			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+			\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class
+		);
+		\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 		_manually_load_event_plugin( 'the-events-calendar/the-events-calendar.php' );
 		_manually_load_event_plugin( 'gatherpress/gatherpress.php' );
 	}

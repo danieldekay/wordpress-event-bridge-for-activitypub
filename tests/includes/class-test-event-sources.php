@@ -54,18 +54,15 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		self::$event_source_post_id = $post_id;
 	}
 
-
 	/**
 	 * Set up the test.
 	 */
 	public function set_up() {
-		\add_option( 'permalink_structure', '/%postname%/' );
+		if ( ! defined( 'GATHERPRESS_CORE_FILE' ) ) {
+			self::markTestSkipped( 'GatherPress plugin is not active.' );
+		}
 
-		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
-		\update_option(
-			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
-			\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class );
-		\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
+		\add_option( 'permalink_structure', '/%postname%/' );
 
 		global $wp_rest_server;
 		$wp_rest_server = new WP_REST_Server();
@@ -74,6 +71,20 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		do_action( 'rest_api_init' );
 
 		\Activitypub\Rest\Server::add_hooks();
+
+		// Mock the plugin activation.
+		\GatherPress\Core\Setup::get_instance()->activate_gatherpress_plugin( false );
+
+		// Make sure that ActivityPub support is enabled for GatherPress.
+		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
+		$aec->activate_activitypub_support_for_active_event_plugins();
+
+		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+		\update_option(
+			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+			\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class
+		);
+		\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 	}
 
 	/**
