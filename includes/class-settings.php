@@ -14,8 +14,6 @@ namespace Event_Bridge_For_ActivityPub;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Activitypub\Activity\Extended_Object\Event;
-
 /**
  * Class responsible for the ActivityPui Event Extension related Settings.
  *
@@ -133,7 +131,8 @@ class Settings {
 	 * @return bool True if allowed, false otherwise.
 	 */
 	private static function is_allowed_event_category( $event_category ): bool {
-		$allowed_event_categories = Event::DEFAULT_EVENT_CATEGORIES;
+		require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . '/includes/event-categories.php';
+		$allowed_event_categories = array_keys( EVENT_BRIDGE_FOR_ACTIVITYPUB_EVENT_CATEGORIES );
 		return in_array( $event_category, $allowed_event_categories, true );
 	}
 }
