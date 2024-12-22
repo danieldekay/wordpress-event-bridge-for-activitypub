@@ -209,7 +209,6 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
 
-
 	/**
 	 * Test receiving event from actor we do not follow.
 	 */

@@ -1,6 +1,6 @@
 <?php
 /**
- * Class SampleTest
+ * Class file containing tests for the ActivityPub transformer of the WordPress plugin The Events Calendar.
  *
  * @package Event_Bridge_For_ActivityPub
  */
@@ -8,7 +8,7 @@
 namespace Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer;
 
 /**
- * Sample test case.
+ * Class containing tests for the ActivityPub transformer of the WordPress plugin The Events Calendar.
  */
 class Test_The_Events_Calendar extends \WP_UnitTestCase {
 	/**

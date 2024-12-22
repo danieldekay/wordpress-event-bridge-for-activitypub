@@ -65,6 +65,15 @@ final class The_Events_Calendar extends Event_plugin_Integration implements Feat
 	}
 
 	/**
+	 * Return the location/venue post type used by tribe.
+	 *
+	 * @return ?string
+	 */
+	public static function get_location_post_type() {
+		return class_exists( '\Tribe__Events__Venue' ) ? \Tribe__Events__Venue::POSTTYPE : 'tribe_venue';
+	}
+
+	/**
 	 * Returns the IDs of the admin pages of the plugin.
 	 *
 	 * @return array The settings page urls.
@@ -88,11 +97,39 @@ final class The_Events_Calendar extends Event_plugin_Integration implements Feat
 	/**
 	 * Get a list of Post IDs of events that have ended.
 	 *
-	 * @param int $ended_before_time Filter: only get events that ended before that datetime as unix-time.
+	 * @param int $ends_before_time Filter to only get events that ended before that datetime as unix-time.
 	 *
-	 * @return array
+	 * @return array<int>
 	 */
-	public static function get_cached_remote_events( $ended_before_time ): array {
-		return array();
+	public static function get_cached_remote_events( $ends_before_time ): array {
+		add_filter(
+			'tribe_repository_events_apply_modifier_schema_entry',
+			array( self::class, 'add_is_activitypub_remote_cached_to_query' ),
+			10,
+			1
+		);
+
+		$events = tribe_events()->where( 'ends_before', $ends_before_time )->get_ids();
+
+		remove_filter(
+			'tribe_repository_events_apply_modifier_schema_entry',
+			array( self::class, 'add_is_activitypub_remote_cached_to_query' )
+		);
+
+		return $events;
+	}
+
+	/**
+	 * Only show remote cached ActivityPub events in Tribe query.
+	 *
+	 * @param array $schema_entry The current schema entry.
+	 * @return array The modified schema entry.
+	 */
+	public static function add_is_activitypub_remote_cached_to_query( $schema_entry ) {
+		$schema_entry['meta_query']['is-remote-cached'] = array(
+			'key'     => '_event_bridge_for_activitypub_is_remote_cached',
+			'compare' => 'EXISTS',
+		);
+		return $schema_entry;
 	}
 }

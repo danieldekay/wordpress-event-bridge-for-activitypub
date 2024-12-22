@@ -1,9 +1,10 @@
 <?php
 /**
- * ActivityPub Transmogrify for the The Events Calendar event plugin.
+ * ActivityPub Transmogrifier for the VS Event List event plugin.
  *
- * Handles converting incoming external ActivityPub events to The Events Calendar Events.
+ * Handles converting incoming external ActivityPub events to events of VS Event List.
  *
+ * @link https://wordpress.org/plugins/very-simple-event-list/
  * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  * @license AGPL-3.0-or-later
@@ -11,21 +12,34 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 
-use Tribe__Date_Utils;
-
 use function Activitypub\sanitize_url;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
- * ActivityPub Transmogrifier for the GatherPress event plugin.
+ * ActivityPub Transmogrifier for the VS Event List event plugin.
  *
- * Handles converting incoming external ActivityPub events to GatherPress Events.
+ * Handles converting incoming external ActivityPub events to events of VS Event List.
  *
+ * @link https://wordpress.org/plugins/very-simple-event-list/
  * @since 1.0.0
  */
-class The_Events_Calendar extends Base {
+class VS_Event_List extends Base {
+	/**
+	 * Get a list of Post IDs of events that have ended.
+	 *
+	 * @param int $cache_retention_period Additional time buffer in seconds.
+	 * @return ?array
+	 */
+	public static function get_past_events( $cache_retention_period = 0 ): ?array {
+		unset( $cache_retention_period );
+
+		$results = array();
+
+		return $results;
+	}
+
 	/**
 	 * Map an ActivityStreams Place to the Events Calendar venue.
 	 *

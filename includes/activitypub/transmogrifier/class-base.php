@@ -56,7 +56,7 @@ abstract class Base {
 		$post_id = $this->save_event();
 
 		if ( $post_id ) {
-			update_post_meta( $post_id, '_event_bridge_for_activitypub_is_cached', true );
+			update_post_meta( $post_id, '_event_bridge_for_activitypub_is_remote_cached', true );
 			update_post_meta( $post_id, 'activitypub_content_visibility', constant( 'ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL' ) ?? '' );
 		}
 	}

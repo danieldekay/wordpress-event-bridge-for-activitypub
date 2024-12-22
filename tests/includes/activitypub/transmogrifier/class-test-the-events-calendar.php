@@ -132,8 +132,83 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 			$venue = $venues[0];
 		}
 
-		// $this->assertEquals( $json['object']['location']['address'], $venue->address );
-		// $this->assertEquals( $json['object']['location']['name'], $venue->post_title );
+		$this->assertEquals( $json['object']['location']['address'], $venue->address );
+		$this->assertEquals( $json['object']['location']['name'], $venue->post_title );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
+	}
+
+	/**
+	 * Test receiving event from followed actor.
+	 */
+	public function test_incoming_event_with_postal_address() {
+		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
+
+		$json = array(
+			'id'     => 'https://remote.example/@organizer/events/new-year-party#create',
+			'type'   => 'Create',
+			'actor'  => 'https://remote.example/@organizer',
+			'object' => array(
+				'id'        => 'https://remote.example/@organizer/events/new-year-party',
+				'type'      => 'Event',
+				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS ),
+				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS + HOUR_IN_SECONDS ),
+				'name'      => 'Fediverse Party for The Events Calendar',
+				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
+				'published' => '2020-01-01T00:00:00Z',
+				'location'  => array(
+					'type'    => 'Place',
+					'name'    => 'Fediverse Concert Hall',
+					'address' => array(
+						'type'            => 'PostalAddress',
+						'streetAddress'   => 'FediStreet 13',
+						'postalCode'      => '1337',
+						'addressLocality' => 'Feditown',
+						'addressState'    => 'Fediverse State',
+						'addressCountry'  => 'Fediverse World',
+						'url'             => 'https://fedidevs.org/',
+					),
+				),
+			),
+		);
+
+		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
+		$request->set_header( 'Content-Type', 'application/activity+json' );
+		$request->set_body( \wp_json_encode( $json ) );
+
+		// Dispatch the request.
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+
+		// Check if post has been created.
+		$events = tribe_get_events();
+
+		$this->assertEquals( 1, count( $events ) );
+
+		// Initialize new GatherPress Event object.
+		$event = tribe_get_event( $events[0] );
+
+		$this->assertEquals( $json['object']['name'], $event->post_title );
+		$this->assertEquals( $json['object']['startTime'], $event->dates->start->format( 'Y-m-d\TH:i:s\Z' ) );
+		$this->assertEquals( $json['object']['endTime'], $event->dates->end->format( 'Y-m-d\TH:i:s\Z' ) );
+
+		$venues = $event->venues;
+		// Get first venue. We currently only support a single venue.
+		if ( $venues instanceof \Tribe\Events\Collections\Lazy_Post_Collection ) {
+			$venue = $venues->first();
+		} elseif ( empty( $this->wp_object->venues ) || ! empty( $this->wp_object->venues[0] ) ) {
+			return null;
+		} else {
+			$venue = $venues[0];
+		}
+
+		$this->assertEquals( $json['object']['location']['name'], $venue->post_title );
+		$this->assertEquals( $json['object']['location']['address']['streetAddress'], $venue->address );
+		$this->assertEquals( $json['object']['location']['address']['postalCode'], $venue->zip );
+		$this->assertEquals( $json['object']['location']['address']['addressLocality'], $venue->city );
+		$this->assertEquals( $json['object']['location']['address']['addressState'], $venue->state );
+		$this->assertEquals( $json['object']['location']['address']['addressCountry'], $venue->country );
+		$this->assertEquals( $json['object']['location']['address']['url'], $venue->website );
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}

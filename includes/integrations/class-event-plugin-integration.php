@@ -56,6 +56,15 @@ abstract class Event_Plugin_Integration {
 	abstract public static function get_activitypub_event_transformer( $post ): ActivityPub_Event_Transformer;
 
 	/**
+	 * In case an event plugin used a custom post type for the locations/venues return it here.
+	 *
+	 * @return ?string
+	 */
+	public static function get_location_post_type() {
+		return null;
+	}
+
+	/**
 	 * Returns the IDs of the admin pages of the plugin.
 	 *
 	 * @return array The IDs of one or several admin/settings pages.

@@ -36,9 +36,9 @@ interface Feature_Event_Sources {
 	 *
 	 * Filters the events to include only those that ended before the specified timestamp.
 	 *
-	 * @param int $ended_before_time Unix timestamp. Only events ending before this time will be included.
+	 * @param int $ends_before_time Unix timestamp. Only events ending before this time will be included.
 	 *
 	 * @return int[] List of post IDs for events that match the criteria.
 	 */
-	public static function get_cached_remote_events( $ended_before_time ): array;
+	public static function get_cached_remote_events( $ends_before_time ): array;
 }

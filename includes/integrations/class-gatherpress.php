@@ -83,19 +83,19 @@ final class GatherPress extends Event_Plugin_Integration implements Feature_Even
 	/**
 	 * Get a list of Post IDs of events that have ended.
 	 *
-	 * @param int $ended_before_time Filter: only get events that ended before that datetime as unix-time.
+	 * @param int $ends_before_time Filter: only get events that ended before that datetime as unix-time.
 	 *
 	 * @return array
 	 */
-	public static function get_cached_remote_events( $ended_before_time ): array {
+	public static function get_cached_remote_events( $ends_before_time ): array {
 		global $wpdb;
 
-		$ended_before_time_string = gmdate( 'Y-m-d H:i:s', $ended_before_time );
+		$ends_before_time_string = gmdate( 'Y-m-d H:i:s', $ends_before_time );
 
 		$results = $wpdb->get_col(
 			$wpdb->prepare(
 				"SELECT post_id FROM {$wpdb->prefix}gatherpress_events WHERE datetime_end < %s",
-				$ended_before_time_string
+				$ends_before_time_string
 			)
 		);
 
@@ -116,7 +116,7 @@ final class GatherPress extends Event_Plugin_Integration implements Feature_Even
 				if ( $post && 'gatherpress_event' === $post->post_type ) {
 					// Add your custom logic here to decide whether to force the link.
 					// For example, force it only if a specific meta field exists.
-					if ( get_post_meta( $post->ID, '_event_bridge_for_activitypub_is_cached', true ) ) {
+					if ( get_post_meta( $post->ID, '_event_bridge_for_activitypub_is_remote_cached', true ) ) {
 						return true; // Force the online event link.
 					}
 				}
