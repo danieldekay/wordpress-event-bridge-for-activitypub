@@ -93,7 +93,7 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS + HOUR_IN_SECONDS ),
 				'name'      => 'Fediverse Party for The Events Calendar',
 				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
-				'published' => '2020-01-01T00:00:00Z',
+				'published' => \gmdate( 'Y-m-d\TH:i:s\Z', time() ),
 				'location'  => array(
 					'type'    => 'Place',
 					'name'    => 'Fediverse Concert Hall',
@@ -155,7 +155,7 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS + HOUR_IN_SECONDS ),
 				'name'      => 'Fediverse Party for The Events Calendar',
 				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
-				'published' => '2020-01-01T00:00:00Z',
+				'published' => \gmdate( 'Y-m-d\TH:i:s\Z', time() ),
 				'location'  => array(
 					'type'    => 'Place',
 					'name'    => 'Fediverse Concert Hall',

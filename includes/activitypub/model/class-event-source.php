@@ -55,6 +55,13 @@ class Event_Source extends Actor {
 	}
 
 	/**
+	 * Return the Post-IDs of all events cached by this event source.
+	 */
+	public static function get_cached_events(): array {
+		return array();
+	}
+
+	/**
 	 * Get the WordPress post which stores the Event Source by the ActivityPub actor id of the event source.
 	 *
 	 * @param string $actor_id The ActivityPub actor ID.

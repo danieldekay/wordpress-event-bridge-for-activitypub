@@ -122,7 +122,7 @@ class Settings {
 			'event-bridge-for-activitypub',
 			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
 			array(
-				'type'              => 'array',
+				'type'              => 'string',
 				'description'       => \__( 'Define which plugin/integration is used for the event sources feature', 'event-bridge-for-activitypub' ),
 				'default'           => array(),
 				'sanitize_callback' => array( self::class, 'sanitize_event_plugin_integration_used_for_event_sources' ),

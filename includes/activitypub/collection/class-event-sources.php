@@ -53,7 +53,6 @@ class Event_Sources {
 	 */
 	public static function init() {
 		self::register_post_type();
-		\add_filter( 'allowed_redirect_hosts', array( self::class, 'add_event_sources_hosts_to_allowed_redirect_hosts' ) );
 		\add_action( 'event_bridge_for_activitypub_follow', array( self::class, 'activitypub_follow_actor' ), 10, 1 );
 		\add_action( 'event_bridge_for_activitypub_unfollow', array( self::class, 'activitypub_unfollow_actor' ), 10, 1 );
 	}

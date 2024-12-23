@@ -81,6 +81,12 @@ function _manually_load_plugin() {
 			break;
 		case 'vs_event_list':
 			$plugin_file = 'very-simple-event-list/vsel.php';
+			\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+			\update_option(
+				'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+				\Event_Bridge_For_ActivityPub\Integrations\VS_Event_List::class
+			);
+			\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 			break;
 		case 'events_manager':
 			$plugin_file = 'events-manager/events-manager.php';

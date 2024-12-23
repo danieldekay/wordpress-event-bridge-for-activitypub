@@ -13,6 +13,8 @@
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\VS_Event_List as VS_Event_List_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\VS_Event_List as VS_Event_List_Transmogrifier;
+use WP_Query;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -25,7 +27,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class VS_Event_List extends Event_Plugin_Integration {
+final class VS_Event_List extends Event_Plugin_Integration implements Feature_Event_Sources {
 	/**
 	 * Returns the full plugin file.
 	 *
@@ -70,5 +72,46 @@ final class VS_Event_List extends Event_Plugin_Integration {
 	 */
 	public static function get_activitypub_event_transformer( $post ): VS_Event_List_Transformer {
 		return new VS_Event_List_Transformer( $post, self::get_event_category_taxonomy() );
+	}
+
+	/**
+	 * Returns the Transmogrifier for The_Events_Calendar.
+	 */
+	public static function get_transmogrifier(): VS_Event_List_Transmogrifier {
+		return new VS_Event_List_Transmogrifier();
+	}
+
+	/**
+	 * Get a list of Post IDs of events that have ended.
+	 *
+	 * @param int $ends_before_time Filter to only get events that ended before that datetime as unix-time.
+	 *
+	 * @return array<int>
+	 */
+	public static function get_cached_remote_events( $ends_before_time ): array {
+		$args = array(
+			'post_type'      => 'event',
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'meta_query'     => array(
+				'relation' => 'AND',
+				array(
+					'key'     => '_event_bridge_for_activitypub_is_remote_cached',
+					'compare' => 'EXISTS',
+				),
+				array(
+					'key'     => 'event-date',
+					'value'   => $ends_before_time,
+					'type'    => 'NUMERIC',
+					'compare' => '<',
+				),
+			),
+		);
+
+		$query = new WP_Query( $args );
+
+		$post_ids = $query->posts;
+
+		return $post_ids;
 	}
 }

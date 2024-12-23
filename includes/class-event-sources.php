@@ -36,6 +36,9 @@ class Event_Sources {
 		// Register the Event Sources Collection which takes care of managing the event sources.
 		\add_action( 'init', array( Event_Sources_Collection::class, 'init' ) );
 
+		// Allow wp_safe_redirect to all followed event sources hosts.
+		\add_filter( 'allowed_redirect_hosts', array( self::class, 'add_event_sources_hosts_to_allowed_redirect_hosts' ) );
+
 		// Register handlers for incoming activities to the ActivityPub plugin, e.g. incoming `Event` objects.
 		\add_action( 'activitypub_register_handlers', array( Handler::class, 'register_handlers' ) );
 

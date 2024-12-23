@@ -1,6 +1,6 @@
 <?php
 /**
- * Test file for the Transmogrifier (import of ActivityPub Event objects) of GatherPress.
+ * Test file for the Transmogrifier (import of ActivityPub Event objects) in VS Event List.
  *
  * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
@@ -10,17 +10,18 @@
 namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transmogrifier;
 
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
-use GatherPress\Core\Event;
-use GatherPress\Core\Event_Query;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\VS_Event_List as TransformerVS_Event_List;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\VS_Event_List;
+use Event_Bridge_For_ActivityPub\Integrations\VS_Event_List as IntegrationsVS_Event_List;
 use WP_REST_Request;
 use WP_REST_Server;
 
 /**
- * Test class for the Transmogrifier (import of ActivityPub Event objects) of GatherPress.
+ * Test class for the Transmogrifier (import of ActivityPub Event objects) in VS Event List.
  *
- * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\GatherPress
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\VS_Event_List
  */
-class Test_GatherPress extends \WP_UnitTestCase {
+class Test_VS_Event_List extends \WP_UnitTestCase {
 	const FOLLOWED_ACTOR = array(
 		'id'      => 'https://remote.example/@organizer',
 		'type'    => 'Person',
@@ -29,13 +30,6 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		'name'    => 'The Organizer',
 		'summary' => 'Just a random organizer of events in the Fediverse',
 	);
-
-	/**
-	 * Post ID.
-	 *
-	 * @var int
-	 */
-	protected static $event_source_post_id;
 
 	/**
 	 * REST Server.
@@ -48,8 +42,8 @@ class Test_GatherPress extends \WP_UnitTestCase {
 	 * Set up the test.
 	 */
 	public function set_up() {
-		if ( ! defined( 'GATHERPRESS_CORE_FILE' ) ) {
-			self::markTestSkipped( 'GatherPress plugin is not active.' );
+		if ( ! function_exists( 'vsel_custom_post_type' ) ) {
+			self::markTestSkipped( 'VS Event List plugin is not active.' );
 		}
 
 		\add_option( 'permalink_structure', '/%postname%/' );
@@ -62,10 +56,7 @@ class Test_GatherPress extends \WP_UnitTestCase {
 
 		\Activitypub\Rest\Server::add_hooks();
 
-		// Mock the plugin activation.
-		\GatherPress\Core\Setup::get_instance()->activate_gatherpress_plugin( false );
-
-		// Make sure that ActivityPub support is enabled for GatherPress.
+		// Make sure that ActivityPub support is enabled for The Events Calendar.
 		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
@@ -76,16 +67,9 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
 		\update_option(
 			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
-			\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class
+			\Event_Bridge_For_ActivityPub\Integrations\VS_Event_List::class
 		);
 		\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
-	}
-
-	/**
-	 * Purge gatherpress custom events table.
-	 */
-	public static function delete_all_gatherpress_events() {
-		global $wpdb;
 	}
 
 	/**
@@ -93,7 +77,6 @@ class Test_GatherPress extends \WP_UnitTestCase {
 	 */
 	public function tear_down() {
 		\delete_option( 'permalink_structure' );
-		_delete_all_posts();
 	}
 
 	/**
@@ -111,7 +94,7 @@ class Test_GatherPress extends \WP_UnitTestCase {
 				'type'      => 'Event',
 				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS ),
 				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS + HOUR_IN_SECONDS ),
-				'name'      => 'Fediverse Party',
+				'name'      => 'Fediverse Party Test Event',
 				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
 				'published' => \gmdate( 'Y-m-d\TH:i:s\Z', time() ),
 				'location'  => array(
@@ -130,21 +113,15 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		$response = \rest_do_request( $request );
 		$this->assertEquals( 202, $response->get_status() );
 
-		// Check if post has been created.
-		$event_query = Event_Query::get_instance();
-		$the_query   = $event_query->get_upcoming_events();
+		$events = get_posts( array( 'post_type' => IntegrationsVS_Event_List::get_post_type() ) );
 
-		$this->assertEquals( true, $the_query->have_posts() );
-		$this->assertEquals( 1, $the_query->post_count );
+		$this->assertCount( 1, $events );
+		$event = $events[0];
 
-		// Initialize new GatherPress Event object.
-		$event = new Event( $the_query->get_posts()[0] );
-
-		$this->assertEquals( $json['object']['name'], $event->event->post_title );
-		$this->assertEquals( $json['object']['startTime'], $event->get_datetime_start( 'Y-m-d\TH:i:s\Z' ) );
-		$this->assertEquals( $json['object']['endTime'], $event->get_datetime_end( 'Y-m-d\TH:i:s\Z' ) );
-		$this->assertEquals( $json['object']['location']['address'], $event->get_venue_information()['full_address'] );
-		$this->assertEquals( $json['object']['location']['name'], $event->get_venue_information()['name'] );
-		$this->assertEquals( false, $event->get_venue_information()['is_online_event'] );
+		$this->assertEquals( $json['object']['name'], $event->post_title );
+		$this->assertEquals( $json['object']['startTime'], \gmdate( 'Y-m-d\TH:i:s\Z', get_post_meta( $event->ID, 'event-start-date', true ) ) );
+		$this->assertEquals( $json['object']['endTime'], \gmdate( 'Y-m-d\TH:i:s\Z', get_post_meta( $event->ID, 'event-date', true ) ) );
+		$this->assertStringStartsWith( $json['object']['location']['name'], get_post_meta( $event->ID, 'event-location', true ) );
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
 }

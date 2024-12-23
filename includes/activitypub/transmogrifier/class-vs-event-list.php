@@ -12,6 +12,8 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 
+use Event_Bridge_For_ActivityPub\Integrations\VS_Event_List as IntegrationsVS_Event_List;
+
 use function Activitypub\sanitize_url;
 
 // Exit if accessed directly.
@@ -27,94 +29,67 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  */
 class VS_Event_List extends Base {
 	/**
-	 * Get a list of Post IDs of events that have ended.
+	 * Extract location and address as string.
 	 *
-	 * @param int $cache_retention_period Additional time buffer in seconds.
-	 * @return ?array
+	 * @param ?array $location The ActivitySTreams location as an associative array.
+	 * @return string The location and address formatted as a single string.
 	 */
-	public static function get_past_events( $cache_retention_period = 0 ): ?array {
-		unset( $cache_retention_period );
+	private function get_location_as_string( $location ): string {
+		$location_string = '';
 
-		$results = array();
+		// Return empty string when location is not an associative array.
+		if ( is_null( $location ) || ! is_array( $location ) ) {
+			return $location_string;
+		}
 
-		return $results;
+		if ( ! isset( $location['type'] ) || 'Place' !== $location['type'] ) {
+			return $location_string;
+		}
+
+		// Add name of the location.
+		if ( isset( $location['name'] ) ) {
+			$location_string .= $location['name'];
+		}
+
+		// Add delimiter between name and address if both are set.
+		if ( isset( $location['name'] ) && isset( $location['address'] ) ) {
+			$location_string .= ' – ';
+		}
+
+		// Add address.
+		if ( isset( $location['address'] ) ) {
+			$location_string .= $this->address_to_string( $location['address'] );
+		}
+		return $location_string;
 	}
 
 	/**
-	 * Map an ActivityStreams Place to the Events Calendar venue.
+	 * Add tags to post.
 	 *
-	 * @param array $location An ActivityPub location as an associative array.
-	 * @link https://www.w3.org/TR/activitystreams-vocabulary/#dfn-place
-	 * @return array
+	 * @param int $post_id The post ID.
 	 */
-	private function get_venue_args( $location ) {
-		$args = array(
-			'venue'  => $location['name'],
-			'status' => 'publish',
-		);
+	private function add_tags_to_post( $post_id ) {
+		$tags_array = $this->activitypub_event->get_tag();
 
-		if ( is_array( $location['address'] ) && isset( $location['address']['type'] ) && 'PostalAddress' === $location['address']['type'] ) {
-			$mapping = array(
-				'streetAddress'   => 'address',
-				'postalCode'      => 'zip',
-				'addressLocality' => 'city',
-				'addressState'    => 'state',
-				'addressCountry'  => 'country',
-				'url'             => 'website',
-			);
-
-			foreach ( $mapping as $postal_address_key => $venue_key ) {
-				if ( isset( $location['address'][ $postal_address_key ] ) ) {
-					$args[ $venue_key ] = $location['address'][ $postal_address_key ];
-				}
-			}
-		} elseif ( is_string( $location['address'] ) ) {
-			// Use the address field for a solely text address.
-			$args['address'] = $location['address'];
+		// Ensure the input is valid.
+		if ( empty( $tags_array ) || ! is_array( $tags_array ) || ! $post_id ) {
+			return false;
 		}
 
-		return $args;
-	}
-
-	/**
-	 * Add venue.
-	 *
-	 * @return int|bool $post_id The venues post ID.
-	 */
-	private function add_venue() {
-		$location = $this->activitypub_event->get_location();
-
-		if ( ! $location ) {
-			return;
-		}
-
-		if ( ! isset( $location['name'] ) ) {
-			return;
-		}
-
-		// Fallback for Gancio instances.
-		if ( 'online' === $location['name'] ) {
-			return;
-		}
-
-		$post_ids = tribe_events()->search( $location['name'] )->all();
-
-		$post_id = false;
-
-		if ( count( $post_ids ) ) {
-			$post_id = reset( $post_ids );
-		}
-
-		if ( $post_id && get_post_meta( $post_id, '_event_bridge_for_activitypub_is_remote_cached', true ) ) {
-			tribe_venues()->where( 'id', $post_id )->set_args( $this->get_venue_args( $location ) )->save()[0];
-		} else {
-			$post = tribe_venues()->set_args( $this->get_venue_args( $location ) )->create();
-			if ( $post ) {
-				$post_id = $post->ID;
+		// Extract and process tag names.
+		$tag_names = array();
+		foreach ( $tags_array as $tag ) {
+			if ( isset( $tag['name'] ) && 'Hashtag' === $tag['type'] ) {
+				$tag_names[] = ltrim( $tag['name'], '#' ); // Remove the '#' from the name.
 			}
 		}
 
-		return $post_id;
+		// Add the tags as terms to the post.
+		if ( ! empty( $tag_names ) ) {
+			wp_set_object_terms( $post_id, $tag_names, IntegrationsVS_Event_List::get_event_category_taxonomy(), true );
+		}
+
+		return true;
 	}
 
 	/**
@@ -124,59 +99,62 @@ class VS_Event_List extends Base {
 	 */
 	public function save_event() {
 		// Limit this as a safety measure.
-		add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
+		\add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
 		$post_id = $this->get_post_id_from_activitypub_id();
 
-		$duration = $this->get_duration();
-
-		$venue_id = $this->add_venue();
-
 		$args = array(
-			'title'      => sanitize_text_field( $this->activitypub_event->get_name() ),
-			'content'    => wp_kses_post( $this->activitypub_event->get_content() ),
-			'start_date' => gmdate( 'Y-m-d H:i:s', strtotime( $this->activitypub_event->get_start_time() ) ),
-			'duration'   => $duration,
-			'status'     => 'publish',
-			'guid'       => sanitize_url( $this->activitypub_event->get_id() ),
+			'post_title'   => \sanitize_text_field( $this->activitypub_event->get_name() ),
+			'post_type'    => \Event_Bridge_For_ActivityPub\Integrations\VS_Event_List::get_post_type(),
+			'post_content' => \wp_kses_post( $this->activitypub_event->get_content() ?? '' ),
+			'post_excerpt' => \wp_kses_post( $this->activitypub_event->get_summary() ?? '' ),
+			'post_status'  => 'publish',
+			'guid'         => \sanitize_url( $this->activitypub_event->get_id() ),
+			'meta_input'   => array(
+				'event-start-date'  => \strtotime( $this->activitypub_event->get_start_time() ),
+				'event-link'        => \sanitize_url( $this->activitypub_event->get_url() ),
+				'event-link-label'  => \sanitize_text_field( __( 'Original Website', 'event-bridge-for-activitypub' ) ),
+				'event-link-target' => 'yes', // Open in new window.
+				'event-link-title'  => 'no', // Whether to redirect event title to original source.
+				'event-link-image'  => 'no', // Whether to redirect events featured image to original source.
+			),
 		);
 
-		if ( $venue_id ) {
-			$args['venue']   = $venue_id;
-			$args['VenueID'] = $venue_id;
+		// Add end time.
+		$end_time = $this->activitypub_event->get_end_time();
+		if ( $end_time ) {
+			$args['meta_input']['event-date'] = \strtotime( $end_time );
 		}
 
-		$tribe_event = new The_Events_Calendar_Event_Repository();
+		// Maybe add location.
+		$location = $this->get_location_as_string( $this->activitypub_event->get_location() );
+		if ( $location ) {
+			$args['meta_input']['event-location'] = $location;
+		}
 
 		if ( $post_id ) {
-			$args['post_title']   = $args['title'];
-			$args['post_content'] = $args['content'];
-			// Update existing GatherPress event post.
-			$post = \Tribe__Events__API::updateEvent( $post_id, $args );
+			// Update existing  event post.
+			$args['ID'] = $post_id;
+			$post_id    = \wp_update_post( $args );
 		} else {
-			$post = $tribe_event->set_args( $args )->create();
+			// Insert new event post.
+			$post_id = \wp_insert_post( $args );
 		}
 
-		if ( ! $post ) {
+		if ( ! $post_id || \is_wp_error( $post_id ) ) {
 			return false;
 		}
 
+		// Insert featured image.
+		$image = $this->get_featured_image();
+		self::set_featured_image_with_alt( $post_id, $image['url'], $image['alt'] );
+
+		// Add hashtags.
+		$this->add_tags_to_post( $post_id );
+
 		// Limit this as a safety measure.
-		remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
+		\remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
-		return $post->ID;
-	}
-
-	/**
-	 * Get the events duration in seconds.
-	 *
-	 * @return int
-	 */
-	private function get_duration() {
-		$end_time = $this->activitypub_event->get_end_time();
-		if ( ! $end_time ) {
-			return 2 * HOUR_IN_SECONDS;
-		}
-		return abs( strtotime( $end_time ) - strtotime( $this->activitypub_event->get_start_time() ) );
+		return $post_id;
 	}
 }

@@ -12,6 +12,7 @@
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 
 use DateTime;
+use Event_Bridge_For_ActivityPub\Integrations\GatherPress as IntegrationsGatherPress;
 
 use function Activitypub\sanitize_url;
 
@@ -51,7 +52,7 @@ class GatherPress extends Base {
 
 		// Add the tags as terms to the post.
 		if ( ! empty( $tag_names ) ) {
-			wp_set_object_terms( $post_id, $tag_names, 'gatherpress_topic', true );
+			wp_set_object_terms( $post_id, $tag_names, IntegrationsGatherPress::get_event_category_taxonomy(), true );
 		}
 
 		return true;
