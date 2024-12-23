@@ -120,7 +120,7 @@ class The_Events_Calendar extends Base {
 
 		$args = array(
 			'title'      => sanitize_text_field( $this->activitypub_event->get_name() ),
-			'content'    => wp_kses_post( $this->activitypub_event->get_content() ),
+			'content'    => wp_kses_post( $this->activitypub_event->get_content() ?? '' ),
 			'start_date' => gmdate( 'Y-m-d H:i:s', strtotime( $this->activitypub_event->get_start_time() ) ),
 			'duration'   => $duration,
 			'status'     => 'publish',
