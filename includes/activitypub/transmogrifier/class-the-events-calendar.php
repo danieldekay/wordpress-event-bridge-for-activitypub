@@ -91,7 +91,7 @@ class The_Events_Calendar extends Base {
 			$post_id = reset( $post_ids );
 		}
 
-		if ( $post_id && get_post_meta( $post_id, '_event_bridge_for_activitypub_is_remote_cached' ) ) {
+		if ( $post_id && get_post_meta( $post_id, '_event_bridge_for_activitypub_is_remote_cached', true ) ) {
 			tribe_venues()->where( 'id', $post_id )->set_args( $this->get_venue_args( $location ) )->save()[0];
 		} else {
 			$post = tribe_venues()->set_args( $this->get_venue_args( $location ) )->create();

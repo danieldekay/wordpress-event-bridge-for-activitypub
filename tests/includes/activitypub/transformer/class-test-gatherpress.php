@@ -33,6 +33,13 @@ class Test_GatherPress extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Tear down the test.
+	 */
+	public function tear_down() {
+		_delete_all_posts();
+	}
+
+	/**
 	 * Test that the right transformer gets applied.
 	 */
 	public function test_transformer_class() {
@@ -48,7 +55,7 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		// Mock GatherPress Event.
 		$post_id = wp_insert_post(
 			array(
-				'post_title'   => 'Unit Test Event',
+				'post_title'   => 'Test Event for transformer class.',
 				'post_type'    => 'gatherpress_event',
 				'post_content' => 'Unit Test description.',
 				'post_status'  => 'publish',

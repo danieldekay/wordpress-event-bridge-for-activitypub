@@ -7,18 +7,17 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transmogrifier;
+namespace Event_Bridge_For_ActivityPub\Tests\Integrations;
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
-use GatherPress\Core\Event;
-use GatherPress\Core\Event_Query;
+use Event_Bridge_For_ActivityPub\Integrations\GatherPress;
+
 use WP_REST_Request;
 use WP_REST_Server;
 
 /**
  * Test class for the Transmogrifier (import of ActivityPub Event objects) of GatherPress.
  *
- * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\GatherPress
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\Integrations\GatherPress
  */
 class Test_GatherPress extends \WP_UnitTestCase {
 	const FOLLOWED_ACTOR = array(
@@ -29,13 +28,6 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		'name'    => 'The Organizer',
 		'summary' => 'Just a random organizer of events in the Fediverse',
 	);
-
-	/**
-	 * Post ID.
-	 *
-	 * @var int
-	 */
-	protected static $event_source_post_id;
 
 	/**
 	 * REST Server.
@@ -62,10 +54,7 @@ class Test_GatherPress extends \WP_UnitTestCase {
 
 		\Activitypub\Rest\Server::add_hooks();
 
-		// Mock the plugin activation.
-		\GatherPress\Core\Setup::get_instance()->activate_gatherpress_plugin( false );
-
-		// Make sure that ActivityPub support is enabled for GatherPress.
+		// Make sure that ActivityPub support is enabled for The Events Calendar.
 		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
@@ -82,26 +71,25 @@ class Test_GatherPress extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Purge gatherpress custom events table.
-	 */
-	public static function delete_all_gatherpress_events() {
-		global $wpdb;
-	}
-
-	/**
 	 * Tear down the test.
 	 */
 	public function tear_down() {
 		\delete_option( 'permalink_structure' );
-		_delete_all_posts();
+	}
+
+	public static function get_all_posts() {
+		global $wpdb;
+
+		return $wpdb->get_results( "SELECT ID, post_type from {$wpdb->posts}", ARRAY_A );
 	}
 
 	/**
 	 * Test receiving event from followed actor.
 	 */
-	public function test_incoming_event() {
+	public function test_getting_past_remote_events() {
 		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
 
+		// Receive an federated event.
 		$json = array(
 			'id'     => 'https://remote.example/@organizer/events/new-year-party#create',
 			'type'   => 'Create',
@@ -111,7 +99,7 @@ class Test_GatherPress extends \WP_UnitTestCase {
 				'type'      => 'Event',
 				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS ),
 				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS + HOUR_IN_SECONDS ),
-				'name'      => 'Fediverse Party',
+				'name'      => 'Fediverse Party for GatherPress',
 				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
 				'published' => '2020-01-01T00:00:00Z',
 				'location'  => array(
@@ -130,21 +118,37 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		$response = \rest_do_request( $request );
 		$this->assertEquals( 202, $response->get_status() );
 
-		// Check if post has been created.
-		$event_query = Event_Query::get_instance();
-		$the_query   = $event_query->get_upcoming_events();
+		// Mock local GatherPress Event.
+		$post_id = wp_insert_post(
+			array(
+				'post_title'   => 'Locally created GatherPress event',
+				'post_type'    => 'gatherpress_event',
+				'post_content' => 'Unit Test description.',
+				'post_status'  => 'publish',
+			)
+		);
+		$event   = new \GatherPress\Core\Event( $post_id );
+		$params  = array(
+			'datetime_start' => '+10 days 15:00:00',
+			'datetime_end'   => '+10 days 16:00:00',
+			'timezone'       => \wp_timezone_string(),
+		);
+		$event->save_datetimes( $params );
 
-		$this->assertEquals( true, $the_query->have_posts() );
-		$this->assertEquals( 1, $the_query->post_count );
+		$this->assertNotEquals( false, $post_id );
 
-		// Initialize new GatherPress Event object.
-		$event = new Event( $the_query->get_posts()[0] );
+		// Check if we now have two tribe events.
 
-		$this->assertEquals( $json['object']['name'], $event->event->post_title );
-		$this->assertEquals( $json['object']['startTime'], $event->get_datetime_start( 'Y-m-d\TH:i:s\Z' ) );
-		$this->assertEquals( $json['object']['endTime'], $event->get_datetime_end( 'Y-m-d\TH:i:s\Z' ) );
-		$this->assertEquals( $json['object']['location']['address'], $event->get_venue_information()['full_address'] );
-		$this->assertEquals( $json['object']['location']['name'], $event->get_venue_information()['name'] );
-		$this->assertEquals( false, $event->get_venue_information()['is_online_event'] );
+		$query = \GatherPress\Core\Event_Query::get_instance();
+		$query->get_past_events();
+
+		$events = GatherPress::get_cached_remote_events( time() + MONTH_IN_SECONDS );
+		$this->assertEquals( 1, count( $events ) );
+		$this->assertEquals( $json['object']['id'], get_post( $events[0] )->guid );
+
+		$events = GatherPress::get_cached_remote_events( time() - WEEK_IN_SECONDS );
+		$this->assertEquals( 0, count( $events ) );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
 }

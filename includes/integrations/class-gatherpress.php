@@ -92,18 +92,31 @@ final class GatherPress extends Event_Plugin_Integration implements Feature_Even
 
 		$ends_before_time_string = gmdate( 'Y-m-d H:i:s', $ends_before_time );
 
-		$results = $wpdb->get_col(
+		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT post_id FROM {$wpdb->prefix}gatherpress_events WHERE datetime_end < %s",
+				"SELECT DISTINCT {$wpdb->prefix}posts.ID
+				FROM {$wpdb->prefix}posts
+				LEFT JOIN {$wpdb->prefix}gatherpress_events
+					ON {$wpdb->prefix}posts.ID = {$wpdb->prefix}gatherpress_events.post_id
+				LEFT JOIN {$wpdb->prefix}postmeta
+					ON {$wpdb->prefix}posts.ID = {$wpdb->prefix}postmeta.post_id
+				WHERE {$wpdb->prefix}posts.post_type = 'gatherpress_event'
+					AND {$wpdb->prefix}posts.post_status = 'publish'
+					AND {$wpdb->prefix}gatherpress_events.datetime_end_gmt <= %s
+					AND {$wpdb->prefix}postmeta.meta_key = '_event_bridge_for_activitypub_is_remote_cached'
+				",
 				$ends_before_time_string
-			)
+			),
+			ARRAY_N
 		);
 
-		return $results;
+		$post_ids = array_column( $results, 0 );
+
+		return $post_ids;
 	}
 
 	/**
-	 * Init function.
+	 * Init function: force displaying online event link for federated events.
 	 */
 	public static function init() {
 		\add_filter(
