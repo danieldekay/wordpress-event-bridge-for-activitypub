@@ -77,29 +77,44 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		\delete_option( 'permalink_structure' );
 	}
 
-	public static function get_all_posts() {
-		global $wpdb;
-
-		return $wpdb->get_results( "SELECT ID, post_type from {$wpdb->posts}", ARRAY_A );
-	}
-
 	/**
 	 * Test receiving event from followed actor.
 	 */
 	public function test_getting_past_remote_events() {
 		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
 
-		// Receive an federated event.
-		$json = array(
-			'id'     => 'https://remote.example/@organizer/events/new-year-party#create',
+		// Federated event 1: starts in one week.
+		$event_in_one_week = array(
+			'id'     => 'https://remote.example/@organizer/events/in-one-week#create',
 			'type'   => 'Create',
 			'actor'  => 'https://remote.example/@organizer',
 			'object' => array(
-				'id'        => 'https://remote.example/@organizer/events/new-year-party',
+				'id'        => 'https://remote.example/@organizer/events/in-one-week',
 				'type'      => 'Event',
 				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS ),
 				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS + HOUR_IN_SECONDS ),
-				'name'      => 'Fediverse Party for GatherPress',
+				'name'      => 'Remote Event in One Week',
+				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
+				'published' => '2020-01-01T00:00:00Z',
+				'location'  => array(
+					'type'    => 'Place',
+					'name'    => 'Fediverse Concert Hall',
+					'address' => 'Fedistreet 13, Feditown 1337',
+				),
+			),
+		);
+
+		// Federated event 1: starts in two months.
+		$event_in_two_months = array(
+			'id'     => 'https://remote.example/@organizer/events/in-two-months#create',
+			'type'   => 'Create',
+			'actor'  => 'https://remote.example/@organizer',
+			'object' => array(
+				'id'        => 'https://remote.example/@organizer/events/in-two-months',
+				'type'      => 'Event',
+				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + 2 * MONTH_IN_SECONDS ),
+				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + 2 * MONTH_IN_SECONDS + HOUR_IN_SECONDS ),
+				'name'      =>  'Remote Event in Two Months',
 				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
 				'published' => '2020-01-01T00:00:00Z',
 				'location'  => array(
@@ -112,9 +127,12 @@ class Test_GatherPress extends \WP_UnitTestCase {
 
 		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
 		$request->set_header( 'Content-Type', 'application/activity+json' );
-		$request->set_body( \wp_json_encode( $json ) );
 
-		// Dispatch the request.
+		// Receive both events.
+		$request->set_body( \wp_json_encode( $event_in_one_week ) );
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+		$request->set_body( \wp_json_encode( $event_in_two_months ) );
 		$response = \rest_do_request( $request );
 		$this->assertEquals( 202, $response->get_status() );
 
@@ -134,19 +152,20 @@ class Test_GatherPress extends \WP_UnitTestCase {
 			'timezone'       => \wp_timezone_string(),
 		);
 		$event->save_datetimes( $params );
-
+		// Assure that adding the local third GatherPress event worked.
 		$this->assertNotEquals( false, $post_id );
 
-		// Check if we now have two tribe events.
-
-		$query = \GatherPress\Core\Event_Query::get_instance();
-		$query->get_past_events();
-
+		// Only one event should show up in the remote events query.
 		$events = GatherPress::get_cached_remote_events( time() + MONTH_IN_SECONDS );
 		$this->assertEquals( 1, count( $events ) );
-		$this->assertEquals( $json['object']['id'], get_post( $events[0] )->guid );
+		$this->assertEquals( $event_in_one_week['object']['id'], get_post( $events[0] )->guid );
 
-		$events = GatherPress::get_cached_remote_events( time() - WEEK_IN_SECONDS );
+		// Include the even in two months in the time_span.
+		$events = GatherPress::get_cached_remote_events( time() + 3 * MONTH_IN_SECONDS );
+		$this->assertEquals( 2, count( $events ) );
+
+		// All events are in the future, so no events should be in past.
+		$events = GatherPress::get_cached_remote_events( time() );
 		$this->assertEquals( 0, count( $events ) );
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
