@@ -93,6 +93,15 @@ class Setup {
 	}
 
 	/**
+	 * Getter function for whether the ActivityPub plugin is active.
+	 *
+	 * @return bool True when the ActivityPub plugin is active.
+	 */
+	public function is_activitypub_plugin_active(): bool {
+		return $this->activitypub_plugin_is_active;
+	}
+
+	/**
 	 * LooksUp the current version of the ActivityPub.
 	 *
 	 * @return string The semantic Version.
@@ -135,6 +144,9 @@ class Setup {
 	 * @return void
 	 */
 	public function redetect_active_event_plugins(): void {
+		if ( ! $this->activitypub_plugin_is_active ) {
+			return;
+		}
 		delete_transient( 'event_bridge_for_activitypub_active_event_plugins' );
 		$this->detect_active_event_plugins();
 	}
@@ -150,6 +162,11 @@ class Setup {
 		if ( $active_event_plugins ) {
 			$this->active_event_plugins = $active_event_plugins;
 			return $active_event_plugins;
+		}
+
+		// Detection will fail in case the ActivityPub plugin is not active.
+		if ( ! $this->activitypub_plugin_is_active ) {
+			return array();
 		}
 
 		if ( ! function_exists( 'get_plugins' ) ) {
@@ -203,16 +220,6 @@ class Setup {
 		$this->activitypub_plugin_is_active = defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) || \is_plugin_active( 'activitypub/activitypub.php' );
 		$this->activitypub_plugin_version   = self::get_activitypub_plugin_version();
 
-		// Detect active supported event plugins.
-		$this->detect_active_event_plugins();
-
-		// Register hook that runs when this plugin gets activated.
-		register_activation_hook( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE, array( $this, 'activate' ) );
-
-		// Register listeners whenever any plugin gets activated or deactivated.
-		add_action( 'activated_plugin', array( $this, 'redetect_active_event_plugins' ) );
-		add_action( 'deactivated_plugin', array( $this, 'redetect_active_event_plugins' ) );
-
 		// Add hook that takes care of all notices in the Admin UI.
 		add_action( 'admin_init', array( $this, 'do_admin_notices' ) );
 
@@ -222,6 +229,13 @@ class Setup {
 		// Add hook that loads CSS and JavaScript files for the Admin UI.
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_styles' ) );
 
+		// Register hook that runs when this plugin gets activated.
+		register_activation_hook( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE, array( $this, 'activate' ) );
+
+		// Register listeners whenever any plugin gets activated or deactivated.
+		add_action( 'activated_plugin', array( $this, 'redetect_active_event_plugins' ) );
+		add_action( 'deactivated_plugin', array( $this, 'redetect_active_event_plugins' ) );
+
 		// Register the settings page(s) of this plugin to the WordPress admin menu.
 		add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
 		add_filter(
@@ -230,7 +244,15 @@ class Setup {
 		);
 
 		// If we don't have any active event plugins, or the ActivityPub plugin is not enabled, abort here.
-		if ( empty( $this->active_event_plugins ) || ! $this->activitypub_plugin_is_active ) {
+		if ( ! $this->activitypub_plugin_is_active ) {
+			return;
+		}
+
+		// Detect active supported event plugins.
+		$this->detect_active_event_plugins();
+
+		// If we don't have any active event plugins, or the ActivityPub plugin is not enabled, abort here.
+		if ( empty( $this->active_event_plugins ) ) {
 			return;
 		}
 
@@ -292,15 +314,17 @@ class Setup {
 		// Check if any general admin notices are needed and add actions to insert the needed admin notices.
 		if ( ! $this->activitypub_plugin_is_active ) {
 			// The ActivityPub plugin is not active.
-			add_action( 'admin_notices', array( 'Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices', 'activitypub_plugin_not_enabled' ), 10, 1 );
+			add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_not_enabled' ), 10, 1 );
+			return;
 		}
 		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
 			// The ActivityPub plugin is too old.
-			add_action( 'admin_notices', array( 'Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices', 'activitypub_plugin_version_too_old' ), 10, 1 );
+			add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_version_too_old' ), 10, 1 );
+			return;
 		}
 		if ( empty( $this->active_event_plugins ) ) {
 			// No supported Event Plugin is active.
-			add_action( 'admin_notices', array( 'Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices', 'no_supported_event_plugin_active' ), 10, 1 );
+			add_action( 'admin_notices', array( General_Admin_Notices::class, 'no_supported_event_plugin_active' ), 10, 1 );
 		}
 	}
 

@@ -23,6 +23,9 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 );
 
 use Activitypub\Activity\Extended_Object\Event;
+use Event_Bridge_For_ActivityPub\Setup;
+
+$activitypub_plugin_is_active = Setup::get_instance()->is_activitypub_plugin_active();
 
 if ( ! isset( $args ) || ! array_key_exists( 'event_terms', $args ) ) {
 	return;
@@ -100,6 +103,7 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 			</div>
 		</div>
 
+		<?php if ( $activitypub_plugin_is_active ) { ?>
 		<div class="box">
 			<h2><?php \esc_html_e( 'Event Sources', 'event-bridge-for-activitypub' ); ?></h2>
 			<?php
@@ -215,6 +219,7 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 			}
 			?>
 		</div>
+		<?php } ?>
 
 		<div class="box">
 			<h2> <?php esc_html_e( 'ActivityPub Event Category', 'event-bridge-for-activitypub' ); ?> </h2>

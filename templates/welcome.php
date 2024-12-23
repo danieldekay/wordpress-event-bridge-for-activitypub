@@ -24,6 +24,7 @@ use Event_Bridge_For_ActivityPub\Admin\Health_Check;
 );
 
 $active_event_plugins                   = Setup::get_instance()->get_active_event_plugins();
+$activitypub_plugin_is_active           = Setup::get_instance()->is_activitypub_plugin_active();
 $event_bridge_for_activitypub_status_ok = true;
 $example_event_post                     = Health_Check::get_most_recent_event_posts();
 
@@ -45,7 +46,9 @@ WP_Filesystem();
 		<h2><?php \esc_html_e( 'Status', 'event-bridge-for-activitypub' ); ?></h2>
 		<p><?php \esc_html_e( 'The Event Bridge for ActivityPub detected the following (activated) event plugins:', 'event-bridge-for-activitypub' ); ?></p>
 			<?php
-			if ( empty( $active_event_plugins ) ) {
+			if ( ! $activitypub_plugin_is_active ) {
+				$notice = General_Admin_Notices::get_admin_notice_activitypub_plugin_not_enabled();
+			} elseif ( empty( $active_event_plugins ) ) {
 				$notice = General_Admin_Notices::get_admin_notice_no_supported_event_plugin_active();
 			}
 			echo '<p>⚠' . \wp_kses( $notice, General_Admin_Notices::ALLOWED_HTML ) . '</p>';
