@@ -114,7 +114,7 @@ class Test_GatherPress extends \WP_UnitTestCase {
 				'type'      => 'Event',
 				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + 2 * MONTH_IN_SECONDS ),
 				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + 2 * MONTH_IN_SECONDS + HOUR_IN_SECONDS ),
-				'name'      =>  'Remote Event in Two Months',
+				'name'      => 'Remote Event in Two Months',
 				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
 				'published' => '2020-01-01T00:00:00Z',
 				'location'  => array(
