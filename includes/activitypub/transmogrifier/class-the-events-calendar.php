@@ -11,9 +11,11 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 
+use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 use Tribe__Date_Utils;
 
 use function Activitypub\sanitize_url;
+use function Activitypub\object_to_uri;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -104,6 +106,59 @@ class The_Events_Calendar extends Base {
 	}
 
 	/**
+	 * Add organizer.
+	 *
+	 * @return int|bool $post_id The organizers post ID.
+	 */
+	private function add_organizer() {
+		// This might likely change, because of FEP-8a8e.
+		$actor = $this->activitypub_event->get_attributed_to();
+		if ( is_null( $actor ) ) {
+			return false;
+		}
+		$actor_id = object_to_uri( $actor );
+
+		$event_source = Event_Source::get_by_id( $actor_id );
+
+		// As long as we do not support announces, we expect the attributedTo to be an existing event source.
+		if ( ! $event_source ) {
+			return false;
+		}
+
+		$tribe_organizer = tribe_organizers()
+			->set_args(
+				array(
+					'organizer'     => $event_source->get_name(),
+					'description'   => $event_source->get_summary(),
+					'post_date_gmt' => $event_source->get_published(),
+					'website'       => $event_source->get_id(),
+					'excerpt'       => $event_source->get_summary(),
+				),
+				'publish',
+				true // This enables avoid_duplicates which includes exact matches of title, content, excerpt, and website.
+			)->create();
+
+		if ( ! $tribe_organizer ) {
+			return;
+		}
+
+		// Make a relationship between the event source WP_Post and the organizer WP_Post.
+		wp_update_post(
+			array(
+				'ID'          => $tribe_organizer->ID,
+				'post_parent' => $event_source->get__id(),
+			)
+		);
+
+		// Add the thumbnail of the event source to the organizer.
+		if ( get_post_thumbnail_id( $event_source ) ) {
+			set_post_thumbnail( $tribe_organizer, get_post_thumbnail_id( $event_source ) );
+		}
+
+		return $tribe_organizer->ID;
+	}
+
+	/**
 	 * Save the ActivityPub event object as GatherPress Event.
 	 *
 	 * @return false|int
@@ -118,6 +173,8 @@ class The_Events_Calendar extends Base {
 
 		$venue_id = $this->add_venue();
 
+		$organizer_id = $this->add_organizer();
+
 		$args = array(
 			'title'      => sanitize_text_field( $this->activitypub_event->get_name() ),
 			'content'    => wp_kses_post( $this->activitypub_event->get_content() ?? '' ),
@@ -130,6 +187,11 @@ class The_Events_Calendar extends Base {
 		if ( $venue_id ) {
 			$args['venue']   = $venue_id;
 			$args['VenueID'] = $venue_id;
+		}
+
+		if ( $organizer_id ) {
+			$args['organizer']   = $organizer_id;
+			$args['OrganizerID'] = $organizer_id;
 		}
 
 		$tribe_event = new The_Events_Calendar_Event_Repository();

@@ -15,6 +15,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Model;
 use Activitypub\Activity\Actor;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use WP_Error;
+use WP_Post;
 
 use function Activitypub\sanitize_url;
 
@@ -62,10 +63,23 @@ class Event_Source extends Actor {
 	}
 
 	/**
+	 * Getter for URL attribute.
+	 *
+	 * @return string The URL.
+	 */
+	public function get_url() {
+		if ( $this->url ) {
+			return $this->url;
+		}
+
+		return $this->id;
+	}
+
+	/**
 	 * Get the WordPress post which stores the Event Source by the ActivityPub actor id of the event source.
 	 *
 	 * @param string $actor_id The ActivityPub actor ID.
-	 * @return ?int The WordPress post ID if the actor is found, null if not.
+	 * @return ?WP_Post The WordPress post if the actor is found, null if not.
 	 */
 	private static function get_wp_post_by_activitypub_actor_id( $actor_id ) {
 		global $wpdb;
@@ -110,8 +124,8 @@ class Event_Source extends Actor {
 		$object->set_id( $post->guid );
 		$object->set_name( $post->post_title );
 		$object->set_summary( $post->post_excerpt );
-		$object->set_published( gmdate( 'Y-m-d H:i:s', strtotime( $post->post_date ) ) );
-		$object->set_updated( gmdate( 'Y-m-d H:i:s', strtotime( $post->post_modified ) ) );
+		$object->set_published( gmdate( 'Y-m-d H:i:s', strtotime( $post->post_date_gmt ) ) );
+		$object->set_updated( gmdate( 'Y-m-d H:i:s', strtotime( $post->post_modified_gmt ) ) );
 		$thumbnail_id = get_post_thumbnail_id( $post );
 		if ( $thumbnail_id ) {
 			$object->set_icon(
