@@ -112,7 +112,7 @@ class VS_Event_List extends Base {
 			'guid'         => \sanitize_url( $this->activitypub_event->get_id() ),
 			'meta_input'   => array(
 				'event-start-date'  => \strtotime( $this->activitypub_event->get_start_time() ),
-				'event-link'        => \sanitize_url( $this->activitypub_event->get_url() ),
+				'event-link'        => \sanitize_url( $this->activitypub_event->get_url() ?? $this->activitypub_event->get_id() ),
 				'event-link-label'  => \sanitize_text_field( __( 'Original Website', 'event-bridge-for-activitypub' ) ),
 				'event-link-target' => 'yes', // Open in new window.
 				'event-link-title'  => 'no', // Whether to redirect event title to original source.
