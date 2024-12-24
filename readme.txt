@@ -44,6 +44,8 @@ The Event Federation plugin ensures that users from those platforms are provided
 
 **Event Reminders for Your Followers:** Often, events are planned well in advance. To keep your followers informed right in time, you can set up reminders that are supposed to trigger the events showing up in their timelines right before the event starts. At the moment this reminder is implemented as a self-boost of your original event post. While this feature may behave differently across various platforms, we are working on a more robust solution that will let you schedule dedicated reminder notes that appear in all followers' timelines.
 
+**External Event Sources:**  This functionality is only available for a subset of the supported event plugins. It enables your WordPress site to act as a hub for displaying events from other ActivityPub profiles, aggregating them into a cohesive calendar view.
+
 == Installation ==
 
 This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/). Additionally, you need to use one of the supported event Plugins.
@@ -94,6 +96,10 @@ If you know about coding have a look at the documentation of how to add your plu
 We're always interested in your feedback. Feel free to reach out to us via [E-Mail](https://event-federation.eu/contact/) or create an [issue](https://code.event-federation.eu/Event-Federation/wordpress-event-bridge-for-activitypub/issues).
 
 == Changelog ==
+
+= Unreleased =
+
+* Add feature: External Event Sources.
 
 = [0.3.3] 2024-12-19 =
 
