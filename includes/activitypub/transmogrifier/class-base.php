@@ -279,7 +279,7 @@ abstract class Base {
 	 * @param int $activitypub_event_id The ActivityPub events ID.
 	 */
 	public function delete( $activitypub_event_id ) {
-		$post_id = self::get_post_id_from_activitypub_id( $activitypub_event_id);
+		$post_id = self::get_post_id_from_activitypub_id( $activitypub_event_id );
 
 		if ( ! $post_id ) {
 			return new WP_Error(

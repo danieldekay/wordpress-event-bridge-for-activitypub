@@ -135,7 +135,7 @@ class Test_VS_Event_List extends \WP_UnitTestCase {
 		$events = get_posts( array( 'post_type' => IntegrationsVS_Event_List::get_post_type() ) );
 		$this->assertCount( 1, $events );
 		$event = $events[0];
-		$this->assertStringContainsString( 'Updated address' , get_post_meta( $event->ID, 'event-location', true ) );
+		$this->assertStringContainsString( 'Updated address', get_post_meta( $event->ID, 'event-location', true ) );
 
 		// We should see the updates.
 		$this->assertEquals( 'Updated name', $event->post_title );
