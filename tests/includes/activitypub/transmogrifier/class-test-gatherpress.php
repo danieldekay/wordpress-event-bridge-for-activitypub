@@ -209,15 +209,13 @@ class Test_GatherPress extends \WP_UnitTestCase {
 
 		// We do not except duplicated.
 		$the_query = $event_query->get_upcoming_events();
-
-		$this->assertEquals( true, $the_query->have_posts() );
 		$this->assertEquals( 1, $the_query->post_count );
 
 		// Check the updated representation of the event within The Events Calendar.
 		$event = new Event( $the_query->get_posts()[0] );
 
 		$this->assertEquals( 'Updated name', $event->event->post_title );
-		$this->assertEquals( 'Updated address', $event->get_venue_information()['name'] );
+		$this->assertEquals( 'Updated address', $event->get_venue_information()['full address'] );
 
 		// Test delete.
 		$json['type']   = 'Delete';
