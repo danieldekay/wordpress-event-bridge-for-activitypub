@@ -41,6 +41,7 @@ class Create {
 			return;
 		}
 
+		// Check that we are actually following this actor.
 		if ( ! Event_Sources::actor_is_event_source( $activity['actor'] ) ) {
 			return false;
 		}

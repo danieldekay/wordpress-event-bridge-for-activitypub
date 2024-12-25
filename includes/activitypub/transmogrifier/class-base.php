@@ -62,14 +62,17 @@ abstract class Base {
 	}
 
 	/**
-	 * Get post.
+	 * Get WordPress post by ActivityPub object ID.
+	 *
+	 * @param int $activitypub_id The ActivityPub object ID.
+	 * @return int The WordPress Post ID.
 	 */
-	protected function get_post_id_from_activitypub_id() {
+	protected static function get_post_id_from_activitypub_id( $activitypub_id ) {
 		global $wpdb;
 		return $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT ID FROM $wpdb->posts WHERE guid=%s",
-				esc_sql( $this->activitypub_event->get_id() )
+				esc_sql( $activitypub_id ),
 			)
 		);
 	}
@@ -273,18 +276,10 @@ abstract class Base {
 	/**
 	 * Delete a local event in WordPress that is a cached remote one.
 	 *
-	 * @param array $activitypub_event The ActivityPub event as associative array.
+	 * @param int $activitypub_event_id The ActivityPub events ID.
 	 */
-	public function delete( $activitypub_event ) {
-		$activitypub_event = Event::init_from_array( $activitypub_event );
-
-		if ( is_wp_error( $activitypub_event ) ) {
-			return;
-		}
-
-		$this->activitypub_event = $activitypub_event;
-
-		$post_id = $this->get_post_id_from_activitypub_id();
+	public function delete( $activitypub_event_id ) {
+		$post_id = self::get_post_id_from_activitypub_id( $activitypub_event_id);
 
 		if ( ! $post_id ) {
 			return new WP_Error(

@@ -114,7 +114,6 @@ class Test_VS_Event_List extends \WP_UnitTestCase {
 		$this->assertEquals( 202, $response->get_status() );
 
 		$events = get_posts( array( 'post_type' => IntegrationsVS_Event_List::get_post_type() ) );
-
 		$this->assertCount( 1, $events );
 		$event = $events[0];
 
@@ -122,6 +121,36 @@ class Test_VS_Event_List extends \WP_UnitTestCase {
 		$this->assertEquals( $json['object']['startTime'], \gmdate( 'Y-m-d\TH:i:s\Z', get_post_meta( $event->ID, 'event-start-date', true ) ) );
 		$this->assertEquals( $json['object']['endTime'], \gmdate( 'Y-m-d\TH:i:s\Z', get_post_meta( $event->ID, 'event-date', true ) ) );
 		$this->assertStringStartsWith( $json['object']['location']['name'], get_post_meta( $event->ID, 'event-location', true ) );
+		$this->assertStringContainsString( $json['object']['location']['address'], get_post_meta( $event->ID, 'event-location', true ) );
+
+		// Now we receive an update of that event.
+		$json['type']                          = 'Update';
+		$json['object']['name']                = 'Updated name';
+		$json['object']['location']['address'] = 'Updated address';
+
+		$request->set_body( \wp_json_encode( $json ) );
+		$response = \rest_do_request( $request );
+
+		// We do not except duplicated.
+		$events = get_posts( array( 'post_type' => IntegrationsVS_Event_List::get_post_type() ) );
+		$this->assertCount( 1, $events );
+		$event = $events[0];
+		$this->assertStringContainsString( 'Updated address' , get_post_meta( $event->ID, 'event-location', true ) );
+
+		// We should see the updates.
+		$this->assertEquals( 'Updated name', $event->post_title );
+
+		// Test delete.
+		$json['type']   = 'Delete';
+		$json['object'] = $json['object']['id'];
+		$request->set_body( \wp_json_encode( $json ) );
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+
+		// We do expect the event to be removed.
+		$events = get_posts( array( 'post_type' => IntegrationsVS_Event_List::get_post_type() ) );
+		$this->assertCount( 0, $events );
+
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Test file for the Transmogrifier (import of ActivityPub Event objects) of GatherPress.
+ * Test file for the Transmogrifier (import of ActivityPub Event objects) of "The Events Calendar".
  *
  * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
@@ -14,7 +14,7 @@ use WP_REST_Request;
 use WP_REST_Server;
 
 /**
- * Test class for the Transmogrifier (import of ActivityPub Event objects) of GatherPress.
+ * Test class for the Transmogrifier (import of ActivityPub Event objects) of "The Events Calendar".
  *
  * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\The_Events_Calendar
  */
@@ -77,6 +77,23 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * Get the first venue of an Event of The Events Calendar.
+	 *
+	 * @param WP_Post $event The Event Post.
+	 * @return ?WP_Post
+	 */
+	private static function get_first_tribe_venue_of_tribe_event( $event ) {
+		// Get first venue. We currently only support a single venue.
+		if ( $event->venues instanceof \Tribe\Events\Collections\Lazy_Post_Collection ) {
+			return $event->venues->first();
+		} elseif ( empty( $event->venues ) || ! empty( $event->venues[0] ) ) {
+			return null;
+		} else {
+			return $event->venues[0];
+		}
+	}
+
+	/**
 	 * Test receiving event from followed actor.
 	 */
 	public function test_incoming_event() {
@@ -115,22 +132,14 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 
 		$this->assertEquals( 1, count( $events ) );
 
-		// Initialize new GatherPress Event object.
+		// Initialize new Tribe Event object.
 		$event = tribe_get_event( $events[0] );
 
 		$this->assertEquals( $json['object']['name'], $event->post_title );
 		$this->assertEquals( $json['object']['startTime'], $event->dates->start->format( 'Y-m-d\TH:i:s\Z' ) );
 		$this->assertEquals( $json['object']['endTime'], $event->dates->end->format( 'Y-m-d\TH:i:s\Z' ) );
 
-		$venues = $event->venues;
-		// Get first venue. We currently only support a single venue.
-		if ( $venues instanceof \Tribe\Events\Collections\Lazy_Post_Collection ) {
-			$venue = $venues->first();
-		} elseif ( empty( $this->wp_object->venues ) || ! empty( $this->wp_object->venues[0] ) ) {
-			return null;
-		} else {
-			$venue = $venues[0];
-		}
+		$venue = self::get_first_tribe_venue_of_tribe_event( $event );
 
 		$this->assertEquals( $json['object']['location']['address'], $venue->address );
 		$this->assertEquals( $json['object']['location']['name'], $venue->post_title );
@@ -185,22 +194,14 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 
 		$this->assertEquals( 1, count( $events ) );
 
-		// Initialize new GatherPress Event object.
+		// Initialize new Tribe Event object.
 		$event = tribe_get_event( $events[0] );
 
 		$this->assertEquals( $json['object']['name'], $event->post_title );
 		$this->assertEquals( $json['object']['startTime'], $event->dates->start->format( 'Y-m-d\TH:i:s\Z' ) );
 		$this->assertEquals( $json['object']['endTime'], $event->dates->end->format( 'Y-m-d\TH:i:s\Z' ) );
 
-		$venues = $event->venues;
-		// Get first venue. We currently only support a single venue.
-		if ( $venues instanceof \Tribe\Events\Collections\Lazy_Post_Collection ) {
-			$venue = $venues->first();
-		} elseif ( empty( $this->wp_object->venues ) || ! empty( $this->wp_object->venues[0] ) ) {
-			return null;
-		} else {
-			$venue = $venues[0];
-		}
+		$venue = self::get_first_tribe_venue_of_tribe_event( $event );
 
 		$this->assertEquals( $json['object']['location']['name'], $venue->post_title );
 		$this->assertEquals( $json['object']['location']['address']['streetAddress'], $venue->address );
@@ -209,6 +210,78 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$this->assertEquals( $json['object']['location']['address']['addressState'], $venue->state );
 		$this->assertEquals( $json['object']['location']['address']['addressCountry'], $venue->country );
 		$this->assertEquals( $json['object']['location']['address']['url'], $venue->website );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
+	}
+
+	/**
+	 * Test handling updates and deletes.
+	 */
+	public function test_incoming_event_updates() {
+		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
+
+		$json = array(
+			'id'     => 'https://remote.example/@organizer/events/new-year-party#create',
+			'type'   => 'Create',
+			'actor'  => 'https://remote.example/@organizer',
+			'object' => array(
+				'id'        => 'https://remote.example/@organizer/events/new-year-party',
+				'type'      => 'Event',
+				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS ),
+				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS + HOUR_IN_SECONDS ),
+				'name'      => 'Fediverse Party for The Events Calendar',
+				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
+				'published' => \gmdate( 'Y-m-d\TH:i:s\Z', time() ),
+				'location'  => array(
+					'type'    => 'Place',
+					'name'    => 'Fediverse Concert Hall',
+					'address' => 'Fedistreet 13, Feditown 1337',
+				),
+			),
+		);
+
+		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
+		$request->set_header( 'Content-Type', 'application/activity+json' );
+		$request->set_body( \wp_json_encode( $json ) );
+
+		// Dispatch the request.
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+
+		// Check if post has been created.
+		$events = tribe_get_events();
+
+		$this->assertEquals( 1, count( $events ) );
+
+		// Now we receive an update of that event.
+		$json['type']                          = 'Update';
+		$json['object']['name']                = 'Updated name';
+		$json['object']['location']['address'] = 'Updated address';
+
+		$request->set_body( \wp_json_encode( $json ) );
+		$response = \rest_do_request( $request );
+
+		// We do not except duplicated.
+		$events = tribe_get_events();
+		$this->assertEquals( 1, count( $events ) );
+
+		// Check the updated representation of the event within The Events Calendar.
+		$event = tribe_get_event( $events[0] );
+		$venue = self::get_first_tribe_venue_of_tribe_event( $event );
+
+		$this->assertEquals( 'Updated name', $event->post_title );
+		$this->assertEquals( 'Updated address', $venue->address );
+
+		// Test delete.
+		$json['type']   = 'Delete';
+		$json['object'] = $json['object']['id'];
+		$request->set_body( \wp_json_encode( $json ) );
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+
+		// We do expect the event to be removed.
+		$events = tribe_get_events();
+		$this->assertEmpty( $events );
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}

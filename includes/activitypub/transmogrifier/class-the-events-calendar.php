@@ -85,20 +85,27 @@ class The_Events_Calendar extends Base {
 			return;
 		}
 
-		$post_ids = tribe_events()->search( $location['name'] )->all();
+		$post_ids = tribe_venues()->search( $location['name'] )->all();
 
 		$post_id = false;
 
 		if ( count( $post_ids ) ) {
 			$post_id = reset( $post_ids );
+			if ( $post_id instanceof \WP_Post ) {
+				$post_id = $post_id->ID;
+			}
 		}
 
 		if ( $post_id && get_post_meta( $post_id, '_event_bridge_for_activitypub_is_remote_cached', true ) ) {
-			tribe_venues()->where( 'id', $post_id )->set_args( $this->get_venue_args( $location ) )->save()[0];
+			$result = tribe_venues()->where( 'id', $post_id )->set_args( $this->get_venue_args( $location ) )->save();
+			if ( array_key_exists( $post_id, $result ) && $result[ $post_id ] ) {
+				return $post_id;
+			}
 		} else {
 			$post = tribe_venues()->set_args( $this->get_venue_args( $location ) )->create();
 			if ( $post ) {
 				$post_id = $post->ID;
+				update_post_meta( $post_id, '_event_bridge_for_activitypub_is_remote_cached', true );
 			}
 		}
 
@@ -167,7 +174,7 @@ class The_Events_Calendar extends Base {
 		// Limit this as a safety measure.
 		add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
-		$post_id = $this->get_post_id_from_activitypub_id();
+		$post_id = self::get_post_id_from_activitypub_id( $this->activitypub_event->get_id() );
 
 		$duration = $this->get_duration();
 
@@ -199,20 +206,23 @@ class The_Events_Calendar extends Base {
 		if ( $post_id ) {
 			$args['post_title']   = $args['title'];
 			$args['post_content'] = $args['content'];
-			// Update existing GatherPress event post.
-			$post = \Tribe__Events__API::updateEvent( $post_id, $args );
+			// Update existing The Events Calendar event post.
+			$post_id = \Tribe__Events__API::updateEvent( $post_id, $args );
 		} else {
 			$post = $tribe_event->set_args( $args )->create();
+			if ( $post instanceof \WP_Post ) {
+				$post_id = $post->ID;
+			}
 		}
 
-		if ( ! $post ) {
+		if ( ! $post_id || is_wp_error( $post_id ) ) {
 			return false;
 		}
 
 		// Limit this as a safety measure.
 		remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
-		return $post->ID;
+		return $post_id;
 	}
 
 	/**

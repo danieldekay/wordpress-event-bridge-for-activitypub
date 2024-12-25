@@ -12,7 +12,6 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Event_Bridge_For_ActivityPub\Event_Sources;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Accept;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Update;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Create;

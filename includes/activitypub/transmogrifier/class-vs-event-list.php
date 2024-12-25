@@ -101,7 +101,7 @@ class VS_Event_List extends Base {
 		// Limit this as a safety measure.
 		\add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
-		$post_id = $this->get_post_id_from_activitypub_id();
+		$post_id = self::get_post_id_from_activitypub_id( $this->activitypub_event->get_id() );
 
 		$args = array(
 			'post_title'   => \sanitize_text_field( $this->activitypub_event->get_name() ),

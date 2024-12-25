@@ -11,6 +11,8 @@ use Activitypub\Collection\Actors;
 use Event_Bridge_For_ActivityPub\Event_Sources;
 use Event_Bridge_For_ActivityPub\Setup;
 
+use function Activitypub\object_to_uri;
+
 /**
  * Handle Delete requests.
  */
@@ -39,14 +41,12 @@ class Delete {
 			return;
 		}
 
+		// Check that we are actually following this actor.
 		if ( ! Event_Sources::actor_is_event_source( $activity['actor'] ) ) {
-			return;
+			return false;
 		}
 
-		// Check if an object is set.
-		if ( ! isset( $activity['object']['type'] ) || 'Event' !== $activity['object']['type'] ) {
-			return;
-		}
+		$id = object_to_uri( $activity['object'] );
 
 		$transmogrifier = Setup::get_transmogrifier();
 
@@ -54,6 +54,6 @@ class Delete {
 			return;
 		}
 
-		$transmogrifier->delete( $activity['object'] );
+		$transmogrifier->delete( $id );
 	}
 }
