@@ -52,7 +52,7 @@ class Update {
 			return;
 		}
 
-		// Check if an object is set.
+		// Check if an object is set and it is an object of type `Event`.
 		if ( ! isset( $activity['object']['type'] ) || 'Event' !== $activity['object']['type'] ) {
 			return;
 		}

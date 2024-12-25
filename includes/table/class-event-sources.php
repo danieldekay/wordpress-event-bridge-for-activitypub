@@ -48,7 +48,7 @@ class Event_Sources extends WP_List_Table {
 			'cb'        => '<input type="checkbox" />',
 			'icon'      => \__( 'Icon', 'event-bridge-for-activitypub' ),
 			'name'      => \__( 'Name', 'event-bridge-for-activitypub' ),
-			'active'    => \__( 'Active', 'event-bridge-for-activitypub' ),
+			'accepted'  => \__( 'Follow', 'event-bridge-for-activitypub' ),
 			'url'       => \__( 'URL', 'event-bridge-for-activitypub' ),
 			'published' => \__( 'Followed', 'event-bridge-for-activitypub' ),
 			'modified'  => \__( 'Last updated', 'event-bridge-for-activitypub' ),
@@ -118,7 +118,7 @@ class Event_Sources extends WP_List_Table {
 				'icon'       => esc_attr( $actor->get_icon_url() ),
 				'name'       => esc_attr( $actor->get_name() ),
 				'url'        => esc_attr( object_to_uri( $actor->get_id() ) ),
-				'active'     => esc_attr( get_post_meta( $actor->get__id(), 'event_source_active', true ) ),
+				'accepted'     => esc_attr( get_post_meta( $actor->get__id(), '_event_bridge_for_activitypub_accept_of_follow', true ) ),
 				'identifier' => esc_attr( $actor->get_id() ),
 				'published'  => esc_attr( $actor->get_published() ),
 				'modified'   => esc_attr( $actor->get_updated() ),
@@ -196,16 +196,12 @@ class Event_Sources extends WP_List_Table {
 	 * @param array $item Item.
 	 * @return string
 	 */
-	public function column_active( $item ) {
-		if ( $item['active'] ) {
-			$action = 'true';
+	public function column_accepted( $item ) {
+		if ( $item['accepted'] ) {
+			return esc_html__( 'Accepted', 'event-bridge-for-activitypub' );
 		} else {
-			$action = 'false';
+			return esc_html__( 'Pending', 'event-bridge-for-activitypub' );
 		}
-		return sprintf(
-			'%s',
-			$action
-		);
 	}
 
 	/**

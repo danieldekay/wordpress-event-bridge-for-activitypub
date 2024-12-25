@@ -16,6 +16,7 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Accept;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Update;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Create;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Delete;
+use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Undo;
 
 /**
  *  Class responsible for registering handlers for incoming activities to the ActivityPub plugin.
@@ -29,5 +30,6 @@ class Handler {
 		Update::init();
 		Create::init();
 		Delete::init();
+		Undo::init();
 	}
 }

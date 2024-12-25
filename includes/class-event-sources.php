@@ -42,11 +42,17 @@ class Event_Sources {
 		// Register handlers for incoming activities to the ActivityPub plugin, e.g. incoming `Event` objects.
 		\add_action( 'activitypub_register_handlers', array( Handler::class, 'register_handlers' ) );
 
-		// Add validation filter, so that only plausible event objects reach the handlers above.
+		// Add validation filter, so that only plausible activities reach the handlers above.
 		\add_filter(
 			'activitypub_validate_object',
 			array( self::class, 'validate_event_object' ),
 			12,
+			3
+		);
+		\add_filter(
+			'activitypub_validate_object',
+			array( self::class, 'validate_activity' ),
+			13,
 			3
 		);
 
@@ -335,6 +341,27 @@ class Event_Sources {
 		return array_merge( $hosts, $event_sources_hosts );
 	}
 
+	/**
+	 * Validate the event object.
+	 *
+	 * @param bool             $valid   The validation state.
+	 * @param string           $param   The object parameter.
+	 * @param \WP_REST_Request $request The request object.
+	 *
+	 * @return bool|WP_Error The validation state: true if valid, false if not.
+	 */
+	public static function validate_activity( $valid, $param, $request ) {
+		if ( $valid ) {
+			return $valid;
+		}
+		$json_params = $request->get_json_params();
+
+		if ( isset( $json_params['object']['type'] ) && in_array( $json_params['object']['type'], array( 'Accept', 'Undo' ), true ) ) {
+			return true;
+		}
+
+		return $valid;
+	}
 
 	/**
 	 * Validate the event object.

@@ -118,15 +118,6 @@ class Event_Sources {
 
 		\register_post_meta(
 			self::POST_TYPE,
-			'event_source_active',
-			array(
-				'type'   => 'bool',
-				'single' => true,
-			)
-		);
-
-		\register_post_meta(
-			self::POST_TYPE,
 			'activitypub_inbox',
 			array(
 				'type'              => 'string',
@@ -137,7 +128,7 @@ class Event_Sources {
 
 		\register_post_meta(
 			self::POST_TYPE,
-			'event_source_utilize_announces',
+			'_event_bridge_for_activitypub_utilize_announces',
 			array(
 				'type'              => 'string',
 				'single'            => true,
@@ -147,6 +138,16 @@ class Event_Sources {
 					}
 					return '';
 				},
+			)
+		);
+
+		\register_post_meta(
+			self::POST_TYPE,
+			'_event_bridge_for_activitypub_accept_of_follow',
+			array(
+				'type'              => 'string',
+				'single'            => true,
+				'sanitize_callback' => 'sanitize_url',
 			)
 		);
 	}
@@ -178,11 +179,22 @@ class Event_Sources {
 			return $post_id;
 		}
 
-		$success = self::queue_follow_actor( $actor );
+		self::queue_follow_actor( $actor );
 
 		self::delete_event_source_transients();
 
 		return $event_source;
+	}
+
+	/**
+	 * Compose the ActivityPub ID of a follow request.
+	 *
+	 * @param string $follower_id The ActivityPub ID of the actor that followers the other one.
+	 * @param string $followed_id The ActivityPub ID of the followed actor.
+	 * @return string The `Follow` ID.
+	 */
+	public static function compose_follow_id( $follower_id, $followed_id ) {
+		return $follower_id . '#follow-' . \preg_replace( '~^https?://~', '', $followed_id );
 	}
 
 	/**
@@ -226,6 +238,7 @@ class Event_Sources {
 
 		// If the deletion was successful delete all transients regarding event sources.
 		if ( $result ) {
+			self::queue_unfollow_actor( $actor );
 			self::delete_event_source_transients();
 		}
 
@@ -350,7 +363,7 @@ class Event_Sources {
 		$activity->set_cc( null );
 		$activity->set_actor( $application->get_id() );
 		$activity->set_object( $to );
-		$activity->set_id( $application->get_id() . '#follow-' . \preg_replace( '~^https?://~', '', $to ) );
+		$activity->set_id( self::compose_follow_id( $application->get_id(), $to ) );
 		$activity = $activity->to_json();
 		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::BLOG_USER_ID );
 	}
@@ -375,13 +388,11 @@ class Event_Sources {
 	/**
 	 * Unfollow an ActivityPub actor.
 	 *
-	 * @param      string $actor_id  The ActivityPub actor ID.
+	 * @param Event_Source $actor The ActivityPub actor model.
 	 */
-	public static function activitypub_unfollow_actor( $actor_id ) {
-		$actor = Event_Source::get_by_id( $actor_id );
-
-		if ( ! $actor ) {
-			return $actor;
+	public static function activitypub_unfollow_actor( $actor ) {
+		if ( ! $actor instanceof Event_Source ) {
+			return;
 		}
 
 		$inbox = $actor->get_shared_inbox();
@@ -406,7 +417,7 @@ class Event_Sources {
 				'id'     => $to,
 			)
 		);
-		$activity->set_id( $actor . '#unfollow-' . \preg_replace( '~^https?://~', '', $to ) );
+		$activity->set_id( $application->get_id() . '#unfollow-' . \preg_replace( '~^https?://~', '', $to ) );
 		$activity = $activity->to_json();
 		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::BLOG_USER_ID );
 	}
