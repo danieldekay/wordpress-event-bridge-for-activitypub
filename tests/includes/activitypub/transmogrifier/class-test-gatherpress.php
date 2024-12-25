@@ -215,7 +215,7 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		$event = new Event( $the_query->get_posts()[0] );
 
 		$this->assertEquals( 'Updated name', $event->event->post_title );
-		$this->assertEquals( 'Updated address', $event->get_venue_information()['full address'] );
+		$this->assertEquals( 'Updated address', $event->get_venue_information()['full_address'] );
 
 		// Test delete.
 		$json['type']   = 'Delete';
