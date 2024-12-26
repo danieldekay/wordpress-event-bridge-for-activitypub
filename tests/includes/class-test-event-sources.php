@@ -9,6 +9,8 @@
 
 namespace Event_Bridge_For_ActivityPub\Tests;
 
+use Activitypub\Model\Blog;
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use GatherPress\Core\Event_Query;
 use WP_REST_Request;
 use WP_REST_Server;
@@ -241,6 +243,47 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		$event_query = Event_Query::get_instance();
 		$the_query   = $event_query->get_upcoming_events();
 		$this->assertEquals( false, $the_query->have_posts() );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
+	}
+
+	/**
+	 * Test receiving "Accept" of "Follow".
+	 *
+	 *
+	 */
+	public function test_incoming_accept_of_follow() {
+		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
+
+		$blog = new Blog();
+
+		$json = array(
+			'id'     => 'https://remote.example/random-id',
+			'type'   => 'Accept',
+			'actor'  => 'https://remote.example/@organizer',
+			'object' => array(
+				'id'     => Event_Sources::compose_follow_id( $blog->get_id(), 'https://remote.example/@organizer' ),
+				'type'   => 'Follow',
+				'to'     => 'https://www.w3.org/ns/activitystreams#Public',
+				'object' => 'https://remote.example/@organizer',
+			),
+		);
+
+		$event_source = \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source::get_by_id( 'https://remote.example/@organizer' );
+		$accepted     = get_post_meta( $event_source->get__id(), '_event_bridge_or_activitypub_accept_of_follow', true );
+		$this->assertNotFalse( $accepted );
+
+		// Receive Accept.
+		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
+		$request->set_header( 'Content-Type', 'application/activity+json' );
+		$request->set_body( \wp_json_encode( $json ) );
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+
+
+		$accepted = get_post_meta( $event_source->get__id(), '_event_bridge_or_activitypub_accept_of_follow', true );
+
+		$this->assertNotFalse( $accepted );
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
