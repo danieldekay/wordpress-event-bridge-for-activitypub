@@ -64,7 +64,7 @@ class Undo {
 		$query = new \WP_Query( $args );
 
 		// If no event source with that accept ID is found return.
-		if ( ! $query->have_posts ) {
+		if ( ! $query->have_posts() ) {
 			return;
 		}
 

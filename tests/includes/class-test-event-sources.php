@@ -250,7 +250,6 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 	/**
 	 * Test receiving "Accept" of "Follow".
 	 *
-	 *
 	 */
 	public function test_incoming_accept_of_follow() {
 		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
@@ -258,7 +257,7 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		$blog = new Blog();
 
 		$json = array(
-			'id'     => 'https://remote.example/random-id',
+			'id'     => 'https://remote.example/random-accept-id',
 			'type'   => 'Accept',
 			'actor'  => 'https://remote.example/@organizer',
 			'object' => array(
@@ -270,8 +269,8 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		);
 
 		$event_source = \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source::get_by_id( 'https://remote.example/@organizer' );
-		$accepted     = get_post_meta( $event_source->get__id(), '_event_bridge_or_activitypub_accept_of_follow', true );
-		$this->assertNotFalse( $accepted );
+		$accepted     = get_post_meta( $event_source->get__id(), '_event_bridge_for_activitypub_accept_of_follow', true );
+		$this->assertEmpty( $accepted );
 
 		// Receive Accept.
 		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
@@ -280,10 +279,37 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		$response = \rest_do_request( $request );
 		$this->assertEquals( 202, $response->get_status() );
 
+		$accepted = get_post_meta( $event_source->get__id(), '_event_bridge_for_activitypub_accept_of_follow', true );
 
-		$accepted = get_post_meta( $event_source->get__id(), '_event_bridge_or_activitypub_accept_of_follow', true );
+		$this->assertEquals( 'https://remote.example/random-accept-id', $accepted );
 
-		$this->assertNotFalse( $accepted );
+		// Receive Undo of the Accept.
+		$json = array(
+			'id'     => 'https://remote.example/random-undo-id',
+			'type'   => 'Undo',
+			'actor'  => 'https://remote.example/@organizer',
+			'object' => array(
+				'id'     => 'https://remote.example/random-accept-id',
+				'type'   => 'Accept',
+				'actor'  => 'https://remote.example/@organizer',
+				'object' => array(
+					'id'     => Event_Sources::compose_follow_id( $blog->get_id(), 'https://remote.example/@organizer' ),
+					'type'   => 'Follow',
+					'to'     => 'https://www.w3.org/ns/activitystreams#Public',
+					'object' => 'https://remote.example/@organizer',
+				),
+			),
+		);
+
+		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
+		$request->set_header( 'Content-Type', 'application/activity+json' );
+		$request->set_body( \wp_json_encode( $json ) );
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+
+		$accepted = get_post_meta( $event_source->get__id(), '_event_bridge_for_activitypub_accept_of_follow', true );
+
+		$this->assertEmpty( $accepted );
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
