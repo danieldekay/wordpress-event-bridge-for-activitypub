@@ -249,7 +249,6 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 
 	/**
 	 * Test receiving "Accept" of "Follow".
-	 *
 	 */
 	public function test_incoming_accept_of_follow() {
 		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
