@@ -13,6 +13,12 @@ jobs:
     - name: Checkout
       uses: https://code.forgejo.org/actions/checkout@v4
 
+    - name: Install and cache rsync
+      uses: https://github.com/awalsh128/cache-apt-pkgs-action@latest
+      with:
+        packages: rsync subversion
+        version: 1.0
+
     - name: WordPress.org plugin asset/readme update
       uses: https://github.com/10up/action-wordpress-plugin-asset-update@stable
       env:

@@ -45,8 +45,8 @@ WP_Filesystem();
 			<?php
 			if ( empty( $active_event_plugins ) ) {
 				$notice = General_Admin_Notices::get_admin_notice_no_supported_event_plugin_active();
+				echo '<p>⚠' . \wp_kses( $notice, General_Admin_Notices::ALLOWED_HTML ) . '</p>';
 			}
-			echo '<p>⚠' . \wp_kses( $notice, General_Admin_Notices::ALLOWED_HTML ) . '</p>';
 			?>
 			<?php foreach ( $active_event_plugins as $active_event_plugin ) { ?>
 			<h3><?php echo esc_html( $active_event_plugin->get_plugin_name() ); ?>:</h3>
