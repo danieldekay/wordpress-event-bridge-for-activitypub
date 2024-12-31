@@ -38,14 +38,14 @@ With the Event Bridge for ActivityPub WordPress plugin, sharing your events is e
 Once you create an event on your WordPress site, it is seamlessly shared across the decentralized web using the ActivityPub protocol.
 
 <p align="center">
-    <img src="./.wordpress-org/event-activitypub-publishing.gif" alt="Logo" width="300"/>
+    <img src="./.wordpress-org/event-activitypub-publishing.gif" alt="An animation that shows how WordPress events federate to users of different applications via ActivityPub." width="300"/>
 </p>
 
 Your events can be automatically delivered to platforms that fully support events, such as [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/).
 These platforms create public event calendars by pulling in events from various sources, including your website. Any updates you make to your events are synced across these platforms—so you only need to manage your events on your own site, with no extra work required.
 
 <p align="center">
-    <img src="./.wordpress-org/decentralized-event-calenders.gif" alt="Logo" width="250"/>
+    <img src="./.wordpress-org/decentralized-event-calenders.gif" alt="An animation that shows how a decentralized event calendar gets build via ActivityPub including an WordPress site as a source of events." width="250"/>
 </p>
 
 Even platforms that don't yet fully support events, like [Mastodon](https://joinmastodon.org), will still receive a detailed, well-composed summary of your event.
