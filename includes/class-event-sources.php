@@ -94,7 +94,7 @@ class Event_Sources {
 					'type'              => 'string',
 					'single'            => false,
 					'sanitize_callback' => function ( $value ) {
-						return esc_sql( $value );
+						return sanitize_url( $value );
 					},
 				)
 			);
@@ -108,11 +108,23 @@ class Event_Sources {
 						'type'              => 'string',
 						'single'            => false,
 						'sanitize_callback' => function ( $value ) {
-							return esc_sql( $value );
+							return sanitize_url( $value );
 						},
 					)
 				);
 			}
+
+			\register_post_meta(
+				$event_plugin_integration::get_post_type(),
+				'_event_bridge_for_activitypub_attributed_to',
+				array(
+					'type'              => 'string',
+					'single'            => false,
+					'sanitize_callback' => function ( $value ) {
+						return sanitize_url( $value );
+					},
+				)
+			);
 		}
 	}
 
