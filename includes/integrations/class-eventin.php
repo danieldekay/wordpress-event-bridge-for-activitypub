@@ -5,11 +5,11 @@
  * Defines all the necessary meta information for the events calendar.
  *
  * @link    https://wordpress.org/plugins/the-events-calendar/
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -21,14 +21,14 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class The_Events_Calendar extends Event_plugin {
+final class Eventin extends Event_plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
-		return 'the-events-calendar/the-events-calendar.php';
+	public static function get_relative_plugin_file(): string {
+		return 'wp-event-solution/eventin.php';
 	}
 
 	/**
@@ -37,21 +37,16 @@ final class The_Events_Calendar extends Event_plugin {
 	 * @return string
 	 */
 	public static function get_post_type(): string {
-		return class_exists( '\Tribe__Events__Main' ) ? \Tribe__Events__Main::POSTTYPE : 'tribe_event';
+		return 'etn';
 	}
 
 	/**
 	 * Returns the IDs of the admin pages of the plugin.
 	 *
-	 * @return array The settings page urls.
+	 * @return array The settings page url.
 	 */
 	public static function get_settings_pages(): array {
-		if ( class_exists( '\Tribe\Events\Admin\Settings' ) ) {
-			$page = \Tribe\Events\Admin\Settings::$settings_page_id;
-		} else {
-			$page = 'tec-events-settings';
-		}
-		return array( $page );
+		return array( 'eventin' ); // Base always is wp-admin/admin.php?page=eventin.
 	}
 
 	/**
@@ -60,6 +55,6 @@ final class The_Events_Calendar extends Event_plugin {
 	 * @return string
 	 */
 	public static function get_event_category_taxonomy(): string {
-		return class_exists( '\Tribe__Events__Main' ) ? \Tribe__Events__Main::TAXONOMY : 'tribe_events_cat';
+		return 'etn_category';
 	}
 }

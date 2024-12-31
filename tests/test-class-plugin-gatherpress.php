@@ -2,7 +2,7 @@
 /**
  * Class SampleTest
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  */
 
 /**
@@ -23,7 +23,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 		GatherPress\Core\Setup::get_instance()->activate_gatherpress_plugin( false );
 
 		// Make sure that ActivityPub support is enabled for The Events Calendar.
-		$aec = \ActivityPub_Event_Bridge\Setup::get_instance();
+		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
 		// Delete all posts afterwards.
@@ -37,7 +37,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 		// We only test for one event plugin being active at the same time,
 		// even though we support multiple onces in theory.
 		// But testing all combinations is beyond scope.
-		$active_event_plugins = \ActivityPub_Event_Bridge\Setup::get_instance()->get_active_event_plugins();
+		$active_event_plugins = \Event_Bridge_For_ActivityPub\Setup::get_instance()->get_active_event_plugins();
 		$this->assertEquals( 1, count( $active_event_plugins ) );
 
 		// Enable ActivityPub support for the event plugin.
@@ -56,7 +56,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 		$params  = array(
 			'datetime_start' => '+10 days 15:00:00',
 			'datetime_end'   => '+10 days 16:00:00',
-			'timezone'       => 'America/New_York',
+			'timezone'       => \wp_timezone_string(),
 		);
 
 		$event->save_datetimes( $params );
@@ -65,7 +65,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $event->event );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \ActivityPub_Event_Bridge\Activitypub\Transformer\GatherPress::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\Activitypub\Transformer\GatherPress::class, $transformer );
 	}
 
 	/**
@@ -85,7 +85,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 		$params  = array(
 			'datetime_start' => '+10 days 15:00:00',
 			'datetime_end'   => '+10 days 16:00:00',
-			'timezone'       => 'America/New_York',
+			'timezone'       => \wp_timezone_string(),
 		);
 		$event->save_datetimes( $params );
 

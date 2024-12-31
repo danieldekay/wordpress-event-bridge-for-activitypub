@@ -1,15 +1,18 @@
 <?php
 /**
- * GatherPress.
+ * VS Events LIst.
  *
- * Defines all the necessary meta information for the GatherPress plugin.
+ * Defines all the necessary meta information for the WordPress event plugin
+ * "Very Simple Events List".
  *
- * @link    https://wordpress.org/plugins/gatherpress/
- * @package ActivityPub_Event_Bridge
+ * @link    https://de.wordpress.org/plugins/very-simple-event-list/
+ * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
+
+use Event_Bridge_For_ActivityPub\Event_Plugins;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -21,14 +24,14 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class GatherPress extends Event_Plugin {
+final class VS_Event_List extends Event_Plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
-		return 'gatherpress/gatherpress.php';
+	public static function get_relative_plugin_file(): string {
+		return 'very-simple-event-list/vsel.php';
 	}
 
 	/**
@@ -37,7 +40,7 @@ final class GatherPress extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_post_type(): string {
-		return class_exists( '\GatherPress\Core\Event' ) ? \GatherPress\Core\Event::POST_TYPE : 'gatherpress_event';
+		return 'event';
 	}
 
 	/**
@@ -46,7 +49,7 @@ final class GatherPress extends Event_Plugin {
 	 * @return array The settings page urls.
 	 */
 	public static function get_settings_pages(): array {
-		return array( class_exists( '\GatherPress\Core\Utility' ) ? \GatherPress\Core\Utility::prefix_key( 'general' ) : 'gatherpress_general' );
+		return array( 'settings_page_vsel' );
 	}
 
 	/**
@@ -55,7 +58,7 @@ final class GatherPress extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_activitypub_transformer_class_name(): string {
-		return 'GatherPress';
+		return 'VS_Event';
 	}
 
 	/**
@@ -64,6 +67,6 @@ final class GatherPress extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_event_category_taxonomy(): string {
-		return class_exists( '\GatherPress\Core\Topic' ) ? \GatherPress\Core\Topic::TAXONOMY : 'gatherpress_topic';
+		return 'event_cat';
 	}
 }

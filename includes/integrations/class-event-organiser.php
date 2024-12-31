@@ -1,15 +1,15 @@
 <?php
 /**
- * Events Manager.
+ * Event Organiser.
  *
- * Defines all the necessary meta information for the Events Manager WordPress Plugin.
+ * Defines all the necessary meta information for the Event Organiser plugin.
  *
- * @link    https://wordpress.org/plugins/events-manager/
- * @package ActivityPub_Event_Bridge
+ * @link    https://wordpress.org/plugins/event-organiser/
+ * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -21,14 +21,14 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class Events_Manager extends Event_Plugin {
+final class Event_Organiser extends Event_Plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
-		return 'events-manager/events-manager.php';
+	public static function get_relative_plugin_file(): string {
+		return 'event-organiser/event-organiser.php';
 	}
 
 	/**
@@ -37,7 +37,7 @@ final class Events_Manager extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_post_type(): string {
-		return defined( 'EM_POST_TYPE_EVENT' ) ? constant( 'EM_POST_TYPE_EVENT' ) : 'event';
+		return 'event';
 	}
 
 	/**
@@ -45,8 +45,17 @@ final class Events_Manager extends Event_Plugin {
 	 *
 	 * @return array The settings page urls.
 	 */
-	public static function get_settings_page(): array {
-		return array();
+	public static function get_settings_pages(): array {
+		return array( 'event-organiser' );
+	}
+
+	/**
+	 * Returns the ActivityPub transformer class.
+	 *
+	 * @return string
+	 */
+	public static function get_activitypub_transformer_class_name(): string {
+		return 'Event_Organiser';
 	}
 
 	/**
@@ -55,6 +64,6 @@ final class Events_Manager extends Event_Plugin {
 	 * @return string
 	 */
 	public static function get_event_category_taxonomy(): string {
-		return defined( 'EM_TAXONOMY_CATEGORY' ) ? constant( 'EM_TAXONOMY_CATEGORY' ) : 'event-categories';
+		return 'event-category';
 	}
 }

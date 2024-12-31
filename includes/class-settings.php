@@ -3,18 +3,16 @@
  * General settings class.
  *
  * This file contains the General class definition, which handles the "General" settings
- * page for the Activitypub Event Bridge Plugin, providing options for configuring various general settings.
+ * page for the Event Bridge for ActivityPub Plugin, providing options for configuring various general settings.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  */
 
-namespace ActivityPub_Event_Bridge;
+namespace Event_Bridge_For_ActivityPub;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
-
-use Activitypub\Activity\Extended_Object\Event;
 
 /**
  * Class responsible for the ActivityPui Event Extension related Settings.
@@ -24,7 +22,7 @@ use Activitypub\Activity\Extended_Object\Event;
  * @since 1.0.0
  */
 class Settings {
-	const SETTINGS_SLUG = 'activitypub-event-bridge';
+	const SETTINGS_SLUG = 'event-bridge-for-activitypub';
 
 	/**
 	 * The default ActivityPub event category.
@@ -34,17 +32,17 @@ class Settings {
 	const DEFAULT_EVENT_CATEGORY = 'MEETING';
 
 	/**
-	 * Register the settings for the ActivityPub Event Bridge plugin.
+	 * Register the settings for the Event Bridge for ActivityPub plugin.
 	 *
 	 * @return void
 	 */
 	public static function register_settings(): void {
 		\register_setting(
-			'activitypub-event-bridge',
-			'activitypub_event_bridge_default_event_category',
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_default_event_category',
 			array(
 				'type'              => 'string',
-				'description'       => \__( 'Define your own custom post template', 'activitypub-event-bridge' ),
+				'description'       => \__( 'Define your own custom post template', 'event-bridge-for-activitypub' ),
 				'show_in_rest'      => true,
 				'default'           => self::DEFAULT_EVENT_CATEGORY,
 				'sanitize_callback' => array( self::class, 'sanitize_mapped_event_category' ),
@@ -52,23 +50,45 @@ class Settings {
 		);
 
 		\register_setting(
-			'activitypub-event-bridge',
-			'activitypub_event_bridge_event_category_mappings',
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_event_category_mappings',
 			array(
 				'type'              => 'array',
-				'description'       => \__( 'Define your own custom post template', 'activitypub-event-bridge' ),
+				'description'       => \__( 'Define your own custom post template', 'event-bridge-for-activitypub' ),
 				'default'           => array(),
 				'sanitize_callback' => array( self::class, 'sanitize_event_category_mappings' ),
 			)
 		);
 
 		\register_setting(
-			'activitypub-event-bridge',
-			'activitypub_event_bridge_initially_activated',
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_initially_activated',
 			array(
 				'type'        => 'boolean',
-				'description' => \__( 'Whether the plugin just got activated for the first time.', 'activitypub-event-bridge' ),
+				'description' => \__( 'Whether the plugin just got activated for the first time.', 'event-bridge-for-activitypub' ),
 				'default'     => 1,
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_summary_type',
+			array(
+				'type'         => 'string',
+				'description'  => \__( 'Summary type to use for ActivityStreams', 'event-bridge-for-activitypub' ),
+				'show_in_rest' => true,
+				'default'      => 'preset',
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_custom_summary',
+			array(
+				'type'         => 'string',
+				'description'  => \__( 'Define your own custom summary template for events', 'event-bridge-for-activitypub' ),
+				'show_in_rest' => true,
+				'default'      => EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY,
 			)
 		);
 	}
@@ -111,7 +131,8 @@ class Settings {
 	 * @return bool True if allowed, false otherwise.
 	 */
 	private static function is_allowed_event_category( $event_category ): bool {
-		$allowed_event_categories = Event::DEFAULT_EVENT_CATEGORIES;
+		require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . '/includes/event-categories.php';
+		$allowed_event_categories = array_keys( EVENT_BRIDGE_FOR_ACTIVITYPUB_EVENT_CATEGORIES );
 		return in_array( $event_category, $allowed_event_categories, true );
 	}
 }

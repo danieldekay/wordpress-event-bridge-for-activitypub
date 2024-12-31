@@ -1,6 +1,6 @@
 
 {
-  "name": "activitypub-event-bridge",
+  "name": "event-bridge-for-activitypub",
   "version": "0.1.0",
   "author": {
     "name": "André Menrath",
@@ -15,7 +15,7 @@
   },
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://code.event-federation.eu/Event-Federation/wordpress-activitypub-event-bridge/issues"
+    "url": "https://code.event-federation.eu/Event-Federation/wordpress-event-bridge-for-activitypub/issues"
   },
   "devDependencies": {
       "@wordpress/env": "^10.10.0",

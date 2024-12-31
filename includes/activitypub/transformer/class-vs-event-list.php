@@ -2,17 +2,17 @@
 /**
  * ActivityPub Transformer for the plugin Very Simple Event List.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Activitypub\Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transformer;
 
 /**
  * ActivityPub Transformer for VS Event.
@@ -44,7 +44,7 @@ final class VS_Event_List extends Event_Transformer {
 	/**
 	 * Get the end time from the events metadata.
 	 */
-	protected function get_end_time(): ?string {
+	public function get_end_time(): ?string {
 		if ( 'yes' === get_post_meta( $this->wp_object->ID, 'event-hide-end-time', true ) ) {
 			return null;
 		}
@@ -58,7 +58,7 @@ final class VS_Event_List extends Event_Transformer {
 	/**
 	 * Get the end time from the events metadata.
 	 */
-	protected function get_start_time(): string {
+	public function get_start_time(): string {
 		$start_time = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $start_time );
 	}

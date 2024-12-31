@@ -108,8 +108,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="activitypub-event-bridge"/>
-				<element value="activitypub"/>
+				<element value="event-bridge-for-activitypub"/>
 			</property>
 		</properties>
 	</rule>
@@ -117,7 +116,7 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="ACTIVITYPUB_EVENT_BRIDGE"/>
+				<element value="EVENT_BRIDGE_FOR_ACTIVITYPUB"/>
 			</property>
 		</properties>
 	</rule>
