@@ -46,7 +46,7 @@ class Event_Sources {
 	/**
 	 * The custom post type.
 	 */
-	const POST_TYPE = 'ebap_event_source';
+	const POST_TYPE = 'activitypub_event_source';
 
 	/**
 	 * Init.
