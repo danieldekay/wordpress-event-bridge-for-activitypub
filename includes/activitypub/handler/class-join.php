@@ -2,17 +2,17 @@
 /**
  * Join handler file.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Activitypub\Handler;
+namespace Event_Bridge_For_ActivityPub\Activitypub\Handler;
 
 use Activitypub\Activity\Activity;
 use Activitypub\Collection\Actors;
 use Activitypub\Http;
 use Activitypub\Transformer\Factory;
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transformer;
 
 use function Activitypub\is_same_domain;
 use function Activitypub\object_to_uri;

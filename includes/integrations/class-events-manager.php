@@ -1,15 +1,15 @@
 <?php
 /**
- * The Events Calendar.
+ * Events Manager.
  *
- * Defines all the necessary meta information for the events calendar.
+ * Defines all the necessary meta information for the Events Manager WordPress Plugin.
  *
- * @link    https://wordpress.org/plugins/the-events-calendar/
- * @package ActivityPub_Event_Bridge
+ * @link    https://wordpress.org/plugins/events-manager/
+ * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -21,14 +21,14 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  *
  * @since 1.0.0
  */
-final class Eventin extends Event_plugin {
+final class Events_Manager extends Event_Plugin {
 	/**
 	 * Returns the full plugin file.
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
-		return 'wp-event-solution/eventin.php';
+	public static function get_relative_plugin_file(): string {
+		return 'events-manager/events-manager.php';
 	}
 
 	/**
@@ -37,16 +37,16 @@ final class Eventin extends Event_plugin {
 	 * @return string
 	 */
 	public static function get_post_type(): string {
-		return 'etn';
+		return defined( 'EM_POST_TYPE_EVENT' ) ? constant( 'EM_POST_TYPE_EVENT' ) : 'event';
 	}
 
 	/**
 	 * Returns the IDs of the admin pages of the plugin.
 	 *
-	 * @return array The settings page url.
+	 * @return array The settings page urls.
 	 */
-	public static function get_settings_pages(): array {
-		return array( 'eventin' ); // Base always is wp-admin/admin.php?page=eventin.
+	public static function get_settings_page(): array {
+		return array();
 	}
 
 	/**
@@ -55,6 +55,6 @@ final class Eventin extends Event_plugin {
 	 * @return string
 	 */
 	public static function get_event_category_taxonomy(): string {
-		return 'etn_category';
+		return defined( 'EM_TAXONOMY_CATEGORY' ) ? constant( 'EM_TAXONOMY_CATEGORY' ) : 'event-categories';
 	}
 }

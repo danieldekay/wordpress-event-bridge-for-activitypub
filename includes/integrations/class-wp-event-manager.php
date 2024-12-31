@@ -6,13 +6,13 @@
  * "WP Event Manager"
  *
  * @link    https://de.wordpress.org/plugins/wp-event-manager
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
 
-use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
+use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -30,7 +30,7 @@ final class WP_Event_Manager extends Event_Plugin {
 	 *
 	 * @return string
 	 */
-	public static function get_plugin_file(): string {
+	public static function get_relative_plugin_file(): string {
 		return 'wp-event-manager/wp-event-manager.php';
 	}
 

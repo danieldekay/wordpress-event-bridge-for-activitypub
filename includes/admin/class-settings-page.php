@@ -3,32 +3,32 @@
  * General settings class.
  *
  * This file contains the General class definition, which handles the "General" settings
- * page for the Activitypub Event Bridge Plugin, providing options for configuring various general settings.
+ * page for the Event Bridge for ActivityPub Plugin, providing options for configuring various general settings.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Admin;
+namespace Event_Bridge_For_ActivityPub\Admin;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
-use ActivityPub_Event_Bridge\Setup;
+use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
+use Event_Bridge_For_ActivityPub\Setup;
 
 /**
- * Class responsible for the Activitypub Event Bridge related Settings.
+ * Class responsible for the Event Bridge for ActivityPub related Settings.
  *
- * Class which handles the "General" settings page for the Activitypub Event Bridge Plugin,
+ * Class which handles the "General" settings page for the Event Bridge for ActivityPub Plugin,
  * providing options for configuring various general settings.
  *
  * @since 1.0.0
  */
 class Settings_Page {
-	const STATIC = 'ActivityPub_Event_Bridge\Admin\Settings_Page';
+	const STATIC = 'Event_Bridge_For_ActivityPub\Admin\Settings_Page';
 
-	const SETTINGS_SLUG = 'activitypub-event-bridge';
+	const SETTINGS_SLUG = 'event-bridge-for-activitypub';
 	/**
 	 * Warning if the plugin is Active and the ActivityPub plugin is not.
 	 *
@@ -36,8 +36,8 @@ class Settings_Page {
 	 */
 	public static function admin_menu(): void {
 		\add_options_page(
-			'Activitypub Event Bridge',
-			__( 'ActivityPub Event Bridge', 'activitypub-event-bridge' ),
+			'Event Bridge for ActivityPub',
+			__( 'Event Bridge for ActivityPub', 'event-bridge-for-activitypub' ),
 			'manage_options',
 			self::SETTINGS_SLUG,
 			array( self::STATIC, 'settings_page' ),
@@ -97,6 +97,9 @@ class Settings_Page {
 			$tab = sanitize_key( $_GET['tab'] );
 		}
 
+		// Fallback to always re-scan active event plugins, when user visits admin area of this plugin.
+		Setup::get_instance()->redetect_active_event_plugins();
+
 		switch ( $tab ) {
 			case 'settings':
 				$plugin_setup = Setup::get_instance();
@@ -114,7 +117,7 @@ class Settings_Page {
 					'event_terms' => $event_terms,
 				);
 
-				\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/settings.php', true, $args );
+				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/settings.php', true, $args );
 				break;
 			case 'welcome':
 			default:
@@ -122,7 +125,7 @@ class Settings_Page {
 				add_thickbox();
 				wp_enqueue_script( 'updates' );
 
-				\load_template( ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'templates/welcome.php', true );
+				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/welcome.php', true );
 				break;
 		}
 	}

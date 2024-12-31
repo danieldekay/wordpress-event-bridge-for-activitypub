@@ -5,11 +5,11 @@
  * @package Activitypub_Event_Bridge
  */
 
-namespace ActivityPub_Event_Bridge\Admin;
+namespace Event_Bridge_For_ActivityPub\Admin;
 
 use Activitypub\Transformer\Factory as Transformer_Factory;
-use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
-use ActivityPub_Event_Bridge\Setup;
+use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
+use Event_Bridge_For_ActivityPub\Setup;
 use WP_Query;
 
 /**
@@ -32,8 +32,8 @@ class Health_Check {
 	 * @return array The filtered test array.
 	 */
 	public static function add_tests( $tests ) {
-		$tests['direct']['activitypub_event_bridge_test'] = array(
-			'label' => __( 'ActivityPub Event Transformer Test', 'activitypub-event-bridge' ),
+		$tests['direct']['event_bridge_for_activitypub_test'] = array(
+			'label' => __( 'ActivityPub Event Transformer Test', 'event-bridge-for-activitypub' ),
 			'test'  => array( self::class, 'test_event_transformation' ),
 		);
 
@@ -47,15 +47,15 @@ class Health_Check {
 	 */
 	public static function test_event_transformation() {
 		$result = array(
-			'label'       => \__( 'Transformation of Events to a valid ActivityStreams representation.', 'activitypub-event-bridge' ),
+			'label'       => \__( 'Transformation of Events to a valid ActivityStreams representation.', 'event-bridge-for-activitypub' ),
 			'status'      => 'good',
 			'badge'       => array(
-				'label' => \__( 'ActivityPub Event Bridge', 'activitypub-event-bridge' ),
+				'label' => \__( 'Event Bridge for ActivityPub', 'event-bridge-for-activitypub' ),
 				'color' => 'green',
 			),
 			'description' => \sprintf(
 				'<p>%s</p>',
-				\__( 'The transformation of your most recent events was successful.', 'activitypub-event-bridge' )
+				\__( 'The transformation of your most recent events was successful.', 'event-bridge-for-activitypub' )
 			),
 			'actions'     => '',
 			'test'        => 'test_event_transformation',
@@ -68,7 +68,7 @@ class Health_Check {
 		}
 
 		$result['status']         = 'critical';
-		$result['label']          = \__( 'One or more of your most recent events failed to transform to ActivityPub', 'activitypub-event-bridge' );
+		$result['label']          = \__( 'One or more of your most recent events failed to transform to ActivityPub', 'event-bridge-for-activitypub' );
 		$result['badge']['color'] = 'red';
 		$result['description']    = \sprintf(
 			'<p>%s</p>',
@@ -114,7 +114,12 @@ class Health_Check {
 	 */
 	public static function get_most_recent_event_posts( $event_post_type = null, $number_of_posts = 5 ) {
 		if ( ! $event_post_type ) {
-			$event_post_type = Setup::get_instance()->get_active_event_plugins()[0]->get_post_type();
+			$active_event_plugins = Setup::get_instance()->get_active_event_plugins();
+			$active_event_plugin  = reset( $active_event_plugins );
+			if ( ! $active_event_plugin ) {
+				return false;
+			}
+			$event_post_type = $active_event_plugin->get_post_type();
 		}
 
 		$args = array(
@@ -148,7 +153,7 @@ class Health_Check {
 		$active_event_plugins = Setup::get_instance()->get_active_event_plugins();
 		$info                 = array();
 		foreach ( $active_event_plugins as $active_event_plugin ) {
-			$event_plugin_file    = $active_event_plugin->get_plugin_file();
+			$event_plugin_file    = $active_event_plugin->get_relative_plugin_file();
 			$event_plugin_data    = \get_plugin_data( $event_plugin_file );
 			$event_plugin_name    = isset( $event_plugin_data['Plugin Name'] ) ? $event_plugin_data['Plugin Name'] : 'Name not found';
 			$event_plugin_version = isset( $event_plugin_version['Plugin Version'] ) ? $event_plugin_version['Plugin Version'] : 'Version not found';
@@ -168,12 +173,12 @@ class Health_Check {
 	 * @return array        The extended information.
 	 */
 	public static function add_debug_information( $info ) {
-		$info['activitypub_event_bridge'] = array(
-			'label'  => __( 'ActivityPub Event Bridge', 'activitypub-event-bridge' ),
+		$info['event_bridge_for_activitypub'] = array(
+			'label'  => __( 'Event Bridge for ActivityPub', 'event-bridge-for-activitypub' ),
 			'fields' => array(
 				'plugin_version'       => array(
-					'label'   => __( 'Plugin Version', 'activitypub-event-bridge' ),
-					'value'   => ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_VERSION,
+					'label'   => __( 'Plugin Version', 'event-bridge-for-activitypub' ),
+					'value'   => EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_VERSION,
 					'private' => true,
 				),
 				'active_event_plugins' => self::get_info_about_active_event_plugins(),

@@ -4,13 +4,13 @@
  *
  * Basic information that each supported event needs for this plugin to work.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  */
 
-namespace ActivityPub_Event_Bridge\Plugins;
+namespace Event_Bridge_For_ActivityPub\Integrations;
 
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -24,11 +24,11 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  */
 abstract class Event_Plugin {
 	/**
-	 * Returns the full plugin file.
+	 * Returns the plugin file relative to the plugins dir.
 	 *
 	 * @return string
 	 */
-	abstract public static function get_plugin_file(): string;
+	abstract public static function get_relative_plugin_file(): string;
 
 	/**
 	 * Returns the event post type of the plugin.
@@ -57,9 +57,9 @@ abstract class Event_Plugin {
 	 * Get the plugins name from the main plugin-file's top-level-file-comment.
 	 */
 	final public static function get_plugin_name(): string {
-		$plugin_data = get_plugin_data( WP_PLUGIN_DIR . '/' . static::get_plugin_file() );
-		if ( isset( $plugin_data['Name'] ) ) {
-			return $plugin_data['Name'];
+		$all_plugins = array_merge( get_plugins(), get_mu_plugins() );
+		if ( isset( $all_plugins[ static::get_relative_plugin_file() ]['Name'] ) ) {
+			return $all_plugins[ static::get_relative_plugin_file() ]['Name'];
 		} else {
 			return '';
 		}
@@ -83,6 +83,6 @@ abstract class Event_Plugin {
 	 * Returns the Activitypub transformer for the event plugins event post type.
 	 */
 	public static function get_activitypub_event_transformer_class(): string {
-		return str_replace( 'Plugins', 'Activitypub\Transformer', static::class );
+		return str_replace( 'Integrations', 'Activitypub\Transformer', static::class );
 	}
 }
