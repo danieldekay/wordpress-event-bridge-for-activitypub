@@ -111,5 +111,3 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 ### [0.3.4] 2024-12-21 ###
 
 * Initial release on https://wordpress.org/
-
-

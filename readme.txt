@@ -11,8 +11,7 @@ Integrating popular event plugins with the ActivityPub plugin.
 
 == Description ==
 
-Make your events more discoverable, expand your reach effortlessly while being independent of other (commercial) platforms, and be a part of the growing decentralized web (the Fediverse). With the Event Bridge for ActivityPub Plugin for WordPress, your events can be automatically followed, aggregated and displayed across decentralized platforms like [Mastodon](https://joinmastodon.org) or [Gancio](https://gancio.org), without any extra work.
-Forget the hassle of managing multiple social media accounts just to keep your audience informed.
+Make your events more discoverable, expand your reach effortlessly while being independent of other (commercial) platforms, and be a part of the growing decentralized web (the Fediverse). With the Event Bridge for ActivityPub Plugin for WordPress, your events can be automatically followed, aggregated and displayed across decentralized platforms like [Mastodon](https://joinmastodon.org) or [Gancio](https://gancio.org), without any extra work. Forget the hassle of managing multiple social media accounts just to keep your audience informed.
 
 This plugin is not an event managing plugin but an add-on to popular event plugins. It extends their functionality to fully support the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/). With the ActivityPub plugin people can follow your website directly and engage with your events just as they would on social media: liking, boosting and even commenting if you enable it. You retain full ownership of your content. By integrating into your existing setup, it ensures no extra work is needed while enhancing your events' visibility across the web.
 
@@ -20,11 +19,11 @@ This plugin is not an event managing plugin but an add-on to popular event plugi
 
 With the Event Bridge for ActivityPub WordPress plugin, sharing your events is effortless and automatic! Once you create an event on your WordPress site, it is seamlessly shared across the decentralized web using the ActivityPub protocol.
 
-<img src="https://ps.w.org/event-bridge-for-activitypub/assets/event-activitypub-publishing.gif" alt="An animation showing WordPress events being federated to several applications in the ActivityPub network." />
+[vimeo https://vimeo.com/1043105544 ]
 
 Your events can be automatically delivered to platforms that fully support events, such as [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/). These platforms create public event calendars by pulling in events from various sources, including your website. Any updates you make to your events are synced across these platforms—so you only need to manage your events on your own site, with no extra work required.
 
-<img src="https://ps.w.org/event-bridge-for-activitypub/assets/decentralized-event-calenders.gif" alt="An animation that shows how a decentralized event calendar gets build via ActivityPub including an WordPress site as a source of events." />
+[vimeo https://vimeo.com/1043104445 ]
 
 Even platforms that don't yet fully support events, like [Mastodon](https://joinmastodon.org), will still receive a detailed, well-composed summary of your event. The Event Federation plugin ensures that users from those platforms are provided with all important information about an event.
 
