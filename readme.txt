@@ -63,7 +63,7 @@ This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/ac
 * [GatherPress](https://gatherpress.org/)
 * [Event Organiser](https://wordpress.org/plugins/event-organiser/)
 
-== Configuration ==
+= Configuration =
 
 If you're new to the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/), it’s recommended to spend a few minutes reading through its documentation to familiarize yourself with its setup and functionality.
 
@@ -98,9 +98,6 @@ If you know about coding have a look at the documentation of how to add your plu
 We're always interested in your feedback. Feel free to reach out to us via [E-Mail](https://event-federation.eu/contact/) or create an [issue](https://code.event-federation.eu/Event-Federation/wordpress-event-bridge-for-activitypub/issues).
 
 == Acknowledgement ==
-
-<img src="https://ps.w.org/event-bridge-for-activitypub/assets/acknowledgement-NLnet.png" alt="NLnet foundation logo" width="20%" />
-<img src="https://ps.w.org/event-bridge-for-activitypub/assets/acknowledgement-NGI0Entrust.png" alt="NGI Zero Logo" width="20%" />
 
 The development of this WordPress plugin was funded through the [NGI0 Entrust](https://NLnet.nl/entrust) Fund, a fund established by [NLnet](https://nlnet.nl) with financial support from the European Commission's [Next Generation Internet](https://ngi.eu) programme, under the aegis of [Communications Networks, Content and Technology](https://commission.europa.eu/about-european-commission/departments-and-executive-agencies/communications-networks-content-and-technology_en) under grant agreement number 101069594.
 
