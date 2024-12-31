@@ -4,7 +4,6 @@
 .wordpress-org
 .wp-env.json
 bin
-CHANGELOG.md
 CODE_OF_CONDUCT.md
 composer.json
 composer.lock
