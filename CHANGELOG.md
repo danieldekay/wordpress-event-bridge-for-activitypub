@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Add feature: External Event Sources.
 
-## [0.3.3] - 2024-12-19
+## [0.3.4] - 2024-12-21
 
 * Initial release on WordPress.org
 
