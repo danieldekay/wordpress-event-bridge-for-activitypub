@@ -482,11 +482,9 @@ class Event_Sources {
 	 * @return bool True if the ActivityPub actor ID is followed, false otherwise.
 	 */
 	public static function actor_is_event_source( $actor_id ) {
-		$event_sources = Event_Sources_Collection::get_event_sources();
-		foreach ( $event_sources as $event_source ) {
-			if ( $actor_id === $event_source->get_id() ) {
-				return true;
-			}
+		$event_sources_ids = self::get_event_sources_ids();
+		if ( in_array( $actor_id, $event_sources_ids, true ) ) {
+			return true;
 		}
 		return false;
 	}
