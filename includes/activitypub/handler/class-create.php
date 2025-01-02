@@ -70,6 +70,6 @@ class Create {
 			return;
 		}
 
-		$transmogrifier->save( $activity['object'] );
+		$transmogrifier->save( $activity['object'], $activity['actor'] );
 	}
 }

@@ -26,7 +26,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
  */
 abstract class Base {
 	/**
-	 * The current GatherPress Event object.
+	 * The current Event object.
 	 *
 	 * @var Event
 	 */
@@ -40,11 +40,12 @@ abstract class Base {
 	abstract protected function save_event();
 
 	/**
-	 * Save the ActivityPub event object as GatherPress Event.
+	 * Save the ActivityPub event object within WordPress.
 	 *
-	 * @param array $activitypub_event The ActivityPub event as associative array.
+	 * @param array   $activitypub_event The ActivityPub event as associative array.
+	 * @param ?string $actor             The ActivityPub ID of the actor which we received the event from.
 	 */
-	public function save( $activitypub_event ) {
+	public function save( $activitypub_event, $actor ) {
 		$activitypub_event = Event::init_from_array( $activitypub_event );
 
 		if ( is_wp_error( $activitypub_event ) ) {
@@ -57,6 +58,7 @@ abstract class Base {
 
 		if ( $post_id ) {
 			update_post_meta( $post_id, '_event_bridge_for_activitypub_is_remote_cached', true );
+			update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', sanitize_url( $actor ) );
 			update_post_meta( $post_id, 'activitypub_content_visibility', constant( 'ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL' ) ?? '' );
 		}
 	}

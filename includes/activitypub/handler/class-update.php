@@ -42,7 +42,6 @@ class Update {
 		}
 
 		// Check that we are actually following this actor.
-
 		if ( ! Event_Sources::actor_is_event_source( $activity['actor'] ) ) {
 			return;
 		}
@@ -67,6 +66,6 @@ class Update {
 			return;
 		}
 
-		$transmogrifier->save( $activity['object'] );
+		$transmogrifier->save( $activity['object'], $activity['actor'] );
 	}
 }
