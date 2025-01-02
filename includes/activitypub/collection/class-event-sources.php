@@ -209,6 +209,53 @@ class Event_Sources {
 	}
 
 	/**
+	 * Delete all posts of an event source.
+	 *
+	 * @param string $event_source_id The ActivityPub ID of the event source.
+	 * @return void
+	 */
+	public static function delete_events_by_event_source( $event_source_id ) {
+		$args = array(
+			'author'         => 0, // Currently we do not use a special user or special users.
+			'posts_per_page' => -1, // Retrieve all matching posts.
+			'meta_key'       => '_event_bridge_for_activitypub_event_source',
+			'meta_query'     => array(
+				array(
+					'key'     => '_event_bridge_for_activitypub_event_source',
+					'value'   => $event_source_id,
+					'compare' => '=',
+				),
+			),
+		);
+
+		$query = new \WP_Query( $args );
+
+		// If no matching posts are found, return early.
+		if ( ! $query->have_posts() ) {
+			return;
+		}
+
+		// Loop through the posts and delete them permanently.
+		foreach ( $query->posts as $post ) {
+			// Check if the post has a thumbnail.
+			$thumbnail_id = get_post_thumbnail_id( $post->ID );
+
+			if ( $thumbnail_id ) {
+				// Remove the thumbnail from the post.
+				delete_post_thumbnail( $post->ID );
+
+				// Delete the attachment (and its files) from the media library.
+				wp_delete_attachment( $thumbnail_id, true );
+			}
+
+			\wp_delete_post( $post->ID, true );
+		}
+
+		// Clean up the query.
+		\wp_reset_postdata();
+	}
+
+	/**
 	 * Remove an Event Source (=Followed ActivityPub actor).
 	 *
 	 * @param string $actor  The Actor URL.
@@ -228,13 +275,15 @@ class Event_Sources {
 			return;
 		}
 
+		self::delete_events_by_event_source( $actor->get_id() );
+
 		$thumbnail_id = get_post_thumbnail_id( $post_id );
 
 		if ( $thumbnail_id ) {
 			wp_delete_attachment( $thumbnail_id, true );
 		}
 
-		$result = wp_delete_post( $post_id, true );
+		$result = wp_delete_post( $post_id, false );
 
 		// If the deletion was successful delete all transients regarding event sources.
 		if ( $result ) {
