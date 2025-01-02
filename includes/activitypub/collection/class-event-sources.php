@@ -209,6 +209,36 @@ class Event_Sources {
 	}
 
 	/**
+	 * Check whether an attachment is set as a featured image of any post.
+	 *
+	 * @param string|int $attachment_id The numeric post ID of the attachment.
+	 * @return bool
+	 */
+	public static function is_attachment_featured_image( $attachment_id ) {
+		if ( ! is_numeric( $attachment_id ) ) {
+			return false;
+		}
+
+		// Query posts with the given attachment ID as their featured image.
+		$args = array(
+			'post_type'   => 'any',
+			'meta_query'  => array(
+				array(
+					'key'     => '_thumbnail_id',
+					'value'   => $attachment_id,
+					'compare' => '=',
+				),
+			),
+			'fields'      => 'ids', // Only retrieve post IDs for performance.
+			'numberposts' => 1,     // We only need one match to confirm.
+		);
+
+		$posts = \get_posts( $args );
+
+		return ! empty( $posts );
+	}
+
+	/**
 	 * Delete all posts of an event source.
 	 *
 	 * @param string $event_source_id The ActivityPub ID of the event source.
@@ -242,10 +272,12 @@ class Event_Sources {
 
 			if ( $thumbnail_id ) {
 				// Remove the thumbnail from the post.
-				delete_post_thumbnail( $post->ID );
+				\delete_post_thumbnail( $post->ID );
 
 				// Delete the attachment (and its files) from the media library.
-				wp_delete_attachment( $thumbnail_id, true );
+				if ( self::is_attachment_featured_image( $thumbnail_id ) ) {
+					\wp_delete_attachment( $thumbnail_id, true );
+				}
 			}
 
 			\wp_delete_post( $post->ID, true );

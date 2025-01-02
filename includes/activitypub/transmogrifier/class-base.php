@@ -11,6 +11,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 
 use Activitypub\Activity\Extended_Object\Event;
 use DateTime;
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use Exception;
 use WP_Error;
 
@@ -150,8 +151,8 @@ abstract class Base {
 	 *
 	 * Forked from https://gist.github.com/kingkool68/a66d2df7835a8869625282faa78b489a.
 	 *
-	 * @param int    $post_id   The post ID where the image will be set as featured image.
-	 * @param string $url The image URL to maybe sideload.
+	 * @param int    $post_id The post ID where the image will be set as featured image.
+	 * @param string $url     The image URL to maybe sideload.
 	 * @uses media_sideload_image
 	 * @return string|int|WP_Error
 	 */
@@ -293,7 +294,7 @@ abstract class Base {
 
 		$thumbnail_id = get_post_thumbnail_id( $post_id );
 
-		if ( $thumbnail_id ) {
+		if ( $thumbnail_id && ! Event_Sources::is_attachment_featured_image( $thumbnail_id ) ) {
 			wp_delete_attachment( $thumbnail_id, true );
 		}
 
