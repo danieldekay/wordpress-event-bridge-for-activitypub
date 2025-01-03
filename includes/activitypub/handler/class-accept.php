@@ -59,6 +59,14 @@ class Accept {
 				return;
 			}
 			\update_post_meta( $post_id, '_event_bridge_for_activitypub_accept_of_follow', $activity['id'] );
+			\wp_update_post(
+				array(
+					'ID'          => $post_id,
+					'post_status' => 'publish',
+				)
+			);
 		}
+
+		\do_action( 'event_bridge_for_activitypub_backfill_events', $activity['actor'] );
 	}
 }

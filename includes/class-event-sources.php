@@ -74,6 +74,9 @@ class Event_Sources {
 
 		// Add the actors followed by the event sources feature to the `follow` collection of the used ActivityPub actor.
 		\add_filter( 'activitypub_rest_following', array( self::class, 'add_event_sources_to_follow_collection' ), 10, 2 );
+
+		// Add action for backfilling the events.
+		Outbox_Parser::init();
 	}
 
 
@@ -387,6 +390,7 @@ class Event_Sources {
 	public static function validate_event_object( $valid, $param, $request ) {
 		$json_params = $request->get_json_params();
 
+		// Check if we should continue with the validation.
 		if ( isset( $json_params['object']['type'] ) && 'Event' === $json_params['object']['type'] ) {
 			$valid = true;
 		} else {
@@ -405,9 +409,17 @@ class Event_Sources {
 			return $valid;
 		}
 
-		$object = $json_params['object'];
+		return self::is_valid_activitypub_event_object( $json_params['object'] );
+	}
 
-		if ( ! is_array( $object ) ) {
+	/**
+	 * Check if the object is a valid ActivityPub event.
+	 *
+	 * @param array $event_object The (event) object as an associative array.
+	 * @return bool|WP_Error True if the object is an valid ActivityPub Event, false or WP_Error if not.
+	 */
+	public static function is_valid_activitypub_event_object( $event_object ) {
+		if ( ! is_array( $event_object ) ) {
 			return false;
 		}
 
@@ -417,21 +429,21 @@ class Event_Sources {
 			'name',
 		);
 
-		if ( array_intersect( $required, array_keys( $object ) ) !== $required ) {
+		if ( array_intersect( $required, array_keys( $event_object ) ) !== $required ) {
 			return new WP_Error(
 				'event_bridge_for_activitypub_invalid_event_object',
 				__( 'The Event object is missing a required attribute.', 'event-bridge-for-activitypub' )
 			);
 		}
 
-		if ( ! self::is_valid_activitypub_time_string( $object['startTime'] ) ) {
+		if ( ! self::is_valid_activitypub_time_string( $event_object['startTime'] ) ) {
 			return new WP_Error(
 				'event_bridge_for_activitypub_event_object_is_not_in_the_future',
 				__( 'Ignoring event that has already started.', 'event-bridge-for-activitypub' )
 			);
 		}
 
-		return $valid;
+		return true;
 	}
 
 	/**
@@ -461,18 +473,35 @@ class Event_Sources {
 	/**
 	 * Check if a given DateTime is already passed.
 	 *
-	 * @param string $time_string The ActivityPub like time string.
+	 * @param string|DateTime $time The ActivityPub like time string or DateTime object.
 	 * @return bool
 	 */
-	public static function is_time_passed( $time_string ) {
-		// Create a DateTime object from the ActivityPub time string.
-		$time = new DateTime( $time_string, new DateTimeZone( 'UTC' ) );
+	public static function is_time_passed( $time ) {
+		if ( ! $time instanceof DateTime ) {
+			// Create a DateTime object from the ActivityPub time string.
+			$time = new DateTime( $time, new DateTimeZone( 'UTC' ) );
+		}
 
 		// Get the current time in UTC.
 		$current_time = new DateTime( 'now', new DateTimeZone( 'UTC' ) );
 
 		// Compare the event time with the current time.
 		return $time < $current_time;
+	}
+
+	/**
+	 * Determine whether an Event is an ongoing or future event.
+	 *
+	 * @param array $event_object The ActivityPub Event as an associative array.
+	 * @return bool
+	 */
+	public static function is_ongoing_or_future_event( $event_object ) {
+		if ( isset( $event_object['endTime'] ) ) {
+			$time = $event_object['endTime'];
+		} else {
+			$time = new DateTime( $event_object['startTime'], new DateTimeZone( 'UTC' ) ) + 3 * HOUR_IN_SECONDS;
+		}
+		return ! self::is_time_passed( $time );
 	}
 
 	/**

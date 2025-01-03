@@ -289,6 +289,8 @@ class Event_Sources {
 	 * @return WP_Post|false|null Post data on success, false or null on failure.
 	 */
 	public static function remove_event_source( $actor ) {
+		self::delete_event_source_transients();
+
 		$actor = Event_Source::get_by_id( $actor );
 
 		if ( ! $actor ) {
@@ -314,7 +316,6 @@ class Event_Sources {
 		// If the deletion was successful delete all transients regarding event sources.
 		if ( $result ) {
 			self::queue_unfollow_actor( $actor );
-			self::delete_event_source_transients();
 		}
 
 		return $result;
@@ -356,6 +357,7 @@ class Event_Sources {
 			'paged'          => $page,
 			'orderby'        => 'ID',
 			'order'          => 'DESC',
+			'post_status'    => array( 'publish', 'pending', 'draft', 'auto-draft', 'future', 'private', 'inherit' ),
 		);
 
 		$args   = wp_parse_args( $args, $defaults );

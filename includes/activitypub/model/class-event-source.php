@@ -76,6 +76,31 @@ class Event_Source extends Actor {
 	}
 
 	/**
+	 * Get the outbox.
+	 *
+	 * @return ?string The outbox URL.
+	 */
+	public function get_outbox() {
+		if ( $this->outbox ) {
+			return $this->outbox;
+		}
+
+		$actor_json = \get_post_meta( $this->get__id(), 'activitypub_actor_json', true );
+
+		if ( ! $actor_json ) {
+			return null;
+		}
+
+		$actor = \json_decode( $actor_json, true );
+
+		if ( ! isset( $actor['outbox'] ) ) {
+			return null;
+		}
+
+		return $actor['outbox'];
+	}
+
+	/**
 	 * Get the WordPress post which stores the Event Source by the ActivityPub actor id of the event source.
 	 *
 	 * @param string $actor_id The ActivityPub actor ID.
@@ -226,7 +251,7 @@ class Event_Source extends Actor {
 			'post_type'    => Event_Sources::POST_TYPE,
 			'post_name'    => esc_url_raw( $this->get_id() ),
 			'post_excerpt' => sanitize_text_field( wp_kses( $this->get_summary(), 'user_description' ) ),
-			'post_status'  => 'publish',
+			'post_status'  => 'pending',
 			'meta_input'   => $this->get_post_meta_input(),
 		);
 
