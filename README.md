@@ -23,7 +23,7 @@ You retain full ownership of your content. By integrating into your existing set
 
 ### Supported Event Plugins ###
 
-Full supporting including importing events from the Fediverse:
+Full support (including importing events from the Fediverse):
 
 * [The Events Calendar](https://de.wordpress.org/plugins/the-events-calendar/)
 * [VS Event List](https://de.wordpress.org/plugins/very-simple-event-list/)

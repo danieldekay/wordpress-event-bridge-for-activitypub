@@ -17,13 +17,18 @@ This plugin is not an event managing plugin but an add-on to popular event plugi
 
 = Supported Event Plugins =
 
+Full support (including importing events from the Fediverse):
+
 * [The Events Calendar](https://de.wordpress.org/plugins/the-events-calendar/)
 * [VS Event List](https://de.wordpress.org/plugins/very-simple-event-list/)
+* [GatherPress](https://gatherpress.org/)
+
+Basic support (outgoing events):
+
 * [Events Manager](https://de.wordpress.org/plugins/events-manager/)
 * [WP Event Manager](https://de.wordpress.org/plugins/wp-event-manager/)
 * [Eventin](https://de.wordpress.org/plugins/wp-event-solution/)
 * [Modern Events Calendar Lite](https://webnus.net/modern-events-calendar/)
-* [GatherPress](https://gatherpress.org/)
 * [Event Organiser](https://wordpress.org/plugins/event-organiser/)
 
 = How It Works =
@@ -56,13 +61,18 @@ This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/ac
 
 = Supported Event Plugins =
 
+Full support (including importing events from the Fediverse):
+
 * [The Events Calendar](https://de.wordpress.org/plugins/the-events-calendar/)
 * [VS Event List](https://de.wordpress.org/plugins/very-simple-event-list/)
+* [GatherPress](https://gatherpress.org/)
+
+Basic support (outgoing events):
+
 * [Events Manager](https://de.wordpress.org/plugins/events-manager/)
 * [WP Event Manager](https://de.wordpress.org/plugins/wp-event-manager/)
 * [Eventin](https://de.wordpress.org/plugins/wp-event-solution/)
 * [Modern Events Calendar Lite](https://webnus.net/modern-events-calendar/)
-* [GatherPress](https://gatherpress.org/)
 * [Event Organiser](https://wordpress.org/plugins/event-organiser/)
 
 = Configuration =
