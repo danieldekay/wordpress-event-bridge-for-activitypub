@@ -3,7 +3,7 @@
 **Tags:** events, fediverse, activitypub, calendar  
 **Requires at least:** 6.5  
 **Tested up to:** 6.7  
-**Stable tag:** 0.3.4  
+**Stable tag:** 0.3.5  
 **Requires PHP:** 7.4  
 **License:** AGPL-3.0-or-later  
 **License URI:** https://www.gnu.org/licenses/agpl-3.0.html  
@@ -107,6 +107,12 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 The development of this WordPress plugin was funded through the [NGI0 Entrust](https://NLnet.nl/entrust) Fund, a fund established by [NLnet](https://nlnet.nl) with financial support from the European Commission's [Next Generation Internet](https://ngi.eu) programme, under the aegis of [Communications Networks, Content and Technology](https://commission.europa.eu/about-european-commission/departments-and-executive-agencies/communications-networks-content-and-technology_en) under grant agreement number 101069594.
 
 ## Changelog ##
+
+## [0.3.5] - 2025-01-03
+
+### Fixed
+
+* Images of Acknowledgements in Admin UI
 
 ### [0.3.4] 2024-12-21 ###
 
