@@ -150,6 +150,17 @@ class Event_Sources {
 				'sanitize_callback' => 'sanitize_url',
 			)
 		);
+
+		\register_post_meta(
+			self::POST_TYPE,
+			'_event_bridge_for_activitypub_event_count',
+			array(
+				'type'              => 'int',
+				'single'            => true,
+				'sanitize_callback' => 'absint',
+				'default'           => '0',
+			)
+		);
 	}
 
 	/**
