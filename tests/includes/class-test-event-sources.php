@@ -30,6 +30,15 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		'summary' => 'Just a random organizer of events in the Fediverse',
 	);
 
+	const FOLLOWED_ACTOR_2 = array(
+		'id'      => 'https://remote.example/@organizer2',
+		'type'    => 'Person',
+		'inbox'   => 'https://remote.example/@organizer2/inbox',
+		'outbox'  => 'https://remote.example/@organizer2/outbox',
+		'name'    => 'The Second Organizer',
+		'summary' => 'Just a second random organizer of events in the Fediverse',
+	);
+
 	/**
 	 * REST Server.
 	 *
@@ -309,6 +318,98 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		$accepted = get_post_meta( $event_source->get__id(), '_event_bridge_for_activitypub_accept_of_follow', true );
 
 		$this->assertEmpty( $accepted );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
+	}
+
+	/**
+	 * Test receiving "Accept" of "Follow".
+	 */
+	public function test_delete_cached_events_of_removed_event_sources() {
+		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
+
+		// Check that we have three event posts.
+		$event_query = Event_Query::get_instance();
+		$the_query   = $event_query->get_upcoming_events();
+		$this->assertEquals( 0, $the_query->post_count );
+
+		// Add second event source.
+		\Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source::init_from_array( self::FOLLOWED_ACTOR_2 )->save();
+		\Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources::delete_event_source_transients();
+
+		// Receive first event of first Organizer.
+		$json = array(
+			'id'     => 'https://remote.example/@organizer/events/new-year-party#create',
+			'type'   => 'Create',
+			'actor'  => 'https://remote.example/@organizer',
+			'object' => array(
+				'id'        => 'https://remote.example/@organizer/events/new-year-party',
+				'type'      => 'Event',
+				'name'      => 'Fediverse Party',
+				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS ),
+				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + WEEK_IN_SECONDS + HOUR_IN_SECONDS ),
+				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
+				'published' => '2020-01-01T00:00:00Z',
+			),
+		);
+
+		$request  = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
+		$request->set_header( 'Content-Type', 'application/activity+json' );
+		$request->set_body( \wp_json_encode( $json ) );
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+
+		$the_query   = $event_query->get_upcoming_events();
+		$this->assertEquals( 1, $the_query->post_count );
+
+		// Second event of first organizer.
+		$json = array(
+			'id'     => 'https://remote.example/@organizer/events/birthday-party#create',
+			'type'   => 'Create',
+			'actor'  => 'https://remote.example/@organizer',
+			'object' => array(
+				'id'        => 'https://remote.example/@organizer/events/birthday-party',
+				'type'      => 'Event',
+				'name'      => 'Fediverse Party',
+				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + 2* WEEK_IN_SECONDS ),
+				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + 2* WEEK_IN_SECONDS + HOUR_IN_SECONDS ),
+				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
+				'published' => '2020-01-01T00:00:00Z',
+			),
+		);
+		$request->set_body( \wp_json_encode( $json ) );
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+		$the_query = $event_query->get_upcoming_events();
+		$this->assertEquals( 2, $the_query->post_count );
+
+		// Receive event of other organizer.
+		$json = array(
+			'id'     => 'https://remote.example/@organizer2/events/concert#create',
+			'type'   => 'Create',
+			'actor'  => 'https://remote.example/@organizer2',
+			'object' => array(
+				'id'        => 'https://remote.example/@organizer2/events/concert',
+				'type'      => 'Event',
+				'name'      => 'Concert',
+				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + 3 * WEEK_IN_SECONDS ),
+				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + 3 * WEEK_IN_SECONDS + HOUR_IN_SECONDS ),
+				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
+				'published' => '2020-01-01T00:00:00Z',
+			),
+		);
+		$request->set_body( \wp_json_encode( $json ) );
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+		$the_query = $event_query->get_upcoming_events();
+		$this->assertEquals( 3, $the_query->post_count );
+
+		// Remove first event source.
+		$result = \Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources::remove_event_source( 'https://remote.example/@organizer' );
+
+		// Verify that event posts got deleted.
+		$the_query   = $event_query->get_upcoming_events();
+		$this->assertEquals( 1, $the_query->post_count );
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}

@@ -245,34 +245,28 @@ class Event_Sources {
 	 * @return void
 	 */
 	public static function delete_events_by_event_source( $event_source_id ) {
-		$args = array(
-			'author'         => 0, // Currently we do not use a special user or special users.
-			'posts_per_page' => -1, // Retrieve all matching posts.
-			'meta_key'       => '_event_bridge_for_activitypub_event_source',
-			'meta_query'     => array(
-				array(
-					'key'     => '_event_bridge_for_activitypub_event_source',
-					'value'   => $event_source_id,
-					'compare' => '=',
-				),
-			),
+		global $wpdb;
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s",
+				'_event_bridge_for_activitypub_event_source',
+				esc_sql( $event_source_id )
+			)
 		);
 
-		$query = new \WP_Query( $args );
-
 		// If no matching posts are found, return early.
-		if ( ! $query->have_posts() ) {
+		if ( empty( $results ) || ! $results ) {
 			return;
 		}
 
 		// Loop through the posts and delete them permanently.
-		foreach ( $query->posts as $post ) {
+		foreach ( $results as $post ) {
 			// Check if the post has a thumbnail.
-			$thumbnail_id = get_post_thumbnail_id( $post->ID );
+			$thumbnail_id = get_post_thumbnail_id( $post->post_id );
 
 			if ( $thumbnail_id ) {
 				// Remove the thumbnail from the post.
-				\delete_post_thumbnail( $post->ID );
+				\delete_post_thumbnail( $post->post_id  );
 
 				// Delete the attachment (and its files) from the media library.
 				if ( self::is_attachment_featured_image( $thumbnail_id ) ) {
@@ -280,7 +274,7 @@ class Event_Sources {
 				}
 			}
 
-			\wp_delete_post( $post->ID, true );
+			\wp_delete_post( $post->post_id , true );
 		}
 
 		// Clean up the query.
