@@ -109,7 +109,7 @@ class Settings {
 			'event-bridge-for-activitypub',
 			'event_bridge_for_activitypub_event_source_cache_retention',
 			array(
-				'type'              => 'int',
+				'type'              => 'integer',
 				'show_in_rest'      => true,
 				'description'       => \__( 'The cache retention period for external event sources.', 'event-bridge-for-activitypub' ),
 				'default'           => WEEK_IN_SECONDS,

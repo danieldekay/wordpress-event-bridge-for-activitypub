@@ -155,7 +155,7 @@ class Event_Sources {
 			self::POST_TYPE,
 			'_event_bridge_for_activitypub_event_count',
 			array(
-				'type'              => 'int',
+				'type'              => 'integer',
 				'single'            => true,
 				'sanitize_callback' => 'absint',
 				'default'           => '0',
