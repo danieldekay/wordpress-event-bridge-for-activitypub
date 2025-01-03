@@ -353,13 +353,13 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 			),
 		);
 
-		$request  = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
+		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
 		$request->set_header( 'Content-Type', 'application/activity+json' );
 		$request->set_body( \wp_json_encode( $json ) );
 		$response = \rest_do_request( $request );
 		$this->assertEquals( 202, $response->get_status() );
 
-		$the_query   = $event_query->get_upcoming_events();
+		$the_query = $event_query->get_upcoming_events();
 		$this->assertEquals( 1, $the_query->post_count );
 
 		// Second event of first organizer.
@@ -371,8 +371,8 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 				'id'        => 'https://remote.example/@organizer/events/birthday-party',
 				'type'      => 'Event',
 				'name'      => 'Fediverse Party',
-				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + 2* WEEK_IN_SECONDS ),
-				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + 2* WEEK_IN_SECONDS + HOUR_IN_SECONDS ),
+				'startTime' => \gmdate( 'Y-m-d\TH:i:s\Z', time() + 2 * WEEK_IN_SECONDS ),
+				'endTime'   => \gmdate( 'Y-m-d\TH:i:s\Z', time() + 2 * WEEK_IN_SECONDS + HOUR_IN_SECONDS ),
 				'to'        => 'https://www.w3.org/ns/activitystreams#Public',
 				'published' => '2020-01-01T00:00:00Z',
 			),
@@ -408,7 +408,7 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		$result = \Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources::remove_event_source( 'https://remote.example/@organizer' );
 
 		// Verify that event posts got deleted.
-		$the_query   = $event_query->get_upcoming_events();
+		$the_query = $event_query->get_upcoming_events();
 		$this->assertEquals( 1, $the_query->post_count );
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );

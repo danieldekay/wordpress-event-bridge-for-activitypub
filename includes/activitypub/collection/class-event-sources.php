@@ -266,7 +266,7 @@ class Event_Sources {
 
 			if ( $thumbnail_id ) {
 				// Remove the thumbnail from the post.
-				\delete_post_thumbnail( $post->post_id  );
+				\delete_post_thumbnail( $post->post_id );
 
 				// Delete the attachment (and its files) from the media library.
 				if ( self::is_attachment_featured_image( $thumbnail_id ) ) {
@@ -274,7 +274,7 @@ class Event_Sources {
 				}
 			}
 
-			\wp_delete_post( $post->post_id , true );
+			\wp_delete_post( $post->post_id, true );
 		}
 
 		// Clean up the query.
