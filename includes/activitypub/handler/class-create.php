@@ -8,6 +8,7 @@
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
 use Activitypub\Collection\Actors;
+use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 use Event_Bridge_For_ActivityPub\Event_Sources;
 use Event_Bridge_For_ActivityPub\Setup;
 
@@ -51,9 +52,10 @@ class Create {
 			return;
 		}
 
-		// Check that we are actually following this actor.
-		if ( ! Event_Sources::actor_is_event_source( $activity['actor'] ) ) {
-			return false;
+		// Check that we are actually following/or have a pending follow request this actor.
+		$event_source = Event_Source::get_by_id( $activity['actor'] );
+		if ( ! $event_source ) {
+			return;
 		}
 
 		if ( Event_Sources::is_time_passed( $activity['object']['startTime'] ) ) {
@@ -70,6 +72,6 @@ class Create {
 			return;
 		}
 
-		$transmogrifier->save( $activity['object'], $activity['actor'] );
+		$transmogrifier->save( $activity['object'], $event_source );
 	}
 }

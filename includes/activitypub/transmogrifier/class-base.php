@@ -43,10 +43,10 @@ abstract class Base {
 	/**
 	 * Save the ActivityPub event object within WordPress.
 	 *
-	 * @param array   $activitypub_event The ActivityPub event as associative array.
-	 * @param ?string $actor             The ActivityPub ID of the actor which we received the event from.
+	 * @param array        $activitypub_event The ActivityPub event as associative array.
+	 * @param Event_Source $event_source      The Event Source we received the event from.
 	 */
-	public function save( $activitypub_event, $actor ) {
+	public function save( $activitypub_event, $event_source ) {
 		$activitypub_event = Event::init_from_array( $activitypub_event );
 
 		if ( is_wp_error( $activitypub_event ) ) {
@@ -57,20 +57,23 @@ abstract class Base {
 
 		$post_id = $this->save_event();
 
-		$event_id = $activitypub_event['id'];
+		$event_id = $activitypub_event->get_id();
+
+		$event_source_activitypub_id = $event_source->get_id();
+		$event_source_post_id        = $event_source->get__id();
 
 		if ( $post_id ) {
 			\do_action(
 				'event_bridge_for_activitypub_write_log',
-				array( "[ACTIVITYPUB] Processed incoming event {$event_id} from {$actor}" )
+				array( "[ACTIVITYPUB] Processed incoming event {$event_id} from {$event_source_activitypub_id}" )
 			);
 			update_post_meta( $post_id, '_event_bridge_for_activitypub_is_remote_cached', true );
-			update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', sanitize_url( $actor ) );
+			update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', absint( $event_source_post_id ) );
 			update_post_meta( $post_id, 'activitypub_content_visibility', constant( 'ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL' ) ?? '' );
 		} else {
 			\do_action(
 				'event_bridge_for_activitypub_write_log',
-				array( "[ACTIVITYPUB] Failed processing incoming event {$event_id} from {$actor}" )
+				array( "[ACTIVITYPUB] Failed processing incoming event {$event_id} from {$event_source_activitypub_id}" )
 			);
 		}
 	}

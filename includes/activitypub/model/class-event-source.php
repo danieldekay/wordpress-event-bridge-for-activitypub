@@ -122,16 +122,17 @@ class Event_Source extends Actor {
 	/**
 	 * Get the Event Source by the ActivityPub ID.
 	 *
-	 * @param string $actor_id The ActivityPub actor ID.
-	 * @return Event_Source|WP_Error|false The Event Source Actor, if a WordPress Post representing it is found, false otherwise.
+	 * @param string $activitypub_actor_id The ActivityPub actor ID.
+	 * @return Event_Source|false The Event Source Actor, if a WordPress Post representing it is found, false otherwise.
 	 */
-	public static function get_by_id( $actor_id ) {
-		$post = self::get_wp_post_by_activitypub_actor_id( $actor_id );
+	public static function get_by_id( $activitypub_actor_id ) {
+		$event_sources = Event_Sources::get_event_sources();
 
-		if ( $post ) {
-			$actor = self::init_from_cpt( $post );
+		if ( ! array_key_exists( $activitypub_actor_id, $event_sources ) ) {
+			return false;
 		}
-		return $actor ?? false;
+
+		return $event_sources[ $activitypub_actor_id ];
 	}
 
 	/**

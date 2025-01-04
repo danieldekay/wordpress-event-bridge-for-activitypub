@@ -216,7 +216,6 @@ class Event_Sources {
 	public static function delete_event_source_transients(): void {
 		delete_transient( 'event_bridge_for_activitypub_event_sources' );
 		delete_transient( 'event_bridge_for_activitypub_event_sources_hosts' );
-		delete_transient( 'event_bridge_for_activitypub_event_sources_ids' );
 	}
 
 	/**
@@ -252,16 +251,16 @@ class Event_Sources {
 	/**
 	 * Delete all posts of an event source.
 	 *
-	 * @param string $event_source_id The ActivityPub ID of the event source.
+	 * @param int $event_source_post_id The WordPress Post ID of the event source.
 	 * @return void
 	 */
-	public static function delete_events_by_event_source( $event_source_id ) {
+	public static function delete_events_by_event_source( $event_source_post_id ) {
 		global $wpdb;
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s",
+				"SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s",
 				'_event_bridge_for_activitypub_event_source',
-				esc_sql( $event_source_id )
+				absint( $event_source_post_id )
 			)
 		);
 
@@ -271,13 +270,13 @@ class Event_Sources {
 		}
 
 		// Loop through the posts and delete them permanently.
-		foreach ( $results as $post ) {
+		foreach ( $results as $result ) {
 			// Check if the post has a thumbnail.
-			$thumbnail_id = get_post_thumbnail_id( $post->post_id );
+			$thumbnail_id = get_post_thumbnail_id( $result->post_id );
 
 			if ( $thumbnail_id ) {
 				// Remove the thumbnail from the post.
-				\delete_post_thumbnail( $post->post_id );
+				\delete_post_thumbnail( $result->post_id );
 
 				// Delete the attachment (and its files) from the media library.
 				if ( self::is_attachment_featured_image( $thumbnail_id ) ) {
@@ -285,7 +284,7 @@ class Event_Sources {
 				}
 			}
 
-			\wp_delete_post( $post->post_id, true );
+			\wp_delete_post( $result->post_id, true );
 		}
 
 		// Clean up the query.
@@ -295,26 +294,26 @@ class Event_Sources {
 	/**
 	 * Remove an Event Source (=Followed ActivityPub actor).
 	 *
-	 * @param string $actor  The Actor URL.
+	 * @param string $activitypub_id The Events Sources ActivityPub Actor ID/URL.
 	 *
 	 * @return WP_Post|false|null Post data on success, false or null on failure.
 	 */
-	public static function remove_event_source( $actor ) {
+	public static function remove_event_source( $activitypub_id ) {
 		self::delete_event_source_transients();
 
-		$actor = Event_Source::get_by_id( $actor );
+		$event_source = Event_Source::get_by_id( $activitypub_id );
 
-		if ( ! $actor ) {
+		if ( ! $event_source ) {
 			return;
 		}
 
-		$post_id = $actor->get__id();
+		$post_id = $event_source->get__id();
 
 		if ( ! $post_id ) {
 			return;
 		}
 
-		self::delete_events_by_event_source( $actor->get_id() );
+		self::delete_events_by_event_source( $post_id);
 
 		$thumbnail_id = get_post_thumbnail_id( $post_id );
 
@@ -326,7 +325,7 @@ class Event_Sources {
 
 		// If the deletion was successful delete all transients regarding event sources.
 		if ( $result ) {
-			self::queue_unfollow_actor( $actor );
+			self::queue_unfollow_actor( $activitypub_id );
 		}
 
 		return $result;
@@ -374,12 +373,11 @@ class Event_Sources {
 		$args   = wp_parse_args( $args, $defaults );
 		$query  = new WP_Query( $args );
 		$total  = $query->found_posts;
-		$actors = array_map(
-			function ( $post ) {
-				return Event_Source::init_from_cpt( $post );
-			},
-			$query->get_posts()
-		);
+		$actors = array();
+
+		foreach ( $query->get_posts() as $post ) {
+			$actors[ $post->guid ] = Event_Source::init_from_cpt( $post );
+		}
 
 		$event_sources = compact( 'actors', 'total' );
 

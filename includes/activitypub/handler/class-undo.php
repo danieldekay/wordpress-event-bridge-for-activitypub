@@ -47,30 +47,24 @@ class Undo {
 			return;
 		}
 
-		$id = object_to_uri( $activity['object'] );
+		$accept_id = object_to_uri( $activity['object'] );
 
-		// This is what the ID of the follow request would look like.
-		$args  = array(
-			'post_type'  => Event_Sources_Collection::POST_TYPE,
-			'meta_key'   => '_event_bridge_for_activitypub_accept_of_follow',
-			'meta_query' => array(
-				array(
-					'key'     => '_event_bridge_for_activitypub_accept_of_follow',
-					'value'   => $id,
-					'compare' => '=',
-				),
-			),
+		global $wpdb;
+
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s",
+				'_event_bridge_for_activitypub_accept_of_follow',
+				esc_sql( $accept_id )
+			)
 		);
-		$query = new \WP_Query( $args );
 
 		// If no event source with that accept ID is found return.
-		if ( ! $query->have_posts() ) {
+		if ( empty( $results ) || ! $results ) {
 			return;
 		}
 
-		$post = $query->get_posts()[0];
-
-		$post_id = is_a( $post, 'WP_Post' ) ? $post->ID : $post;
+		$post_id = reset( $results )->post_id;
 
 		\delete_post_meta( $post_id, '_event_bridge_for_activitypub_accept_of_follow' );
 	}

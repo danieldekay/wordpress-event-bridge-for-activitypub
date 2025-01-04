@@ -119,13 +119,11 @@ class Event_Sources {
 
 			\register_post_meta(
 				$event_plugin_integration::get_post_type(),
-				'_event_bridge_for_activitypub_attributed_to',
+				'_event_bridge_for_activitypub_event_source',
 				array(
-					'type'              => 'string',
-					'single'            => false,
-					'sanitize_callback' => function ( $value ) {
-						return sanitize_url( $value );
-					},
+					'type'              => 'integer',
+					'single'            => true,
+					'sanitize_callback' => 'absint',
 				)
 			);
 		}
@@ -283,7 +281,7 @@ class Event_Sources {
 			return $follow_list;
 		}
 
-		$event_sources = self::get_event_sources_ids();
+		$event_sources = array_keys( Event_Sources_Collection::get_event_sources() );
 
 		if ( ! is_array( $event_sources ) ) {
 			return $follow_list;
@@ -304,11 +302,11 @@ class Event_Sources {
 			return $hosts;
 		}
 
-		$actors = Event_Sources_Collection::get_event_sources();
+		$event_sources = Event_Sources_Collection::get_event_sources();
 
 		$hosts = array();
-		foreach ( $actors as $actor ) {
-			$url = wp_parse_url( $actor->get_id() );
+		foreach ( array_keys( $event_sources ) as $actor ) {
+			$url = wp_parse_url( $actor );
 			if ( isset( $url['host'] ) ) {
 				$hosts[] = $url['host'];
 			}
@@ -319,30 +317,6 @@ class Event_Sources {
 		set_transient( 'event_bridge_for_activitypub_event_sources_hosts', $hosts );
 
 		return $hosts;
-	}
-
-	/**
-	 * Get add Event Sources ActivityPub IDs.
-	 *
-	 * @return array A list with the ActivityPub IDs of all Event Sources (follows).
-	 */
-	public static function get_event_sources_ids() {
-		$ids = get_transient( 'event_bridge_for_activitypub_event_sources_ids' );
-
-		if ( $ids ) {
-			return $ids;
-		}
-
-		$actors = Event_Sources_Collection::get_event_sources();
-
-		$ids = array();
-		foreach ( $actors as $actor ) {
-			$ids[] = $actor->get_id();
-		}
-
-		set_transient( 'event_bridge_for_activitypub_event_sources_ids', $ids );
-
-		return $ids;
 	}
 
 	/**
@@ -511,7 +485,7 @@ class Event_Sources {
 	 * @return bool True if the ActivityPub actor ID is followed, false otherwise.
 	 */
 	public static function actor_is_event_source( $actor_id ) {
-		$event_sources_ids = self::get_event_sources_ids();
+		$event_sources_ids = array_keys( Event_Sources_Collection::get_event_sources() );
 		if ( in_array( $actor_id, $event_sources_ids, true ) ) {
 			return true;
 		}
