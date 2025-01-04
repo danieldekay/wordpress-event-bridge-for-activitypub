@@ -39,7 +39,7 @@ class Outbox_Parser {
 	/**
 	 * Initialize the backfilling of events via the outbox of an ActivityPub actor.
 	 *
-	 * @param Event_Source $event_source The Source we want to backfill the events for.
+	 * @param Event_Source $event_source The Event Source we want to backfill the events for.
 	 * @return bool|WP_Error
 	 */
 	public static function backfill_events( $event_source ) {
