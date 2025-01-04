@@ -29,7 +29,7 @@ class General_Admin_Notices {
 	 */
 	const ACTIVITYPUB_PLUGIN_URL = 'https://wordpress.org/plugins/activitypub';
 
-	const EVENT_BRIDGE_FOR_ACTIVITYPUB_SUPPORTED_EVENT_PLUGINS_URL = 'https://code.event-federation.eu/Event-Federation/wordpress-event-bridge-for-activitypub#supported-event-plugins';
+	const EVENT_BRIDGE_FOR_ACTIVITYPUB_SUPPORTED_EVENT_PLUGINS_URL = 'https://wordpress.org/plugins/event-bridge-for-activitypub/#installation';
 
 	/**
 	 * Allowed HTML for admin notices.
