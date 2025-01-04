@@ -42,7 +42,7 @@ class Undo {
 			return;
 		}
 
-		// Check that we are actually following/or have a pending follow request this actor.
+		// Check that we are actually following/or have a pending follow request for this actor.
 		if ( ! Event_Sources::actor_is_event_source( $activity['actor'] ) ) {
 			return;
 		}

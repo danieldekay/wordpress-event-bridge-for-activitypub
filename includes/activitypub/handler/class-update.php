@@ -41,11 +41,6 @@ class Update {
 			return;
 		}
 
-		// Check that we are actually following this actor.
-		if ( ! Event_Sources::actor_is_event_source( $activity['actor'] ) ) {
-			return;
-		}
-
 		// Check if Activity is public or not.
 		if ( ! is_activity_public( $activity ) ) {
 			return;
@@ -54,6 +49,11 @@ class Update {
 		// Check if an object is set and it is an object of type `Event`.
 		if ( ! isset( $activity['object']['type'] ) || 'Event' !== $activity['object']['type'] ) {
 			return;
+		}
+
+		// Check that we are actually following this actor.
+		if ( ! Event_Sources::actor_is_event_source( $activity['actor'] ) ) {
+			return false;
 		}
 
 		if ( Event_Sources::is_time_passed( $activity['object']['startTime'] ) ) {
