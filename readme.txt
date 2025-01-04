@@ -119,6 +119,6 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 
 * Fixed: Images of Acknowledgements in Admin UI
 
-= [0.3.4] 2024-12-21 =
+= [0.3.4] - 2024-12-21 =
 
 * Initial release on https://wordpress.org/
