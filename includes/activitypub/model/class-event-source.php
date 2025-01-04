@@ -30,7 +30,7 @@ class Event_Source extends Actor {
 	const ACTIVITYPUB_USER_HANDLE_REGEXP = '(?:([A-Za-z0-9_.-]+)@((?:[A-Za-z0-9_-]+\.)+[A-Za-z]+))';
 
 	/**
-	 * The complete remote ActivityPub profile of the Event Source.
+	 * The WordPress Post ID which stores the event source.
 	 *
 	 * @var int
 	 */
@@ -99,24 +99,6 @@ class Event_Source extends Actor {
 		}
 
 		return $actor['outbox'];
-	}
-
-	/**
-	 * Get the WordPress post which stores the Event Source by the ActivityPub actor id of the event source.
-	 *
-	 * @param string $actor_id The ActivityPub actor ID.
-	 * @return ?WP_Post The WordPress post if the actor is found, null if not.
-	 */
-	private static function get_wp_post_by_activitypub_actor_id( $actor_id ) {
-		global $wpdb;
-		$post_id = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT ID FROM $wpdb->posts WHERE guid=%s AND post_type=%s",
-				esc_sql( $actor_id ),
-				Event_Sources::POST_TYPE
-			)
-		);
-		return $post_id ? get_post( $post_id ) : null;
 	}
 
 	/**
@@ -295,5 +277,24 @@ class Event_Source extends Actor {
 		}
 
 		return $post_id;
+	}
+
+	/**
+	 * Delete an Event Source and it's profile image.
+	 */
+	public function delete() {
+		$post_id = $this->get__id();
+
+		if ( ! $post_id ) {
+			return false;
+		}
+
+		$thumbnail_id = get_post_thumbnail_id( $post_id );
+
+		if ( $thumbnail_id ) {
+			wp_delete_attachment( $thumbnail_id, true );
+		}
+
+		return wp_delete_post( $post_id, false ) ?? false;
 	}
 }

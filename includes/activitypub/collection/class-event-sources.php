@@ -313,22 +313,15 @@ class Event_Sources {
 			return;
 		}
 
-		self::delete_events_by_event_source( $post_id);
+		self::delete_events_by_event_source( $post_id );
 
-		$thumbnail_id = get_post_thumbnail_id( $post_id );
+		$deleted = $event_source->delete();
 
-		if ( $thumbnail_id ) {
-			wp_delete_attachment( $thumbnail_id, true );
-		}
-
-		$result = wp_delete_post( $post_id, false );
-
-		// If the deletion was successful delete all transients regarding event sources.
-		if ( $result ) {
+		if ( $deleted ) {
 			self::queue_unfollow_actor( $activitypub_id );
 		}
 
-		return $result;
+		return $deleted;
 	}
 
 	/**
