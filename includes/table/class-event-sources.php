@@ -101,27 +101,26 @@ class Event_Sources extends WP_List_Table {
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		$event_sources = Event_Sources_Collection::get_event_sources_with_count( $per_page, $page_num, $args );
-		$actors        = $event_sources['actors'];
-		$counter       = $event_sources['total'];
+		$total_count   = $event_sources['total'];
 
 		$this->items = array();
 		$this->set_pagination_args(
 			array(
-				'total_items' => $counter,
-				'total_pages' => ceil( $counter / $per_page ),
+				'total_items' => $total_count,
+				'total_pages' => ceil( $total_count / $per_page ),
 				'per_page'    => $per_page,
 			)
 		);
 
-		foreach ( $actors as $actor ) {
+		foreach ( $event_sources['actors'] as $event_source ) {
 			$item = array(
-				'icon'       => esc_attr( $actor->get_icon_url() ),
-				'name'       => esc_attr( $actor->get_name() ),
-				'url'        => esc_attr( object_to_uri( $actor->get_id() ) ),
-				'accepted'   => esc_attr( get_post_meta( $actor->get__id(), '_event_bridge_for_activitypub_accept_of_follow', true ) ),
-				'identifier' => esc_attr( $actor->get_id() ),
-				'published'  => esc_attr( $actor->get_published() ),
-				'modified'   => esc_attr( $actor->get_updated() ),
+				'icon'       => esc_attr( $event_source->get_icon_url() ),
+				'name'       => esc_attr( $event_source->get_name() ),
+				'url'        => esc_attr( object_to_uri( $event_source->get_id() ) ),
+				'accepted'   => esc_attr( get_post_meta( $event_source->get__id(), '_event_bridge_for_activitypub_accept_of_follow', true ) ),
+				'identifier' => esc_attr( $event_source->get_id() ),
+				'published'  => esc_attr( $event_source->get_published() ),
+				'modified'   => esc_attr( $event_source->get_updated() ),
 			);
 
 			$this->items[] = $item;
