@@ -96,7 +96,7 @@ class The_Events_Calendar extends Base {
 			}
 		}
 
-		if ( $post_id && get_post_meta( $post_id, '_event_bridge_for_activitypub_is_remote_cached', true ) ) {
+		if ( $post_id && get_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', true ) ) {
 			$result = tribe_venues()->where( 'id', $post_id )->set_args( $this->get_venue_args( $location ) )->save();
 			if ( array_key_exists( $post_id, $result ) && $result[ $post_id ] ) {
 				return $post_id;
@@ -105,7 +105,7 @@ class The_Events_Calendar extends Base {
 			$post = tribe_venues()->set_args( $this->get_venue_args( $location ) )->create();
 			if ( $post ) {
 				$post_id = $post->ID;
-				update_post_meta( $post_id, '_event_bridge_for_activitypub_is_remote_cached', true );
+				update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', $this->event_source->get__id() );
 			}
 		}
 

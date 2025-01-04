@@ -103,7 +103,7 @@ final class GatherPress extends Event_Plugin_Integration implements Feature_Even
 				WHERE {$wpdb->prefix}posts.post_type = 'gatherpress_event'
 					AND {$wpdb->prefix}posts.post_status = 'publish'
 					AND {$wpdb->prefix}gatherpress_events.datetime_end_gmt <= %s
-					AND {$wpdb->prefix}postmeta.meta_key = '_event_bridge_for_activitypub_is_remote_cached'
+					AND {$wpdb->prefix}postmeta.meta_key = '_event_bridge_for_activitypub_event_source'
 				",
 				$ends_before_time_string
 			),
@@ -129,7 +129,7 @@ final class GatherPress extends Event_Plugin_Integration implements Feature_Even
 				if ( $post && 'gatherpress_event' === $post->post_type ) {
 					// Add your custom logic here to decide whether to force the link.
 					// For example, force it only if a specific meta field exists.
-					if ( get_post_meta( $post->ID, '_event_bridge_for_activitypub_is_remote_cached', true ) ) {
+					if ( get_post_meta( $post->ID, '_event_bridge_for_activitypub_event_source', true ) ) {
 						return true; // Force the online event link.
 					}
 				}

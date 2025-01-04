@@ -90,32 +90,6 @@ class Event_Sources {
 			if ( ! $event_plugin_integration instanceof Feature_Event_Sources && $event_plugin_integration instanceof Event_Plugin_Integration ) {
 				continue;
 			}
-			\register_post_meta(
-				$event_plugin_integration::get_post_type(),
-				'_event_bridge_for_activitypub_is_remote_cached',
-				array(
-					'type'              => 'string',
-					'single'            => false,
-					'sanitize_callback' => function ( $value ) {
-						return sanitize_url( $value );
-					},
-				)
-			);
-
-			$location_post_type = $event_plugin_integration::get_location_post_type();
-			if ( $location_post_type ) {
-				\register_post_meta(
-					$location_post_type,
-					'_event_bridge_for_activitypub_is_remote_cached',
-					array(
-						'type'              => 'string',
-						'single'            => false,
-						'sanitize_callback' => function ( $value ) {
-							return sanitize_url( $value );
-						},
-					)
-				);
-			}
 
 			\register_post_meta(
 				$event_plugin_integration::get_post_type(),
@@ -126,6 +100,21 @@ class Event_Sources {
 					'sanitize_callback' => 'absint',
 				)
 			);
+
+			$location_post_type = $event_plugin_integration::get_location_post_type();
+			if ( $location_post_type ) {
+				\register_post_meta(
+					$location_post_type,
+					'_event_bridge_for_activitypub_event_source',
+					array(
+						'type'              => 'string',
+						'single'            => false,
+						'sanitize_callback' => function ( $value ) {
+							return sanitize_url( $value );
+						},
+					)
+				);
+			}
 		}
 	}
 
@@ -205,7 +194,7 @@ class Event_Sources {
 	 * @return bool
 	 */
 	public static function is_cached_external_event_post( $post ): bool {
-		if ( get_post_meta( $post->ID, '_event_bridge_for_activitypub_is_remote_cached', true ) ) {
+		if ( get_post_meta( $post->ID, '_event_bridge_for_activitypub_event_source', true ) ) {
 			return true;
 		}
 

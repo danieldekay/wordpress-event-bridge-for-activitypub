@@ -10,9 +10,8 @@
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 
 use Activitypub\Activity\Extended_Object\Event;
-use DateTime;
+use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
-use Exception;
 use WP_Error;
 
 use function Activitypub\sanitize_url;
@@ -32,6 +31,13 @@ abstract class Base {
 	 * @var Event
 	 */
 	protected $activitypub_event;
+
+	/**
+	 * The current Event object.
+	 *
+	 * @var Event_Source
+	 */
+	protected $event_source;
 
 	/**
 	 * Internal function to actually save the event.
@@ -54,6 +60,7 @@ abstract class Base {
 		}
 
 		$this->activitypub_event = $activitypub_event;
+		$this->event_source      = $event_source;
 
 		$post_id = $this->save_event();
 
@@ -67,7 +74,6 @@ abstract class Base {
 				'event_bridge_for_activitypub_write_log',
 				array( "[ACTIVITYPUB] Processed incoming event {$event_id} from {$event_source_activitypub_id}" )
 			);
-			update_post_meta( $post_id, '_event_bridge_for_activitypub_is_remote_cached', true );
 			update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', absint( $event_source_post_id ) );
 			update_post_meta( $post_id, 'activitypub_content_visibility', constant( 'ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL' ) ?? '' );
 		} else {

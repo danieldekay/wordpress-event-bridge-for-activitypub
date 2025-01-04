@@ -127,7 +127,7 @@ final class The_Events_Calendar extends Event_plugin_Integration implements Feat
 	 */
 	public static function add_is_activitypub_remote_cached_to_query( $schema_entry ) {
 		$schema_entry['meta_query']['is-remote-cached'] = array(
-			'key'     => '_event_bridge_for_activitypub_is_remote_cached',
+			'key'     => '_event_bridge_for_activitypub_event_source',
 			'compare' => 'EXISTS',
 		);
 		return $schema_entry;

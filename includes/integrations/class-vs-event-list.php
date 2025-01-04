@@ -96,7 +96,7 @@ final class VS_Event_List extends Event_Plugin_Integration implements Feature_Ev
 			'meta_query'     => array(
 				'relation' => 'AND',
 				array(
-					'key'     => '_event_bridge_for_activitypub_is_remote_cached',
+					'key'     => '_event_bridge_for_activitypub_event_source',
 					'compare' => 'EXISTS',
 				),
 				array(
