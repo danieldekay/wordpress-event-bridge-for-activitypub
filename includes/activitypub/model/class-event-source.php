@@ -133,8 +133,8 @@ class Event_Source extends Actor {
 		$object->set_id( $post->guid );
 		$object->set_name( $post->post_title );
 		$object->set_summary( $post->post_excerpt );
-		$object->set_published( gmdate( 'Y-m-d H:i:s', strtotime( $post->post_date_gmt ) ) );
-		$object->set_updated( gmdate( 'Y-m-d H:i:s', strtotime( $post->post_modified_gmt ) ) );
+		$object->set_published( gmdate( 'Y-m-d H:i:s', strtotime( $post->post_date ) ) );
+		$object->set_updated( gmdate( 'Y-m-d H:i:s', strtotime( $post->post_modified ) ) );
 		$thumbnail_id = get_post_thumbnail_id( $post );
 		if ( $thumbnail_id ) {
 			$object->set_icon(
