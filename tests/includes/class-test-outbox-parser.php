@@ -139,10 +139,10 @@ class Test_Outbox_Parser extends \WP_UnitTestCase {
 		// The function we want to test is private, so we need a Reflection class.
 		$reflection = new \ReflectionClass( \Event_Bridge_For_ActivityPub\Outbox_Parser::class );
 
-        $method = $reflection->getMethod( 'import_events_from_items' );
-        $method->setAccessible( true );
+		$method = $reflection->getMethod( 'import_events_from_items' );
+		$method->setAccessible( true );
 
-        $count = $method->invoke( null, $items, 'https://remote.example/@organizer' );
+		$count = $method->invoke( null, $items, 'https://remote.example/@organizer' );
 
 		$this->assertEquals( 2, $count );
 
