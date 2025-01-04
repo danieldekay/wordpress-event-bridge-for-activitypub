@@ -3,7 +3,7 @@ Contributors: andremenrath
 Tags: events, fediverse, activitypub, calendar
 Requires at least: 6.5
 Tested up to: 6.7
-Stable tag: 0.3.4
+Stable tag: 0.3.5
 Requires PHP: 7.4
 License: AGPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/agpl-3.0.html
@@ -77,7 +77,7 @@ Basic support (outgoing events):
 
 = Configuration =
 
-If you're new to the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/), it’s recommended to spend a few minutes reading through its documentation to familiarize yourself with its setup and functionality.
+If you're new to the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/), it's recommended to spend a few minutes reading through its documentation to familiarize yourself with its setup and functionality.
 
 == Frequently Asked Questions ==
 
@@ -115,9 +115,9 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 
 == Changelog ==
 
-= Unreleased =
+= [0.3.5] - 2025-01-03 =
 
-* Add feature: External Event Sources.
+* Fixed: Images of Acknowledgements in Admin UI
 
 = [0.3.4] 2024-12-21 =
 
