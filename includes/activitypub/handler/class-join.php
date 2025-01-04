@@ -31,7 +31,7 @@ class Join {
 		);
 
 		\add_action(
-			'activitypub_event_bridge_ignore_join',
+			'event_bridge_for_activitypub_ignore_join',
 			array( self::class, 'send_ignore_response' ),
 			10,
 			4
@@ -81,7 +81,7 @@ class Join {
 		// Until then just send an ignore.
 
 		do_action(
-			'activitypub_event_bridge_ignore_join',
+			'event_bridge_for_activitypub_ignore_join',
 			$transformer->get_actor_object()->get_id(),
 			$activity,
 		);
@@ -90,9 +90,9 @@ class Join {
 	/**
 	 * Send "Ignore" response.
 	 *
-	 * @param string  $actor            The actors ActivityPub ID which sends the response.
-	 * @param array   $activity_object  The Activity object that gets ignored.
-	 * @param string  $to               The target actor.
+	 * @param string $actor           The actors ActivityPub ID which sends the response.
+	 * @param array  $activity_object The Activity object that gets ignored.
+	 * @param string $to              The target actor.
 	 */
 	public static function send_ignore_response( $actor, $activity_object, $to = null ) {
 		if ( ! $to && array_key_exists( 'actor', $activity_object ) ) {
