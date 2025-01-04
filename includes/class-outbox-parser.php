@@ -39,17 +39,10 @@ class Outbox_Parser {
 	/**
 	 * Initialize the backfilling of events via the outbox of an ActivityPub actor.
 	 *
-	 * @param string $actor The ActivityPub ID of the actor which owns the outbox.
+	 * @param Event_Source $event_source The Source we want to backfill the events for.
 	 * @return bool|WP_Error
 	 */
-	public static function backfill_events( $actor ) {
-		// Initiate parsing of outbox collection.
-		$event_source = Event_Source::get_by_id( $actor );
-
-		if ( ! $event_source ) {
-			return;
-		}
-
+	public static function backfill_events( $event_source ) {
 		$outbox_url = $event_source->get_outbox();
 
 		if ( ! $outbox_url ) {
@@ -57,7 +50,7 @@ class Outbox_Parser {
 		}
 
 		// Schedule the import of events via the outbox.
-		return self::queue_importing_from_outbox( $outbox_url, $actor, 0 );
+		return self::queue_importing_from_outbox( $outbox_url, $event_source->get_id(), 0 );
 	}
 
 	/**

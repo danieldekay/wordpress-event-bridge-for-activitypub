@@ -75,6 +75,6 @@ class Accept {
 		);
 
 		// Trigger the backfilling of events from this actor.
-		\do_action( 'event_bridge_for_activitypub_backfill_events', $activity['actor'] );
+		\do_action( 'event_bridge_for_activitypub_backfill_events', $event_source );
 	}
 }
