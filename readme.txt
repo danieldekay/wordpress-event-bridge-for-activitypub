@@ -65,7 +65,7 @@ This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/ac
 
 = Configuration =
 
-If you're new to the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/), it’s recommended to spend a few minutes reading through its documentation to familiarize yourself with its setup and functionality.
+If you're new to the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/), it's recommended to spend a few minutes reading through its documentation to familiarize yourself with its setup and functionality.
 
 == Frequently Asked Questions ==
 
