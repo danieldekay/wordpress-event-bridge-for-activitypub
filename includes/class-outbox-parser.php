@@ -1,7 +1,7 @@
 <?php
 /**
  * Class file for parsing an ActivityPub outbox for Events.
- * 
+ *
  * The main external entry function is `backfill_events`.
  * The function `import_events_from_outbox` is used for delaying the parsing via schedules.
  *
