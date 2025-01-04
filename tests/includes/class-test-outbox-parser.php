@@ -85,7 +85,7 @@ class Test_Outbox_Parser extends \WP_UnitTestCase {
 			array(
 				'id'     => 'https://remote.example/@organizer/events/concert#create',
 				'type'   => 'Create',
-				'actor'  => 'https://remote.example/@organizer',
+				'actor'  => self::FOLLOWED_ACTOR['id'],
 				'object' => array(
 					'id'        => 'https://remote.example/@organizer/events/concert',
 					'type'      => 'Event',
@@ -99,7 +99,7 @@ class Test_Outbox_Parser extends \WP_UnitTestCase {
 			array(
 				'id'     => 'https://remote.example/@organizer/events/birthday-party#create',
 				'type'   => 'Create',
-				'actor'  => 'https://remote.example/@organizer',
+				'actor'  => self::FOLLOWED_ACTOR['id'],
 				'object' => array(
 					'id'        => 'https://remote.example/@organizer/events/birthday-party',
 					'type'      => 'Event',
@@ -113,7 +113,7 @@ class Test_Outbox_Parser extends \WP_UnitTestCase {
 			array(
 				'id'     => 'https://remote.example/@organizer/events/status/1#create',
 				'type'   => 'Create',
-				'actor'  => 'https://remote.example/@organizer',
+				'actor'  => self::FOLLOWED_ACTOR['id'],
 				'object' => array(
 					'id'        => 'https://remote.example/@organizer/status/1',
 					'type'      => 'Note',
@@ -125,13 +125,13 @@ class Test_Outbox_Parser extends \WP_UnitTestCase {
 			array(
 				'id'     => 'https://remote.example/@organizer/likes/1',
 				'type'   => 'Like',
-				'actor'  => 'https://remote.example/@organizer',
+				'actor'  => self::FOLLOWED_ACTOR['id'],
 				'object' => 'https://remote2.example/@actor/status/1',
 			),
 			array(
 				'id'     => 'https://remote.example/@organizer/shares/1',
 				'type'   => 'Announce',
-				'actor'  => 'https://remote.example/@organizer',
+				'actor'  => self::FOLLOWED_ACTOR['id'],
 				'object' => 'https://remote2.example/@actor/status/2',
 			),
 		);
@@ -142,7 +142,9 @@ class Test_Outbox_Parser extends \WP_UnitTestCase {
 		$method = $reflection->getMethod( 'import_events_from_items' );
 		$method->setAccessible( true );
 
-		$count = $method->invoke( null, $items, 'https://remote.example/@organizer' );
+		$event_source = \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source::get_by_id( self::FOLLOWED_ACTOR['id'] );
+
+		$count = $method->invoke( null, $items, $event_source );
 
 		$this->assertEquals( 2, $count );
 
