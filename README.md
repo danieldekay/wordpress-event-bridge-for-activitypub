@@ -93,11 +93,11 @@ No, the Event Federation Plugin depends on the [ActivityPub plugin](https://word
 
 ### My event plugin is not supported, what can I do? ###
 
-If you know about coding have a look at the documentation of how to add your plugin or open an [issue](https://code.event-federation.eu/Event-Federation/wordpress-event-bridge-for-activitypub/issues), if we can spare some free hours we might add it.
+If you know about coding have a look at the documentation of how to add your plugin or open an [issue](https://codeberg.org/Event-Federation/wordpress-event-bridge-for-activitypub/issues), if we can spare some free hours we might add it.
 
 ### What if I experience problems? ###
 
-We're always interested in your feedback. Feel free to reach out to us via [E-Mail](https://event-federation.eu/contact/) or create an [issue](https://code.event-federation.eu/Event-Federation/wordpress-event-bridge-for-activitypub/issues).
+We're always interested in your feedback. Feel free to reach out to us via [E-Mail](https://event-federation.eu/contact/) or create an [issue](https://codeberg.org/Event-Federation/wordpress-event-bridge-for-activitypub/issues).
 
 ## Acknowledgement
 
