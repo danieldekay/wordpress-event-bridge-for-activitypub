@@ -57,10 +57,56 @@ abstract class Base {
 
 		$post_id = $this->save_event();
 
+		$event_id = $activitypub_event['id'];
+
 		if ( $post_id ) {
+			\do_action(
+				'event_bridge_for_activitypub_write_log',
+				array( "[ACTIVITYPUB] Processed incoming event {$event_id} from {$actor}" )
+			);
 			update_post_meta( $post_id, '_event_bridge_for_activitypub_is_remote_cached', true );
 			update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', sanitize_url( $actor ) );
 			update_post_meta( $post_id, 'activitypub_content_visibility', constant( 'ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL' ) ?? '' );
+		} else {
+			\do_action(
+				'event_bridge_for_activitypub_write_log',
+				array( "[ACTIVITYPUB] Failed processing incoming event {$event_id} from {$actor}" )
+			);
+		}
+	}
+
+	/**
+	 * Delete a local event in WordPress that is a cached remote one.
+	 *
+	 * @param int $activitypub_event_id The ActivityPub events ID.
+	 */
+	public function delete( $activitypub_event_id ) {
+		$post_id = self::get_post_id_from_activitypub_id( $activitypub_event_id );
+
+		if ( ! $post_id ) {
+			\do_action(
+				'event_bridge_for_activitypub_write_log',
+				array( "[ACTIVITYPUB] Received delete for event that is not cached locally {$activitypub_event_id}" )
+			);
+			return new WP_Error(
+				'event_bridge_for_activitypub_remote_event_not_found',
+				\__( 'Remote event not found in cache', 'event-bridge-for-activitypub' ),
+				array( 'status' => 404 )
+			);
+		}
+
+		$thumbnail_id = get_post_thumbnail_id( $post_id );
+
+		if ( $thumbnail_id && ! Event_Sources::is_attachment_featured_image( $thumbnail_id ) ) {
+			wp_delete_attachment( $thumbnail_id, true );
+		}
+
+		$result = wp_delete_post( $post_id, true );
+
+		if ( $result ) {
+			\do_action( 'event_bridge_for_activitypub_write_log', array( "[ACTIVITYPUB] Deleted cached event {$activitypub_event_id}" ) );
+		} else {
+			\do_action( 'event_bridge_for_activitypub_write_log', array( "[ACTIVITYPUB] Failed deleting cached event {$activitypub_event_id}" ) );
 		}
 	}
 
@@ -274,31 +320,6 @@ abstract class Base {
 			return self::postal_address_to_string( $address );
 		}
 		return '';
-	}
-
-	/**
-	 * Delete a local event in WordPress that is a cached remote one.
-	 *
-	 * @param int $activitypub_event_id The ActivityPub events ID.
-	 */
-	public function delete( $activitypub_event_id ) {
-		$post_id = self::get_post_id_from_activitypub_id( $activitypub_event_id );
-
-		if ( ! $post_id ) {
-			return new WP_Error(
-				'event_bridge_for_activitypub_remote_event_not_found',
-				\__( 'Remote event not found in cache', 'event-bridge-for-activitypub' ),
-				array( 'status' => 404 )
-			);
-		}
-
-		$thumbnail_id = get_post_thumbnail_id( $post_id );
-
-		if ( $thumbnail_id && ! Event_Sources::is_attachment_featured_image( $thumbnail_id ) ) {
-			wp_delete_attachment( $thumbnail_id, true );
-		}
-
-		wp_delete_post( $post_id, true );
 	}
 
 	/**

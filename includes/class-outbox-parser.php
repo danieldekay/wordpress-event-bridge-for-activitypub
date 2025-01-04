@@ -1,6 +1,9 @@
 <?php
 /**
  * Class file for parsing an ActivityPub outbox for Events.
+ * 
+ * The main external entry function is `backfill_events`.
+ * The function `import_events_from_outbox` is used for delaying the parsing via schedules.
  *
  * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
@@ -14,6 +17,9 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 
 /**
  * Class for parsing an ActivityPub outbox for Events.
+ *
+ * The main external entry function is `backfill_events`.
+ * The function `import_events_from_outbox` is used for delaying the parsing via schedules.
  */
 class Outbox_Parser {
 	/**
@@ -31,12 +37,80 @@ class Outbox_Parser {
 	}
 
 	/**
+	 * Initialize the backfilling of events via the outbox of an ActivityPub actor.
+	 *
+	 * @param string $actor The ActivityPub ID of the actor which owns the outbox.
+	 * @return bool|WP_Error
+	 */
+	public static function backfill_events( $actor ) {
+		// Initiate parsing of outbox collection.
+		$event_source = Event_Source::get_by_id( $actor );
+
+		if ( ! $event_source ) {
+			return;
+		}
+
+		$outbox_url = $event_source->get_outbox();
+
+		if ( ! $outbox_url ) {
+			return;
+		}
+
+		// Schedule the import of events via the outbox.
+		return self::queue_importing_from_outbox( $outbox_url, $actor, 0 );
+	}
+
+	/**
+	 * Import events from an outbox: OrderedCollection or OrderedCollectionPage.
+	 *
+	 * @param string $url The url of the current page or outbox.
+	 * @param string $actor The ActivityPub ID/URL of the actor that owns the outbox.
+	 * @return void
+	 */
+	public static function import_events_from_outbox( $url, $actor ) {
+		$outbox = self::fetch_outbox( $url );
+
+		if ( ! $outbox ) {
+			return;
+		}
+
+		$current_count = self::get_import_count( $actor );
+
+		if ( $current_count >= self::MAX_EVENTS_TO_IMPORT ) {
+			return;
+		}
+
+		// Process orderedItems if they exist (non-paginated outbox).
+		if ( isset( $outbox['orderedItems'] ) && is_array( $outbox['orderedItems'] ) ) {
+			$current_count += self::import_events_from_items(
+				$outbox['orderedItems'],
+				$actor,
+				self::MAX_EVENTS_TO_IMPORT - $current_count
+			);
+		}
+
+		self::update_import_count( $actor, $current_count );
+
+		// If the count is already exceeded abort here.
+		if ( $current_count >= self::MAX_EVENTS_TO_IMPORT ) {
+			return;
+		}
+
+		// Get next page and if it exists schedule the import of next page.
+		$pagination_url = self::get_pagination_url( $outbox );
+
+		if ( $pagination_url ) {
+			self::queue_importing_from_outbox( $pagination_url, $actor );
+		}
+	}
+
+	/**
 	 * Check if an Activity is of type Update or Create.
 	 *
 	 * @param array $activity The Activity as associative array.
 	 * @return bool
 	 */
-	public static function is_create_or_update_activity( $activity ) {
+	private static function is_create_or_update_activity( $activity ) {
 		if ( ! isset( $activity['type'] ) ) {
 			return false;
 		}
@@ -95,7 +169,7 @@ class Outbox_Parser {
 	 * @param int    $limit The limit of how many events to save locally.
 	 * @return int The number of saved events (at least attempted).
 	 */
-	public static function import_events_from_items( $items, $actor, $limit = -1 ) {
+	private static function import_events_from_items( $items, $actor, $limit = -1 ) {
 		$events = self::parse_items_for_events( $items, $limit );
 
 		$transmogrifier = Setup::get_transmogrifier();
@@ -125,7 +199,7 @@ class Outbox_Parser {
 	 * @param int    $delay The delay of the current time in seconds.
 	 * @return void
 	 */
-	public static function queue_importing_from_outbox( $url, $actor, $delay = 10 ) {
+	private static function queue_importing_from_outbox( $url, $actor, $delay = 10 ) {
 		$hook = 'event_bridge_for_activitypub_import_events_from_outbox';
 		$args = array( $url, $actor );
 
@@ -134,24 +208,6 @@ class Outbox_Parser {
 		}
 
 		return \wp_schedule_single_event( \time() + $delay, $hook, $args );
-	}
-
-	/**
-	 * Initialize the backfilling of events via the outbox of an ActivityPub actor.
-	 *
-	 * @param string $actor The ActivityPub ID of the actor which owns the outbox.
-	 * @return bool|WP_Error
-	 */
-	public static function backfill_events( $actor ) {
-		// Initiate parsing of outbox collection.
-		$outbox_url = Event_Source::get_by_id( $actor )->get_outbox();
-
-		if ( ! $outbox_url ) {
-			return;
-		}
-
-		// Schedule the import of events via the outbox.
-		return self::queue_importing_from_outbox( $outbox_url, $actor, 0 );
 	}
 
 	/**
@@ -212,50 +268,5 @@ class Outbox_Parser {
 		}
 
 		return null;
-	}
-
-
-	/**
-	 * Import events from an outbox: OrderedCollection or OrderedCollectionPage.
-	 *
-	 * @param string $url The url of the current page or outbox.
-	 * @param string $actor The ActivityPub ID/URL of the actor that owns the outbox.
-	 * @return void
-	 */
-	public static function import_events_from_outbox( $url, $actor ) {
-		$outbox = self::fetch_outbox( $url );
-
-		if ( ! $outbox ) {
-			return;
-		}
-
-		$current_count = self::get_import_count( $actor );
-
-		if ( $current_count >= self::MAX_EVENTS_TO_IMPORT ) {
-			return;
-		}
-
-		// Process orderedItems if they exist (non-paginated outbox).
-		if ( isset( $outbox['orderedItems'] ) && is_array( $outbox['orderedItems'] ) ) {
-			$current_count += self::import_events_from_items(
-				$outbox['orderedItems'],
-				$actor,
-				self::MAX_EVENTS_TO_IMPORT - $current_count
-			);
-		}
-
-		self::update_import_count( $actor, $current_count );
-
-		// If the count is already exceeded abort here.
-		if ( $current_count >= self::MAX_EVENTS_TO_IMPORT ) {
-			return;
-		}
-
-		// Get next page and if it exists schedule the import of next page.
-		$pagination_url = self::get_pagination_url( $outbox );
-
-		if ( $pagination_url ) {
-			self::queue_importing_from_outbox( $pagination_url, $actor );
-		}
 	}
 }

@@ -269,6 +269,9 @@ class Setup {
 			Event_Sources::init();
 		}
 
+		// Initialize writing of debug logs.
+		Debug::init();
+
 		// Lastly but most importantly: register the ActivityPub transformers for events to the ActivityPub plugin.
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
 	}

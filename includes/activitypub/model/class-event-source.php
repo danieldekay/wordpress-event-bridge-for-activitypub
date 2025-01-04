@@ -94,6 +94,7 @@ class Event_Source extends Actor {
 		$actor = \json_decode( $actor_json, true );
 
 		if ( ! isset( $actor['outbox'] ) ) {
+			\do_action( 'event_bridge_for_activitypub_write_log', array( "[ACTIVITYPUB] Did not find outbox URL for actor {$actor}" ) );
 			return null;
 		}
 
