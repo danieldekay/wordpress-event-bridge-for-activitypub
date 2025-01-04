@@ -110,3 +110,11 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 = [0.3.4] 2024-12-21 =
 
 * Initial release on https://wordpress.org/
+
+== Contributing ==
+
+This plugin is free software, and contributions of all kinds are welcome! Whether it's reporting issues, submitting improvements, or suggesting new features, your input helps make the plugin better for everyone.
+
+Please review our [Contribution Guidelines](https://codeberg.org/Event-Federation/wordpress-event-bridge-for-activitypub/src/branch/main/CONTRIBUTING.md) to get started. The source code is hosted on [Codeberg](https://codeberg.org/Event-Federation/wordpress-event-bridge-for-activitypub), where you can open issues and submit pull requests.
+
+Thank you for contributing!
