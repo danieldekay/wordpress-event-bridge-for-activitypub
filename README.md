@@ -3,7 +3,11 @@
 **Tags:** events, fediverse, activitypub, calendar  
 **Requires at least:** 6.5  
 **Tested up to:** 6.7  
+<<<<<<< HEAD
 **Stable tag:** 0.3.4  
+=======
+**Stable tag:** 0.3.5  
+>>>>>>> 4dd1d56daa487caa56755e874dd7e74995f0340a
 **Requires PHP:** 7.4  
 **License:** AGPL-3.0-or-later  
 **License URI:** https://www.gnu.org/licenses/agpl-3.0.html  
@@ -101,13 +105,13 @@ We're always interested in your feedback. Feel free to reach out to us via [E-Ma
 
 ## Acknowledgement
 
-[<img src="./.wordpress-org/acknowledgement-NLnet.svg" alt="NLnet foundation logo" width="20%" style="margin: 10px 5% 10px 5%;"/>](https://nlnet.nl)
-[<img src="./.wordpress-org/acknowledgement-NGI0Entrust.svg" alt="NGI Zero Logo" width="20%" style="margin: 10px 5% 10px 5%;"/>](https://nlnet.nl/entrust)
-
-The development of this WordPress plugin was funded through the [NGI0 Entrust](https://NLnet.nl/entrust) Fund, a fund established by [NLnet](https://nlnet.nl) with financial support from the European Commission's [Next Generation Internet](https://ngi.eu) programme, under the aegis of [Communications Networks, Content and Technology](https://commission.europa.eu/about-european-commission/departments-and-executive-agencies/communications-networks-content-and-technology_en) under grant agreement number 101069594.
-
-## Changelog ##
-
+<<<<<<< HEAD
 ### [0.3.4] 2024-12-21 ###
 
 * Initial release on https://wordpress.org/
+=======
+[<img src="./assets/img/acknowledgement-NLnet.svg" alt="NLnet foundation logo" width="20%" style="margin: 10px 5% 10px 5%;"/>](https://nlnet.nl)
+[<img src="./assets/img/acknowledgement-NGI0Entrust.svg" alt="NGI Zero Logo" width="20%" style="margin: 10px 5% 10px 5%;"/>](https://nlnet.nl/entrust)
+
+The development of this WordPress plugin was funded through the [NGI0 Entrust](https://NLnet.nl/entrust) Fund, a fund established by [NLnet](https://nlnet.nl) with financial support from the European Commission's [Next Generation Internet](https://ngi.eu) programme, under the aegis of [Communications Networks, Content and Technology](https://commission.europa.eu/about-european-commission/departments-and-executive-agencies/communications-networks-content-and-technology_en) under grant agreement number 101069594.
+>>>>>>> 4dd1d56daa487caa56755e874dd7e74995f0340a
