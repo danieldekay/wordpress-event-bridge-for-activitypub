@@ -119,7 +119,7 @@ class Event_Sources extends WP_List_Table {
 		foreach ( $event_sources['actors'] as $event_source_post_id => $event_source_activitypub_id ) {
 			$event_source = Event_Source::get_by_id( (int) $event_source_post_id );
 
-			if ( \is_wp_error( $event_source ) || ! in_array( $event_source->get_status(), array( 'publish', 'pending'), true ) ) {
+			if ( \is_wp_error( $event_source ) || ! in_array( $event_source->get_status(), array( 'publish', 'pending' ), true ) ) {
 				continue;
 			}
 
