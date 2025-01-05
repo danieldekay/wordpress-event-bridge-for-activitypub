@@ -12,8 +12,12 @@
 
 namespace Event_Bridge_For_ActivityPub\Table;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use WP_List_Table;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
+use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 
 use function Activitypub\object_to_uri;
 
@@ -112,11 +116,21 @@ class Event_Sources extends WP_List_Table {
 			)
 		);
 
-		foreach ( $event_sources['actors'] as $event_source ) {
+		foreach ( $event_sources['actors'] as $event_source_post_id => $event_source_activitypub_id ) {
+			$event_source_post = \get_post( $event_source_post_id );
+			if ( ! $event_source_post ) {
+				continue;
+			}
+			$event_source = Event_Source::init_from_cpt( $event_source_post );
+
+			if ( \is_wp_error( $event_source ) ) {
+				continue;
+			}
+
 			$item = array(
 				'icon'       => esc_attr( $event_source->get_icon_url() ),
 				'name'       => esc_attr( $event_source->get_name() ),
-				'url'        => esc_attr( object_to_uri( $event_source->get_id() ) ),
+				'url'        => esc_attr( $event_source_activitypub_id ),
 				'accepted'   => esc_attr( get_post_meta( $event_source->get__id(), '_event_bridge_for_activitypub_accept_of_follow', true ) ),
 				'identifier' => esc_attr( $event_source->get_id() ),
 				'published'  => esc_attr( $event_source->get_published() ),

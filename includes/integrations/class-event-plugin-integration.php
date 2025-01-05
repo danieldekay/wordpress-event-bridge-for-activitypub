@@ -11,10 +11,10 @@
 
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event as ActivityPub_Event_Transformer;
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event as ActivityPub_Event_Transformer;
 
 require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'includes/integrations/interface-feature-event-sources.php';
 

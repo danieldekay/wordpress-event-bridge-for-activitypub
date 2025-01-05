@@ -12,10 +12,10 @@
 
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Modern_Events_Calendar_Lite as Modern_Events_Calendar_Lite_Transformer;
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Modern_Events_Calendar_Lite as Modern_Events_Calendar_Lite_Transformer;
 
 /**
  * Modern Events Calendar (Lite)

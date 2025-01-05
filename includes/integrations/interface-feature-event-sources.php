@@ -13,10 +13,10 @@
 
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Base as Transmogrifier;
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
+use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Base as Transmogrifier;
 
 /**
  * Interface for an event plugin integration that supports the Event Sources feature.

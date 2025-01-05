@@ -7,6 +7,9 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub\Collection\Actors;
 use Event_Bridge_For_ActivityPub\Event_Sources;
 use Event_Bridge_For_ActivityPub\Setup;

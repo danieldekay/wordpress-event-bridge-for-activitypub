@@ -12,11 +12,11 @@
 
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\The_Events_Calendar as The_Events_Calendar_Transformer;
-use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\The_Events_Calendar as The_Events_Calendar_Transmogrifier;
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\The_Events_Calendar as The_Events_Calendar_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\The_Events_Calendar as The_Events_Calendar_Transmogrifier;
 
 /**
  * The Events Calendar.

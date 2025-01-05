@@ -9,6 +9,9 @@
 
 namespace Event_Bridge_For_ActivityPub;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub\Model\Blog;
 use DateTime;
 use DateTimeZone;
@@ -270,13 +273,13 @@ class Event_Sources {
 			return $follow_list;
 		}
 
-		$event_sources = array_keys( Event_Sources_Collection::get_event_sources() );
+		$event_sources_activitypub_ids = array_values( Event_Sources_Collection::get_event_sources() );
 
-		if ( ! is_array( $event_sources ) ) {
+		if ( ! is_array( $event_sources_activitypub_ids ) ) {
 			return $follow_list;
 		}
 
-		return array_merge( $follow_list, $event_sources );
+		return array_merge( $follow_list, $event_sources_activitypub_ids );
 	}
 
 	/**
@@ -294,7 +297,7 @@ class Event_Sources {
 		$event_sources = Event_Sources_Collection::get_event_sources();
 
 		$hosts = array();
-		foreach ( array_keys( $event_sources ) as $actor ) {
+		foreach ( $event_sources as $actor ) {
 			$url = wp_parse_url( $actor );
 			if ( isset( $url['host'] ) ) {
 				$hosts[] = $url['host'];
@@ -474,8 +477,8 @@ class Event_Sources {
 	 * @return bool True if the ActivityPub actor ID is followed, false otherwise.
 	 */
 	public static function actor_is_event_source( $actor_id ) {
-		$event_sources_ids = array_keys( Event_Sources_Collection::get_event_sources() );
-		if ( in_array( $actor_id, $event_sources_ids, true ) ) {
+		$event_sources = Event_Sources_Collection::get_event_sources();
+		if ( in_array( $actor_id, $event_sources, true ) ) {
 			return true;
 		}
 		return false;

@@ -7,6 +7,9 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub\Collection\Actors;
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 use Event_Bridge_For_ActivityPub\Event_Sources;
@@ -53,8 +56,8 @@ class Update {
 		}
 
 		// Check that we are actually following/or have a pending follow request this actor.
-		$event_source = Event_Source::get_by_id( $activity['actor'] );
-		if ( ! $event_source ) {
+		$event_source_post_id = Event_Source::get_post_id_by_activitypub_id( $activity['actor'] );
+		if ( ! $event_source_post_id ) {
 			return;
 		}
 
@@ -68,6 +71,6 @@ class Update {
 			return;
 		}
 
-		$transmogrifier->save( $activity['object'], $event_source );
+		$transmogrifier->save( $activity['object'], $event_source_post_id );
 	}
 }

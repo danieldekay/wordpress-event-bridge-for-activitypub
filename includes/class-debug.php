@@ -9,6 +9,9 @@
 
 namespace Event_Bridge_For_ActivityPub;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 /**
  * Debug Class.
  *

@@ -16,6 +16,7 @@ namespace Event_Bridge_For_ActivityPub;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Base as Transmogrifier;
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 use Event_Bridge_For_ActivityPub\Admin\Event_Plugin_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\Health_Check;
@@ -64,6 +65,11 @@ class Setup {
 	 * @since 1.0.0
 	 */
 	protected function __construct() {
+		// Detect the presence/active-status and version of the ActivityPub plugin.
+		$this->activitypub_plugin_is_active = defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) || \is_plugin_active( 'activitypub/activitypub.php' );
+		$this->activitypub_plugin_version   = self::get_activitypub_plugin_version();
+
+		// Register main action that load the Event Bridge For ActivityPub.
 		add_action( 'plugins_loaded', array( $this, 'setup_hooks' ) );
 	}
 
@@ -157,16 +163,16 @@ class Setup {
 	 * @return array List of supported event plugins as keys from the SUPPORTED_EVENT_PLUGINS const.
 	 */
 	public function detect_active_event_plugins(): array {
+		// Detection will fail in case the ActivityPub plugin is not active.
+		if ( ! $this->activitypub_plugin_is_active ) {
+			return array();
+		}
+
 		$active_event_plugins = get_transient( 'event_bridge_for_activitypub_active_event_plugins' );
 
 		if ( $active_event_plugins ) {
 			$this->active_event_plugins = $active_event_plugins;
 			return $active_event_plugins;
-		}
-
-		// Detection will fail in case the ActivityPub plugin is not active.
-		if ( ! $this->activitypub_plugin_is_active ) {
-			return array();
 		}
 
 		if ( ! function_exists( 'get_plugins' ) ) {
@@ -216,9 +222,15 @@ class Setup {
 	 * @return void
 	 */
 	public function setup_hooks(): void {
-		// Detect the presence of the ActivityPub plugin.
-		$this->activitypub_plugin_is_active = defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) || \is_plugin_active( 'activitypub/activitypub.php' );
-		$this->activitypub_plugin_version   = self::get_activitypub_plugin_version();
+		// Detect active supported event plugins.
+		$this->detect_active_event_plugins();
+
+		// Register hook that runs when this plugin gets activated.
+		register_activation_hook( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE, array( $this, 'activate' ) );
+
+		// Register listeners whenever any plugin gets activated or deactivated to maybe update the transient of active event plugins.
+		add_action( 'activated_plugin', array( $this, 'redetect_active_event_plugins' ) );
+		add_action( 'deactivated_plugin', array( $this, 'redetect_active_event_plugins' ) );
 
 		// Add hook that takes care of all notices in the Admin UI.
 		add_action( 'admin_init', array( $this, 'do_admin_notices' ) );
@@ -229,13 +241,6 @@ class Setup {
 		// Add hook that loads CSS and JavaScript files for the Admin UI.
 		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_styles' ) );
 
-		// Register hook that runs when this plugin gets activated.
-		register_activation_hook( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE, array( $this, 'activate' ) );
-
-		// Register listeners whenever any plugin gets activated or deactivated.
-		add_action( 'activated_plugin', array( $this, 'redetect_active_event_plugins' ) );
-		add_action( 'deactivated_plugin', array( $this, 'redetect_active_event_plugins' ) );
-
 		// Register the settings page(s) of this plugin to the WordPress admin menu.
 		add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
 		add_filter(
@@ -244,15 +249,8 @@ class Setup {
 		);
 
 		// If we don't have any active event plugins, or the ActivityPub plugin is not enabled, abort here.
-		if ( ! $this->activitypub_plugin_is_active ) {
-			return;
-		}
-
-		// Detect active supported event plugins.
-		$this->detect_active_event_plugins();
-
-		// If we don't have any active event plugins, or the ActivityPub plugin is not enabled, abort here.
-		if ( empty( $this->active_event_plugins ) ) {
+		if ( empty( $this->active_event_plugins ) || ! $this->activitypub_plugin_is_active ) {
+			self::shut_down();
 			return;
 		}
 
@@ -274,6 +272,33 @@ class Setup {
 
 		// Lastly but most importantly: register the ActivityPub transformers for events to the ActivityPub plugin.
 		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
+	}
+
+	/**
+	 * Shut down the plugin.
+	 *
+	 * @return void
+	 */
+	public static function shut_down() {
+		// Delete all transients.
+		Event_Sources_Collection::delete_event_source_transients();
+		delete_transient( 'event_bridge_for_activitypub_active_event_plugins' );
+
+		// Get the cron array.
+		$cron_array = _get_cron_array();
+
+		// Loop through all cron events.
+		foreach ( $cron_array as $timestamp => $events ) {
+			foreach ( $events as $hook => $details ) {
+				// Check if the hook starts with the plugin's prefix.
+				if ( strpos( $hook, 'event_bridge_for_activitypub' ) === 0 ) {
+					foreach ( $details as $key => $event ) {
+						// Unschedule the event regardless of arguments.
+						wp_unschedule_event( $timestamp, $hook, $event['args'] );
+					}
+				}
+			}
+		}
 	}
 
 	/**

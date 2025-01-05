@@ -9,8 +9,6 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 
-use DateTime;
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 

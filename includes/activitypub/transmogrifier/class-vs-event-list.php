@@ -12,12 +12,10 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 
-use Event_Bridge_For_ActivityPub\Integrations\VS_Event_List as IntegrationsVS_Event_List;
-
-use function Activitypub\sanitize_url;
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
+use Event_Bridge_For_ActivityPub\Integrations\VS_Event_List as IntegrationsVS_Event_List;
 
 /**
  * ActivityPub Transmogrifier for the VS Event List event plugin.

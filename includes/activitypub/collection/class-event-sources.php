@@ -20,6 +20,9 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Collection;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub\Model\Blog;
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 use WP_Error;
@@ -301,19 +304,21 @@ class Event_Sources {
 	public static function remove_event_source( $activitypub_id ) {
 		self::delete_event_source_transients();
 
-		$event_source = Event_Source::get_by_id( $activitypub_id );
+		$event_source_post_id = Event_Source::get_post_id_by_activitypub_id( $activitypub_id );
 
-		if ( ! $event_source ) {
+		self::delete_events_by_event_source( $event_source_post_id );
+
+		$event_source_post = \get_post( $event_source_post_id );
+
+		if ( ! $event_source_post ) {
 			return;
 		}
 
-		$post_id = $event_source->get__id();
+		$event_source = Event_Source::init_from_cpt( $event_source_post );
 
-		if ( ! $post_id ) {
+		if ( \is_wp_error( $event_source ) ) {
 			return;
 		}
-
-		self::delete_events_by_event_source( $post_id );
 
 		$deleted = $event_source->delete();
 
@@ -327,10 +332,27 @@ class Event_Sources {
 	/**
 	 * Get all Event-Sources.
 	 *
-	 * @return Event_Source[] A List of all Event Sources (follows).
+	 * It returns associative arrays, where the keys are the WordPress post IDs and the values are the ActivityPub IDs.
+	 * For example:
+	 * array(
+	 *    15 => 'https://remote.example/actors/event_organizer1',
+	 *    19 => 'https://remote2.example/users/johnmastodon',
+	 * )
+	 *
+	 * @return array List of `Event Sources`: <WP_Post-ID> => <ActivityPub-ID>
 	 */
 	public static function get_event_sources() {
-		return self::get_event_sources_with_count()['actors'];
+		$event_sources = get_transient( 'event_bridge_for_activitypub_event_sources' );
+
+		if ( $event_sources ) {
+			return $event_sources;
+		}
+
+		$event_sources = self::get_event_sources_with_count()['actors'];
+
+		set_transient( 'event_bridge_for_activitypub_event_sources', $event_sources );
+
+		return $event_sources;
 	}
 
 	/**
@@ -341,19 +363,13 @@ class Event_Sources {
 	 * @param array $args    The WP_Query arguments.
 	 *
 	 * @return array {
-	 *      Data about the followers.
+	 *      Data about the event sources.
 	 *
-	 *      @type array $followers List of `Follower` objects.
+	 *      @type array $followers List of `Event Sources`: <WP_Post-ID> => <ActivityPub-ID>
 	 *      @type int   $total     Total number of followers.
 	 *  }
 	 */
 	public static function get_event_sources_with_count( $number = -1, $page = null, $args = array() ) {
-		$event_sources = get_transient( 'event_bridge_for_activitypub_event_sources' );
-
-		if ( $event_sources ) {
-			return $event_sources;
-		}
-
 		$defaults = array(
 			'post_type'      => self::POST_TYPE,
 			'posts_per_page' => $number,
@@ -369,12 +385,10 @@ class Event_Sources {
 		$actors = array();
 
 		foreach ( $query->get_posts() as $post ) {
-			$actors[ $post->guid ] = Event_Source::init_from_cpt( $post );
+			$actors[ $post->ID ] = $post->guid;
 		}
 
 		$event_sources = compact( 'actors', 'total' );
-
-		set_transient( 'event_bridge_for_activitypub_event_sources', $event_sources );
 
 		return $event_sources;
 	}

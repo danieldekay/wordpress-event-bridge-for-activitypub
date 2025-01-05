@@ -9,15 +9,14 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub\Activity\Extended_Object\Event;
-use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use WP_Error;
 
 use function Activitypub\sanitize_url;
-
-// Exit if accessed directly.
-defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
  * Base class with common functions for transforming an ActivityPub Event object to a WordPress object.
@@ -35,9 +34,9 @@ abstract class Base {
 	/**
 	 * The current Event object.
 	 *
-	 * @var Event_Source
+	 * @var int
 	 */
-	protected $event_source;
+	protected $event_source_post_id;
 
 	/**
 	 * Internal function to actually save the event.
@@ -49,25 +48,25 @@ abstract class Base {
 	/**
 	 * Save the ActivityPub event object within WordPress.
 	 *
-	 * @param array        $activitypub_event The ActivityPub event as associative array.
-	 * @param Event_Source $event_source      The Event Source we received the event from.
+	 * @param array $activitypub_event    The ActivityPub event as associative array.
+	 * @param int   $event_source_post_id The Post ID of the Event Source that owns the outbox.
 	 */
-	public function save( $activitypub_event, $event_source ) {
+	public function save( $activitypub_event, $event_source_post_id ) {
 		$activitypub_event = Event::init_from_array( $activitypub_event );
 
 		if ( is_wp_error( $activitypub_event ) ) {
 			return;
 		}
 
-		$this->activitypub_event = $activitypub_event;
-		$this->event_source      = $event_source;
+		$this->activitypub_event    = $activitypub_event;
+		$this->event_source_post_id = $event_source_post_id;
 
+		// Pass the saving to the actual Transmogrifier implementation.
 		$post_id = $this->save_event();
 
-		$event_id = $activitypub_event->get_id();
-
-		$event_source_activitypub_id = $event_source->get_id();
-		$event_source_post_id        = $event_source->get__id();
+		// Post processing: Logging and marking the imported event's origin.
+		$event_id                    = $activitypub_event->get_id();
+		$event_source_activitypub_id = \get_the_guid( $event_source_post_id );
 
 		if ( $post_id ) {
 			\do_action(

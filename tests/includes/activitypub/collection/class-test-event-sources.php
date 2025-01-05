@@ -92,7 +92,7 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 
 		$this->assertCount( 2, $event_sources );
 
-		$this->assertArrayHasKey( self::FOLLOWED_ACTOR_1['id'], $event_sources );
-		$this->assertArrayHasKey( self::FOLLOWED_ACTOR_2['id'], $event_sources );
+		$this->assertContains( self::FOLLOWED_ACTOR_1['id'], $event_sources );
+		$this->assertContains( self::FOLLOWED_ACTOR_2['id'], $event_sources );
 	}
 }

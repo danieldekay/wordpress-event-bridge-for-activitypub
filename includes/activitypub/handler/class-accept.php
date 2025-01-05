@@ -8,6 +8,9 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub\Collection\Actors;
 use Activitypub\Model\Blog;
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
@@ -44,8 +47,8 @@ class Accept {
 		}
 
 		// Check that we are actually following/or have a pending follow request this actor.
-		$event_source = Event_Source::get_by_id( $activity['actor'] );
-		if ( ! $event_source ) {
+		$event_source_post_id = Event_Source::get_post_id_by_activitypub_id( $activity['actor'] );
+		if ( ! $event_source_post_id ) {
 			return;
 		}
 
@@ -58,23 +61,16 @@ class Accept {
 			return;
 		}
 
-		// Get the WordPress post ID of the Event Source. This should not be able to fail here.
-		$post_id = $event_source->get__id();
-
-		if ( ! $post_id ) {
-			return;
-		}
-
 		// Save the accept status of the follow request to the event source post.
-		\update_post_meta( $post_id, '_event_bridge_for_activitypub_accept_of_follow', $activity['id'] );
+		\update_post_meta( $event_source_post_id, '_event_bridge_for_activitypub_accept_of_follow', $activity['id'] );
 		\wp_update_post(
 			array(
-				'ID'          => $post_id,
+				'ID'          => $event_source_post_id,
 				'post_status' => 'publish',
 			)
 		);
 
 		// Trigger the backfilling of events from this actor.
-		\do_action( 'event_bridge_for_activitypub_backfill_events', $event_source );
+		\do_action( 'event_bridge_for_activitypub_backfill_events', $event_source_post_id );
 	}
 }

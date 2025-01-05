@@ -12,12 +12,12 @@
 
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\VS_Event_List as VS_Event_List_Transformer;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\VS_Event_List as VS_Event_List_Transmogrifier;
 use WP_Query;
-
-// Exit if accessed directly.
-defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
  * VS Events LIst.

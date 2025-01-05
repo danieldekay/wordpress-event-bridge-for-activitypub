@@ -276,8 +276,8 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 			),
 		);
 
-		$event_source = \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source::get_by_id( 'https://remote.example/@organizer' );
-		$accepted     = get_post_meta( $event_source->get__id(), '_event_bridge_for_activitypub_accept_of_follow', true );
+		$post_id  = \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source::get_post_id_by_activitypub_id( 'https://remote.example/@organizer' );
+		$accepted = \get_post_meta( $post_id, '_event_bridge_for_activitypub_accept_of_follow', true );
 		$this->assertEmpty( $accepted );
 
 		// Receive Accept.
@@ -287,7 +287,7 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		$response = \rest_do_request( $request );
 		$this->assertEquals( 202, $response->get_status() );
 
-		$accepted = get_post_meta( $event_source->get__id(), '_event_bridge_for_activitypub_accept_of_follow', true );
+		$accepted = get_post_meta( $post_id, '_event_bridge_for_activitypub_accept_of_follow', true );
 
 		$this->assertEquals( 'https://remote.example/random-accept-id', $accepted );
 
@@ -315,7 +315,7 @@ class Test_Event_Sources extends \WP_UnitTestCase {
 		$response = \rest_do_request( $request );
 		$this->assertEquals( 202, $response->get_status() );
 
-		$accepted = get_post_meta( $event_source->get__id(), '_event_bridge_for_activitypub_accept_of_follow', true );
+		$accepted = get_post_meta( $post_id, '_event_bridge_for_activitypub_accept_of_follow', true );
 
 		$this->assertEmpty( $accepted );
 

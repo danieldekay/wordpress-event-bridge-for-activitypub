@@ -11,14 +11,13 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
-use Tribe__Date_Utils;
 
 use function Activitypub\sanitize_url;
 use function Activitypub\object_to_uri;
-
-// Exit if accessed directly.
-defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
  * ActivityPub Transmogrifier for the GatherPress event plugin.
@@ -105,7 +104,7 @@ class The_Events_Calendar extends Base {
 			$post = tribe_venues()->set_args( $this->get_venue_args( $location ) )->create();
 			if ( $post ) {
 				$post_id = $post->ID;
-				update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', $this->event_source->get__id() );
+				update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', $this->event_source_post_id );
 			}
 		}
 

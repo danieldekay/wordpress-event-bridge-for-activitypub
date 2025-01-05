@@ -12,6 +12,9 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Model;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub\Activity\Actor;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use WP_Error;
@@ -102,26 +105,22 @@ class Event_Source extends Actor {
 	}
 
 	/**
-	 * Get the Event Source by the ActivityPub ID.
+	 * Get the Event Source Post ID by the ActivityPub ID.
 	 *
 	 * @param string $activitypub_actor_id The ActivityPub actor ID.
-	 * @return Event_Source|false The Event Source Actor, if a WordPress Post representing it is found, false otherwise.
+	 * @return int|false The Event Sources Post ID, if a WordPress Post representing it is found, false otherwise.
 	 */
-	public static function get_by_id( $activitypub_actor_id ) {
+	public static function get_post_id_by_activitypub_id( $activitypub_actor_id ) {
 		$event_sources = Event_Sources::get_event_sources();
 
-		if ( ! array_key_exists( $activitypub_actor_id, $event_sources ) ) {
-			return false;
-		}
-
-		return $event_sources[ $activitypub_actor_id ];
+		return array_search( $activitypub_actor_id, $event_sources, true );
 	}
 
 	/**
 	 * Convert a Custom-Post-Type input to an \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source.
 	 *
 	 * @param \WP_Post $post The post object.
-	 * @return \Event_Bridge_For_ActivityPub\ActivityPub\Event_Source|WP_Error
+	 * @return Event_Source|WP_Error
 	 */
 	public static function init_from_cpt( $post ) {
 		if ( Event_Sources::POST_TYPE !== $post->post_type ) {

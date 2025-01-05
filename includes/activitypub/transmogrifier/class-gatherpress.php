@@ -11,15 +11,14 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 
-use DateTime;
-use Event_Bridge_For_ActivityPub\Integrations\GatherPress as IntegrationsGatherPress;
-
-use function Activitypub\sanitize_url;
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use DateTime;
+use Event_Bridge_For_ActivityPub\Integrations\GatherPress as IntegrationsGatherPress;
 use GatherPress\Core\Event as GatherPress_Event;
+
+use function Activitypub\sanitize_url;
 
 /**
  * ActivityPub Transmogrifier for the GatherPress event plugin.

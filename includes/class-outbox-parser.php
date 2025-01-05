@@ -12,6 +12,9 @@
 
 namespace Event_Bridge_For_ActivityPub;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub\Http;
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 
@@ -39,10 +42,22 @@ class Outbox_Parser {
 	/**
 	 * Initialize the backfilling of events via the outbox of an ActivityPub actor.
 	 *
-	 * @param Event_Source $event_source The Event Source we want to backfill the events for.
+	 * @param int $event_source_post_id The Post ID of Event Source we want to backfill the events for.
 	 * @return bool|WP_Error
 	 */
-	public static function backfill_events( $event_source ) {
+	public static function backfill_events( $event_source_post_id ) {
+		$event_source_post = \get_post( $event_source_post_id );
+
+		if ( ! $event_source_post ) {
+			return;
+		}
+
+		$event_source = Event_Source::init_from_cpt( $event_source_post );
+
+		if ( \is_wp_error( $event_source ) ) {
+			return;
+		}
+
 		$outbox_url = $event_source->get_outbox();
 
 		if ( ! $outbox_url ) {
@@ -50,24 +65,24 @@ class Outbox_Parser {
 		}
 
 		// Schedule the import of events via the outbox.
-		return self::queue_importing_from_outbox( $outbox_url, $event_source, 0 );
+		return self::queue_importing_from_outbox( $outbox_url, $event_source->get__id(), 0 );
 	}
 
 	/**
 	 * Import events from an outbox: OrderedCollection or OrderedCollectionPage.
 	 *
-	 * @param string       $url          The url of the current page or outbox.
-	 * @param Event_Source $event_source The event source that the outbox belongs to.
+	 * @param string $url                  The url of the current page or outbox.
+	 * @param int    $event_source_post_id The Post ID of the Event Source that owns the outbox.
 	 * @return void
 	 */
-	public static function import_events_from_outbox( $url, $event_source ) {
+	public static function import_events_from_outbox( $url, $event_source_post_id ) {
 		$outbox = self::fetch_outbox( $url );
 
 		if ( ! $outbox ) {
 			return;
 		}
 
-		$current_count = self::get_import_count( $event_source );
+		$current_count = self::get_import_count( $event_source_post_id );
 
 		if ( $current_count >= self::MAX_EVENTS_TO_IMPORT ) {
 			return;
@@ -77,12 +92,12 @@ class Outbox_Parser {
 		if ( isset( $outbox['orderedItems'] ) && is_array( $outbox['orderedItems'] ) ) {
 			$current_count += self::import_events_from_items(
 				$outbox['orderedItems'],
-				$event_source,
+				$event_source_post_id,
 				self::MAX_EVENTS_TO_IMPORT - $current_count
 			);
 		}
 
-		self::update_import_count( $event_source, $current_count );
+		self::update_import_count( $event_source_post_id, $current_count );
 
 		// If the count is already exceeded abort here.
 		if ( $current_count >= self::MAX_EVENTS_TO_IMPORT ) {
@@ -93,7 +108,7 @@ class Outbox_Parser {
 		$pagination_url = self::get_pagination_url( $outbox );
 
 		if ( $pagination_url ) {
-			self::queue_importing_from_outbox( $pagination_url, $event_source );
+			self::queue_importing_from_outbox( $pagination_url, $event_source_post_id );
 		}
 	}
 
@@ -157,12 +172,12 @@ class Outbox_Parser {
 	/**
 	 * Import events from the items of an outbox.
 	 *
-	 * @param array        $items        The items/orderedItems as an associative array.
-	 * @param Event_Source $event_source The Event Source the items belong to.
-	 * @param int          $limit        The limit of how many events to save locally.
+	 * @param array $items                The items/orderedItems as an associative array.
+	 * @param int   $event_source_post_id The Post ID of the Event Source that owns the outbox.
+	 * @param int   $limit                The limit of how many events to save locally.
 	 * @return int The number of saved events (at least attempted).
 	 */
-	private static function import_events_from_items( $items, $event_source, $limit = -1 ) {
+	private static function import_events_from_items( $items, $event_source_post_id, $limit = -1 ) {
 		$events = self::parse_outbox_items_for_events( $items, $limit );
 
 		$transmogrifier = Setup::get_transmogrifier();
@@ -174,7 +189,7 @@ class Outbox_Parser {
 		$imported_count = 0;
 
 		foreach ( $events as $event ) {
-			$transmogrifier->save( $event, $event_source );
+			$transmogrifier->save( $event, $event_source_post_id );
 			++$imported_count;
 			if ( $limit > 0 && $imported_count >= $limit ) {
 				break;
@@ -187,14 +202,14 @@ class Outbox_Parser {
 	/**
 	 * Schedule the import of events from an outbox OrderedCollection or OrderedCollectionPage.
 	 *
-	 * @param string       $url          The url of the current page or outbox.
-	 * @param Event_Source $event_source The Event Source that owns the outbox.
-	 * @param int          $delay        The delay of the current time in seconds.
+	 * @param string $url                  The url of the current page or outbox.
+	 * @param int    $event_source_post_id The Post ID of the Event Source that owns the outbox.
+	 * @param int    $delay                The delay of the current time in seconds.
 	 * @return void
 	 */
-	private static function queue_importing_from_outbox( $url, $event_source, $delay = 10 ) {
+	private static function queue_importing_from_outbox( $url, $event_source_post_id, $delay = 10 ) {
 		$hook = 'event_bridge_for_activitypub_import_events_from_outbox';
-		$args = array( $url, $event_source );
+		$args = array( $url, $event_source_post_id );
 
 		if ( \wp_next_scheduled( $hook, $args ) ) {
 			return;
@@ -206,22 +221,22 @@ class Outbox_Parser {
 	/**
 	 * Get the current import count for the actor.
 	 *
-	 * @param Event_Source $event_source The event source.
+	 * @param int $event_source_post_id The Post ID of the Event Source that owns the outbox.
 	 * @return int The current count of imported events.
 	 */
-	private static function get_import_count( $event_source ) {
-		return (int) \get_post_meta( $event_source->get__id(), '_event_bridge_for_activitypub_event_count', true );
+	private static function get_import_count( $event_source_post_id ) {
+		return (int) \get_post_meta( $event_source_post_id, '_event_bridge_for_activitypub_event_count', true );
 	}
 
 	/**
 	 * Update the import count for an event source..
 	 *
-	 * @param Event_Source $event_source The event source.
-	 * @param int          $count        The new count of imported events.
+	 * @param int $event_source_post_id The Post ID of the Event Source that owns the outbox.
+	 * @param int $count                The new count of imported events.
 	 * @return void
 	 */
-	private static function update_import_count( $event_source, $count ) {
-		\update_post_meta( $event_source->get__id(), '_event_bridge_for_activitypub_event_count', $count );
+	private static function update_import_count( $event_source_post_id, $count ) {
+		\update_post_meta( $event_source_post_id, '_event_bridge_for_activitypub_event_count', $count );
 	}
 
 	/**

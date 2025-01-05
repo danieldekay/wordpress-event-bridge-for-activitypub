@@ -8,9 +8,11 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
 use Activitypub\Collection\Actors;
 use Event_Bridge_For_ActivityPub\Event_Sources;
-use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 
 use function Activitypub\object_to_uri;
 
