@@ -117,9 +117,9 @@ class Event_Sources extends WP_List_Table {
 		);
 
 		foreach ( $event_sources['actors'] as $event_source_post_id => $event_source_activitypub_id ) {
-			$event_source = Event_Source::get_by_id( $event_source_activitypub_id );
+			$event_source = Event_Source::get_by_id( (int) $event_source_post_id );
 
-			if ( \is_wp_error( $event_source ) ) {
+			if ( \is_wp_error( $event_source ) || ! in_array( $event_source->get_status(), array( 'publish', 'pending'), true ) ) {
 				continue;
 			}
 
@@ -128,7 +128,7 @@ class Event_Sources extends WP_List_Table {
 				'name'       => esc_attr( $event_source->get_name() ),
 				'url'        => esc_attr( $event_source_activitypub_id ),
 				'accepted'   => esc_attr( get_post_meta( $event_source->get__id(), '_event_bridge_for_activitypub_accept_of_follow', true ) ),
-				'identifier' => esc_attr( $event_source->get_id() ),
+				'identifier' => esc_attr( $event_source_post_id ),
 				'published'  => esc_attr( $event_source->get_published() ),
 				'modified'   => esc_attr( $event_source->get_updated() ),
 			);
@@ -236,7 +236,7 @@ class Event_Sources extends WP_List_Table {
 				$event_sources = array( $event_sources );
 			}
 			foreach ( $event_sources as $event_source ) {
-				Event_Sources_Collection::remove_event_source( $event_source );
+				Event_Sources_Collection::remove_event_source( (int) $event_source );
 			}
 		}
 	}

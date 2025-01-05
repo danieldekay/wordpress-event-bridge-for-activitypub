@@ -9,10 +9,11 @@
 
 namespace Event_Bridge_For_ActivityPub\Admin;
 
-use Event_Bridge_For_ActivityPub\Event_Sources;
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
+
+use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
+use Event_Bridge_For_ActivityPub\Event_Sources;
 
 /**
  * Class responsible for Event Plugin related admin notices.
@@ -58,7 +59,7 @@ class User_Interface {
 		}
 
 		$actions['view_origin'] = sprintf(
-			'<a href="%s" target="_blank">%s</a>',
+			'<a href="%s" target="_blank">⁂ %s</a>',
 			\esc_url( $post->guid ),
 			\esc_html__( 'Open original page', 'event-bridge-for-activitypub' )
 		);

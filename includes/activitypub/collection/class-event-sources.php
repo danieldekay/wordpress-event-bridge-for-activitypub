@@ -297,28 +297,27 @@ class Event_Sources {
 	/**
 	 * Remove an Event Source (=Followed ActivityPub actor).
 	 *
-	 * @param string $activitypub_id The Events Sources ActivityPub Actor ID/URL.
+	 * @param int $event_source_post_id The Events Sources Post ID.
 	 *
 	 * @return WP_Post|false|null Post data on success, false or null on failure.
 	 */
-	public static function remove_event_source( $activitypub_id ) {
+	public static function remove_event_source( $event_source_post_id ) {
 		self::delete_event_source_transients();
 
-		$event_source = Event_Source::get_by_id( $activitypub_id );
+		$event_source = Event_Source::get_by_id( (int) $event_source_post_id );
 
-		if ( \is_wp_error( $event_source ) ) {
+		if ( ! $event_source ) {
 			return;
 		}
 
 		self::delete_events_by_event_source( $event_source->get__id() );
 
-		$deleted = $event_source->delete();
+		// Temporary hack.
+		$post              = \get_post( $event_source->get__id() );
+		$post->post_status = 'draft';
+		\wp_update_post( $post );
 
-		if ( $deleted ) {
-			self::queue_unfollow_actor( $activitypub_id );
-		}
-
-		return $deleted;
+		self::queue_unfollow_actor( $event_source->get_id() );
 	}
 
 	/**
@@ -507,5 +506,9 @@ class Event_Sources {
 		$activity->set_id( $application->get_id() . '#unfollow-' . \preg_replace( '~^https?://~', '', $to ) );
 		$activity = $activity->to_json();
 		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::BLOG_USER_ID );
+
+		$actor->delete();
+
+		self::delete_event_source_transients();
 	}
 }

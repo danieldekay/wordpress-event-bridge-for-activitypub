@@ -40,6 +40,13 @@ class Event_Source extends Actor {
 	protected $_id; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
+	 * The WordPress Post ID which stores the event source.
+	 *
+	 * @var int
+	 */
+	protected $status; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
+
+	/**
 	 * Get the Icon URL (Avatar).
 	 *
 	 * @return string The URL to the Avatar.
@@ -164,6 +171,7 @@ class Event_Source extends Actor {
 		$object->set_summary( $post->post_excerpt );
 		$object->set_published( gmdate( 'Y-m-d H:i:s', strtotime( $post->post_date ) ) );
 		$object->set_updated( gmdate( 'Y-m-d H:i:s', strtotime( $post->post_modified ) ) );
+		$object->set_status( $post->post_status );
 		$thumbnail_id = get_post_thumbnail_id( $post );
 		if ( $thumbnail_id ) {
 			$object->set_icon(
