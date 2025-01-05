@@ -70,6 +70,11 @@ class Outbox_Parser {
 	 * @return void
 	 */
 	public static function import_events_from_outbox( $url, $event_source_post_id ) {
+		$setup = Setup::get_instance();
+		if ( ! $setup->is_activitypub_plugin_active() ) {
+			return;
+		}
+
 		$outbox = self::fetch_outbox( $url );
 
 		if ( ! $outbox ) {

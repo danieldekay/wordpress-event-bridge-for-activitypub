@@ -217,8 +217,8 @@ class Event_Sources {
 	 * @return void
 	 */
 	public static function delete_event_source_transients(): void {
-		delete_transient( 'event_bridge_for_activitypub_event_sources' );
-		delete_transient( 'event_bridge_for_activitypub_event_sources_hosts' );
+		\delete_transient( 'event_bridge_for_activitypub_event_sources' );
+		\delete_transient( 'event_bridge_for_activitypub_event_sources_hosts' );
 	}
 
 	/**
@@ -275,7 +275,7 @@ class Event_Sources {
 		// Loop through the posts and delete them permanently.
 		foreach ( $results as $result ) {
 			// Check if the post has a thumbnail.
-			$thumbnail_id = get_post_thumbnail_id( $result->post_id );
+			$thumbnail_id = \get_post_thumbnail_id( $result->post_id );
 
 			if ( $thumbnail_id ) {
 				// Remove the thumbnail from the post.
@@ -297,20 +297,20 @@ class Event_Sources {
 	/**
 	 * Remove an Event Source (=Followed ActivityPub actor).
 	 *
-	 * @param int $event_source_post_id The Events Sources Post ID.
+	 * @param int|string $event_source The Events Sources Post ID or ActivityPub ID.
 	 *
 	 * @return WP_Post|false|null Post data on success, false or null on failure.
 	 */
-	public static function remove_event_source( $event_source_post_id ) {
-		self::delete_event_source_transients();
-
-		$event_source = Event_Source::get_by_id( (int) $event_source_post_id );
+	public static function remove_event_source( $event_source ) {
+		$event_source = Event_Source::get_by_id( $event_source );
 
 		if ( ! $event_source ) {
 			return;
 		}
 
 		self::delete_events_by_event_source( $event_source->get__id() );
+
+		self::delete_event_source_transients();
 
 		// Temporary hack.
 		$post              = \get_post( $event_source->get__id() );
