@@ -233,7 +233,7 @@ class Event_Source extends Actor {
 	 * @return int|WP_Error The post ID or an WP_Error.
 	 */
 	public function save() {
-		delete_transient( 'event_bridge_for_activitypub_event_sources');
+		Event_Sources::delete_event_source_transients();
 
 		if ( ! $this->is_valid() ) {
 			return new WP_Error( 'activitypub_invalid_follower', __( 'Invalid Follower', 'event-bridge-for-activitypub' ), array( 'status' => 400 ) );
@@ -329,7 +329,7 @@ class Event_Source extends Actor {
 		$result = wp_delete_post( $post_id, false ) ?? false;
 
 		if ( $result ) {
-			delete_transient( 'event_bridge_for_activitypub_event_sources');
+			Event_Sources::delete_event_source_transients();
 		}
 
 		return $result;

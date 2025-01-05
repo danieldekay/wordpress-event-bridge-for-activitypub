@@ -476,8 +476,9 @@ class Event_Sources {
 	 * @param string $actor The ActivityPub ID of the actor to unfollow.
 	 */
 	public static function activitypub_unfollow_actor( $actor ) {
-		
-		if ( ! $actor instanceof Event_Source ) {
+		$actor = Event_Source::get_by_id( $actor );
+
+		if ( ! $actor ) {
 			return;
 		}
 
