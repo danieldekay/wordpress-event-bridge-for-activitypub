@@ -142,9 +142,9 @@ class Test_Outbox_Parser extends \WP_UnitTestCase {
 		$method = $reflection->getMethod( 'import_events_from_items' );
 		$method->setAccessible( true );
 
-		$event_source = \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source::get_by_id( self::FOLLOWED_ACTOR['id'] );
+		$event_source_post_id = \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source::get_post_id_by_activitypub_id( self::FOLLOWED_ACTOR['id'] );
 
-		$count = $method->invoke( null, $items, $event_source );
+		$count = $method->invoke( null, $items, $event_source_post_id );
 
 		$this->assertEquals( 2, $count );
 
