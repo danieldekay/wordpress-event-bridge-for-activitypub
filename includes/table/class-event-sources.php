@@ -117,11 +117,7 @@ class Event_Sources extends WP_List_Table {
 		);
 
 		foreach ( $event_sources['actors'] as $event_source_post_id => $event_source_activitypub_id ) {
-			$event_source_post = \get_post( $event_source_post_id );
-			if ( ! $event_source_post ) {
-				continue;
-			}
-			$event_source = Event_Source::init_from_cpt( $event_source_post );
+			$event_source = Event_Source::get_by_id( $event_source_activitypub_id );
 
 			if ( \is_wp_error( $event_source ) ) {
 				continue;

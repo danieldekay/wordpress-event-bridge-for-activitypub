@@ -117,6 +117,36 @@ class Event_Source extends Actor {
 	}
 
 	/**
+	 * Get the Event Source Post ID by the ActivityPub ID.
+	 *
+	 * @param int|string $event_source_id The ActivityPub actor ID as string or the Post ID as int of the Event Source.
+	 * @return Event_Source|false The Event Sources if it exists, false otherwise.
+	 */
+	public static function get_by_id( $event_source_id ) {
+		$post_id = is_integer( $event_source_id ) ? $event_source_id : self::get_post_id_by_activitypub_id( $event_source_id );
+
+		if ( ! $post_id ) {
+			return;
+		}
+
+		// Get Custom Post.
+		$event_source_post = \get_post( $post_id );
+
+		if ( ! $event_source_post ) {
+			return;
+		}
+
+		// Init From Custom Post.
+		$event_source = self::init_from_cpt( $event_source_post );
+
+		if ( \is_wp_error( $event_source ) ) {
+			return false;
+		}
+
+		return $event_source;
+	}
+
+	/**
 	 * Convert a Custom-Post-Type input to an \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source.
 	 *
 	 * @param \WP_Post $post The post object.
@@ -203,6 +233,8 @@ class Event_Source extends Actor {
 	 * @return int|WP_Error The post ID or an WP_Error.
 	 */
 	public function save() {
+		delete_transient( 'event_bridge_for_activitypub_event_sources');
+
 		if ( ! $this->is_valid() ) {
 			return new WP_Error( 'activitypub_invalid_follower', __( 'Invalid Follower', 'event-bridge-for-activitypub' ), array( 'status' => 400 ) );
 		}
@@ -294,6 +326,12 @@ class Event_Source extends Actor {
 			wp_delete_attachment( $thumbnail_id, true );
 		}
 
-		return wp_delete_post( $post_id, false ) ?? false;
+		$result = wp_delete_post( $post_id, false ) ?? false;
+
+		if ( $result ) {
+			delete_transient( 'event_bridge_for_activitypub_event_sources');
+		}
+
+		return $result;
 	}
 }

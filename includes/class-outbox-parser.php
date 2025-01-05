@@ -46,15 +46,9 @@ class Outbox_Parser {
 	 * @return bool|WP_Error
 	 */
 	public static function backfill_events( $event_source_post_id ) {
-		$event_source_post = \get_post( $event_source_post_id );
+		$event_source = Event_Source::get_by_id( $event_source_post_id );
 
-		if ( ! $event_source_post ) {
-			return;
-		}
-
-		$event_source = Event_Source::init_from_cpt( $event_source_post );
-
-		if ( \is_wp_error( $event_source ) ) {
+		if ( ! $event_source ) {
 			return;
 		}
 

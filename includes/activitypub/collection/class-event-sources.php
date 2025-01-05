@@ -304,21 +304,13 @@ class Event_Sources {
 	public static function remove_event_source( $activitypub_id ) {
 		self::delete_event_source_transients();
 
-		$event_source_post_id = Event_Source::get_post_id_by_activitypub_id( $activitypub_id );
-
-		self::delete_events_by_event_source( $event_source_post_id );
-
-		$event_source_post = \get_post( $event_source_post_id );
-
-		if ( ! $event_source_post ) {
-			return;
-		}
-
-		$event_source = Event_Source::init_from_cpt( $event_source_post );
+		$event_source = Event_Source::get_by_id( $activitypub_id );
 
 		if ( \is_wp_error( $event_source ) ) {
 			return;
 		}
+
+		self::delete_events_by_event_source( $event_source->get__id() );
 
 		$deleted = $event_source->delete();
 
@@ -481,9 +473,10 @@ class Event_Sources {
 	/**
 	 * Unfollow an ActivityPub actor.
 	 *
-	 * @param Event_Source $actor The ActivityPub actor model.
+	 * @param string $actor The ActivityPub ID of the actor to unfollow.
 	 */
 	public static function activitypub_unfollow_actor( $actor ) {
+		
 		if ( ! $actor instanceof Event_Source ) {
 			return;
 		}
