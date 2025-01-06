@@ -18,6 +18,8 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 use Activitypub\Http;
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 
+use function Activitypub\object_to_uri;
+
 /**
  * Class for parsing an ActivityPub outbox for Events.
  *
@@ -264,12 +266,14 @@ class Outbox_Parser {
 	 * @return string|null The pagination URL, or null if not found.
 	 */
 	private static function get_pagination_url( $outbox ) {
-		if ( 'OrderedCollection' === $outbox['type'] && ! empty( $outbox['first'] ) && is_string( $outbox['first'] ) ) {
-			return $outbox['first'];
-		}
-
+		// If we are on a collection page simply use the next key.
 		if ( 'OrderedCollectionPage' === $outbox['type'] && ! empty( $outbox['next'] ) && is_string( $outbox['next'] ) ) {
 			return $outbox['next'];
+		}
+
+		// If we still have the ordered collection itself.
+		if ( isset( $outbox['type'] ) && 'OrderedCollection' === $outbox['type'] && isset( $outbox['first'] ) ) {
+			return object_to_uri( $outbox['first'] );
 		}
 
 		return null;
