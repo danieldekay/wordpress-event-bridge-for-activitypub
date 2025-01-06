@@ -218,6 +218,10 @@ class The_Events_Calendar extends Base {
 			return false;
 		}
 
+		// Insert featured image.
+		$image = $this->get_featured_image();
+		self::set_featured_image_with_alt( $post_id, $image['url'], $image['alt'] );
+
 		// Limit this as a safety measure.
 		remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
