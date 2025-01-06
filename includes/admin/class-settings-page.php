@@ -181,7 +181,8 @@ class Settings_Page {
 
 				foreach ( $event_plugins as $event_plugin_integration ) {
 					if ( $event_plugin_integration instanceof Feature_Event_Sources && $event_plugin_integration instanceof Event_Plugin_Integration ) {
-						$supports_event_sources[ $event_plugin_integration::class ] = $event_plugin_integration::get_plugin_name();
+						$class_name                            = get_class( $event_plugin_integration );
+						$supports_event_sources[ $class_name ] = $event_plugin_integration::get_plugin_name();
 					}
 				}
 
