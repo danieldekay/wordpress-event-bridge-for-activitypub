@@ -465,7 +465,8 @@ class Event_Sources {
 		if ( isset( $event_object['endTime'] ) ) {
 			$time = $event_object['endTime'];
 		} else {
-			$time = new DateTime( $event_object['startTime'], new DateTimeZone( 'UTC' ) ) + 3 * HOUR_IN_SECONDS;
+			$time = new DateTime( $event_object['startTime'], new DateTimeZone( 'UTC' ) );
+			$time->modify( '+3 hours' );
 		}
 		return ! self::is_time_passed( $time );
 	}
