@@ -137,7 +137,7 @@ class The_Events_Calendar extends Base {
 					'organizer'     => $event_source->get_name(),
 					'description'   => $event_source->get_summary(),
 					'post_date_gmt' => $event_source->get_published(),
-					'website'       => $event_source->get_id(),
+					'website'       => $event_source->get_url(),
 					'excerpt'       => $event_source->get_summary(),
 				),
 				'publish',
