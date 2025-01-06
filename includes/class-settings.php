@@ -156,7 +156,7 @@ class Settings {
 		$valid_options = array();
 		foreach ( $active_event_plugins as $active_event_plugin ) {
 			if ( $active_event_plugin instanceof Feature_Event_Sources ) {
-				$valid_options[] = $active_event_plugin::class;
+				$valid_options[] = get_class( $active_event_plugin );
 			}
 		}
 		if ( in_array( $event_plugin_integration, $valid_options, true ) ) {
