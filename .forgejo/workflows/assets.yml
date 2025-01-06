@@ -1,9 +1,6 @@
 name: Plugin asset/readme update on WordPress.org
 
-on:
-  push:
-    branches:
-    - main
+on: workflow_dispatch
 
 jobs:
   trunk:
