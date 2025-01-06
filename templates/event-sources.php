@@ -20,7 +20,11 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 ?>
 
 <div class="wrap event_bridge_for_activitypub-admin-table-container">
-	<?php if ( defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) ) { ?>
+	<?php
+	if ( ! \get_option( 'event_bridge_for_activitypub_event_sources_active', false ) ) {
+		echo '<div class="box"><div class="notice notice-warning"><p>' . esc_html_x( 'Here you will be able to add event sources (i.e., following other ActivityPub actors and displaying their events on your website), once you have enabled the Event Sources feature in the plugins settings.', 'admin notice', 'event-bridge-for-activitypub' ) . '</p></div></div>';
+	} elseif ( defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) ) {
+		?>
 		<!-- Table title with add new button like on post edit pages -->
 		<div class="event_bridge_for_activitypub-admin-table-top">
 			<h2 class="wp-heading-inline"> <?php esc_html_e( 'List of Event Sources', 'event-bridge-for-activitypub' ); ?> </h2>
