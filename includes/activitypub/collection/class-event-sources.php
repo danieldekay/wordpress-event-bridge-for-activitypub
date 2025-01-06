@@ -193,9 +193,9 @@ class Event_Sources {
 			return $post_id;
 		}
 
-		self::queue_follow_actor( $actor );
-
 		self::delete_event_source_transients();
+
+		self::queue_follow_actor( $actor );
 
 		return $event_source;
 	}
@@ -439,15 +439,15 @@ class Event_Sources {
 		$inbox = $actor->get_shared_inbox();
 		$to    = $actor->get_id();
 
-		$application = new Blog();
+		$from_actor = new Blog();
 
 		$activity = new \Activitypub\Activity\Activity();
 		$activity->set_type( 'Follow' );
 		$activity->set_to( null );
 		$activity->set_cc( null );
-		$activity->set_actor( $application->get_id() );
+		$activity->set_actor( $from_actor );
 		$activity->set_object( $to );
-		$activity->set_id( self::compose_follow_id( $application->get_id(), $to ) );
+		$activity->set_id( self::compose_follow_id( $from_actor->get_id(), $to ) );
 		$activity = $activity->to_json();
 		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::BLOG_USER_ID );
 	}
@@ -484,7 +484,7 @@ class Event_Sources {
 		$inbox = $actor->get_shared_inbox();
 		$to    = $actor->get_id();
 
-		$application = new Blog();
+		$from_actor = new Blog();
 
 		if ( is_wp_error( $inbox ) ) {
 			return $inbox;
@@ -494,7 +494,7 @@ class Event_Sources {
 		$activity->set_type( 'Undo' );
 		$activity->set_to( null );
 		$activity->set_cc( null );
-		$activity->set_actor( $application->get_id() );
+		$activity->set_actor( $from_actor );
 		$activity->set_object(
 			array(
 				'type'   => 'Follow',
@@ -503,7 +503,7 @@ class Event_Sources {
 				'id'     => $to,
 			)
 		);
-		$activity->set_id( $application->get_id() . '#unfollow-' . \preg_replace( '~^https?://~', '', $to ) );
+		$activity->set_id( $from_actor->get_id() . '#unfollow-' . \preg_replace( '~^https?://~', '', $to ) );
 		$activity = $activity->to_json();
 		\Activitypub\safe_remote_post( $inbox, $activity, \Activitypub\Collection\Actors::BLOG_USER_ID );
 

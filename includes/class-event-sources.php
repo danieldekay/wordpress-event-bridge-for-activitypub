@@ -70,10 +70,10 @@ class Event_Sources {
 		\add_filter( 'template_include', array( self::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
 
 		// Register daily schedule to cleanup cached remote events that have ended.
+		\add_action( 'event_bridge_for_activitypub_event_sources_clear_cache', array( self::class, 'clear_cache' ) );
 		if ( ! \wp_next_scheduled( 'event_bridge_for_activitypub_event_sources_clear_cache' ) ) {
 			\wp_schedule_event( time(), 'daily', 'event_bridge_for_activitypub_event_sources_clear_cache' );
 		}
-		\add_action( 'event_bridge_for_activitypub_event_sources_clear_cache', array( self::class, 'clear_cache' ) );
 
 		// Add the actors followed by the event sources feature to the `follow` collection of the used ActivityPub actor.
 		\add_filter( 'activitypub_rest_following', array( self::class, 'add_event_sources_to_follow_collection' ), 10, 2 );
@@ -323,7 +323,7 @@ class Event_Sources {
 	}
 
 	/**
-	 * Validate the event object.
+	 * Mark incoming accept activities as valid.
 	 *
 	 * @param bool             $valid   The validation state.
 	 * @param string           $param   The object parameter.
