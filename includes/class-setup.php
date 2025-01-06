@@ -430,7 +430,10 @@ class Setup {
 	 */
 	public static function get_event_plugin_integration_used_for_event_sources_feature() {
 		// Get plugin option.
-		$event_plugin_integration = get_option( 'event_bridge_for_activitypub_integration_used_for_event_sources_feature', '' );
+		$event_plugin_integration = get_option(
+			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+			self::get_default_integration_class_name_used_for_event_sources_feature()
+		);
 
 		// Exit if event sources are not active or no plugin is specified.
 		if ( empty( $event_plugin_integration ) ) {
