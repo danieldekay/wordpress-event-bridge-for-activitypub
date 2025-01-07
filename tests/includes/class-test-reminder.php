@@ -2,7 +2,7 @@
 /**
  * Test for Reminder class.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  */
 
 /**
@@ -39,7 +39,7 @@ class Test_Reminder extends \WP_UnitTestCase {
 		update_option( 'dbem_events_anonymous_submissions', true );
 
 		// Make sure that ActivityPub support is enabled for Events Manager.
-		$aec = \ActivityPub_Event_Bridge\Setup::get_instance();
+		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
 		// Delete all posts afterwards.
@@ -55,7 +55,7 @@ class Test_Reminder extends \WP_UnitTestCase {
 			->set_args( self::MOCKUP_EVENT )
 			->create();
 
-		$scheduled_event = \wp_get_scheduled_event( 'activitypub_event_bridge_send_event_reminder', array( $wp_object->ID ) );
+		$scheduled_event = \wp_get_scheduled_event( 'event_bridge_for_activitypub_send_event_reminder', array( $wp_object->ID ) );
 
 		$this->assertEquals( false, $scheduled_event );
 	}
@@ -64,53 +64,53 @@ class Test_Reminder extends \WP_UnitTestCase {
 	 * Test that with a side-wide option the reminder is scheduled.
 	 */
 	public function test_event_reminder_scheduled_with_site_wide_option() {
-		\update_option( 'activitypub_event_bridge_reminder_time_gap', DAY_IN_SECONDS );
+		\update_option( 'event_bridge_for_activitypub_reminder_time_gap', DAY_IN_SECONDS );
 		// Create a The Events Calendar Event.
 		$wp_object = tribe_events()
 			->set_args( self::MOCKUP_EVENT )
 			->create();
 
-		$scheduled_event = \wp_get_scheduled_event( 'activitypub_event_bridge_send_event_reminder', array( $wp_object->ID ) );
+		$scheduled_event = \wp_get_scheduled_event( 'event_bridge_for_activitypub_send_event_reminder', array( $wp_object->ID ) );
 
 		$this->assertNotEquals( false, $scheduled_event );
 		$this->assertEquals( strtotime( self::MOCKUP_EVENT['start_date'] ) - DAY_IN_SECONDS, $scheduled_event->timestamp );
 		$this->assertEquals( false, $scheduled_event->schedule );
-		$this->assertEquals( 'activitypub_event_bridge_send_event_reminder', $scheduled_event->hook );
+		$this->assertEquals( 'event_bridge_for_activitypub_send_event_reminder', $scheduled_event->hook );
 	}
 
 	/**
 	 * Test that a specific event can override the side-wide reminder default.
 	 */
 	public function test_event_reminder_scheduled_with_per_event_override() {
-		\update_option( 'activitypub_event_bridge_reminder_time_gap', DAY_IN_SECONDS );
+		\update_option( 'event_bridge_for_activitypub_reminder_time_gap', DAY_IN_SECONDS );
 
 		// Create a The Events Calendar Event.
 		$wp_object = tribe_events()
 			->set_args(
 				array_merge(
 					self::MOCKUP_EVENT,
-					array( 'activitypub_event_bridge_reminder_time_gap' => DAY_IN_SECONDS * 3 ),
+					array( 'event_bridge_for_activitypub_reminder_time_gap' => DAY_IN_SECONDS * 3 ),
 				)
 			)
 			->create();
 
-		$scheduled_event = \wp_get_scheduled_event( 'activitypub_event_bridge_send_event_reminder', array( $wp_object->ID ) );
+		$scheduled_event = \wp_get_scheduled_event( 'event_bridge_for_activitypub_send_event_reminder', array( $wp_object->ID ) );
 
 		$this->assertNotEquals( false, $scheduled_event );
 		$this->assertEquals( strtotime( self::MOCKUP_EVENT['start_date'] ) - DAY_IN_SECONDS * 3, $scheduled_event->timestamp );
 		$this->assertEquals( false, $scheduled_event->schedule );
-		$this->assertEquals( 'activitypub_event_bridge_send_event_reminder', $scheduled_event->hook );
+		$this->assertEquals( 'event_bridge_for_activitypub_send_event_reminder', $scheduled_event->hook );
 
 		// Now update the option once more to see if the schedule got updated too.
 		$post_id = array_key_first(
 			tribe_events( $wp_object->ID )
 				->set_args(
-					array( 'activitypub_event_bridge_reminder_time_gap' => HOUR_IN_SECONDS ),
+					array( 'event_bridge_for_activitypub_reminder_time_gap' => HOUR_IN_SECONDS ),
 				)
 				->save()
 		);
 
-		$scheduled_event = \wp_get_scheduled_event( 'activitypub_event_bridge_send_event_reminder', array( $post_id ) );
+		$scheduled_event = \wp_get_scheduled_event( 'event_bridge_for_activitypub_send_event_reminder', array( $post_id ) );
 		$this->assertNotEquals( false, $scheduled_event );
 		$this->assertEquals( strtotime( self::MOCKUP_EVENT['start_date'] ) - HOUR_IN_SECONDS, $scheduled_event->timestamp );
 	}
@@ -119,29 +119,29 @@ class Test_Reminder extends \WP_UnitTestCase {
 	 * Test that the scheduled reminder is removed when the event is deleted.
 	 */
 	public function test_event_reminder_deleted_event() {
-		\update_option( 'activitypub_event_bridge_reminder_time_gap', DAY_IN_SECONDS );
+		\update_option( 'event_bridge_for_activitypub_reminder_time_gap', DAY_IN_SECONDS );
 
 		// Create a The Events Calendar Event.
 		$wp_object = tribe_events()
 			->set_args(
 				array_merge(
 					self::MOCKUP_EVENT,
-					array( 'activitypub_event_bridge_reminder_time_gap' => DAY_IN_SECONDS * 3 ),
+					array( 'event_bridge_for_activitypub_reminder_time_gap' => DAY_IN_SECONDS * 3 ),
 				)
 			)
 			->create();
 
-		$scheduled_event = \wp_get_scheduled_event( 'activitypub_event_bridge_send_event_reminder', array( $wp_object->ID ) );
+		$scheduled_event = \wp_get_scheduled_event( 'event_bridge_for_activitypub_send_event_reminder', array( $wp_object->ID ) );
 
 		$this->assertNotEquals( false, $scheduled_event );
 		$this->assertEquals( strtotime( self::MOCKUP_EVENT['start_date'] ) - DAY_IN_SECONDS * 3, $scheduled_event->timestamp );
 		$this->assertEquals( false, $scheduled_event->schedule );
-		$this->assertEquals( 'activitypub_event_bridge_send_event_reminder', $scheduled_event->hook );
+		$this->assertEquals( 'event_bridge_for_activitypub_send_event_reminder', $scheduled_event->hook );
 
 		// Now delete the event.
 		tribe_events( $wp_object->ID )->delete();
 
-		$scheduled_event = \wp_get_scheduled_event( 'activitypub_event_bridge_send_event_reminder', array( $wp_object->ID ) );
+		$scheduled_event = \wp_get_scheduled_event( 'event_bridge_for_activitypub_send_event_reminder', array( $wp_object->ID ) );
 		$this->assertEquals( false, $scheduled_event );
 	}
 
@@ -149,24 +149,24 @@ class Test_Reminder extends \WP_UnitTestCase {
 	 * Test that the scheduled reminder is removed when the event is moved to trash.
 	 */
 	public function test_event_reminder_event_moved_to_trash() {
-		\update_option( 'activitypub_event_bridge_reminder_time_gap', DAY_IN_SECONDS );
+		\update_option( 'event_bridge_for_activitypub_reminder_time_gap', DAY_IN_SECONDS );
 
 		// Create a The Events Calendar Event.
 		$wp_object = tribe_events()
 			->set_args(
 				array_merge(
 					self::MOCKUP_EVENT,
-					array( 'activitypub_event_bridge_reminder_time_gap' => DAY_IN_SECONDS * 3 ),
+					array( 'event_bridge_for_activitypub_reminder_time_gap' => DAY_IN_SECONDS * 3 ),
 				)
 			)
 			->create();
 
-		$scheduled_event = \wp_get_scheduled_event( 'activitypub_event_bridge_send_event_reminder', array( $wp_object->ID ) );
+		$scheduled_event = \wp_get_scheduled_event( 'event_bridge_for_activitypub_send_event_reminder', array( $wp_object->ID ) );
 
 		$this->assertNotEquals( false, $scheduled_event );
 		$this->assertEquals( strtotime( self::MOCKUP_EVENT['start_date'] ) - DAY_IN_SECONDS * 3, $scheduled_event->timestamp );
 		$this->assertEquals( false, $scheduled_event->schedule );
-		$this->assertEquals( 'activitypub_event_bridge_send_event_reminder', $scheduled_event->hook );
+		$this->assertEquals( 'event_bridge_for_activitypub_send_event_reminder', $scheduled_event->hook );
 
 		// Now move the event to the trash.
 		$post_id = array_key_first(
@@ -177,7 +177,7 @@ class Test_Reminder extends \WP_UnitTestCase {
 				->save()
 		);
 
-		$scheduled_event = \wp_get_scheduled_event( 'activitypub_event_bridge_send_event_reminder', array( $wp_object->ID ) );
+		$scheduled_event = \wp_get_scheduled_event( 'event_bridge_for_activitypub_send_event_reminder', array( $wp_object->ID ) );
 		$this->assertEquals( false, $scheduled_event );
 	}
 }

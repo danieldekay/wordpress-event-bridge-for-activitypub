@@ -22,7 +22,6 @@ use DateTime;
 
 use function Activitypub\is_user_disabled;
 use function Activitypub\safe_remote_post;
-use function Activitypub\set_wp_object_state;
 
 /**
  * Adds automatic announcing or sending of reminders before the events start time.
