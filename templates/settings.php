@@ -41,7 +41,6 @@ if ( ! isset( $args ) || ! array_key_exists( 'supports_event_sources', $args ) )
 
 $event_plugins_supporting_event_sources = $args['supports_event_sources'];
 
-$selected_plugin        = \get_option( 'event_bridge_for_activitypub_integration_used_for_event_sources_feature', '' );
 $event_sources_active   = \get_option( 'event_bridge_for_activitypub_event_sources_active', false );
 $cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_source_cache_retention', DAY_IN_SECONDS );
 
@@ -143,7 +142,7 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 							>
 							<?php
 							foreach ( $event_plugins_supporting_event_sources as $event_plugin_class_name => $event_plugin_name ) {
-								echo '<option value="' . esc_attr( $event_plugin_class_name ) . '" ' . selected( $event_plugin_class_name, get_option( 'event_bridge_for_activitypub_integration_used_for_event_sources_feature', $event_plugin ), true ) . '>' . esc_attr( $event_plugin_name ) . '</option>';
+								echo '<option value="' . esc_attr( $event_plugin_class_name ) . '" ' . selected( $event_plugin_class_name, Setup::get_event_plugin_integration_used_for_event_sources_feature(), true ) . '>' . esc_attr( $event_plugin_name ) . '</option>';
 							}
 							?>
 							</select>
