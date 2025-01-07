@@ -8,7 +8,7 @@
 /**
  * Test class for testing the scheduling of reminder Activities.
  */
-class Test_Reminder extends WP_UnitTestCase {
+class Test_Reminder extends \WP_UnitTestCase {
 	/**
 	 * Mockup events of certain complexity.
 	 */
