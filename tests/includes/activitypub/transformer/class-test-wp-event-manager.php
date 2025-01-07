@@ -5,10 +5,12 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+
 /**
  * Sample test case.
  */
-class Test_WP_Event_Manager extends WP_UnitTestCase {
+class Test_WP_Event_Manager extends \WP_UnitTestCase {
 	/**
 	 * Override the setup function, so that tests don't run if the Events Calendar is not active.
 	 */
@@ -52,13 +54,13 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 			)
 		);
 
-		$wp_object = get_post( $wp_post_id );
+		$wp_object = \get_post( $wp_post_id );
 
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\Activitypub\Transformer\WP_Event_Manager::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\WP_Event_Manager::class, $transformer );
 	}
 
 	/**
@@ -66,7 +68,7 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 	 */
 	public function test_transform_of_minimal_event() {
 		// Insert a new Event.
-		$wp_post_id = wp_insert_post(
+		$wp_post_id = \wp_insert_post(
 			array(
 				'post_title'   => 'WP Event Manager TestEvent',
 				'post_status'  => 'publish',
@@ -84,13 +86,13 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'WP Event Manager TestEvent', $event_array['name'] );
-		$this->assertEquals( 'Come to my WP Event Manager event!', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
+		$this->assertEquals( 'Come to my WP Event Manager event!', \wp_strip_all_tags( $event_array['content'] ) );
+		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertArrayNotHasKey( 'endTime', $event_array );
-		$this->assertEquals( comments_open( $wp_post_id ), $event_array['commentsEnabled'] );
-		$this->assertEquals( comments_open( $wp_post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
+		$this->assertEquals( \comments_open( $wp_post_id ), $event_array['commentsEnabled'] );
+		$this->assertEquals( \comments_open( $wp_post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
-		$this->assertEquals( esc_url( get_permalink( $wp_post_id ) ), $event_array['externalParticipationUrl'] );
+		$this->assertEquals( \esc_url( \get_permalink( $wp_post_id ) ), $event_array['externalParticipationUrl'] );
 		$this->assertArrayNotHasKey( 'location', $event_array );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
 	}
@@ -100,7 +102,7 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 	 */
 	public function test_transform_of_full_online_event() {
 		// Insert a new Event.
-		$wp_post_id = wp_insert_post(
+		$wp_post_id = \wp_insert_post(
 			array(
 				'post_title'   => 'WP Event Manager TestEvent',
 				'post_status'  => 'publish',
@@ -147,15 +149,15 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 	 */
 	public function test_transform_of_event_with_location() {
 		// Insert a new Event.
-		$wp_post_id = wp_insert_post(
+		$wp_post_id = \wp_insert_post(
 			array(
 				'post_title'   => 'WP Event Manager TestEvent',
 				'post_status'  => 'publish',
 				'post_type'    => 'event_listing',
 				'post_content' => 'Come to my WP Event Manager event!',
 				'meta_input'   => array(
-					'_event_start_date' => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 15:00:00' ) ),
-					'_event_end_date'   => \gmdate( 'Y-m-d H:i:s', strtotime( '+10 days 16:00:00' ) ),
+					'_event_start_date' => \gmdate( 'Y-m-d H:i:s', \strtotime( '+10 days 15:00:00' ) ),
+					'_event_end_date'   => \gmdate( 'Y-m-d H:i:s', \strtotime( '+10 days 16:00:00' ) ),
 					'_event_location'   => 'Some text location',
 					'_event_online'     => 'no',
 				),
@@ -168,14 +170,14 @@ class Test_WP_Event_Manager extends WP_UnitTestCase {
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'WP Event Manager TestEvent', $event_array['name'] );
-		$this->assertEquals( 'Come to my WP Event Manager event!', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
-		$this->assertEquals( comments_open( $wp_post_id ), $event_array['commentsEnabled'] );
-		$this->assertEquals( comments_open( $wp_post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
+		$this->assertEquals( 'Come to my WP Event Manager event!', \wp_strip_all_tags( $event_array['content'] ) );
+		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
+		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 15:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
+		$this->assertEquals( \comments_open( $wp_post_id ), $event_array['commentsEnabled'] );
+		$this->assertEquals( \comments_open( $wp_post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertEquals( false, $event_array['isOnline'] );
-		$this->assertEquals( esc_url( get_permalink( $wp_post_id ) ), $event_array['externalParticipationUrl'] );
+		$this->assertEquals( \esc_url( \get_permalink( $wp_post_id ) ), $event_array['externalParticipationUrl'] );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( 'Some text location', $event_array['location']['address'] );
 	}

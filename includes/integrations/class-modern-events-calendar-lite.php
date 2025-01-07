@@ -2,7 +2,8 @@
 /**
  * Modern Events Calendar (Lite)
  *
- * Defines all the necessary meta information for the Modern Events Calendar (Lite).
+ * Defines all the necessary meta information for the integration of the
+ * WordPress plugin "Modern Events Calendar (Lite)".
  *
  * @link    https://webnus.net/modern-events-calendar/
  * @package Event_Bridge_For_ActivityPub
@@ -14,14 +15,17 @@ namespace Event_Bridge_For_ActivityPub\Integrations;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Modern_Events_Calendar_Lite as Modern_Events_Calendar_Lite_Transformer;
+
 /**
- * Interface for a supported event plugin.
+ * Modern Events Calendar (Lite)
  *
- * This interface defines which information is necessary for a supported event plugin.
+ * Defines all the necessary meta information for the integration of the
+ * WordPress plugin "Modern Events Calendar (Lite)".
  *
  * @since 1.0.0
  */
-final class Modern_Events_Calendar_Lite extends Event_plugin {
+final class Modern_Events_Calendar_Lite extends Event_Plugin_Integration {
 	/**
 	 * Returns the full plugin file.
 	 *
@@ -57,5 +61,15 @@ final class Modern_Events_Calendar_Lite extends Event_plugin {
 	 */
 	public static function get_event_category_taxonomy(): string {
 		return 'mec_category';
+	}
+
+	/**
+	 * Returns the ActivityPub transformer for a Modern_Events_Calendar_Lite event post.
+	 *
+	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @return Modern_Events_Calendar_Lite_Transformer
+	 */
+	public static function get_activitypub_event_transformer( $post ): Modern_Events_Calendar_Lite_Transformer {
+		return new Modern_Events_Calendar_Lite_Transformer( $post, self::get_event_category_taxonomy() );
 	}
 }

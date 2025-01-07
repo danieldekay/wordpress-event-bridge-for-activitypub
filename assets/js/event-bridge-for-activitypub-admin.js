@@ -23,7 +23,6 @@ jQuery( function( $ ) {
 
 	// Run the toggle function on page load.
 	$(document).ready(function() {
-		window.console.log("test");
 		toggleCustomDetailsForSummary(); // Set the correct state on load.
 
 		// Listen for changes on the radio buttons
@@ -31,4 +30,5 @@ jQuery( function( $ ) {
 			toggleCustomDetailsForSummary(); // Update visibility on change.
 		});
 	});
+
 } );

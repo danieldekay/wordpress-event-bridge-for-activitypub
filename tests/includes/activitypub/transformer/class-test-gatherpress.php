@@ -5,10 +5,12 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+
 /**
  * Sample test case.
  */
-class Test_GatherPress extends WP_UnitTestCase {
+class Test_GatherPress extends \WP_UnitTestCase {
 	/**
 	 * Override the setup function, so that tests don't run if the Events Calendar is not active.
 	 */
@@ -20,13 +22,20 @@ class Test_GatherPress extends WP_UnitTestCase {
 		}
 
 		// Mock the plugin activation.
-		GatherPress\Core\Setup::get_instance()->activate_gatherpress_plugin( false );
+		\GatherPress\Core\Setup::get_instance()->activate_gatherpress_plugin( false );
 
-		// Make sure that ActivityPub support is enabled for The Events Calendar.
+		// Make sure that ActivityPub support is enabled for GatherPress.
 		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
 		// Delete all posts afterwards.
+		_delete_all_posts();
+	}
+
+	/**
+	 * Tear down the test.
+	 */
+	public function tear_down() {
 		_delete_all_posts();
 	}
 
@@ -38,7 +47,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 		// even though we support multiple onces in theory.
 		// But testing all combinations is beyond scope.
 		$active_event_plugins = \Event_Bridge_For_ActivityPub\Setup::get_instance()->get_active_event_plugins();
-		$this->assertEquals( 1, count( $active_event_plugins ) );
+		$this->assertArrayHasKey( 'gatherpress/gatherpress.php', $active_event_plugins );
 
 		// Enable ActivityPub support for the event plugin.
 		$this->assertContains( 'gatherpress_event', get_option( 'activitypub_support_post_types' ) );
@@ -46,7 +55,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 		// Mock GatherPress Event.
 		$post_id = wp_insert_post(
 			array(
-				'post_title'   => 'Unit Test Event',
+				'post_title'   => 'Test Event for transformer class.',
 				'post_type'    => 'gatherpress_event',
 				'post_content' => 'Unit Test description.',
 				'post_status'  => 'publish',
@@ -65,7 +74,7 @@ class Test_GatherPress extends WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $event->event );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\Activitypub\Transformer\GatherPress::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\GatherPress::class, $transformer );
 	}
 
 	/**

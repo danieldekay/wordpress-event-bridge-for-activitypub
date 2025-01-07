@@ -17,13 +17,18 @@ This plugin is not an event managing plugin but an add-on to popular event plugi
 
 = Supported Event Plugins =
 
+Full support (including importing events from the Fediverse):
+
 * [The Events Calendar](https://de.wordpress.org/plugins/the-events-calendar/)
 * [VS Event List](https://de.wordpress.org/plugins/very-simple-event-list/)
+* [GatherPress](https://gatherpress.org/)
+
+Basic support (outgoing events):
+
 * [Events Manager](https://de.wordpress.org/plugins/events-manager/)
 * [WP Event Manager](https://de.wordpress.org/plugins/wp-event-manager/)
 * [Eventin](https://de.wordpress.org/plugins/wp-event-solution/)
 * [Modern Events Calendar Lite](https://webnus.net/modern-events-calendar/)
-* [GatherPress](https://gatherpress.org/)
 * [Event Organiser](https://wordpress.org/plugins/event-organiser/)
 
 = How It Works =
@@ -48,19 +53,26 @@ Even platforms that don't yet fully support events, like [Mastodon](https://join
 
 **Event Reminders for Your Followers:** Often, events are planned well in advance. To keep your followers informed right in time, you can set up reminders that are supposed to trigger the events showing up in their timelines right before the event starts. At the moment this reminder is implemented as a self-boost of your original event post. While this feature may behave differently across various platforms, we are working on a more robust solution that will let you schedule dedicated reminder notes that appear in all followers' timelines.
 
+**External Event Sources:**  This functionality is only available for a subset of the supported event plugins. It enables your WordPress site to act as a hub for displaying events from other ActivityPub profiles, aggregating them into a cohesive calendar view.
+
 == Installation ==
 
 This plugin depends on the [ActivityPub plugin](https://wordpress.org/plugins/activitypub/). Additionally, you need to use one of the supported event Plugins.
 
 = Supported Event Plugins =
 
+Full support (including importing events from the Fediverse):
+
 * [The Events Calendar](https://de.wordpress.org/plugins/the-events-calendar/)
 * [VS Event List](https://de.wordpress.org/plugins/very-simple-event-list/)
+* [GatherPress](https://gatherpress.org/)
+
+Basic support (outgoing events):
+
 * [Events Manager](https://de.wordpress.org/plugins/events-manager/)
 * [WP Event Manager](https://de.wordpress.org/plugins/wp-event-manager/)
 * [Eventin](https://de.wordpress.org/plugins/wp-event-solution/)
 * [Modern Events Calendar Lite](https://webnus.net/modern-events-calendar/)
-* [GatherPress](https://gatherpress.org/)
 * [Event Organiser](https://wordpress.org/plugins/event-organiser/)
 
 = Configuration =
@@ -107,7 +119,7 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 
 * Fixed: Images of Acknowledgements in Admin UI
 
-= [0.3.4] 2024-12-21 =
+= [0.3.4] - 2024-12-21 =
 
 * Initial release on https://wordpress.org/
 

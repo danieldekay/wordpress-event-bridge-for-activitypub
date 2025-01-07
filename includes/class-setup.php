@@ -15,17 +15,22 @@ namespace Event_Bridge_For_ActivityPub;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Base as Transmogrifier;
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 use Event_Bridge_For_ActivityPub\Admin\Event_Plugin_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\Health_Check;
 use Event_Bridge_For_ActivityPub\Admin\Settings_Page;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
+use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
+
+use function Activitypub\is_user_type_disabled;
 
 require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
 /**
  * Class Setup.
- *
+
  * This class is responsible for initializing Event Bridge for ActivityPub.
  *
  * @since 1.0.0
@@ -60,15 +65,12 @@ class Setup {
 	 * @since 1.0.0
 	 */
 	protected function __construct() {
-		$this->activitypub_plugin_is_active = defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) ||
-			is_plugin_active( 'activitypub/activitypub.php' );
-		// BeforeFirstRelease: decide whether we want to do anything at all when ActivityPub plugin is note active.
-		// if ( ! $this->activitypub_plugin_is_active ) {
-		// deactivate_plugins( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE );
-		// return;
-		// }.
-		$this->activitypub_plugin_version = self::get_activitypub_plugin_version();
-		add_action( 'plugins_loaded', array( $this, 'setup_hooks' ) );
+		// Detect the presence/active-status and version of the ActivityPub plugin.
+		$this->activitypub_plugin_is_active = defined( 'ACTIVITYPUB_PLUGIN_VERSION' ) || \is_plugin_active( 'activitypub/activitypub.php' );
+		$this->activitypub_plugin_version   = self::get_activitypub_plugin_version();
+
+		// Register main action that load the Event Bridge For ActivityPub.
+		\add_action( 'plugins_loaded', array( $this, 'setup_hooks' ) );
 	}
 
 	/**
@@ -97,6 +99,15 @@ class Setup {
 	}
 
 	/**
+	 * Getter function for whether the ActivityPub plugin is active.
+	 *
+	 * @return bool True when the ActivityPub plugin is active.
+	 */
+	public function is_activitypub_plugin_active(): bool {
+		return $this->activitypub_plugin_is_active;
+	}
+
+	/**
 	 * LooksUp the current version of the ActivityPub.
 	 *
 	 * @return string The semantic Version.
@@ -111,7 +122,7 @@ class Setup {
 	/**
 	 * Getter function for the active event plugins.
 	 *
-	 * @return Event_Plugin[]
+	 * @return \Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration[]
 	 */
 	public function get_active_event_plugins() {
 		return $this->active_event_plugins;
@@ -120,17 +131,17 @@ class Setup {
 	/**
 	 * Holds all the classes for the supported event plugins.
 	 *
-	 * @var array
+	 * @var \Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration[]
 	 */
-	private const EVENT_PLUGIN_CLASSES = array(
-		'\Event_Bridge_For_ActivityPub\Integrations\Events_Manager',
-		'\Event_Bridge_For_ActivityPub\Integrations\GatherPress',
-		'\Event_Bridge_For_ActivityPub\Integrations\The_Events_Calendar',
-		'\Event_Bridge_For_ActivityPub\Integrations\VS_Event_List',
-		'\Event_Bridge_For_ActivityPub\Integrations\WP_Event_Manager',
-		'\Event_Bridge_For_ActivityPub\Integrations\Eventin',
-		'\Event_Bridge_For_ActivityPub\Integrations\Modern_Events_Calendar_Lite',
-		'\Event_Bridge_For_ActivityPub\Integrations\Event_Organiser',
+	private const EVENT_PLUGIN_INTEGRATIONS = array(
+		\Event_Bridge_For_ActivityPub\Integrations\Events_Manager::class,
+		\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class,
+		\Event_Bridge_For_ActivityPub\Integrations\The_Events_Calendar::class,
+		\Event_Bridge_For_ActivityPub\Integrations\VS_Event_List::class,
+		\Event_Bridge_For_ActivityPub\Integrations\WP_Event_Manager::class,
+		\Event_Bridge_For_ActivityPub\Integrations\Eventin::class,
+		\Event_Bridge_For_ActivityPub\Integrations\Modern_Events_Calendar_Lite::class,
+		\Event_Bridge_For_ActivityPub\Integrations\Event_Organiser::class,
 	);
 
 	/**
@@ -139,7 +150,10 @@ class Setup {
 	 * @return void
 	 */
 	public function redetect_active_event_plugins(): void {
-		delete_transient( 'event_bridge_for_activitypub_active_event_plugins' );
+		if ( ! $this->activitypub_plugin_is_active ) {
+			return;
+		}
+		\delete_transient( 'event_bridge_for_activitypub_active_event_plugins' );
 		$this->detect_active_event_plugins();
 	}
 
@@ -149,6 +163,11 @@ class Setup {
 	 * @return array List of supported event plugins as keys from the SUPPORTED_EVENT_PLUGINS const.
 	 */
 	public function detect_active_event_plugins(): array {
+		// Detection will fail in case the ActivityPub plugin is not active.
+		if ( ! $this->activitypub_plugin_is_active ) {
+			return array();
+		}
+
 		$active_event_plugins = get_transient( 'event_bridge_for_activitypub_active_event_plugins' );
 
 		if ( $active_event_plugins ) {
@@ -163,22 +182,38 @@ class Setup {
 		$all_plugins = array_merge( get_plugins(), get_mu_plugins() );
 
 		$active_event_plugins = array();
-		foreach ( self::EVENT_PLUGIN_CLASSES as $event_plugin_class ) {
-			$event_plugin_file = call_user_func( array( $event_plugin_class, 'get_relative_plugin_file' ) );
-			if ( ! $event_plugin_file ) {
-				continue;
-			}
+		foreach ( self::EVENT_PLUGIN_INTEGRATIONS as $event_plugin_integration ) {
+			// Get the filename of the main plugin file of the event plugin (relative to the plugin dir).
+			$event_plugin_file = $event_plugin_integration::get_relative_plugin_file();
+
+			// Check if plugin is present on disk and is activated.
 			if ( array_key_exists( $event_plugin_file, $all_plugins ) && \is_plugin_active( $event_plugin_file ) ) {
-				$active_event_plugins[ $event_plugin_file ] = new $event_plugin_class();
+				$active_event_plugins[ $event_plugin_file ] = new $event_plugin_integration();
 			}
 		}
-		set_transient( 'event_bridge_for_activitypub_active_event_plugins', $active_event_plugins );
+		\set_transient( 'event_bridge_for_activitypub_active_event_plugins', $active_event_plugins );
 		$this->active_event_plugins = $active_event_plugins;
 		return $active_event_plugins;
 	}
 
 	/**
-	 * Set up hooks for various purposes.
+	 * Function that checks which event plugins support the event sources feature.
+	 *
+	 * @return array List of supported event plugins as keys from the SUPPORTED_EVENT_PLUGINS const.
+	 */
+	public static function detect_event_plugins_supporting_event_sources(): array {
+		$plugins_supporting_event_sources = array();
+
+		foreach ( self::EVENT_PLUGIN_INTEGRATIONS as $event_plugin_integration ) {
+			if ( $event_plugin_integration instanceof Feature_Event_Sources ) {
+				$plugins_supporting_event_sources[] = new $event_plugin_integration();
+			}
+		}
+		return $plugins_supporting_event_sources;
+	}
+
+	/**
+	 * Main setup function of the plugin "Event Bridge For ActivityPub".
 	 *
 	 * This method adds hooks for different purposes as needed.
 	 *
@@ -187,35 +222,70 @@ class Setup {
 	 * @return void
 	 */
 	public function setup_hooks(): void {
+		// Detect active supported event plugins.
 		$this->detect_active_event_plugins();
 
-		register_activation_hook( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE, array( $this, 'activate' ) );
+		// Register hook that runs when this plugin gets activated.
+		\register_activation_hook( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE, array( $this, 'activate' ) );
 
-		add_action( 'activated_plugin', array( $this, 'redetect_active_event_plugins' ) );
-		add_action( 'deactivated_plugin', array( $this, 'redetect_active_event_plugins' ) );
+		// Register listeners whenever any plugin gets activated or deactivated to maybe update the transient of active event plugins.
+		\add_action( 'activated_plugin', array( $this, 'redetect_active_event_plugins' ) );
+		\add_action( 'deactivated_plugin', array( $this, 'redetect_active_event_plugins' ) );
 
-		add_action( 'admin_init', array( $this, 'do_admin_notices' ) );
-		add_action( 'admin_init', array( Settings::class, 'register_settings' ) );
-		add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_styles' ) );
-		add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
-		add_filter(
+		// Add hook that takes care of all notices in the Admin UI.
+		\add_action( 'admin_init', array( $this, 'do_admin_notices' ) );
+
+		// Add hook that registers all settings of this plugin to WordPress.
+		\add_action( 'admin_init', array( Settings::class, 'register_settings' ) );
+
+		// Add hook that loads CSS and JavaScript files for the Admin UI.
+		\add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_styles' ) );
+
+		// Register the settings page(s) of this plugin to the WordPress admin menu.
+		\add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
+		\add_filter(
 			'plugin_action_links_' . EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_BASENAME,
 			array( Settings_Page::class, 'settings_link' )
 		);
 
 		// If we don't have any active event plugins, or the ActivityPub plugin is not enabled, abort here.
 		if ( empty( $this->active_event_plugins ) || ! $this->activitypub_plugin_is_active ) {
+			self::shut_down();
 			return;
 		}
 
-		add_action( 'init', array( Health_Check::class, 'init' ) );
+		// Register health checks and status reports to the WordPress status report site.
+		\add_action( 'init', array( Health_Check::class, 'init' ) );
 
-		// Check if the minimum required version of the ActivityPub plugin is installed.
+		// Check if the minimum required version of the ActivityPub plugin is installed, if not abort.
 		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
 			return;
 		}
 
-		add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
+		// If the Event-Sources feature is enabled and all requirements are met, initialize it.
+		if ( ! is_user_type_disabled( 'blog' ) && \get_option( 'event_bridge_for_activitypub_event_sources_active' ) ) {
+			Event_Sources::init();
+		}
+
+		// Initialize writing of debug logs.
+		Debug::init();
+
+		// Lastly but most importantly: register the ActivityPub transformers for events to the ActivityPub plugin.
+		\add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
+	}
+
+	/**
+	 * Shut down the plugin.
+	 *
+	 * @return void
+	 */
+	public static function shut_down() {
+		// Delete all transients.
+		Event_Sources_Collection::delete_event_source_transients();
+		\delete_transient( 'event_bridge_for_activitypub_active_event_plugins' );
+
+		// Unschedule all crons.
+		wp_unschedule_hook( 'event_bridge_for_activitypub_event_sources_clear_cache' );
 	}
 
 	/**
@@ -259,15 +329,17 @@ class Setup {
 		// Check if any general admin notices are needed and add actions to insert the needed admin notices.
 		if ( ! $this->activitypub_plugin_is_active ) {
 			// The ActivityPub plugin is not active.
-			add_action( 'admin_notices', array( 'Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices', 'activitypub_plugin_not_enabled' ), 10, 1 );
+			add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_not_enabled' ), 10, 1 );
+			return;
 		}
 		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
 			// The ActivityPub plugin is too old.
-			add_action( 'admin_notices', array( 'Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices', 'activitypub_plugin_version_too_old' ), 10, 1 );
+			add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_version_too_old' ), 10, 1 );
+			return;
 		}
 		if ( empty( $this->active_event_plugins ) ) {
 			// No supported Event Plugin is active.
-			add_action( 'admin_notices', array( 'Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices', 'no_supported_event_plugin_active' ), 10, 1 );
+			add_action( 'admin_notices', array( General_Admin_Notices::class, 'no_supported_event_plugin_active' ), 10, 1 );
 		}
 	}
 
@@ -289,10 +361,7 @@ class Setup {
 		// Get the transformer for a specific event plugins event-post type.
 		foreach ( $this->active_event_plugins as $event_plugin ) {
 			if ( $wp_object->post_type === $event_plugin->get_post_type() ) {
-				$transformer_class = $event_plugin::get_activitypub_event_transformer_class();
-				if ( class_exists( $transformer_class ) ) {
-					return new $transformer_class( $wp_object, $event_plugin::get_event_category_taxonomy() );
-				}
+				return $event_plugin::get_activitypub_event_transformer( $wp_object, $event_plugin::get_event_category_taxonomy() );
 			}
 		}
 
@@ -352,5 +421,71 @@ class Setup {
 		}
 
 		self::activate_activitypub_support_for_active_event_plugins();
+	}
+
+	/**
+	 * Get the event plugin integration class name used for the event sources feature.
+	 *
+	 * @return string The class name of the event plugin integration class.
+	 */
+	public static function get_event_plugin_integration_used_for_event_sources_feature() {
+		// Get plugin option.
+		$event_plugin_integration = get_option(
+			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+			self::get_default_integration_class_name_used_for_event_sources_feature()
+		);
+
+		// Exit if event sources are not active or no plugin is specified.
+		if ( empty( $event_plugin_integration ) ) {
+			return null;
+		}
+
+		// Validate if setting is actual existing class.
+		if ( ! class_exists( $event_plugin_integration ) ) {
+			return null;
+		}
+
+		return $event_plugin_integration;
+	}
+
+	/**
+	 * Get the transmogrifier class.
+	 *
+	 * Retrieves the appropriate transmogrifier class based on the active event plugins and settings.
+	 *
+	 * @return ?Transmogrifier The transmogrifier class name or null if not available.
+	 */
+	public static function get_transmogrifier(): ?Transmogrifier {
+		$event_plugin_integration = self::get_event_plugin_integration_used_for_event_sources_feature();
+
+		if ( ! $event_plugin_integration ) {
+			return null;
+		}
+
+		// Validate if get_transformer method exists in event plugin integration.
+		if ( ! method_exists( $event_plugin_integration, 'get_transmogrifier' ) ) {
+			return null;
+		}
+
+		$transmogrifier = $event_plugin_integration::get_transmogrifier();
+
+		return $transmogrifier;
+	}
+
+	/**
+	 * Get the full class name of the first event plugin integration that is active and supports the event source feature.
+	 *
+	 * @return string The full class name of the event plugin integration.
+	 */
+	public static function get_default_integration_class_name_used_for_event_sources_feature(): string {
+		$setup = self::get_instance();
+
+		$event_plugin_integrations = $setup->get_active_event_plugins();
+		foreach ( $event_plugin_integrations as $event_plugin_integration ) {
+			if ( $event_plugin_integration instanceof Feature_Event_Sources ) {
+				get_class( $event_plugin_integration );
+			}
+		}
+		return '';
 	}
 }

@@ -14,6 +14,8 @@ namespace Event_Bridge_For_ActivityPub;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
+
 /**
  * Class responsible for the ActivityPui Event Extension related Settings.
  *
@@ -91,6 +93,76 @@ class Settings {
 				'default'      => EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY,
 			)
 		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_event_sources_active',
+			array(
+				'type'         => 'boolean',
+				'show_in_rest' => true,
+				'description'  => \__( 'Whether the event sources feature is activated.', 'event-bridge-for-activitypub' ),
+				'default'      => 0,
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_event_source_cache_retention',
+			array(
+				'type'              => 'integer',
+				'show_in_rest'      => true,
+				'description'       => \__( 'The cache retention period for external event sources.', 'event-bridge-for-activitypub' ),
+				'default'           => WEEK_IN_SECONDS,
+				'sanitize_callback' => 'absint',
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+			array(
+				'type'              => 'string',
+				'description'       => \__( 'Define which plugin/integration is used for the event sources feature', 'event-bridge-for-activitypub' ),
+				'default'           => array(),
+				'sanitize_callback' => array( self::class, 'sanitize_event_plugin_integration_used_for_event_sources' ),
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub-event-sources',
+			'event_bridge_for_activitypub_event_sources',
+			array(
+				'type'              => 'array',
+				'description'       => \__( 'Dummy setting', 'event-bridge-for-activitypub' ),
+				'default'           => array(),
+				'sanitize_callback' => 'is_array',
+			)
+		);
+	}
+
+	/**
+	 * Sanitize the option which event plugin.
+	 *
+	 * @param string $event_plugin_integration The setting.
+	 * @return string
+	 */
+	public static function sanitize_event_plugin_integration_used_for_event_sources( $event_plugin_integration ) {
+		if ( ! is_string( $event_plugin_integration ) ) {
+			return '';
+		}
+		$setup                = Setup::get_instance();
+		$active_event_plugins = $setup->get_active_event_plugins();
+
+		$valid_options = array();
+		foreach ( $active_event_plugins as $active_event_plugin ) {
+			if ( $active_event_plugin instanceof Feature_Event_Sources ) {
+				$valid_options[] = get_class( $active_event_plugin );
+			}
+		}
+		if ( in_array( $event_plugin_integration, $valid_options, true ) ) {
+			return $event_plugin_integration;
+		}
+		return Setup::get_default_integration_class_name_used_for_event_sources_feature();
 	}
 
 	/**

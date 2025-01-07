@@ -5,6 +5,11 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
+// Defined here because setting them in .wp-env.json doesn't work for some reason.
+\defined( 'WP_TESTS_DOMAIN' ) ?? \define( 'WP_TESTS_DOMAIN', 'example.org' );
+\defined( 'WP_SITEURL' ) ?? \define( 'WP_SITEURL', 'http://example.org' );
+\defined( 'WP_HOME' ) ?? \define( 'WP_HOME', 'http://example.org' );
+
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
 if ( ! $_tests_dir ) {
@@ -67,9 +72,21 @@ function _manually_load_plugin() {
 	switch ( $event_bridge_for_activitypub_integration_filter ) {
 		case 'the_events_calendar':
 			$plugin_file = 'the-events-calendar/the-events-calendar.php';
+			\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+			\update_option(
+				'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+				\Event_Bridge_For_ActivityPub\Integrations\The_Events_Calendar::class
+			);
+			\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 			break;
 		case 'vs_event_list':
 			$plugin_file = 'very-simple-event-list/vsel.php';
+			\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+			\update_option(
+				'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+				\Event_Bridge_For_ActivityPub\Integrations\VS_Event_List::class
+			);
+			\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 			break;
 		case 'events_manager':
 			$plugin_file = 'events-manager/events-manager.php';
@@ -82,6 +99,12 @@ function _manually_load_plugin() {
 			break;
 		case 'gatherpress':
 			$plugin_file = 'gatherpress/gatherpress.php';
+			\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+			\update_option(
+				'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+				\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class
+			);
+			\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 			break;
 		case 'wp_event_manager':
 			$plugin_file = 'wp-event-manager/wp-event-manager.php';
@@ -97,10 +120,15 @@ function _manually_load_plugin() {
 	if ( $plugin_file ) {
 		_manually_load_event_plugin( $plugin_file );
 	} else {
-		// For all other tests we mainly use the Events Calendar as a reference.
+		// For all other tests we mainly use the Events Calendar and GatherPress as reference.
+		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+		\update_option(
+			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+			\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class
+		);
+		\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 		_manually_load_event_plugin( 'the-events-calendar/the-events-calendar.php' );
-		_manually_load_event_plugin( 'very-simple-event-list/vsel.php' );
-
+		_manually_load_event_plugin( 'gatherpress/gatherpress.php' );
 	}
 
 	// Hot fix that allows using Events Manager within unit tests, because the em_init() is later not run as admin.
@@ -119,6 +147,9 @@ function _manually_load_plugin() {
 
 	// At last manually load our WordPress plugin.
 	require dirname( __DIR__ ) . '/event-bridge-for-activitypub.php';
+
+	// Always manually load the ActivityPub plugin.
+	require_once $plugin_dir . 'activitypub/activitypub.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
