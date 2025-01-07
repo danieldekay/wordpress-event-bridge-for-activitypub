@@ -445,7 +445,7 @@ class Event_Sources {
 		$activity->set_type( 'Follow' );
 		$activity->set_to( null );
 		$activity->set_cc( null );
-		$activity->set_actor( $from_actor );
+		$activity->set_actor( $from_actor->get_id() );
 		$activity->set_object( $to );
 		$activity->set_id( self::compose_follow_id( $from_actor->get_id(), $to ) );
 		$activity = $activity->to_json();
