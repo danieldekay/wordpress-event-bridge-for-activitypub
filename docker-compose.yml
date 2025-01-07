@@ -1,6 +1,9 @@
 version: '3'
 
 # This files purpose is to run the PHPunit tests locally.
+# Prerequisites:
+# Run "composer install" to generate a composer.lock file and install PHP dev dependencies.
+#
 # Install docker and docker compose and than just run:
 # docker compose up
 
@@ -13,7 +16,7 @@ version: '3'
 #   "request": "launch",
 #   "port": 9003,
 #   "pathMappings": {
-#    "/app/": "${workspaceRoot}/wp-content/plugins/activitypub-event-bridge/",
+#    "/app/": "${workspaceRoot}/wp-content/plugins/event-bridge-for-activitypub/",
 #    "/tmp/wordpress/": "${workspaceRoot}/"
 #   },
 # },
@@ -30,6 +33,8 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+    ports:
+      - "3306:3306"
 
   test-php:
     build:

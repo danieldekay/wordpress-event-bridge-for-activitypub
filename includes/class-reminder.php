@@ -5,19 +5,19 @@
  * This file contains the General class definition, which handles the "General" settings
  * page for the ActivityPub Event Extension Plugin, providing options for configuring various general settings.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  */
 
-namespace ActivityPub_Event_Bridge;
+namespace Event_Bridge_For_ActivityPub;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity_Dispatcher;
 use Activitypub\Transformer\Factory as Transformer_Factory;
-use ActivityPub_Event_Bridge\Setup;
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\Setup;
+use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transformer;
 use DateTime;
 
 use function Activitypub\is_user_disabled;
@@ -35,7 +35,7 @@ class Reminder {
 		\add_action( 'delete_post', array( self::class, 'unschedule_event_reminder' ), 33, 1 );
 
 		// Send an event reminder.
-		\add_action( 'activitypub_event_bridge_send_event_reminder', array( self::class, 'send_event_reminder' ), 10, 1 );
+		\add_action( 'event_bridge_for_activitypub_send_event_reminder', array( self::class, 'send_event_reminder' ), 10, 1 );
 
 		// Load the block which allows overriding the reminder time for an individual event in the post settings.
 		\add_action( 'enqueue_block_editor_assets', array( self::class, 'enqueue_editor_assets' ) );
@@ -52,7 +52,7 @@ class Reminder {
 		foreach ( $ap_post_types as $post_type ) {
 			\register_post_meta(
 				$post_type,
-				'activitypub_event_bridge_reminder_time_gap',
+				'event_bridge_for_activitypub_reminder_time_gap',
 				array(
 					'show_in_rest'      => true,
 					'single'            => true,
@@ -75,14 +75,14 @@ class Reminder {
 		}
 		$asset_data = include ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'build/reminder/plugin.asset.php';
 		$plugin_url = plugins_url( 'build/reminder/plugin.js', ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_FILE );
-		wp_enqueue_script( 'activitypub-event-bridge-reminder', $plugin_url, $asset_data['dependencies'], $asset_data['version'], true );
+		wp_enqueue_script( 'event-bridge-for-activitypub-reminder', $plugin_url, $asset_data['dependencies'], $asset_data['version'], true );
 
 		// Pass the the default site wide time gap option to the settings block on the events edit page.
 		wp_localize_script(
-			'activitypub-event-bridge-reminder',
+			'event-bridge-for-activitypub-reminder',
 			'activityPubEventBridge',
 			array(
-				'reminderTypeGap' => \get_option( 'activitypub_event_bridge_reminder_time_gap', 0 ),
+				'reminderTypeGap' => \get_option( 'event_bridge_for_activitypub_reminder_time_gap', 0 ),
 			)
 		);
 	}
@@ -121,11 +121,11 @@ class Reminder {
 		}
 
 		// See if a reminder time gap is set for the event individually in the events post-meta.
-		$reminder_time_gap = (int) get_post_meta( $post->ID, 'activitypub_event_bridge_reminder_time_gap', true );
+		$reminder_time_gap = (int) get_post_meta( $post->ID, 'event_bridge_for_activitypub_reminder_time_gap', true );
 
 		// If not fallback to the global reminder time gap.
 		if ( ! $reminder_time_gap ) {
-			$reminder_time_gap = \get_option( 'activitypub_event_bridge_reminder_time_gap', 0 );
+			$reminder_time_gap = \get_option( 'event_bridge_for_activitypub_reminder_time_gap', 0 );
 		}
 
 		// Any non positive integer means that this feature is not active for this event post.
@@ -153,7 +153,7 @@ class Reminder {
 		}
 
 		// All checks passed: schedule a single event which will trigger the sending of the reminder for this event post.
-		\wp_schedule_single_event( $schedule_time, 'activitypub_event_bridge_send_event_reminder', array( $post->ID ) );
+		\wp_schedule_single_event( $schedule_time, 'event_bridge_for_activitypub_send_event_reminder', array( $post->ID ) );
 	}
 
 	/**
@@ -162,7 +162,7 @@ class Reminder {
 	 * @param int $post_id The WordPress post ID of the event post.
 	 */
 	public static function unschedule_event_reminder( $post_id ): void {
-		\wp_clear_scheduled_hook( 'activitypub_event_bridge_send_event_reminder', array( $post_id ) );
+		\wp_clear_scheduled_hook( 'event_bridge_for_activitypub_send_event_reminder', array( $post_id ) );
 	}
 
 	/**

@@ -208,9 +208,15 @@ install_wp_plugin() {
 	fi
 
 	# Get the latest tag.
-    LATEST_TAG=$(svn log https://plugins.svn.wordpress.org/$PLUGIN_NAME/tags --limit 1 | awk 'NR == 4 { print $4 }')
-	if [ -n "$LATEST_TAG" ]; then
-		PLUGIN_FILE="$PLUGIN_NAME.$LATEST_TAG.zip"
+	if [ -z "$2" ]; then
+		LATEST_TAG=$(svn log https://plugins.svn.wordpress.org/$PLUGIN_NAME/tags --limit 1 | awk 'NR == 4 { print $4 }')
+		PLUGIN_VERSION=$LATEST_TAG
+	else
+		PLUGIN_VERSION=$2
+	fi
+
+	if [ -n "$PLUGIN_VERSION" ]; then
+		PLUGIN_FILE="$PLUGIN_NAME.$PLUGIN_VERSION.zip"
 	else
 		PLUGIN_FILE="$PLUGIN_NAME.zip"
 	fi
@@ -226,6 +232,20 @@ install_wp_plugin() {
     unzip -q -o "$TMPDIR/$PLUGIN_FILE" -d "$WP_CORE_DIR/wp-content/plugins/"
 }
 
+install_wp_plugin_mec() {
+	mkdir -p "$WP_CORE_DIR/wp-content/plugins/"
+
+	if [ -d "$WP_CORE_DIR/wp-content/plugins/modern-events-calendar-lite" ]; then
+		return;
+	fi
+
+	PLUGIN_VERSION="v7.15.0"
+
+    URL="https://code.event-federation.eu/Event-Federation/modern-events-calendar-lite"
+
+	git clone $URL "$WP_CORE_DIR/wp-content/plugins/modern-events-calendar-lite"
+}
+
 install_wp_plugins() {
 	if [ "$SKIP_PLUGINS_INSTALL" = "true" ]; then
         echo "Skipping WordPress plugin installation."
@@ -234,12 +254,16 @@ install_wp_plugins() {
 	# Install the one and only ActivityPub plugin (greetings @pfefferle).
 	install_wp_plugin activitypub
 	# Install (not-activate) all supported event plugins.
-	install_wp_plugin the-events-calendar
+	install_wp_plugin the-events-calendar "6.8.1"
 	install_wp_plugin very-simple-event-list
 	install_wp_plugin gatherpress
-	install_wp_plugin events-manager
-	install_wp_plugin wp-event-manager
-	install_wp_plugin wp-event-solution
+	install_wp_plugin eventprime-event-calendar-management
+	install_wp_plugin events-manager "6.6.3"
+	install_wp_plugin wp-event-manager "3.1.45.1"
+	install_wp_plugin wp-event-solution "4.0.14"
+	install_wp_plugin event-organiser "3.12.8"
+	# Mec is not installable via wordpress.org, we use our own mirror.
+	install_wp_plugin_mec
 }
 
 install_wp

@@ -14,7 +14,7 @@ const Reminder = () => {
 	);
 	const [ meta, setMeta ] = useEntityProp( 'postType', postType, 'meta' );
 
-	const reminderTimeGap = meta?.activitypub_event_bridge_reminder_time_gap ? meta?.activitypub_event_bridge_reminder_time_gap : reminderTimeGapDefault;
+	const reminderTimeGap = meta?.event_bridge_for_activitypub_reminder_time_gap ? meta?.event_bridge_for_activitypub_reminder_time_gap : reminderTimeGapDefault;
 
 	return (
 		<PluginDocumentSettingPanel
@@ -25,14 +25,14 @@ const Reminder = () => {
 				label={ __( 'Time gap', 'activitypub' ) }
 				value={ reminderTimeGap }
 				options={ [
-					{ label: __( 'Disabled', 'activitypub-event-bridge' ), value: 0 },
-					{ label: __( '6 hours', 'activitypub-event-bridge' ), value: 21600 },
-					{ label: __( '1 day', 'activitypub-event-bridge' ), value: 86400 },
-					{ label: __( '3 days', 'activitypub-event-bridge' ), value: 259200 },
-					{ label: __( '1 week', 'activitypub-event-bridge' ), value: 604800 }
+					{ label: __( 'Disabled', 'event-bridge-for-activitypub' ), value: 0 },
+					{ label: __( '6 hours', 'event-bridge-for-activitypub' ), value: 21600 },
+					{ label: __( '1 day', 'event-bridge-for-activitypub' ), value: 86400 },
+					{ label: __( '3 days', 'event-bridge-for-activitypub' ), value: 259200 },
+					{ label: __( '1 week', 'event-bridge-for-activitypub' ), value: 604800 }
 				] }
 				onChange={ ( value ) => {
-					setMeta( { ...meta, activitypub_event_bridge_reminder_time_gap: value } );
+					setMeta( { ...meta, event_bridge_for_activitypub_reminder_time_gap: value } );
 				} }
 				__nextHasNoMarginBottom
 			/>
@@ -40,4 +40,4 @@ const Reminder = () => {
 	);
 }
 
-registerPlugin( 'activitypub-event-bridge-reminder', { render: Reminder } );
+registerPlugin( 'event-bridge-for-activitypub-reminder', { render: Reminder } );

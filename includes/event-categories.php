@@ -2,46 +2,49 @@
 /**
  * File responsible for defining the event category strings.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge;
+namespace Event_Bridge_For_ActivityPub;
+
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 define(
-	'ACTIVITYPUB_EVENT_BRIDGE_EVENT_CATEGORIES',
+	'EVENT_BRIDGE_FOR_ACTIVITYPUB_EVENT_CATEGORIES',
 	array(
-		'ARTS'                          => __( 'Arts', 'activitypub-event-bridge' ),
-		'BOOK_CLUBS'                    => __( 'Book clubs', 'activitypub-event-bridge' ),
-		'BUSINESS'                      => __( 'Business', 'activitypub-event-bridge' ),
-		'CAUSES'                        => __( 'Causes', 'activitypub-event-bridge' ),
-		'COMEDY'                        => __( 'Comedy', 'activitypub-event-bridge' ),
-		'CRAFTS'                        => __( 'Crafts', 'activitypub-event-bridge' ),
-		'FOOD_DRINK'                    => __( 'Food & Drink', 'activitypub-event-bridge' ),
-		'HEALTH'                        => __( 'Health', 'activitypub-event-bridge' ),
-		'MUSIC'                         => __( 'Music', 'activitypub-event-bridge' ),
-		'AUTO_BOAT_AIR'                 => __( 'Auto, boat and air', 'activitypub-event-bridge' ),
-		'COMMUNITY'                     => __( 'Community', 'activitypub-event-bridge' ),
-		'FAMILY_EDUCATION'              => __( 'Family & Education', 'activitypub-event-bridge' ),
-		'FASHION_BEAUTY'                => __( 'Fashion & Beauty', 'activitypub-event-bridge' ),
-		'FILM_MEDIA'                    => __( 'Film & Media', 'activitypub-event-bridge' ),
-		'GAMES'                         => __( 'Games', 'activitypub-event-bridge' ),
-		'LANGUAGE_CULTURE'              => __( 'Language & Culture', 'activitypub-event-bridge' ),
-		'LEARNING'                      => __( 'Learning', 'activitypub-event-bridge' ),
-		'LGBTQ'                         => __( 'LGBTQ', 'activitypub-event-bridge' ),
-		'MOVEMENTS_POLITICS'            => __( 'Movements and politics', 'activitypub-event-bridge' ),
-		'NETWORKING'                    => __( 'Networking', 'activitypub-event-bridge' ),
-		'PARTY'                         => __( 'Party', 'activitypub-event-bridge' ),
-		'PERFORMING_VISUAL_ARTS'        => __( 'Performing & Visual Arts', 'activitypub-event-bridge' ),
-		'PETS'                          => __( 'Pets', 'activitypub-event-bridge' ),
-		'PHOTOGRAPHY'                   => __( 'Photography', 'activitypub-event-bridge' ),
-		'OUTDOORS_ADVENTURE'            => __( 'Outdoors & Adventure', 'activitypub-event-bridge' ),
-		'SPIRITUALITY_RELIGION_BELIEFS' => __( 'Spirituality, Religion & Beliefs', 'activitypub-event-bridge' ),
-		'SCIENCE_TECH'                  => __( 'Science & Tech', 'activitypub-event-bridge' ),
-		'SPORTS'                        => __( 'Sports', 'activitypub-event-bridge' ),
-		'THEATRE'                       => __( 'Theatre', 'activitypub-event-bridge' ),
-		'MEETING'                       => __( 'Meeting', 'activitypub-event-bridge' ), // Default value in federation.
-		'DEFAULT'                       => __( 'Default', 'activitypub-event-bridge' ), // Internal default for overrides.
+		'ARTS'                          => __( 'Arts', 'event-bridge-for-activitypub' ),
+		'BOOK_CLUBS'                    => __( 'Book clubs', 'event-bridge-for-activitypub' ),
+		'BUSINESS'                      => __( 'Business', 'event-bridge-for-activitypub' ),
+		'CAUSES'                        => __( 'Causes', 'event-bridge-for-activitypub' ),
+		'COMEDY'                        => __( 'Comedy', 'event-bridge-for-activitypub' ),
+		'CRAFTS'                        => __( 'Crafts', 'event-bridge-for-activitypub' ),
+		'FOOD_DRINK'                    => __( 'Food & Drink', 'event-bridge-for-activitypub' ),
+		'HEALTH'                        => __( 'Health', 'event-bridge-for-activitypub' ),
+		'MUSIC'                         => __( 'Music', 'event-bridge-for-activitypub' ),
+		'AUTO_BOAT_AIR'                 => __( 'Auto, boat and air', 'event-bridge-for-activitypub' ),
+		'COMMUNITY'                     => __( 'Community', 'event-bridge-for-activitypub' ),
+		'FAMILY_EDUCATION'              => __( 'Family & Education', 'event-bridge-for-activitypub' ),
+		'FASHION_BEAUTY'                => __( 'Fashion & Beauty', 'event-bridge-for-activitypub' ),
+		'FILM_MEDIA'                    => __( 'Film & Media', 'event-bridge-for-activitypub' ),
+		'GAMES'                         => __( 'Games', 'event-bridge-for-activitypub' ),
+		'LANGUAGE_CULTURE'              => __( 'Language & Culture', 'event-bridge-for-activitypub' ),
+		'LEARNING'                      => __( 'Learning', 'event-bridge-for-activitypub' ),
+		'LGBTQ'                         => __( 'LGBTQ', 'event-bridge-for-activitypub' ),
+		'MOVEMENTS_POLITICS'            => __( 'Movements and politics', 'event-bridge-for-activitypub' ),
+		'NETWORKING'                    => __( 'Networking', 'event-bridge-for-activitypub' ),
+		'PARTY'                         => __( 'Party', 'event-bridge-for-activitypub' ),
+		'PERFORMING_VISUAL_ARTS'        => __( 'Performing & Visual Arts', 'event-bridge-for-activitypub' ),
+		'PETS'                          => __( 'Pets', 'event-bridge-for-activitypub' ),
+		'PHOTOGRAPHY'                   => __( 'Photography', 'event-bridge-for-activitypub' ),
+		'OUTDOORS_ADVENTURE'            => __( 'Outdoors & Adventure', 'event-bridge-for-activitypub' ),
+		'SPIRITUALITY_RELIGION_BELIEFS' => __( 'Spirituality, Religion & Beliefs', 'event-bridge-for-activitypub' ),
+		'SCIENCE_TECH'                  => __( 'Science & Tech', 'event-bridge-for-activitypub' ),
+		'SPORTS'                        => __( 'Sports', 'event-bridge-for-activitypub' ),
+		'THEATRE'                       => __( 'Theatre', 'event-bridge-for-activitypub' ),
+		'MEETING'                       => __( 'Meeting', 'event-bridge-for-activitypub' ), // Default value in federation.
+		'DEFAULT'                       => __( 'Default', 'event-bridge-for-activitypub' ), // Internal default for overrides.
 	),
 );

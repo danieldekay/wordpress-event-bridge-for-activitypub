@@ -2,17 +2,17 @@
 /**
  * ActivityPub Transformer for the plugin Very Simple Event List.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event as Event_Transformer;
 use DateTime;
 
 /**
@@ -101,7 +101,7 @@ final class WP_Event_Manager extends Event_Transformer {
 		if ( str_starts_with( $event_link_url, 'http' ) ) {
 			return array(
 				'type'      => 'Link',
-				'name'      => \esc_html__( 'Video URL', 'activitypub-event-bridge' ),
+				'name'      => \esc_html__( 'Video URL', 'event-bridge-for-activitypub' ),
 				'href'      => \esc_url( $event_link_url ),
 				'mediaType' => 'text/html',
 			);
