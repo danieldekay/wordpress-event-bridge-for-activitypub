@@ -21,6 +21,8 @@ use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transfor
 use DateTime;
 
 use function Activitypub\is_user_disabled;
+use function Activitypub\safe_remote_post;
+use function Activitypub\set_wp_object_state;
 
 /**
  * Adds automatic announcing or sending of reminders before the events start time.
@@ -73,8 +75,8 @@ class Reminder {
 		if ( ! $current_screen || ! in_array( $current_screen->post_type, $event_post_types, true ) ) {
 			return;
 		}
-		$asset_data = include ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_DIR . 'build/reminder/plugin.asset.php';
-		$plugin_url = plugins_url( 'build/reminder/plugin.js', ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_FILE );
+		$asset_data = include EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'build/reminder/plugin.asset.php';
+		$plugin_url = plugins_url( 'build/reminder/plugin.js', EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE );
 		wp_enqueue_script( 'event-bridge-for-activitypub-reminder', $plugin_url, $asset_data['dependencies'], $asset_data['version'], true );
 
 		// Pass the the default site wide time gap option to the settings block on the events edit page.
@@ -187,8 +189,29 @@ class Reminder {
 			return;
 		}
 
-		$activity = $transformer->to_announce_self_activity( 'Announce' );
+		$activity = $transformer->to_announce_self_activity();
 
-		Activity_Dispatcher::send_activity_to_followers( $activity, $user_id, $post );
+		self::send_activity_to_followers( $activity, $user_id );
+	}
+
+	/**
+	 * Send an Activity to all followers.
+	 *
+	 * @param Activity $activity  The ActivityPub Activity.
+	 * @param int      $user_id   The user ID.
+	 */
+	public static function send_activity_to_followers( $activity, $user_id ) {
+		$inboxes = Activity_Dispatcher::add_inboxes_of_follower( array(), $user_id );
+		$inboxes = array_unique( $inboxes );
+
+		if ( empty( $inboxes ) ) {
+			return;
+		}
+
+		$json = $activity->to_json();
+
+		foreach ( $inboxes as $inbox ) {
+			safe_remote_post( $inbox, $json, $user_id );
+		}
 	}
 }
