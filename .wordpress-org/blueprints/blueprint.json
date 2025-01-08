@@ -16,7 +16,7 @@
     },
     {
       "step": "installPlugin",
-      "pluginZipFile": {
+      "pluginData": {
         "resource": "wordpress.org/plugins",
         "slug": "very-simple-event-list"
       },
@@ -28,12 +28,12 @@
       "step": "importWxr",
       "file": {
         "resource": "url",
-        "url": "https://codeberg.org/Event-Federation/wordpress-event-bridge-for-activitypub/raw/branch/blueprint/.wordpress-org/blueprints/fixtures/demo-events-2025.json"
+        "url": "https://codeberg.org/Event-Federation/wordpress-event-bridge-for-activitypub/raw/branch/blueprint/.wordpress-org/blueprints/fixtures/demo-events-2025.xml"
       }
     },
     {
       "step": "installPlugin",
-      "pluginZipFile": {
+      "pluginData": {
         "resource": "wordpress.org/plugins",
         "slug": "activitypub"
       },
@@ -43,9 +43,9 @@
     },
     {
       "step": "installPlugin",
-      "pluginZipFile": {
+      "pluginData": {
         "resource": "wordpress.org/plugins",
-        "slug": "events-bridge-for-activitypub"
+        "slug": "event-bridge-for-activitypub"
       },
       "options": {
         "activate": true
@@ -53,8 +53,7 @@
     },
     {
       "step": "login",
-      "username": "admin",
-      "password": "password"
+      "username": "admin"
     },
     {
       "step": "mkdir",
@@ -63,13 +62,15 @@
     {
       "step": "writeFile",
       "path": "wordpress/wp-content/mu-plugins/show-admin-notice-2.php",
-      "data": "<?php\nadd_action(\n'admin_notices',\nfunction() {\n$dismissed = get_user_option( 'dismissed_expose_blueprint_notice-2', get_current_user_id() );\nif ( $dismissed ) {\nreturn;\n}\necho '<div class=\"notice notice-info is-dismissible\" id=\"custom-admin-notice-2\"><p>' . esc_html( 'Welcome and have fun 👋' ) . '</p></div>';\n}\n);\nadd_action('wp_ajax_dismiss_custom-admin-notice-2', function() {\ncheck_ajax_referer('custom-admin-notice-2', 'nonce');\n$user_id = get_current_user_id();\nif ( $user_id ) {\nupdate_user_option($user_id, 'dismissed_expose_blueprint_notice-2', 1, false);\nwp_send_json_success();\n} else {\nwp_send_json_error('User not found');\n}\n} );\nadd_action('admin_footer', function() {\n?>\n<script type=\"text/javascript\">\njQuery(document).ready( function($) {\nvar ajaxurl = '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>';\nvar nonce = '<?php echo esc_html( wp_create_nonce( 'custom-admin-notice-2' ) ); ?>';\n$( '#custom-admin-notice-2' ).on( 'click', '.notice-dismiss', function() {\n$.ajax({\nurl: ajaxurl,\ntype: 'POST',\ndata: {\naction: 'dismiss_custom-admin-notice-2',\nnonce: nonce\n}\n});\n});\n});\n</script>\n<?php\n} );"
+      "data": "<?php\nadd_action(\n'admin_notices',\nfunction() {\n$dismissed = get_user_option( 'dismissed_expose_blueprint_notice-2', get_current_user_id() );\nif ( $dismissed ) {\nreturn;\n}\necho '<div class=\"notice notice-info is-dismissible\" id=\"custom-admin-notice-2\"><p>' . esc_html( 'Welcome and have fun 👋' ) . '</p></div>';\necho '<div class=\"notice notice-warning is-dismissible\" id=\"custom-admin-notice-2\"><p>' . esc_html( 'Federation and ActivityPub will not work in this Playground. It is only meant for exploring the Admin User Interface!' ) . '</p></div>';\n}\n);\nadd_action('wp_ajax_dismiss_custom-admin-notice-2', function() {\ncheck_ajax_referer('custom-admin-notice-2', 'nonce');\n$user_id = get_current_user_id();\nif ( $user_id ) {\nupdate_user_option($user_id, 'dismissed_expose_blueprint_notice-2', 1, false);\nwp_send_json_success();\n} else {\nwp_send_json_error('User not found');\n}\n} );\nadd_action('admin_footer', function() {\n?>\n<script type=\"text/javascript\">\njQuery(document).ready( function($) {\nvar ajaxurl = '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>';\nvar nonce = '<?php echo esc_html( wp_create_nonce( 'custom-admin-notice-2' ) ); ?>';\n$( '#custom-admin-notice-2' ).on( 'click', '.notice-dismiss', function() {\n$.ajax({\nurl: ajaxurl,\ntype: 'POST',\ndata: {\naction: 'dismiss_custom-admin-notice-2',\nnonce: nonce\n}\n});\n});\n});\n</script>\n<?php\n} );"
     },
     {
       "step": "setSiteOptions",
       "options": {
         "activitypub_enable_blog_user": "1",
-        "event_bridge_for_activitypub_event_sources_active": "1"
+        "event_bridge_for_activitypub_event_sources_active": "1",
+        "activitypub_support_post_types": ["post", "event"],
+        "event_bridge_for_activitypub_initially_activated": ""
       }
     }
   ]
