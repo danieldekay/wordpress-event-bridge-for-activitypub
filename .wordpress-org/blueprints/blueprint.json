@@ -67,7 +67,7 @@
     {
       "step": "setSiteOptions",
       "options": {
-        "activitypub_enable_blog_user": "1",
+        "activitypub_actor_mode": "blog",
         "event_bridge_for_activitypub_event_sources_active": "1",
         "activitypub_support_post_types": ["post", "event"],
         "event_bridge_for_activitypub_initially_activated": ""
