@@ -115,6 +115,10 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 
 == Changelog ==
 
+= Unreleased =
+
+* Added: Blueprint (Preview via WordPress Playground)
+
 = [0.3.5] - 2025-01-03 =
 
 * Fixed: Images of Acknowledgements in Admin UI
