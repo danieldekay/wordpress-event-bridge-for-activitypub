@@ -1,9 +1,10 @@
 {
-  "landingPage": "/wp-admin/options-general.php?page=event-bridge-for-activitypub",
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
   "preferredVersions": {
     "php": "8.3",
     "wp": "latest"
   },
+  "landingPage": "/wp-admin/options-general.php?page=event-bridge-for-activitypub",
   "steps": [
     {
       "step": "setSiteOptions",
