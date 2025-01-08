@@ -16,7 +16,7 @@
 <!-- 7. WordPress will then import each of the posts, pages, comments, categories, etc. -->
 <!--    contained in this file into your site. -->
 
-	<!-- generator="WordPress/6.7.1" created="2025-01-08 17:33" -->
+	<!-- generator="WordPress/6.7.1" created="2025-01-08 18:13" -->
 <rss version="2.0"
 	xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/"
 	xmlns:content="http://purl.org/rss/1.0/modules/content/"
@@ -27,22 +27,41 @@
 
 <channel>
 	<title>Events Bridge For ActivityPub Demo</title>
-	<link>https://playground.wordpress.net/scope:happy-vintage-forest</link>
+	<link>https://playground.wordpress.net/scope:energetic-sunny-city</link>
 	<description>Democratize Publishing in the Fediverse</description>
-	<pubDate>Wed, 08 Jan 2025 17:33:45 +0000</pubDate>
+	<pubDate>Wed, 08 Jan 2025 18:13:55 +0000</pubDate>
 	<language>en-US</language>
 	<wp:wxr_version>1.2</wp:wxr_version>
-	<wp:base_site_url>https://playground.wordpress.net/scope:happy-vintage-forest</wp:base_site_url>
-	<wp:base_blog_url>https://playground.wordpress.net/scope:happy-vintage-forest</wp:base_blog_url>
+	<wp:base_site_url>https://playground.wordpress.net/scope:energetic-sunny-city</wp:base_site_url>
+	<wp:base_blog_url>https://playground.wordpress.net/scope:energetic-sunny-city</wp:base_blog_url>
 
 		<wp:author><wp:author_id>1</wp:author_id><wp:author_login><![CDATA[admin]]></wp:author_login><wp:author_email><![CDATA[admin@localhost.com]]></wp:author_email><wp:author_display_name><![CDATA[admin]]></wp:author_display_name><wp:author_first_name><![CDATA[]]></wp:author_first_name><wp:author_last_name><![CDATA[]]></wp:author_last_name></wp:author>
 
-				
-	<generator>https://wordpress.org/?v=6.7.1</generator>
+		<wp:category>
+		<wp:term_id>1</wp:term_id>
+		<wp:category_nicename><![CDATA[uncategorized]]></wp:category_nicename>
+		<wp:category_parent><![CDATA[]]></wp:category_parent>
+		<wp:cat_name><![CDATA[Uncategorized]]></wp:cat_name>
+	</wp:category>
+				<wp:term>
+		<wp:term_id>2</wp:term_id>
+		<wp:term_taxonomy><![CDATA[event_cat]]></wp:term_taxonomy>
+		<wp:term_slug><![CDATA[concerts]]></wp:term_slug>
+		<wp:term_parent><![CDATA[]]></wp:term_parent>
+		<wp:term_name><![CDATA[Concerts]]></wp:term_name>
+	</wp:term>
+		<wp:term>
+		<wp:term_id>3</wp:term_id>
+		<wp:term_taxonomy><![CDATA[event_cat]]></wp:term_taxonomy>
+		<wp:term_slug><![CDATA[party]]></wp:term_slug>
+		<wp:term_parent><![CDATA[]]></wp:term_parent>
+		<wp:term_name><![CDATA[Party]]></wp:term_name>
+	</wp:term>
 
-		<item>
+	<generator>https://wordpress.org/?v=6.7.1</generator>
+					<item>
 		<title><![CDATA[Living Room Concert]]></title>
-		<link>https://playground.wordpress.net/scope:happy-vintage-forest/event/living-room-concert/</link>
+		<link>https://playground.wordpress.net/scope:energetic-sunny-city/event/living-room-concert/</link>
 		<pubDate>Sun, 05 Jan 2025 13:05:05 +0000</pubDate>
 		<dc:creator><![CDATA[admin]]></dc:creator>
 		<guid isPermaLink="false">https://wp.lan/?post_type=event&#038;p=33</guid>
@@ -54,8 +73,8 @@
 		<wp:post_id>33</wp:post_id>
 		<wp:post_date><![CDATA[2025-01-05 13:05:05]]></wp:post_date>
 		<wp:post_date_gmt><![CDATA[2025-01-05 13:05:05]]></wp:post_date_gmt>
-		<wp:post_modified><![CDATA[2025-01-05 13:05:05]]></wp:post_modified>
-		<wp:post_modified_gmt><![CDATA[2025-01-05 13:05:05]]></wp:post_modified_gmt>
+		<wp:post_modified><![CDATA[2025-01-08 18:13:10]]></wp:post_modified>
+		<wp:post_modified_gmt><![CDATA[2025-01-08 18:13:10]]></wp:post_modified_gmt>
 		<wp:comment_status><![CDATA[closed]]></wp:comment_status>
 		<wp:ping_status><![CDATA[closed]]></wp:ping_status>
 		<wp:post_name><![CDATA[living-room-concert]]></wp:post_name>
@@ -65,7 +84,8 @@
 		<wp:post_type><![CDATA[event]]></wp:post_type>
 		<wp:post_password><![CDATA[]]></wp:post_password>
 		<wp:is_sticky>0</wp:is_sticky>
-														<wp:postmeta>
+										<category domain="event_cat" nicename="party"><![CDATA[Party]]></category>
+						<wp:postmeta>
 		<wp:meta_key><![CDATA[event-start-date]]></wp:meta_key>
 		<wp:meta_value><![CDATA[1767571200]]></wp:meta_value>
 		</wp:postmeta>
@@ -105,10 +125,22 @@
 		<wp:meta_key><![CDATA[_wxr_import_term]]></wp:meta_key>
 		<wp:meta_value><![CDATA[a:3:{s:8:"taxonomy";s:9:"event_cat";s:4:"slug";s:8:"concerts";s:4:"name";s:8:"Concerts";}]]></wp:meta_value>
 		</wp:postmeta>
+							<wp:postmeta>
+		<wp:meta_key><![CDATA[_wxr_import_user_slug]]></wp:meta_key>
+		<wp:meta_value><![CDATA[admin]]></wp:meta_value>
+		</wp:postmeta>
+							<wp:postmeta>
+		<wp:meta_key><![CDATA[_edit_last]]></wp:meta_key>
+		<wp:meta_value><![CDATA[1]]></wp:meta_value>
+		</wp:postmeta>
+							<wp:postmeta>
+		<wp:meta_key><![CDATA[activitypub_status]]></wp:meta_key>
+		<wp:meta_value><![CDATA[federate]]></wp:meta_value>
+		</wp:postmeta>
 							</item>
 					<item>
 		<title><![CDATA[Birthday Party]]></title>
-		<link>https://playground.wordpress.net/scope:happy-vintage-forest/event/birthday-party/</link>
+		<link>https://playground.wordpress.net/scope:energetic-sunny-city/event/birthday-party/</link>
 		<pubDate>Wed, 08 Jan 2025 16:34:03 +0000</pubDate>
 		<dc:creator><![CDATA[admin]]></dc:creator>
 		<guid isPermaLink="false">https://wp.lan/?post_type=event&#038;p=88</guid>
@@ -124,8 +156,8 @@
 		<wp:post_id>88</wp:post_id>
 		<wp:post_date><![CDATA[2025-01-08 17:34:03]]></wp:post_date>
 		<wp:post_date_gmt><![CDATA[2025-01-08 16:34:03]]></wp:post_date_gmt>
-		<wp:post_modified><![CDATA[2025-01-08 17:34:03]]></wp:post_modified>
-		<wp:post_modified_gmt><![CDATA[2025-01-08 16:34:03]]></wp:post_modified_gmt>
+		<wp:post_modified><![CDATA[2025-01-08 18:13:03]]></wp:post_modified>
+		<wp:post_modified_gmt><![CDATA[2025-01-08 18:13:03]]></wp:post_modified_gmt>
 		<wp:comment_status><![CDATA[closed]]></wp:comment_status>
 		<wp:ping_status><![CDATA[closed]]></wp:ping_status>
 		<wp:post_name><![CDATA[birthday-party]]></wp:post_name>
@@ -135,7 +167,8 @@
 		<wp:post_type><![CDATA[event]]></wp:post_type>
 		<wp:post_password><![CDATA[]]></wp:post_password>
 		<wp:is_sticky>0</wp:is_sticky>
-														<wp:postmeta>
+										<category domain="event_cat" nicename="concerts"><![CDATA[Concerts]]></category>
+						<wp:postmeta>
 		<wp:meta_key><![CDATA[event-start-date]]></wp:meta_key>
 		<wp:meta_value><![CDATA[1767895200]]></wp:meta_value>
 		</wp:postmeta>
@@ -175,7 +208,18 @@
 		<wp:meta_key><![CDATA[_wxr_import_term]]></wp:meta_key>
 		<wp:meta_value><![CDATA[a:3:{s:8:"taxonomy";s:9:"event_cat";s:4:"slug";s:5:"party";s:4:"name";s:5:"Party";}]]></wp:meta_value>
 		</wp:postmeta>
+							<wp:postmeta>
+		<wp:meta_key><![CDATA[_wxr_import_user_slug]]></wp:meta_key>
+		<wp:meta_value><![CDATA[admin]]></wp:meta_value>
+		</wp:postmeta>
+							<wp:postmeta>
+		<wp:meta_key><![CDATA[_edit_last]]></wp:meta_key>
+		<wp:meta_value><![CDATA[1]]></wp:meta_value>
+		</wp:postmeta>
+							<wp:postmeta>
+		<wp:meta_key><![CDATA[activitypub_status]]></wp:meta_key>
+		<wp:meta_value><![CDATA[federate]]></wp:meta_value>
+		</wp:postmeta>
 							</item>
 				</channel>
 </rss>
-	
