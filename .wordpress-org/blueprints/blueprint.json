@@ -14,26 +14,10 @@
       }
     },
     {
-      "step": "runPHP",
-      "code": "<?php require '/wordpress/wp-load.php'; $user_id = wp_create_user('editor', 'editorpass', 'editor@localhost.test'); (new WP_User($user_id))->set_role('editor');"
-    },
-    {
-      "step": "login",
-      "username": "admin",
-      "password": "password"
-    },
-    {
-      "step": "updateUserMeta",
-      "meta": {
-          "admin_color": "modern"
-      },
-      "userId": 1
-    },
-    {
       "step": "installPlugin",
       "pluginZipFile": {
         "resource": "wordpress.org/plugins",
-        "slug": "gatherpress"
+        "slug": "very-simple-event-list"
       },
       "options": {
         "activate": true
@@ -43,7 +27,7 @@
       "step": "importWxr",
       "file": {
         "resource": "url",
-        "url": "https://raw.githubusercontent.com/GatherPress/gatherpress-demo-data/main/GatherPress-demo-data-2024.xml"
+        "url": "https://codeberg.org/Event-Federation/wordpress-event-bridge-for-activitypub/raw/branch/blueprint/.wordpress-org/blueprints/fixtures/demo-events-2025.json"
       }
     },
     {
