@@ -5,10 +5,12 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+
 /**
  * Sample test case.
  */
-class Test_Events_Manager extends WP_UnitTestCase {
+class Test_Events_Manager extends \WP_UnitTestCase {
 	/**
 	 * Override the setup function, so that tests don't run if the Events Calendar is not active.
 	 */
@@ -44,7 +46,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$this->assertContains( EM_POST_TYPE_EVENT, get_option( 'activitypub_support_post_types' ) );
 
 		// Insert a new Event.
-		$wp_post_id = wp_insert_post(
+		$wp_post_id = \wp_insert_post(
 			array(
 				'post_title'  => 'Events Manager Test event',
 				'post_status' => 'publish',
@@ -55,13 +57,13 @@ class Test_Events_Manager extends WP_UnitTestCase {
 			)
 		);
 
-		$wp_object = get_post( $wp_post_id );
+		$wp_object = \get_post( $wp_post_id );
 
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Events_Manager::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Events_Manager::class, $transformer );
 	}
 
 	/**
@@ -69,7 +71,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 	 */
 	public function test_transform_of_minimal_event() {
 		// Create mockup event.
-		$event                   = new EM_Event();
+		$event                   = new \EM_Event();
 		$event->event_name       = 'Events Manager Test event';
 		$event->post_content     = 'Event description';
 		$event->event_start_date = gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) );
@@ -100,7 +102,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 	 */
 	public function test_transform_of__full_event_with_location() {
 		// Create a mockup location.
-		$location                    = new EM_Location();
+		$location                    = new \EM_Location();
 		$location->location_name     = 'Test location';
 		$location->location_address  = 'Test Address';
 		$location->location_town     = 'Test Town';
@@ -111,7 +113,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$this->assertTrue( $location->save() );
 
 		// Create mockup event.
-		$event                   = new EM_Event();
+		$event                   = new \EM_Event();
 		$event->event_name       = 'Events Manager Test event';
 		$event->post_content     = 'Event description';
 		$event->location_id      = $location->location_id;
@@ -149,21 +151,21 @@ class Test_Events_Manager extends WP_UnitTestCase {
 	 */
 	public function test_transform_of_event_with_name_only_location() {
 		// Create a mockup location.
-		$location                = new EM_Location();
+		$location                = new \EM_Location();
 		$location->location_name = 'Name only location';
 		$this->assertTrue( $location->save() );
 
 		// Create mockup event.
-		$event                   = new EM_Event();
+		$event                   = new \EM_Event();
 		$event->event_name       = 'Events Manager Test event';
 		$event->post_content     = 'Event description';
 		$event->location_id      = $location->location_id;
-		$event->event_start_date = gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) );
-		$event->event_end_date   = gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) );
+		$event->event_start_date = \gmdate( 'Y-m-d', \strtotime( '+10 days 15:00:00' ) );
+		$event->event_end_date   = \gmdate( 'Y-m-d', \strtotime( '+10 days 16:00:00' ) );
 		$event->event_start_time = '15:00:00';
 		$event->event_end_time   = '16:00:00';
-		$event->start            = strtotime( $event->event_start_date . ' ' . $event->event_start_time );
-		$event->end              = strtotime( $event->event_end_date . ' ' . $event->event_end_time );
+		$event->start            = \strtotime( $event->event_start_date . ' ' . $event->event_start_time );
+		$event->end              = \strtotime( $event->event_end_date . ' ' . $event->event_end_time );
 		$event->force_status     = 'publish';
 		$event->event_rsvp       = false;
 		$this->assertTrue( $event->save() );
@@ -175,7 +177,7 @@ class Test_Events_Manager extends WP_UnitTestCase {
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Events Manager Test event', $event_array['name'] );
 		$this->assertEquals( 'Event description', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
+		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
 		$this->assertArrayHasKey( 'location', $event_array );

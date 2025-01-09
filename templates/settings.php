@@ -6,6 +6,7 @@
  *
  * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
+ * @license AGPL-3.0-or-later
  *
  * @param array  $args An array of arguments for the settings page.
  */
@@ -22,6 +23,9 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 );
 
 use Activitypub\Activity\Extended_Object\Event;
+use Event_Bridge_For_ActivityPub\Setup;
+
+$activitypub_plugin_is_active = Setup::get_instance()->is_activitypub_plugin_active();
 
 if ( ! isset( $args ) || ! array_key_exists( 'event_terms', $args ) ) {
 	return;
@@ -30,6 +34,15 @@ if ( ! isset( $args ) || ! array_key_exists( 'event_terms', $args ) ) {
 if ( ! current_user_can( 'manage_options' ) ) {
 	return;
 }
+\get_option( 'event_bridge_for_activitypub_event_sources_active', false );
+if ( ! isset( $args ) || ! array_key_exists( 'supports_event_sources', $args ) ) {
+	return;
+}
+
+$event_plugins_supporting_event_sources = $args['supports_event_sources'];
+
+$event_sources_active   = \get_option( 'event_bridge_for_activitypub_event_sources_active', false );
+$cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_source_cache_retention', DAY_IN_SECONDS );
 
 $event_terms = $args['event_terms'];
 
@@ -89,6 +102,124 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 			</div>
 		</div>
 
+		<?php if ( $activitypub_plugin_is_active ) { ?>
+		<div class="box">
+			<h2><?php \esc_html_e( 'Event Sources', 'event-bridge-for-activitypub' ); ?></h2>
+			<?php
+			if ( ! \Activitypub\is_user_type_disabled( 'blog' ) && count( $event_plugins_supporting_event_sources ) ) {
+				?>
+				<table class="form-table">
+				<tbody>
+					<tr>
+						<th scope="row">
+							<label for="event_bridge_for_activitypub_event_sources_active"><?php \esc_html_e( 'Enable External Event Sources', 'event-bridge-for-activitypub' ); ?></label>
+						</th>
+						<td>
+							<input
+								type="checkbox"
+								name="event_bridge_for_activitypub_event_sources_active"
+								id="event_bridge_for_activitypub_event_sources_active"
+								aria-describedby="event-sources-description"
+								value="1"
+								<?php echo \checked( $event_sources_active ); ?>
+							>
+							<p id="event-sources-description"><?php esc_html_e( 'Activate this feature to allow your WordPress site to fetch events from external sources via ActivityPub. Once enabled, you can add any ActivityPub account as a source of events. These events will be cached on your site and seamlessly integrated into your existing event calendar, creating a unified view of events from both internal and external sources.', 'event-bridge-for-activitypub' ); ?></p>
+						</td>
+					</tr>
+				<?php
+				if ( $event_sources_active ) {
+					?>
+					<tr>
+						<th scope="row">
+							<label for="event_bridge_for_activitypub_integration_used_for_event_sources_feature"><?php \esc_html_e( 'Event Plugin', 'event-bridge-for-activitypub' ); ?></label>
+						</th>
+						<td>
+							<select
+								name="event_bridge_for_activitypub_integration_used_for_event_sources_feature"
+								id="event_bridge_for_activitypub_integration_used_for_event_sources_feature"
+								value="gatherpress"
+								aria-describedby="event-sources-used-plugin-description"
+							>
+							<?php
+							foreach ( $event_plugins_supporting_event_sources as $event_plugin_class_name => $event_plugin_name ) {
+								echo '<option value="' . esc_attr( $event_plugin_class_name ) . '" ' . selected( $event_plugin_class_name, Setup::get_event_plugin_integration_used_for_event_sources_feature(), true ) . '>' . esc_attr( $event_plugin_name ) . '</option>';
+							}
+							?>
+							</select>
+							<p id="event-sources-used-plugin-description"><?php esc_html_e( 'In case you have multiple event plugins installed you might choose which event plugin is utilized.', 'event-bridge-for-activitypub' ); ?></p>
+						</td>
+					<tr>
+					<tr>
+						<th scope="row">
+							<label for="event_bridge_for_activitypub_event_source_cache"><?php \esc_html_e( 'Retention Period for External Events', 'event-bridge-for-activitypub' ); ?></label>
+						</th>
+						<td>
+							<select
+								name="event_bridge_for_activitypub_event_source_cache_retention"
+								id="event_bridge_for_activitypub_event_source_cache_retention"
+								value="0"
+								aria-describedby="event_bridge_for_activitypub_event-sources-cache-clear-time-frame"
+							>
+							<?php
+							$choices = array(
+								0                => __( 'Immediately', 'event-bridge-for-activitypub' ),
+								DAY_IN_SECONDS   => __( 'One Day', 'event-bridge-for-activitypub' ),
+								WEEK_IN_SECONDS  => __( 'One Week', 'event-bridge-for-activitypub' ),
+								MONTH_IN_SECONDS => __( 'One Month', 'event-bridge-for-activitypub' ),
+								YEAR_IN_SECONDS  => __( 'One Year', 'event-bridge-for-activitypub' ),
+							);
+							foreach ( $choices as $time => $string ) {
+								echo '<option value="' . esc_attr( $time ) . '" ' . selected( $cache_retention_period, $time, true ) . '>' . esc_attr( $string ) . '</option>';
+							}
+							?>
+							</select>
+							<p id="event_bridge_for_activitypub_event-sources-cache-clear-time-frame"><?php esc_html_e( 'External events from your event sources will be automatically removed from your site after the selected time period has passed since the event ended. Choose a time frame that works best for your needs.', 'event-bridge-for-activitypub' ); ?></p>
+						</td>
+					<tr>
+					<?php
+				}
+				?>
+				<tbody>
+				</table>
+				<?php
+			} elseif ( ! \Activitypub\is_user_type_disabled( 'blog' ) ) {
+				?>
+				<p><?php esc_html_e( 'You do not have an Event Plugin installed that supports this feature', 'event-bridge-for-activitypub' ); ?></p>
+				<p><?php esc_html_e( 'The following Event Plugins are supported:', 'event-bridge-for-activitypub' ); ?></p>
+				<?php
+				$plugins_supporting_event_sources = \Event_Bridge_For_ActivityPub\Setup::detect_event_plugins_supporting_event_sources();
+				echo '<ul class="event_bridge_for_activitypub-list">';
+				foreach ( $plugins_supporting_event_sources as $event_plugin ) {
+					echo '<li>' . esc_attr( $event_plugin->get_plugin_name() ) . '</li>';
+				}
+				echo '</ul>';
+				return;
+			} else {
+				$activitypub_plugin_data = get_plugin_data( ACTIVITYPUB_PLUGIN_FILE );
+
+				$notice = sprintf(
+					/* translators: 1: The name of the ActivityPub plugin. */
+					_x(
+						'In order to use this feature your have to enable the Blog-Actor in the the <a href="%1$s">%2$s settings</a>.',
+						'admin notice',
+						'event-bridge-for-activitypub'
+					),
+					admin_url( 'options-general.php?page=activitypub&tab=settings' ),
+					esc_html( $activitypub_plugin_data['Name'] )
+				);
+
+				$allowed_html = array(
+					'a' => array(
+						'href'  => true,
+						'title' => true,
+					),
+				);
+				echo '<div class="notice-warning"><p>' . \wp_kses( $notice, $allowed_html ) . '</p></div>';
+			}
+			?>
+		</div>
+		<?php } ?>
+
 		<div class="box">
 			<h2> <?php esc_html_e( 'ActivityPub Event Category', 'event-bridge-for-activitypub' ); ?> </h2>
 			<p> <?php esc_html_e( 'To help visitors find events more easily, the community created a set of basic event categories. Please select the category that best matches the majority of the events you organize.', 'event-bridge-for-activitypub' ); ?> </p>
@@ -144,7 +275,7 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 			<?php endif; ?>
 		</div>
 		<!-- This disables the setup wizard. -->
-		<div class="hidden">
+		<div class="hidden" aria-hidden="true">
 			<input type="checkbox" id="event_bridge_for_activitypub_initially_activated" name="event_bridge_for_activitypub_initially_activated"/>
 		</div>
 		<?php \submit_button(); ?>

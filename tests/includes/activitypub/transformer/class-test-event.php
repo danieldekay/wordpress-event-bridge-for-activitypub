@@ -6,14 +6,14 @@
  * @license AGPL-3.0-or-later
  */
 
-use Activitypub\Shortcodes;
+namespace Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer;
+
+use Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer\Test_The_Events_Calendar;
 
 /**
- * Test class for Activitypub Shortcodes.
- *
- * @coversDefaultClass \Activitypub\Shortcodes
+ * Test class for Shortcodes.
  */
-class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
+class Test_Event extends \WP_UnitTestCase {
 	/**
 	 * Override the setup function, so that tests don't run if the Events Calendar is not active.
 	 */
@@ -36,31 +36,36 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 	 * Test the shortcode for rendering the events start time.
 	 */
 	public function test_start_time() {
+		$event = Test_The_Events_Calendar::MOCKUP_EVENTS['minimal_event'];
+
 		// Create a The Events Calendar Event without content.
 		$wp_object = tribe_events()
-			->set_args( Test_The_Events_Calendar::MOCKUP_EVENTS['minimal_event'] )
+			->set_args( $event )
 			->create();
 
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event ) {
 			return;
 		}
+
+		$datetime_format = \get_option( 'date_format' ) . ' ' . \get_option( 'time_format' );
+		$time_string     = \wp_date( $datetime_format, \strtotime( $event['start_date'] ) );
 
 		$transformer->register_shortcodes();
 
 		$summary = '[ap_start_time]';
-		$summary = do_shortcode( $summary );
-		$this->assertEquals( '🗓️ Start: December 1, 2024 3:00 pm', $summary );
+		$summary = \do_shortcode( $summary );
+		$this->assertEquals( "🗓️ Start: {$time_string}", $summary );
 
 		$summary = '[ap_start_time icon="false"]';
-		$summary = do_shortcode( $summary );
-		$this->assertEquals( 'Start: December 1, 2024 3:00 pm', $summary );
+		$summary = \do_shortcode( $summary );
+		$this->assertEquals( "Start: {$time_string}", $summary );
 
 		$summary = '[ap_start_time icon="false" label="false"]';
-		$summary = do_shortcode( $summary );
-		$this->assertEquals( 'December 1, 2024 3:00 pm', $summary );
+		$summary = \do_shortcode( $summary );
+		$this->assertEquals( $time_string, $summary );
 
 		$transformer->unregister_shortcodes();
 	}
@@ -69,31 +74,36 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 	 * Test the shortcode for rendering the events end time.
 	 */
 	public function test_end_time() {
+		$event = Test_The_Events_Calendar::MOCKUP_EVENTS['minimal_event'];
+
 		// Create a The Events Calendar Event without content.
 		$wp_object = tribe_events()
-			->set_args( Test_The_Events_Calendar::MOCKUP_EVENTS['minimal_event'] )
+			->set_args( $event )
 			->create();
 
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event ) {
 			return;
 		}
+
+		$datetime_format = \get_option( 'date_format' ) . ' ' . \get_option( 'time_format' );
+		$time_string     = \wp_date( $datetime_format, \strtotime( $event['start_date'] ) + $event['duration'] );
 
 		$transformer->register_shortcodes();
 
 		$summary = '[ap_end_time]';
-		$summary = do_shortcode( $summary );
-		$this->assertEquals( '⏳ End: December 1, 2024 4:00 pm', $summary );
+		$summary = \do_shortcode( $summary );
+		$this->assertEquals( "⏳ End: {$time_string}", $summary );
 
 		$summary = '[ap_end_time icon="false"]';
-		$summary = do_shortcode( $summary );
-		$this->assertEquals( 'End: December 1, 2024 4:00 pm', $summary );
+		$summary = \do_shortcode( $summary );
+		$this->assertEquals( "End: {$time_string}", $summary );
 
 		$summary = '[ap_end_time icon="false" label="false"]';
-		$summary = do_shortcode( $summary );
-		$this->assertEquals( 'December 1, 2024 4:00 pm', $summary );
+		$summary = \do_shortcode( $summary );
+		$this->assertEquals( $time_string, $summary );
 
 		$transformer->unregister_shortcodes();
 	}
@@ -110,7 +120,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event ) {
 			return;
 		}
 
@@ -138,7 +148,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event ) {
 			return;
 		}
 
@@ -174,7 +184,7 @@ class Test_Activitypub_Event_Bridge_Shortcodes extends WP_UnitTestCase {
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
-		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event ) {
+		if ( ! $transformer instanceof \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event ) {
 			return;
 		}
 

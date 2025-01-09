@@ -5,10 +5,14 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+
+use DateTime;
+
 /**
  * Sample test case.
  */
-class Test_Event_Organiser extends WP_UnitTestCase {
+class Test_Event_Organiser extends \WP_UnitTestCase {
 	/**
 	 * Override the setup function, so that tests don't run if the Events Calendar is not active.
 	 */
@@ -24,7 +28,7 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
 		// Run the install script just in time which makes sure the custom tables exist and more.
-		eventorganiser_install();
+		\eventorganiser_install();
 
 		// Delete all posts afterwards.
 		_delete_all_posts();
@@ -44,8 +48,8 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		$this->assertContains( 'event', get_option( 'activitypub_support_post_types' ) );
 
 		$event_data = array(
-			'start'    => new DateTime( '+10 days 15:00:00', eo_get_blog_timezone() ),
-			'end'      => new DateTime( '+10 days 16:00:00', eo_get_blog_timezone() ),
+			'start'    => new DateTime( '+10 days 15:00:00', \eo_get_blog_timezone() ),
+			'end'      => new DateTime( '+10 days 16:00:00', \eo_get_blog_timezone() ),
 			'all_day'  => 0,
 			'schedule' => 'once',
 		);
@@ -56,13 +60,13 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 			'post_status'  => 'publish',
 		);
 
-		$post_id = eo_insert_event( $post_data, $event_data );
+		$post_id = \eo_insert_event( $post_data, $event_data );
 
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( get_post( $post_id ) );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event_Organiser::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event_Organiser::class, $transformer );
 	}
 
 	/**
@@ -83,7 +87,7 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 			'post_status'  => 'publish',
 		);
 
-		$post_id = eo_insert_event( $post_data, $event_data );
+		$post_id = \eo_insert_event( $post_data, $event_data );
 
 		// Call the transformer Factory.
 		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $post_id ) )->to_object()->to_array();
@@ -91,9 +95,9 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Unit Test Event', $event_array['name'] );
-		$this->assertEquals( 'Unit Test description.', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
+		$this->assertEquals( 'Unit Test description.', \wp_strip_all_tags( $event_array['content'] ) );
+		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
+		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertArrayNotHasKey( 'location', $event_array );
 	}
@@ -114,7 +118,7 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 			'longitude'   => 15.421371,
 		);
 		$venue_name = 'Fediverse Venue';
-		$venue      = eo_insert_venue( $venue_name, $venue_args );
+		$venue      = \eo_insert_venue( $venue_name, $venue_args );
 
 		// Mock Event.
 		$event_data = array(
@@ -128,8 +132,8 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 			'post_content' => 'Unit Test description.',
 			'post_status'  => 'publish',
 		);
-		$post_id    = eo_insert_event( $post_data, $event_data );
-		wp_set_object_terms( $post_id, $venue['term_id'], 'event-venue' );
+		$post_id    = \eo_insert_event( $post_data, $event_data );
+		\wp_set_object_terms( $post_id, $venue['term_id'], 'event-venue' );
 
 		// Call the transformer Factory.
 		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $post_id ) )->to_object()->to_array();
@@ -137,12 +141,12 @@ class Test_Event_Organiser extends WP_UnitTestCase {
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Unit Test Event', $event_array['name'] );
-		$this->assertEquals( 'Unit Test description.', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
+		$this->assertEquals( 'Unit Test description.', \wp_strip_all_tags( $event_array['content'] ) );
+		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
+		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertArrayHasKey( 'location', $event_array );
-		$this->assertEquals( $venue_args['description'], wp_strip_all_tags( $event_array['location']['content'] ) );
+		$this->assertEquals( $venue_args['description'], \wp_strip_all_tags( $event_array['location']['content'] ) );
 		$this->assertEquals( $venue_args['address'], $event_array['location']['address']['streetAddress'] );
 		$this->assertEquals( $venue_args['city'], $event_array['location']['address']['addressLocality'] );
 		$this->assertEquals( $venue_args['state'], $event_array['location']['address']['addressRegion'] );

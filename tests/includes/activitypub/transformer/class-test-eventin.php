@@ -5,10 +5,12 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+
 /**
  * Test cases for WP Event Solution.
  */
-class Test_Eventin extends WP_UnitTestCase {
+class Test_Eventin extends \WP_UnitTestCase {
 	/**
 	 * Basic Mock-up event.
 	 */
@@ -54,7 +56,7 @@ class Test_Eventin extends WP_UnitTestCase {
 		$this->assertEquals( 1, count( $active_event_plugins ) );
 
 		// Enable ActivityPub support for the event plugin.
-		$this->assertContains( 'etn', get_option( 'activitypub_support_post_types' ) );
+		$this->assertContains( 'etn', \get_option( 'activitypub_support_post_types' ) );
 
 		// Create a Eventin Event without content.
 		$event = new \Etn\Core\Event\Event_Model();
@@ -64,7 +66,7 @@ class Test_Eventin extends WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( get_post( $event->id ) );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Eventin::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Eventin::class, $transformer );
 	}
 
 	/**
@@ -159,12 +161,12 @@ class Test_Eventin extends WP_UnitTestCase {
 
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Eventin Test Event Title', $event_array['name'] );
-		$this->assertEquals( 'Eventin Test Event Description', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d\TH:i:s\Z', strtotime( '+10 days 15:00:00' ) ), $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d\TH:i:s\Z', strtotime( '+10 days 16:00:00' ) ), $event_array['endTime'] );
+		$this->assertEquals( 'Eventin Test Event Description', \wp_strip_all_tags( $event_array['content'] ) );
+		$this->assertEquals( \gmdate( 'Y-m-d\TH:i:s\Z', \strtotime( '+10 days 15:00:00' ) ), $event_array['startTime'] );
+		$this->assertEquals( \gmdate( 'Y-m-d\TH:i:s\Z', \strtotime( '+10 days 16:00:00' ) ), $event_array['endTime'] );
 		$this->assertEquals( 'Europe/Vienna', $event_array['timezone'] );
-		$this->assertEquals( comments_open( $event->id ), $event_array['commentsEnabled'] );
-		$this->assertEquals( comments_open( $event->id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
+		$this->assertEquals( \comments_open( $event->id ), $event_array['commentsEnabled'] );
+		$this->assertEquals( \comments_open( $event->id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( 'MEETING', $event_array['category'] );

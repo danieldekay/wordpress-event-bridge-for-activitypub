@@ -76,7 +76,7 @@ jobs:
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 ${{ matrix.wordpress-version }} false true true true
 
       - name: Run General Tests
-        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=event_bridge_for_activitypub
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 

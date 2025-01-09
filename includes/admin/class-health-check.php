@@ -2,10 +2,13 @@
 /**
  * Health_Check class.
  *
- * @package Activitypub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  */
 
 namespace Event_Bridge_For_ActivityPub\Admin;
+
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Transformer\Factory as Transformer_Factory;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
@@ -86,6 +89,10 @@ class Health_Check {
 	 * @return bool True if the check passed.
 	 */
 	public static function test_if_event_transformer_is_used( $event_plugin ) {
+		if ( ! Setup::get_instance()->is_activitypub_plugin_active() ) {
+			return false;
+		}
+
 		// Get a (random) event post.
 		$event_posts = self::get_most_recent_event_posts( $event_plugin->get_post_type(), 1 );
 
@@ -97,7 +104,7 @@ class Health_Check {
 		// Call the transformer Factory.
 		$transformer = Transformer_Factory::get_transformer( $event_posts[0] );
 		// Check that we got the right transformer.
-		$desired_transformer_class = $event_plugin::get_activitypub_event_transformer_class();
+		$desired_transformer_class = $event_plugin::get_activitypub_event_transformer( $event_posts[0] );
 		if ( $transformer instanceof $desired_transformer_class ) {
 			return true;
 		}
@@ -113,6 +120,10 @@ class Health_Check {
 	 * @return WP_Post[]|false         Array of event posts, or false if none are found.
 	 */
 	public static function get_most_recent_event_posts( $event_post_type = null, $number_of_posts = 5 ) {
+		if ( ! Setup::get_instance()->is_activitypub_plugin_active() ) {
+			return false;
+		}
+
 		if ( ! $event_post_type ) {
 			$active_event_plugins = Setup::get_instance()->get_active_event_plugins();
 			$active_event_plugin  = reset( $active_event_plugins );

@@ -5,10 +5,12 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+
 /**
  * Sample test case.
  */
-class Test_Modern_Events_Calendar_Lite extends WP_UnitTestCase {
+class Test_Modern_Events_Calendar_Lite extends \WP_UnitTestCase {
 	/**
 	 * The MEC main instance.
 	 *
@@ -47,7 +49,7 @@ class Test_Modern_Events_Calendar_Lite extends WP_UnitTestCase {
 		$this->assertEquals( 1, count( $active_event_plugins ) );
 
 		// Enable ActivityPub support for the event plugin.
-		$this->assertContains( 'mec-events', get_option( 'activitypub_support_post_types' ) );
+		$this->assertContains( 'mec-events', \get_option( 'activitypub_support_post_types' ) );
 
 		// Insert a new Event.
 		$event = array(
@@ -68,35 +70,35 @@ class Test_Modern_Events_Calendar_Lite extends WP_UnitTestCase {
 
 		$post_id = $this->mec_main->save_event( $event );
 
-		$wp_object = get_post( $post_id );
+		$wp_object = \get_post( $post_id );
 
 		// Call the transformer Factory.
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\Activitypub\Transformer\Modern_Events_Calendar_Lite::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Modern_Events_Calendar_Lite::class, $transformer );
 	}
 
 	/**
 	 * Test that the transformation of minimal event.
 	 */
 	public function test_modern_events_calendar_lite_minimal_event() {
-		$start_timestamp = strtotime( '+10 days 15:00:00' );
-		$end_timestamp   = strtotime( '+10 days 16:00:00' );
+		$start_timestamp = \strtotime( '+10 days 15:00:00' );
+		$end_timestamp   = \strtotime( '+10 days 16:00:00' );
 
 		// Insert a new Event.
 		$event = array(
 			'title'              => 'MEC Test Event',
 			'status'             => 'publish',
 			'content'            => 'This is the content of the MEC!',
-			'start_time_hour'    => gmdate( 'h', $start_timestamp ),
-			'start_time_minutes' => gmdate( 'i', $start_timestamp ),
-			'start_time_ampm'    => gmdate( 'A', $start_timestamp ),
-			'start'              => gmdate( 'Y-m-d', $start_timestamp ),
-			'end'                => gmdate( 'Y-m-d', $end_timestamp ),
-			'end_time_hour'      => gmdate( 'h', $end_timestamp ),
-			'end_time_minutes'   => gmdate( 'i', $end_timestamp ),
-			'end_time_ampm'      => gmdate( 'A', $end_timestamp ),
+			'start_time_hour'    => \gmdate( 'h', $start_timestamp ),
+			'start_time_minutes' => \gmdate( 'i', $start_timestamp ),
+			'start_time_ampm'    => \gmdate( 'A', $start_timestamp ),
+			'start'              => \gmdate( 'Y-m-d', $start_timestamp ),
+			'end'                => \gmdate( 'Y-m-d', $end_timestamp ),
+			'end_time_hour'      => \gmdate( 'h', $end_timestamp ),
+			'end_time_minutes'   => \gmdate( 'i', $end_timestamp ),
+			'end_time_ampm'      => \gmdate( 'A', $end_timestamp ),
 			'repeat_status'      => 0,
 			'repeat_type'        => 'daily',
 			'interval'           => 1,
@@ -104,16 +106,16 @@ class Test_Modern_Events_Calendar_Lite extends WP_UnitTestCase {
 
 		$post_id = $this->mec_main->save_event( $event );
 
-		$wp_object = get_post( $post_id );
+		$wp_object = \get_post( $post_id );
 
 		// Call the transformer to make the ActivityStreams representation of the event.
 		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
 
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'MEC Test Event', $event_array['name'] );
-		$this->assertEquals( 'This is the content of the MEC!', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
+		$this->assertEquals( 'This is the content of the MEC!', \wp_strip_all_tags( $event_array['content'] ) );
+		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
+		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
 		$this->assertTrue( $event_array['commentsEnabled'] );
 		$this->assertEquals( 'allow_all', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
@@ -126,8 +128,8 @@ class Test_Modern_Events_Calendar_Lite extends WP_UnitTestCase {
 	 * Test that the transformation of minimal event.
 	 */
 	public function test_modern_events_calendar_lite_event_with_location() {
-		$start_timestamp = strtotime( '+10 days 15:00:00' );
-		$end_timestamp   = strtotime( '+10 days 16:00:00' );
+		$start_timestamp = \strtotime( '+10 days 15:00:00' );
+		$end_timestamp   = \strtotime( '+10 days 16:00:00' );
 
 		// Add new location.
 		$location = array(
@@ -145,14 +147,14 @@ class Test_Modern_Events_Calendar_Lite extends WP_UnitTestCase {
 			'title'              => 'MEC Test Event',
 			'status'             => 'publish',
 			'content'            => 'This is the content of the MEC!',
-			'start_time_hour'    => gmdate( 'h', $start_timestamp ),
-			'start_time_minutes' => gmdate( 'i', $start_timestamp ),
-			'start_time_ampm'    => gmdate( 'A', $start_timestamp ),
-			'start'              => gmdate( 'Y-m-d', $start_timestamp ),
-			'end'                => gmdate( 'Y-m-d', $end_timestamp ),
-			'end_time_hour'      => gmdate( 'h', $end_timestamp ),
-			'end_time_minutes'   => gmdate( 'i', $end_timestamp ),
-			'end_time_ampm'      => gmdate( 'A', $end_timestamp ),
+			'start_time_hour'    => \gmdate( 'h', $start_timestamp ),
+			'start_time_minutes' => \gmdate( 'i', $start_timestamp ),
+			'start_time_ampm'    => \gmdate( 'A', $start_timestamp ),
+			'start'              => \gmdate( 'Y-m-d', $start_timestamp ),
+			'end'                => \gmdate( 'Y-m-d', $end_timestamp ),
+			'end_time_hour'      => \gmdate( 'h', $end_timestamp ),
+			'end_time_minutes'   => \gmdate( 'i', $end_timestamp ),
+			'end_time_ampm'      => \gmdate( 'A', $end_timestamp ),
 			'repeat_status'      => 0,
 			'repeat_type'        => 'daily',
 			'interval'           => 1,
@@ -161,20 +163,20 @@ class Test_Modern_Events_Calendar_Lite extends WP_UnitTestCase {
 
 		$post_id = $this->mec_main->save_event( $event );
 
-		$wp_object = get_post( $post_id );
+		$wp_object = \get_post( $post_id );
 
 		// Call the transformer to make the ActivityStreams representation of the event.
 		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
 
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'MEC Test Event', $event_array['name'] );
-		$this->assertEquals( 'This is the content of the MEC!', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
+		$this->assertEquals( 'This is the content of the MEC!', \wp_strip_all_tags( $event_array['content'] ) );
+		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
+		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
 		$this->assertTrue( $event_array['commentsEnabled'] );
 		$this->assertEquals( 'allow_all', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
-		$this->assertEquals( get_permalink( $wp_object ), $event_array['externalParticipationUrl'] );
+		$this->assertEquals( \get_permalink( $wp_object ), $event_array['externalParticipationUrl'] );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
 		$this->assertEquals( $location['address'], $event_array['location']['address'] );

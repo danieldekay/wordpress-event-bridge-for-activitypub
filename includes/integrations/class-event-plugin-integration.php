@@ -1,28 +1,31 @@
 <?php
 /**
- * Interface for defining supported Event Plugins.
+ * Abstract base class for a basic integration of a WordPress event plugin.
  *
- * Basic information that each supported event needs for this plugin to work.
+ * Basic information and methods that each supported event needs for this plugin to work.
  *
  * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
+ * @license AGPL-3.0-or-later
  */
 
 namespace Event_Bridge_For_ActivityPub\Integrations;
 
-use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transformer;
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event as ActivityPub_Event_Transformer;
+
+require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'includes/integrations/interface-feature-event-sources.php';
+
 /**
- * Interface for a supported event plugin.
+ * Abstract base class for a basic integration of a WordPress event plugin.
  *
- * This interface defines which information is necessary for a supported event plugin.
+ * Basic information and methods that each supported event needs for this plugin to work.
  *
  * @since 1.0.0
  */
-abstract class Event_Plugin {
+abstract class Event_Plugin_Integration {
 	/**
 	 * Returns the plugin file relative to the plugins dir.
 	 *
@@ -45,6 +48,23 @@ abstract class Event_Plugin {
 	abstract public static function get_event_category_taxonomy(): string;
 
 	/**
+	 * Returns the Activitypub transformer for the event plugins event post type.
+	 *
+	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @return ActivityPub_Event_Transformer
+	 */
+	abstract public static function get_activitypub_event_transformer( $post ): ActivityPub_Event_Transformer;
+
+	/**
+	 * In case an event plugin used a custom post type for the locations/venues return it here.
+	 *
+	 * @return ?string
+	 */
+	public static function get_location_post_type() {
+		return null;
+	}
+
+	/**
 	 * Returns the IDs of the admin pages of the plugin.
 	 *
 	 * @return array The IDs of one or several admin/settings pages.
@@ -56,7 +76,7 @@ abstract class Event_Plugin {
 	/**
 	 * Get the plugins name from the main plugin-file's top-level-file-comment.
 	 */
-	final public static function get_plugin_name(): string {
+	public static function get_plugin_name(): string {
 		$all_plugins = array_merge( get_plugins(), get_mu_plugins() );
 		if ( isset( $all_plugins[ static::get_relative_plugin_file() ]['Name'] ) ) {
 			return $all_plugins[ static::get_relative_plugin_file() ]['Name'];
@@ -77,12 +97,5 @@ abstract class Event_Plugin {
 		$is_event_plugins_settings_page = in_array( $screen->id, static::get_settings_pages(), true );
 
 		return $is_event_plugins_edit_page || $is_event_plugins_settings_page;
-	}
-
-	/**
-	 * Returns the Activitypub transformer for the event plugins event post type.
-	 */
-	public static function get_activitypub_event_transformer_class(): string {
-		return str_replace( 'Integrations', 'Activitypub\Transformer', static::class );
 	}
 }

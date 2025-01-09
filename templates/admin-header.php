@@ -3,6 +3,8 @@
  * Template for the header and navigation of the admin pages.
  *
  * @package Event_Bridge_For_ActivityPub
+ * @since   1.0.0
+ * @license AGPL-3.0-or-later
  */
 
 // Exit if accessed directly.
@@ -12,8 +14,9 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 $args = wp_parse_args(
 	$args,
 	array(
-		'welcome'  => '',
-		'settings' => '',
+		'welcome'       => '',
+		'settings'      => '',
+		'event-sources' => '',
 	)
 );
 ?>
@@ -30,6 +33,10 @@ $args = wp_parse_args(
 
 		<a href="<?php echo \esc_url( admin_url( 'options-general.php?page=event-bridge-for-activitypub&tab=settings' ) ); ?>" class="event-bridge-for-activitypub-settings-tab <?php echo \esc_attr( $args['settings'] ); ?>">
 			<?php \esc_html_e( 'Settings', 'event-bridge-for-activitypub' ); ?>
+		</a>
+
+		<a href="<?php echo \esc_url( admin_url( 'options-general.php?page=event-bridge-for-activitypub&tab=event-sources' ) ); ?>" class="event-bridge-for-activitypub-settings-tab <?php echo \esc_attr( $args['event-sources'] ); ?>">
+			<?php \esc_html_e( 'Event Sources', 'event-bridge-for-activitypub' ); ?>
 		</a>
 	</nav>
 </div>
