@@ -46,7 +46,7 @@ class Join {
 	public static function handle_follow( $activity ) {
 		$actor = Actors::get_by_resource( $activity['actor'] );
 
-		if ( ! $actor || is_wp_error( $actor ) ) {
+		if ( ! $actor || \is_wp_error( $actor ) ) {
 			// If we can not find a user, we can not proceed the join process.
 			return;
 		}
@@ -63,7 +63,7 @@ class Join {
 			return;
 		}
 
-		$post_id = url_to_postid( $object_id );
+		$post_id = \url_to_postid( $object_id );
 
 		if ( ! $post_id ) {
 			// No post is found for this URL/ID.
@@ -82,7 +82,7 @@ class Join {
 
 		do_action(
 			'event_bridge_for_activitypub_ignore_join',
-			$transformer->get_actor_object()->get_id(),
+			Actors::APPLICATION_USER_ID,
 			$activity,
 		);
 	}
