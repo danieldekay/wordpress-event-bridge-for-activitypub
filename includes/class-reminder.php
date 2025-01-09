@@ -197,7 +197,7 @@ class Reminder {
 	 * Send an Activity to all followers.
 	 *
 	 * @param Activity $activity  The ActivityPub Activity.
-	 * @param int      $user_id   The user ID.
+	 * @param int      $user_id   The user ID.	xx
 	 */
 	public static function send_activity_to_followers( $activity, $user_id ) {
 		$inboxes = Activity_Dispatcher::add_inboxes_of_follower( array(), $user_id );
