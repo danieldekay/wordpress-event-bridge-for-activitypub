@@ -12,6 +12,7 @@ namespace Event_Bridge_For_ActivityPub;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Activitypub\Activitypub;
 use Activitypub\Model\Blog;
 use DateTime;
 use DateTimeZone;
@@ -230,7 +231,7 @@ class Event_Sources {
 			exit;
 		}
 
-		return $template;
+		return Activitypub::render_activitypub_template( $template );
 	}
 
 	/**
