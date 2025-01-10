@@ -67,8 +67,8 @@ class Event_Sources {
 		\add_action( 'init', array( self::class, 'register_post_meta' ) );
 
 		// Register filters that prevent cached remote events from being federated again.
-		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'is_cached_external_post' ), 10, 2 );
-		\add_filter( 'template_include', array( self::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
+		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'is_cached_remote_post' ), 10, 2 );
+		\add_filter( 'template_redirect', array( self::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
 
 		// Register daily schedule to cleanup cached remote events that have ended.
 		\add_action( 'event_bridge_for_activitypub_event_sources_clear_cache', array( self::class, 'clear_cache' ) );
@@ -184,11 +184,11 @@ class Event_Sources {
 	 * @param WP_Post $post The WordPress post object.
 	 * @return bool True if the post can be federated via ActivityPub.
 	 */
-	public static function is_cached_external_post( $disabled, $post = null ): bool {
+	public static function is_cached_remote_post( $disabled, $post = null ): bool {
 		if ( $disabled || ! $post ) {
 			return $disabled;
 		}
-		return ! self::is_cached_external_event_post( $post );
+		return self::is_cached_remote_event_post( $post );
 	}
 
 	/**
@@ -197,7 +197,7 @@ class Event_Sources {
 	 * @param WP_Post $post The WordPress post object.
 	 * @return bool
 	 */
-	public static function is_cached_external_event_post( $post ): bool {
+	public static function is_cached_remote_event_post( $post ): bool {
 		if ( get_post_meta( $post->ID, '_event_bridge_for_activitypub_event_source', true ) ) {
 			return true;
 		}
@@ -206,32 +206,17 @@ class Event_Sources {
 	}
 
 	/**
-	 * Add the ActivityPub template for EventPrime.
+	 * Redirect ActivityPub requests for cached remote events.
 	 *
-	 * @param  string $template The path to the template object.
-	 * @return string The new path to the JSON template.
+	 * @return void
 	 */
-	public static function redirect_activitypub_requests_for_cached_external_events( $template ) {
-		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
-			return $template;
-		}
-
-		if ( ! is_activitypub_request() ) {
-			return $template;
-		}
-
-		if ( ! \is_singular() ) {
-			return $template;
-		}
-
+	public static function redirect_activitypub_requests_for_cached_external_events() {
 		global $post;
 
-		if ( self::is_cached_external_event_post( $post ) ) {
+		if ( is_activitypub_request() && self::is_cached_remote_event_post( $post ) ) {
 			\wp_safe_redirect( $post->guid, 301 );
 			exit;
 		}
-
-		return Activitypub::render_activitypub_template( $template );
 	}
 
 	/**

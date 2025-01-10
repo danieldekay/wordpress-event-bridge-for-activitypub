@@ -54,7 +54,7 @@ class User_Interface {
 	 */
 	public static function row_actions( $actions, $post ) {
 		// check if the post is enabled for ActivityPub.
-		if ( ! Event_Sources::is_cached_external_event_post( $post ) ) {
+		if ( ! Event_Sources::is_cached_remote_event_post( $post ) ) {
 			return $actions;
 		}
 
@@ -81,7 +81,7 @@ class User_Interface {
 		if ( 'edit_post' === $cap && isset( $args[0] ) ) {
 			$post_id = $args[0];
 			$post    = get_post( $post_id );
-			if ( $post && Event_Sources::is_cached_external_event_post( $post ) ) {
+			if ( $post && Event_Sources::is_cached_remote_event_post( $post ) ) {
 				// Deny editing by returning 'do_not_allow'.
 				return array( 'do_not_allow' );
 			}
