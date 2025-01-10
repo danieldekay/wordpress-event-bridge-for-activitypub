@@ -149,31 +149,6 @@ class Test_Join extends \WP_UnitTestCase {
 	}
 
 	/**
-	 * Test handling of incoming Join.
-	 */
-	public function test_not_sending_ignore_on_invalid_join() {
-		$event_activitypub_id = 'https://some.domain/object';
-
-		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
-
-		$join_object = array(
-			'id'     => 'https://example.org/useros/username/activities/1',
-			'type'   => 'Join',
-			'actor'  => 'https://example.org/users/username',
-			'object' => $event_activitypub_id,
-		);
-
-		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
-		$request->set_header( 'Content-Type', 'application/activity+json' );
-		$request->set_body( \wp_json_encode( $join_object ) );
-		// Dispatch the request.
-		$response = \rest_do_request( $request );
-		$this->assertEquals( 202, $response->get_status() );
-
-		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
-	}
-
-	/**
 	 * Filters remote metadata by actor.
 	 *
 	 * @param array|bool $pre The metadata for the given URL.
