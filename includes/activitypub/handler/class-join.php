@@ -27,8 +27,8 @@ class Join {
 	 */
 	public static function init() {
 		\add_action(
-			'activitypub_inbox_join',
-			array( self::class, 'handle_join' )
+			'activitypub_register_handlers',
+			array( self::class, 'register_join_handler' )
 		);
 
 		\add_action(
@@ -36,6 +36,16 @@ class Join {
 			array( self::class, 'send_ignore_response' ),
 			10,
 			4
+		);
+	}
+
+	/**
+	 * Register the join handler to the ActivityPub plugin.
+	 */
+	public static function register_join_handler() {
+		\add_action(
+			'activitypub_inbox_join',
+			array( self::class, 'handle_join' )
 		);
 	}
 
