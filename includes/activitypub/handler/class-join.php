@@ -57,37 +57,36 @@ class Join {
 	public static function handle_join( $activity ) {
 		$actor = get_remote_metadata_by_actor( object_to_uri( $activity['actor'] ) );
 
+		// If we cannot fetch the actor, we cannot continue.
 		if ( ! is_array( $actor ) ) {
-			// If we can not find a user, we can not proceed the join process.
 			return;
 		}
 
+		// This should be already validated, but just to be sure.
 		if ( ! array_key_exists( 'object', $activity ) ) {
-			// If the object is not set, we can not proceed the join process.
 			return;
 		}
 
-		$object_id = object_to_uri( $activity['object'] );
-
-		// Does not work with ActivityPub ID.
-		$post_id = self::get_post_id_by_activitypub_id( $object_id );
+		// Get the WordPress Post ID, via the ActivityPub ID.
+		$post_id = self::get_post_id_by_activitypub_id( object_to_uri( $activity['object'] ) );
 
 		if ( ! $post_id ) {
 			// No post is found for this URL/ID.
 			return;
 		}
 
+		// Check whether the target object/post is an event post.
+
 		$transformer = Factory::get_transformer( get_post( $post_id ) );
 
 		if ( ! $transformer instanceof Event_Transformer ) {
-			// The target post is not an event post.
 			return;
 		}
 
 		// Pass over to Event plugin specific handler if implemented here. Until then just send an ignore.
 		do_action(
 			'event_bridge_for_activitypub_ignore_join',
-			$transformer->get_actor_object()->get_id(),
+			$transformer->get_actor_object()->get_id(), // Gets the WordPress user that "ows" the object by ActivityPub means.
 			$activity['id'],
 			Actor::init_from_array( $actor )
 		);
