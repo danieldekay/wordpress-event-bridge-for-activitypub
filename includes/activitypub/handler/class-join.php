@@ -6,15 +6,16 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\Activitypub\Handler;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 
 use Activitypub\Activity\Activity;
 use Activitypub\Collection\Actors;
+use Activitypub\Activity\Actor;
 use Activitypub\Http;
 use Activitypub\Transformer\Factory;
 use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transformer;
 
-use function Activitypub\is_same_domain;
+use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\object_to_uri;
 
 /**
@@ -43,10 +44,10 @@ class Join {
 	 *
 	 * @param array $activity The activity object.
 	 */
-	public static function handle_follow( $activity ) {
-		$actor = Actors::get_by_resource( $activity['actor'] );
+	public static function handle_join( $activity ) {
+		$actor = get_remote_metadata_by_actor( object_to_uri( $activity['actor'] ) );
 
-		if ( ! $actor || \is_wp_error( $actor ) ) {
+		if ( ! is_array( $actor ) ) {
 			// If we can not find a user, we can not proceed the join process.
 			return;
 		}
@@ -58,12 +59,8 @@ class Join {
 
 		$object_id = object_to_uri( $activity['object'] );
 
-		if ( ! is_same_domain( $object_id ) ) {
-			// If the "Join" object is not owned by this WordPress site, abort.
-			return;
-		}
-
-		$post_id = \url_to_postid( $object_id );
+		// Does not work with ActivityPub ID.
+		$post_id = self::get_post_id_by_activitypub_id( $object_id );
 
 		if ( ! $post_id ) {
 			// No post is found for this URL/ID.
@@ -77,61 +74,76 @@ class Join {
 			return;
 		}
 
-		// Pass over to Event plugin specific handler if implemented here.
-		// Until then just send an ignore.
-
+		// Pass over to Event plugin specific handler if implemented here. Until then just send an ignore.
 		do_action(
 			'event_bridge_for_activitypub_ignore_join',
-			Actors::APPLICATION_USER_ID,
-			$activity,
+			$transformer->get_actor_object()->get_id(),
+			$activity['id'],
+			Actor::init_from_array( $actor )
 		);
 	}
 
 	/**
 	 * Send "Ignore" response.
 	 *
-	 * @param string $actor           The actors ActivityPub ID which sends the response.
-	 * @param array  $activity_object The Activity object that gets ignored.
-	 * @param string $to              The target actor.
+	 * @param string $actor   The actors ActivityPub ID which sends the response.
+	 * @param string $ignored The ID of the Activity that gets ignored.
+	 * @param Actor  $to      The target actor.
 	 */
-	public static function send_ignore_response( $actor, $activity_object, $to = null ) {
-		if ( ! $to && array_key_exists( 'actor', $activity_object ) ) {
-			$to = object_to_uri( $activity_object['actor'] );
-		}
+	public static function send_ignore_response( $actor, $ignored, $to ) {
+		// Get actor object that owns the object that was targeted by the ignored activity.
+		$actor = Actors::get_by_resource( $actor );
 
-		if ( ! $to ) {
+		if ( \is_wp_error( $to ) || \is_wp_error( $actor ) ) {
 			return;
 		}
 
-		// Only send minimal data.
-		$activity_object = array_intersect_key(
-			$activity_object,
-			array_flip(
-				array(
-					'id',
-					'type',
-					'actor',
-					'object',
-				)
-			)
-		);
-
-		$to    = Actors::get_by_resource( $to );
-		$actor = Actors::get_by_resource( $actor );
-
 		// Get inbox.
-		$inbox = $to->get_shared_inbox();
+		$inbox = $to->get_inbox();
+
+		if ( ! $inbox ) {
+			return;
+		}
 
 		// Send "Ignore" activity.
 		$activity = new Activity();
 		$activity->set_type( 'Ignore' );
-		$activity->set_object( $activity_object );
+		$activity->set_object( $ignored );
 		$activity->set_actor( $actor->get_id() );
-		$activity->set_to( $to );
-		$activity->set_id( $actor->get_id() . '#ignore-' . \preg_replace( '~^https?://~', '', $activity_object['id'] ) );
+		$activity->set_to( $to->get_id() );
+		$activity->set_id( $actor->get_id() . '#ignore-' . \preg_replace( '~^https?://~', '', $ignored ) );
+		$activity->set_sensitive( null );
 
-		$activity = $activity->to_json();
+		Http::post( $inbox, $activity->to_json(), $actor->get__id() );
+	}
 
-		Http::post( $inbox, $activity, $actor->get__id() );
+	/**
+	 * Get the WordPress Post ID by the ActivityPub ID.
+	 *
+	 * @param string $activitypub_id The ActivityPub objects ID.
+	 * @return int The WordPress post ID.
+	 */
+	private static function get_post_id_by_activitypub_id( $activitypub_id ) {
+		// Parse the URL and extract its components.
+		$parsed_url = wp_parse_url( $activitypub_id );
+		$home_url   = \trailingslashit( \home_url() );
+
+		// Ensure the base URL matches the home URL.
+		if ( \trailingslashit( "{$parsed_url['scheme']}://{$parsed_url['host']}" ) !== $home_url ) {
+			return null;
+		}
+
+		// Check for a valid query string and parse it.
+		if ( isset( $parsed_url['query'] ) ) {
+			parse_str( $parsed_url['query'], $query_vars );
+
+			// Ensure the only parameter is 'p'.
+			if ( count( $query_vars ) === 1 && isset( $query_vars['p'] ) ) {
+				return intval( $query_vars['p'] ); // Return the post ID.
+			}
+		}
+
+		// Fallback: legacy ActivityPub plugin (before version 3.0.0) used pretty permalinks as `id`.
+		return \url_to_postid( $activitypub_id );
 	}
 }
