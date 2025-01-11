@@ -7,22 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
-## Fixed
+### Fixed
 
 * Improved admin UI for event-category mapping
 
-## [0.2.1] - 2024-11-16
-
 ### Added
 
-* Initial release on WordPress.org
+* Blueprint (Preview via WordPress Playground)
+
+## [0.3.5] - 2025-01-03
 
 ### Fixed
 
-* Applied some WordPress best practices
+* Images of Acknowledgements in Admin UI
 
-## [0.2.0] - 2024-10-20
+## [0.3.4] - 2024-12-21
 
-### Added
+* Initial release on WordPress.org
 
-* Initial submission to WordPress.org

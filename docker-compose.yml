@@ -16,7 +16,7 @@ version: '3'
 #   "request": "launch",
 #   "port": 9003,
 #   "pathMappings": {
-#    "/app/": "${workspaceRoot}/wp-content/plugins/activitypub-event-bridge/",
+#    "/app/": "${workspaceRoot}/wp-content/plugins/event-bridge-for-activitypub/",
 #    "/tmp/wordpress/": "${workspaceRoot}/"
 #   },
 # },
@@ -33,6 +33,8 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+    ports:
+      - "3306:3306"
 
   test-php:
     build:

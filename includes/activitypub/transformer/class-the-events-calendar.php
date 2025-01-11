@@ -2,17 +2,17 @@
 /**
  * ActivityPub Tribe Transformer
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Activitypub\Transformer;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
 use WP_Post;
 
 use function Activitypub\esc_hashtag;
@@ -72,7 +72,7 @@ final class The_Events_Calendar extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_end_time(): ?string {
+	public function get_end_time(): ?string {
 		if ( empty( $this->tribe_event->end_date ) ) {
 			return null;
 		}
@@ -83,7 +83,7 @@ final class The_Events_Calendar extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	protected function get_start_time(): string {
+	public function get_start_time(): string {
 		$date = date_create( $this->tribe_event->start_date, wp_timezone() );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $date->getTimestamp() );
 	}
