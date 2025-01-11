@@ -194,11 +194,15 @@ class Event_Sources {
 	/**
 	 * Determine whether a WP post is a cached external event.
 	 *
-	 * @param WP_Post $post The WordPress post object.
+	 * @param WP_Post|int $post The WordPress post object or ID.
 	 * @return bool
 	 */
 	public static function is_cached_remote_event_post( $post ): bool {
-		if ( get_post_meta( $post->ID, '_event_bridge_for_activitypub_event_source', true ) ) {
+		if ( ! is_int( $post ) ) {
+			$post = $post->ID;
+		}
+
+		if ( get_post_meta( $post, '_event_bridge_for_activitypub_event_source', true ) ) {
 			return true;
 		}
 
@@ -211,9 +215,13 @@ class Event_Sources {
 	 * @return void
 	 */
 	public static function redirect_activitypub_requests_for_cached_external_events() {
-		global $post;
+		if ( ! \is_singular() ) {
+			return;
+		}
 
-		if ( is_activitypub_request() && self::is_cached_remote_event_post( $post ) ) {
+		$post = \get_post( \get_queried_object_id() );
+
+		if ( is_activitypub_request() && self::is_cached_remote_event_post( $post->ID ) ) {
 			\wp_safe_redirect( $post->guid, 301 );
 			exit;
 		}
