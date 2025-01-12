@@ -11,7 +11,6 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Activitypub\Activity\Activity;
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
 use Activitypub\Shortcodes;
@@ -592,20 +591,5 @@ abstract class Event extends Post {
 		);
 
 		return $activitypub_object;
-	}
-
-	/**
-	 * Creates an activity for announcing itself.
-	 *
-	 * @return Activity The Activity.
-	 */
-	public function to_announce_self_activity() {
-		$activity = new Activity();
-		$activity->set_type( 'Announce' );
-
-		// Pre-fill the Activity with data (for example cc and to).
-		$activity->set_object( $this->get_id() );
-
-		return $activity;
 	}
 }

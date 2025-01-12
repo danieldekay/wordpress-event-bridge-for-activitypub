@@ -1,11 +1,11 @@
 <?php
 /**
- * General settings class.
+ * Class file for Event Reminders.
  *
- * This file contains the General class definition, which handles the "General" settings
- * page for the ActivityPub Event Extension Plugin, providing options for configuring various general settings.
+ * Automatic announcing or sending of reminders before the events start time.
  *
  * @package Event_Bridge_For_ActivityPub
+ * @license AGPL-3.0-or-later
  * @since 1.0.0
  */
 
@@ -14,6 +14,7 @@ namespace Event_Bridge_For_ActivityPub;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Activitypub\Activity\Activity;
 use Activitypub\Activity_Dispatcher;
 use Activitypub\Transformer\Factory as Transformer_Factory;
 use Event_Bridge_For_ActivityPub\Setup;
@@ -182,15 +183,21 @@ class Reminder {
 			return;
 		}
 
-		$user_id = $transformer->get_wp_user_id();
+		$actor      = $transformer->get_actor_object();
+		$wp_user_id = $actor->get__id();
 
-		if ( $user_id > 0 && is_user_disabled( $user_id ) ) {
+		if ( $wp_user_id > 0 && is_user_disabled( $wp_user_id ) ) {
 			return;
 		}
 
-		$activity = $transformer->to_announce_self_activity();
+		// Compose `Announce` activity.
+		$activity = new Activity();
+		$activity->set_type( 'Announce' );
+		$activity->set_actor( $actor->get_id() );
+		$activity->set_object( $transformer->get_id() );
+		$activity->set_sensitive( null );
 
-		self::send_activity_to_followers( $activity, $user_id );
+		self::send_activity_to_followers( $activity, $wp_user_id );
 	}
 
 	/**

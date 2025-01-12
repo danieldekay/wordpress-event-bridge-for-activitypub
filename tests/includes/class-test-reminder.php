@@ -3,12 +3,20 @@
  * Test for Reminder class.
  *
  * @package Event_Bridge_For_ActivityPub
+ * @license AGPL-3.0-or-later
  */
+
+namespace Event_Bridge_For_ActivityPub\Tests;
+
+require_once ACTIVITYPUB_PLUGIN_DIR . '/tests/class-activitypub-testcase-cache-http.php';
+
+use Activitypub\Tests\ActivityPub_TestCase_Cache_HTTP;
+use Event_Bridge_for_ActivityPub\Reminder;
 
 /**
  * Test class for testing the scheduling of reminder Activities.
  */
-class Test_Reminder extends \WP_UnitTestCase {
+class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 	/**
 	 * Mockup events of certain complexity.
 	 */
@@ -23,6 +31,28 @@ class Test_Reminder extends \WP_UnitTestCase {
 		'start_date' => '+10 days 15:00:00',
 		'duration'   => HOUR_IN_SECONDS,
 		'status'     => 'publish',
+	);
+
+	/**
+	 * Users.
+	 *
+	 * @var array[] $users
+	 */
+	public static $users = array(
+		'username@example.org' => array(
+			'id'                => 'https://example.org/users/username',
+			'url'               => 'https://example.org/users/username',
+			'inbox'             => 'https://example.org/users/username/inbox',
+			'name'              => 'username',
+			'preferredUsername' => 'username',
+		),
+		'jon@example.com'      => array(
+			'id'                => 'https://example.com/author/jon',
+			'url'               => 'https://example.com/author/jon',
+			'inbox'             => 'https://example.com/author/jon/inbox',
+			'name'              => 'jon',
+			'preferredUsername' => 'jon',
+		),
 	);
 
 	/**
@@ -41,6 +71,8 @@ class Test_Reminder extends \WP_UnitTestCase {
 		// Make sure that ActivityPub support is enabled for Events Manager.
 		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
+
+		\Activitypub\Migration::add_default_settings();
 
 		// Delete all posts afterwards.
 		_delete_all_posts();
@@ -179,5 +211,134 @@ class Test_Reminder extends \WP_UnitTestCase {
 
 		$scheduled_event = \wp_get_scheduled_event( 'event_bridge_for_activitypub_send_event_reminder', array( $wp_object->ID ) );
 		$this->assertEquals( false, $scheduled_event );
+	}
+
+	/**
+	 * Test the schedule action which sends the event reminder.
+	 */
+	public function test_send_event_reminder() {
+		add_filter( 'pre_get_remote_metadata_by_actor', array( get_called_class(), 'pre_get_remote_metadata_by_actor' ), 10, 2 );
+
+		$followers = array( 'https://example.com/author/jon', 'https://example.org/users/username' );
+
+		add_filter(
+			'activitypub_is_user_type_disabled',
+			function ( $value, $type ) {
+				if ( 'blog' === $type ) {
+					return false;
+				} else {
+					return true;
+				}
+			},
+			10,
+			2
+		);
+
+		$this->assertTrue( \Activitypub\is_single_user() );
+
+		foreach ( $followers as $follower ) {
+			\Activitypub\Collection\Followers::add_follower( \Activitypub\Collection\Actors::BLOG_USER_ID, $follower );
+		}
+
+		// Create a The Events Calendar Event.
+		$wp_object = tribe_events()
+			->set_args(
+				array_merge(
+					self::MOCKUP_EVENT,
+					array( 'event_bridge_for_activitypub_reminder_time_gap' => DAY_IN_SECONDS * 3 ),
+				)
+			)
+			->create();
+
+		$pre_http_request = new \MockAction();
+		add_filter( 'pre_http_request', array( $pre_http_request, 'filter' ), 10, 3 );
+
+		Reminder::send_event_reminder( $wp_object );
+
+		$this->assertSame( 2, $pre_http_request->get_call_count() );
+		$all_args        = $pre_http_request->get_args();
+		$first_call_args = array_shift( $all_args );
+
+		$this->assertEquals( 'https://example.com/author/jon/inbox', $first_call_args[2] );
+
+		$second_call_args = array_shift( $all_args );
+		$this->assertEquals( 'https://example.org/users/username/inbox', $second_call_args[2] );
+
+		$json = json_decode( $second_call_args[1]['body'] );
+		$this->assertEquals( 'Announce', $json->type );
+		$this->assertEquals( 'http://example.org/?author=0', $json->actor );
+
+		remove_filter( 'pre_http_request', array( $pre_http_request, 'filter' ), 10 );
+		remove_filter( 'pre_get_remote_metadata_by_actor', array( get_called_class(), 'pre_get_remote_metadata_by_actor' ) );
+	}
+
+	/**
+	 * Filters remote metadata by actor.
+	 *
+	 * @param array|bool $pre The metadata for the given URL.
+	 * @param string     $actor The URL of the actor.
+	 * @return array|bool
+	 */
+	public static function pre_get_remote_metadata_by_actor( $pre, $actor ) {
+		if ( isset( self::$users[ $actor ] ) ) {
+			return self::$users[ $actor ];
+		}
+		foreach ( self::$users as $data ) {
+			if ( $data['url'] === $actor ) {
+				return $data;
+			}
+		}
+		return $pre;
+	}
+
+	/**
+	 * Filters the arguments used in an HTTP request.
+	 *
+	 * @param array  $args The arguments for the HTTP request.
+	 * @param string $url  The request URL.
+	 * @return array
+	 */
+	public static function http_request_args( $args, $url ) {
+		if ( in_array( wp_parse_url( $url, PHP_URL_HOST ), array( 'example.com', 'example.org' ), true ) ) {
+			$args['reject_unsafe_urls'] = false;
+		}
+		return $args;
+	}
+
+	/**
+	 * Filters the return value of an HTTP request.
+	 *
+	 * @param bool   $preempt Whether to preempt an HTTP request's return value.
+	 * @param array  $request {
+	 *      Array of HTTP request arguments.
+	 *
+	 *      @type string $method Request method.
+	 *      @type string $body   Request body.
+	 * }
+	 * @param string $url The request URL.
+	 * @return array Array containing 'headers', 'body', 'response'.
+	 */
+	public static function pre_http_request( $preempt, $request, $url ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+		return array(
+			'headers'  => array(
+				'content-type' => 'text/json',
+			),
+			'body'     => '',
+			'response' => array(
+				'code' => 202,
+			),
+		);
+	}
+
+	/**
+	 * Filters the return value of an HTTP request.
+	 *
+	 * @param array  $response Response array.
+	 * @param array  $args     Request arguments.
+	 * @param string $url      Request URL.
+	 * @return array
+	 */
+	public static function http_response( $response, $args, $url ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+		return $response;
 	}
 }
