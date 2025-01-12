@@ -231,17 +231,19 @@ $reminder_time_gap_choices = array(
 
 		<div class="box">
 			<h2> <?php esc_html_e( 'ActivityPub Event Category', 'event-bridge-for-activitypub' ); ?> </h2>
-			<p> <?php esc_html_e( 'To help visitors find events more easily, the community created a set of basic event categories. Please select the category that best matches the majority of the events you organize.', 'event-bridge-for-activitypub' ); ?> </p>
+			<p id="event_bridge_for_activitypub_default_event_category_desc"> <?php esc_html_e( 'To help visitors find events more easily, the community created a set of basic event categories. Please select the category that best matches the majority of the events you organize.', 'event-bridge-for-activitypub' ); ?> </p>
 			<table class="form-table">
 				<tr>
-					<th scope="row"> <?php esc_html_e( 'Default Category', 'event-bridge-for-activitypub' ); ?> </th>
+					<th scope="row">
+						<label for="event_bridge_for_activitypub_default_event_category"> <?php esc_html_e( 'Default Federated Event Category', 'event-bridge-for-activitypub' ); ?></label>
+					</th>
 					<td>
-						<select id="event_bridge_for_activitypub_default_event_category" name="event_bridge_for_activitypub_default_event_category">';
-						<?php
-						foreach ( EVENT_BRIDGE_FOR_ACTIVITYPUB_EVENT_CATEGORIES as $value => $label ) {
-							echo '<option value="' . esc_attr( $value ) . '" ' . selected( $selected_default_event_category, $value, false ) . '>' . esc_html( $label ) . '</option>';
-						}
-						?>
+						<select aria-describedby="event_bridge_for_activitypub_default_event_category_desc" id="event_bridge_for_activitypub_default_event_category" name="event_bridge_for_activitypub_default_event_category">';
+							<?php
+							foreach ( EVENT_BRIDGE_FOR_ACTIVITYPUB_EVENT_CATEGORIES as $value => $label ) {
+								echo '<option value="' . esc_attr( $value ) . '" ' . selected( $selected_default_event_category, $value, false ) . '>' . esc_html( $label ) . '</option>';
+							}
+							?>
 						</select>
 					</td>
 				</tr>
@@ -249,7 +251,7 @@ $reminder_time_gap_choices = array(
 
 			<?php if ( ! empty( $event_terms ) ) : ?>
 			<h3> <?php esc_html_e( 'Fine-grained Event Category Settings', 'event-bridge-for-activitypub' ); ?> </h3>
-			<p> <?php esc_html_e( 'For any event category you have created on your WordPress site you can choose an event category which will be used in federation. This option lets you override the default selection above. ', 'event-bridge-for-activitypub' ); ?> </p>
+			<p id="event_bridge_for_activitypub_event_category_mapping_desc"> <?php esc_html_e( 'For any event category you have created on your WordPress site you can choose an event category which will be used in federation. This option lets you override the default selection above. ', 'event-bridge-for-activitypub' ); ?> </p>
 			<table class="form-table">
 				<tr>
 					<th> <?php esc_html_e( 'Event category on your site', 'event-bridge-for-activitypub' ); ?> </th>
@@ -257,9 +259,12 @@ $reminder_time_gap_choices = array(
 				</tr>
 				<?php foreach ( $event_terms as $event_term ) { ?>
 					<tr>
-						<td scope="row"> <?php echo esc_html( $event_term->name ); ?> </td>
+						<td scope="row">
+							<label for="event_bridge_for_activitypub_event_category_mapping_<?php echo esc_attr( $event_term->slug ); ?>"">
+								<?php echo esc_html( $event_term->name ); ?> </td>
+							</label>
 						<td class="select-cell">
-							<select name="event_bridge_for_activitypub_event_category_mappings[<?php echo esc_attr( $event_term->slug ); ?>]">
+							<select aria-describedby="event_bridge_for_activitypub_event_category_mapping_desc" id="event_bridge_for_activitypub_event_category_mapping_<?php echo esc_attr( $event_term->slug ); ?>" name="event_bridge_for_activitypub_event_category_mappings[<?php echo esc_attr( $event_term->slug ); ?>]">
 								<?php
 								$current_mapping_is_set = false;
 								if ( ! empty( $current_category_mapping ) ) {
