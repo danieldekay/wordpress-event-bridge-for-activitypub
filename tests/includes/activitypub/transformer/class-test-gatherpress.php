@@ -1,6 +1,6 @@
 <?php
 /**
- * Class SampleTest
+ * Tests for GatherPress.
  *
  * @package Event_Bridge_For_ActivityPub
  */
@@ -8,7 +8,7 @@
 namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
 
 /**
- * Sample test case.
+ * Test class for testing the GatherPress integration.
  */
 class Test_GatherPress extends \WP_UnitTestCase {
 	/**
