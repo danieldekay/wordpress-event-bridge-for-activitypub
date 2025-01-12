@@ -31,14 +31,14 @@ jobs:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      - name: Cache WordPress Setup
+      - name: Cache WordPress Setup and installed plugins (Event plugins and ActivityPub plugin).
         id: cache-wordpress
         uses: https://code.forgejo.org/actions/cache@v4
         with:
           path: |
             ${{ env.WP_CORE_DIR }}
             ${{ env.WP_TESTS_DIR }}
-          key: cache-wordpress-67-4
+          key: cache-wordpress-67-5
 
       - name: Cache Composer
         id: cache-composer-phpunit

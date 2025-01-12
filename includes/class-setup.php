@@ -23,6 +23,7 @@ use Event_Bridge_For_ActivityPub\Admin\Health_Check;
 use Event_Bridge_For_ActivityPub\Admin\Settings_Page;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
 use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
+use Event_Bridge_For_ActivityPub\Reminder;
 
 use function Activitypub\is_user_type_disabled;
 
@@ -127,6 +128,38 @@ class Setup {
 	public function get_active_event_plugins() {
 		return $this->active_event_plugins;
 	}
+
+	/**
+	 * Getter function for the active event plugins post types.
+	 *
+	 * @return array List of event post types of the active event plugins.
+	 */
+	public function get_active_event_plugins_post_types() {
+		$post_types = array();
+		foreach ( $this->active_event_plugins as $event_plugin ) {
+			$post_types[] = $event_plugin->get_post_type();
+		}
+
+		return $post_types;
+	}
+
+	/**
+	 * Function to check whether a post type is an event post type of an active event plugin.
+	 *
+	 * @param string $post_type The post type.
+	 *
+	 * @return bool True if it is an event post type.
+	 */
+	public function is_post_type_event_of_active_event_plugin( $post_type ) {
+		foreach ( $this->active_event_plugins as $event_plugin ) {
+			if ( $post_type === $event_plugin->get_post_type() ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 
 	/**
 	 * Holds all the classes for the supported event plugins.
@@ -261,6 +294,9 @@ class Setup {
 		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
 			return;
 		}
+
+		// Register the event reminders.
+		add_action( 'init', array( Reminder::class, 'init' ) );
 
 		// If the Event-Sources feature is enabled and all requirements are met, initialize it.
 		if ( ! is_user_type_disabled( 'blog' ) && \get_option( 'event_bridge_for_activitypub_event_sources_active' ) ) {
