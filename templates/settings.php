@@ -240,7 +240,7 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 
 			<?php if ( ! empty( $event_terms ) ) : ?>
 			<h3> <?php esc_html_e( 'Fine-grained Event Category Settings', 'event-bridge-for-activitypub' ); ?> </h3>
-			<p> <?php esc_html_e( 'For any event category you have created on your WordPress site you can choose an event category which will be used in federation. This option lets you override the default selection above. ', 'activitypub-event-bridge' ); ?> </p>
+			<p> <?php esc_html_e( 'For any event category you have created on your WordPress site you can choose an event category which will be used in federation. This option lets you override the default selection above. ', 'event-bridge-for-activitypub' ); ?> </p>
 			<table class="form-table">
 				<tr>
 					<th> <?php esc_html_e( 'Event category on your site', 'event-bridge-for-activitypub' ); ?> </th>

@@ -224,7 +224,7 @@ code.event-bridge-for-activitypub-settings-example-url {
 }
 
 .event-bridge-for-activitypub-settings .select-cell::before {
-    content: "\21D2";
-    margin-right: 8px;
-    color: inherit;
+	content: "\21D2";
+	margin-right: 8px;
+	color: inherit;
 }
