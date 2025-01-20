@@ -11,6 +11,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
 use WP_Post;
@@ -186,5 +187,32 @@ final class The_Events_Calendar extends Event {
 	 */
 	public function get_timezone(): string {
 		return $this->tribe_event->timezone;
+	}
+
+	/**
+	 * Apply the filter for preventing the rendering off The Events Calendar blocks just in time.
+	 *
+	 * @return Event_Object
+	 */
+	public function to_object(): Event_Object {
+		add_filter( 'render_block', array( self::class, 'filter_tribe_blocks' ), 10, 2 );
+		$activitypub_object = parent::to_object();
+		remove_filter( 'render_block', array( self::class, 'filter_tribe_blocks' ) );
+		return $activitypub_object;
+	}
+
+	/**
+	 * Prevents The Events Calendar blocks from being rendered for the content.
+	 *
+	 * @param mixed $block_content The blocks content.
+	 * @param mixed $block         The block.
+	 */
+	public static function filter_tribe_blocks( $block_content, $block ) {
+		// Check if the block name starts with 'tribe' and is not an exception.
+		if ( isset( $block['blockName'] ) && 0 === strpos( $block['blockName'], 'tribe/' ) ) {
+			return ''; // Skip rendering this block.
+		}
+
+		return $block_content; // Return the content for other blocks.
 	}
 }
