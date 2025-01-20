@@ -130,7 +130,7 @@ class Setup {
 	}
 
 	/**
-	 * Getter function for the active event plugins post types.
+	 * Getter function for the active event plugins event post types.
 	 *
 	 * @return array List of event post types of the active event plugins.
 	 */
@@ -308,6 +308,9 @@ class Setup {
 
 		// Lastly but most importantly: register the ActivityPub transformers for events to the ActivityPub plugin.
 		\add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
+
+		// Apply custom ActivityPub previews for events.
+		\add_action( 'init', array( Preview::class, 'init' ) );
 	}
 
 	/**
