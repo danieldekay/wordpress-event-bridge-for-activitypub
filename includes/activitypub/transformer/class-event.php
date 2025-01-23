@@ -456,6 +456,15 @@ abstract class Event extends Post {
 	}
 
 	/**
+	 * Get the address as a string.
+	 *
+	 * @return string
+	 */
+	public function get_formatted_address() {
+		return self::format_address( $this->get_location()->get_address() );
+	}
+
+	/**
 	 * Create a custom summary.
 	 *
 	 * It contains also the most important meta-information. The summary is often used when the
@@ -476,7 +485,7 @@ abstract class Event extends Post {
 		$category   = $this->format_categories();
 		$start_time = $this->get_start_time();
 		$end_time   = $this->get_end_time();
-		$address    = $this->format_address( $this->get_location() );
+		$address    = self::format_address( $this->get_location() );
 		$time_atts  = array(
 			'icon'  => true,
 			'label' => true,
