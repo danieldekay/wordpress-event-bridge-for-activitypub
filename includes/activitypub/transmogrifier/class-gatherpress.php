@@ -31,10 +31,13 @@ class GatherPress extends Base {
 	/**
 	 * Add tags to post.
 	 *
-	 * @param int $post_id The post ID.
+	 * @param Event $event The ActivityPub event object.
+	 * @param int   $post_id The post ID.
+	 *
+	 * @return bool
 	 */
-	private function add_tags_to_post( $post_id ) {
-		$tags_array = $this->activitypub_event->get_tag();
+	private function add_tags_to_post( $event, $post_id ) {
+		$tags_array = $event->get_tag();
 
 		// Ensure the input is valid.
 		if ( empty( $tags_array ) || ! is_array( $tags_array ) || ! $post_id ) {
@@ -60,10 +63,11 @@ class GatherPress extends Base {
 	/**
 	 * Add venue.
 	 *
-	 * @param int $post_id The post ID.
+	 * @param Event $activitypub_event The ActivityPub event object.
+	 * @param int   $post_id          The post ID.
 	 */
-	private function add_venue( $post_id ) {
-		$location = $this->activitypub_event->get_location();
+	private function add_venue( $activitypub_event, $post_id ) {
+		$location = $activitypub_event->get_location();
 
 		if ( ! $location ) {
 			return;
@@ -75,7 +79,7 @@ class GatherPress extends Base {
 
 		// Fallback for Gancio instances.
 		if ( 'online' === $location['name'] ) {
-			$online_event_link = $this->get_online_event_link_from_attachments();
+			$online_event_link = self::get_online_event_link_from_attachments( $activitypub_event );
 			if ( ! $online_event_link ) {
 				return;
 			}
@@ -120,21 +124,24 @@ class GatherPress extends Base {
 	/**
 	 * Save the ActivityPub event object as GatherPress Event.
 	 *
+	 * @param Event $activitypub_event    The ActivityPub event object.
+	 * @param int   $event_source_post_id The Post ID of the Event Source that owns the outbox.
+	 *
 	 * @return false|int
 	 */
-	protected function save_event() {
+	protected static function save_event( $activitypub_event, $event_source_post_id ) {
 		// Limit this as a safety measure.
 		add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
-		$post_id = self::get_post_id_from_activitypub_id( $this->activitypub_event->get_id() );
+		$post_id = self::get_post_id_from_activitypub_id( $activitypub_event->get_id() );
 
 		$args = array(
-			'post_title'   => sanitize_text_field( $this->activitypub_event->get_name() ),
+			'post_title'   => sanitize_text_field( $activitypub_event->get_name() ),
 			'post_type'    => 'gatherpress_event',
-			'post_content' => wp_kses_post( $this->activitypub_event->get_content() ?? '' ) . '<!-- wp:gatherpress/venue /-->',
-			'post_excerpt' => wp_kses_post( $this->activitypub_event->get_summary() ?? '' ),
+			'post_content' => wp_kses_post( $activitypub_event->get_content() ?? '' ) . '<!-- wp:gatherpress/venue /-->',
+			'post_excerpt' => wp_kses_post( $activitypub_event->get_summary() ?? '' ),
 			'post_status'  => 'publish',
-			'guid'         => sanitize_url( $this->activitypub_event->get_id() ),
+			'guid'         => sanitize_url( $activitypub_event->get_id() ),
 		);
 
 		if ( $post_id ) {
@@ -151,9 +158,9 @@ class GatherPress extends Base {
 		}
 
 		// Insert the dates.
-		$event      = new GatherPress_Event( $post_id );
-		$start_time = $this->activitypub_event->get_start_time();
-		$end_time   = $this->activitypub_event->get_end_time();
+		$gatherpress_event = new GatherPress_Event( $post_id );
+		$start_time        = $activitypub_event->get_start_time();
+		$end_time          = $activitypub_event->get_end_time();
 		if ( ! $end_time ) {
 			$end_time = new DateTime( $start_time );
 			$end_time->modify( '+1 hour' );
@@ -162,19 +169,20 @@ class GatherPress extends Base {
 		$params = array(
 			'datetime_start' => $start_time,
 			'datetime_end'   => $end_time,
-			'timezone'       => $this->activitypub_event->get_timezone(),
+			'timezone'       => $activitypub_event->get_timezone(),
 		);
 		// Sanitization of the params is done in the save_datetimes function just in time.
-		$event->save_datetimes( $params );
+		$gatherpress_event->save_datetimes( $params );
 
 		// Insert featured image.
-		$image = $this->get_featured_image();
+		$image = self::get_featured_image( $activitypub_event );
 		self::set_featured_image_with_alt( $post_id, $image['url'], $image['alt'] );
 
 		// Add hashtags.
-		$this->add_tags_to_post( $post_id );
+		self::add_tags_to_post( $activitypub_event, $post_id );
 
-		$this->add_venue( $post_id );
+		// Add venue.
+		self::add_venue( $activitypub_event, $post_id );
 
 		// Limit this as a safety measure.
 		remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );

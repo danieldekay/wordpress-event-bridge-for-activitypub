@@ -57,6 +57,6 @@ class Delete {
 			return;
 		}
 
-		$transmogrifier->delete( $id );
+		$transmogrifier::delete( $id );
 	}
 }

@@ -190,7 +190,7 @@ class Outbox_Parser {
 		$imported_count = 0;
 
 		foreach ( $events as $event ) {
-			$transmogrifier->save( $event, $event_source_post_id );
+			$transmogrifier::save( $event, $event_source_post_id );
 			++$imported_count;
 			if ( $limit > 0 && $imported_count >= $limit ) {
 				break;
