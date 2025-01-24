@@ -25,6 +25,7 @@ use WP_Error;
 
 use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\is_activitypub_request;
+use function Activitypub\sanitize_url;
 
 /**
  * Class for handling and saving the ActivityPub event sources (i.e. follows).
@@ -375,8 +376,49 @@ class Event_Sources {
 			return $valid;
 		}
 
-		return self::is_valid_activitypub_event_object( $json_params['object'] );
+		if ( ! self::is_valid_activitypub_event_object( $json_params['object'] ) ) {
+			return false;
+		}
+
+		if ( ! self::same_host( $json_params['actor'], $json_params['id'], $json_params['object']['id'] ) ) {
+			return false;
+		}
+
+		return true;
 	}
+
+	/**
+	 * Checks if all provided URLs belong to the same origin (host).
+	 *
+	 * @param string ...$urls List of URLs to compare.
+	 * @return bool True if all URLs have the same host, false otherwise.
+	 */
+	public static function same_host( ...$urls ) {
+		if ( empty( $urls ) ) {
+			return false; // No URLs given, can't compare hosts.
+		}
+
+		$first = \wp_parse_url( array_shift( $urls ) );
+		if ( ! isset( $first['host'] ) ) {
+			return false;
+		}
+
+		$first_host = $first['host'];
+
+		foreach ( $urls as $url ) {
+			$result = \wp_parse_url( $url );
+			if ( ! isset( $result['host'] ) ) {
+				return false;
+			}
+
+			if ( $result['host'] !== $first_host ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Check if the object is a valid ActivityPub event.
@@ -406,7 +448,23 @@ class Event_Sources {
 			return false;
 		}
 
+		if ( ! self::is_valid_activitypub_id( $event_object['id'] ) ) {
+			return false;
+		}
+
 		return true;
+	}
+
+	/**
+	 * Validate an ActivityPub ID.
+	 *
+	 * @link https://www.w3.org/TR/activitypub/#obj-id
+	 *
+	 * @param string $id The ID to validate.
+	 * @return bool
+	 */
+	public static function is_valid_activitypub_id( $id ) {
+		return sanitize_url( $id ) ? true : false;
 	}
 
 	/**
