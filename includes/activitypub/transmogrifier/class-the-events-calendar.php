@@ -33,7 +33,7 @@ class The_Events_Calendar extends Base {
 	 * @link https://www.w3.org/TR/activitystreams-vocabulary/#dfn-place
 	 * @return array
 	 */
-	private function get_venue_args( $location ) {
+	private static function get_venue_args( $location ) {
 		$args = array(
 			'venue'  => $location['name'],
 			'status' => 'publish',
@@ -70,7 +70,7 @@ class The_Events_Calendar extends Base {
 	 *
 	 * @return int|bool $post_id The venues post ID.
 	 */
-	private function add_venue( $activitypub_event, $event_source_post_id ) {
+	private static function add_venue( $activitypub_event, $event_source_post_id ) {
 		$location = $activitypub_event->get_location();
 
 		if ( ! $location ) {
@@ -210,7 +210,10 @@ class The_Events_Calendar extends Base {
 			$args['post_title']   = $args['title'];
 			$args['post_content'] = $args['content'];
 			// Update existing The Events Calendar event post.
-			$post_id = \Tribe__Events__API::updateEvent( $post_id, $args );
+			$post = $tribe_event->set_args( $args )->create();
+			if ( $post instanceof \WP_Post ) {
+				$post_id = $post->ID;
+			}
 		} else {
 			$post = $tribe_event->set_args( $args )->create();
 			if ( $post instanceof \WP_Post ) {

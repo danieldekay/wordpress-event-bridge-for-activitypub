@@ -48,7 +48,7 @@ abstract class Base {
 		}
 
 		// Pass the saving to the actual Transmogrifier implementation.
-		$post_id = self::save_event( $activitypub_event, $event_source_post_id );
+		$post_id = static::save_event( $activitypub_event, $event_source_post_id );
 
 		// Post processing: Logging and marking the imported event's origin.
 		$event_activitypub_id        = $activitypub_event->get_id();
@@ -136,7 +136,7 @@ abstract class Base {
 	 * @param int $activitypub_event_id The ActivityPub events ID.
 	 */
 	public static function delete( $activitypub_event_id ) {
-		$post_id = self::get_post_id_from_activitypub_id( $activitypub_event_id );
+		$post_id = static::get_post_id_from_activitypub_id( $activitypub_event_id );
 
 		if ( ! $post_id ) {
 			\do_action(
