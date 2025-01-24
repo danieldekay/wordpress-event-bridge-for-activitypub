@@ -139,7 +139,7 @@ class Test_Events_Manager extends \WP_UnitTestCase {
 		$this->assertEquals( 'MEETING', $event_array['category'] );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( 'Test location', $event_array['location']['name'] );
-		$this->assertEquals( 'Test Address', $event_array['location']['address']['postalAddress'] );
+		$this->assertEquals( 'Test Address', $event_array['location']['address']['streetAddress'] );
 		$this->assertEquals( 'Test Town', $event_array['location']['address']['addressLocality'] );
 		$this->assertEquals( 'Test state', $event_array['location']['address']['addressRegion'] );
 		$this->assertEquals( '1337', $event_array['location']['address']['postalCode'] );

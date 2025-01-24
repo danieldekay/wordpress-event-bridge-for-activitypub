@@ -90,8 +90,8 @@ final class The_Events_Calendar extends Event_plugin_Integration implements Feat
 	/**
 	 * Returns the Transmogrifier for The_Events_Calendar.
 	 */
-	public static function get_transmogrifier(): The_Events_Calendar_Transmogrifier {
-		return new The_Events_Calendar_Transmogrifier();
+	public static function get_transmogrifier(): string {
+		return The_Events_Calendar_Transmogrifier::class;
 	}
 
 	/**

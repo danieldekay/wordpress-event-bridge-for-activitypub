@@ -77,8 +77,8 @@ final class VS_Event_List extends Event_Plugin_Integration implements Feature_Ev
 	/**
 	 * Returns the Transmogrifier for The_Events_Calendar.
 	 */
-	public static function get_transmogrifier(): VS_Event_List_Transmogrifier {
-		return new VS_Event_List_Transmogrifier();
+	public static function get_transmogrifier(): string {
+		return VS_Event_List_Transmogrifier::class;
 	}
 
 	/**

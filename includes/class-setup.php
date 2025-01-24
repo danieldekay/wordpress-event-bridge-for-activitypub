@@ -489,9 +489,9 @@ class Setup {
 	 *
 	 * Retrieves the appropriate transmogrifier class based on the active event plugins and settings.
 	 *
-	 * @return ?Transmogrifier The transmogrifier class name or null if not available.
+	 * @return ?string The transmogrifier class name or null if not available.
 	 */
-	public static function get_transmogrifier(): ?Transmogrifier {
+	public static function get_transmogrifier(): ?string {
 		$event_plugin_integration = self::get_event_plugin_integration_used_for_event_sources_feature();
 
 		if ( ! $event_plugin_integration ) {

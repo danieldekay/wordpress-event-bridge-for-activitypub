@@ -138,6 +138,7 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$this->assertEquals( $json['object']['name'], $event->post_title );
 		$this->assertEquals( $json['object']['startTime'], $event->dates->start->format( 'Y-m-d\TH:i:s\Z' ) );
 		$this->assertEquals( $json['object']['endTime'], $event->dates->end->format( 'Y-m-d\TH:i:s\Z' ) );
+		$this->assertEquals( $json['object']['id'], $event->guid );
 
 		$venue = self::get_first_tribe_venue_of_tribe_event( $event );
 

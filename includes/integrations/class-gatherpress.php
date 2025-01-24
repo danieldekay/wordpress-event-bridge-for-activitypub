@@ -76,8 +76,8 @@ final class GatherPress extends Event_Plugin_Integration implements Feature_Even
 	/**
 	 * Returns the Transmogrifier for GatherPress.
 	 */
-	public static function get_transmogrifier(): GatherPress_Transmogrifier {
-		return new GatherPress_Transmogrifier();
+	public static function get_transmogrifier(): string {
+		return GatherPress_Transmogrifier::class;
 	}
 
 	/**

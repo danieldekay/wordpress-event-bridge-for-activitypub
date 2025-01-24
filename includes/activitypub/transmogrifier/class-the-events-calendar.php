@@ -14,9 +14,9 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 
-use function Activitypub\sanitize_url;
 use function Activitypub\object_to_uri;
 
 /**
@@ -34,13 +34,21 @@ class The_Events_Calendar extends Base {
 	 * @link https://www.w3.org/TR/activitystreams-vocabulary/#dfn-place
 	 * @return array
 	 */
-	private function get_venue_args( $location ) {
+	private static function get_venue_args( $location ) {
 		$args = array(
 			'venue'  => $location['name'],
 			'status' => 'publish',
 		);
 
-		if ( is_array( $location['address'] ) && isset( $location['address']['type'] ) && 'PostalAddress' === $location['address']['type'] ) {
+		if ( $location instanceof Place ) {
+			$location = $location->to_array();
+		}
+
+		if ( ! isset( $location['address'] ) ) {
+			return $args;
+		}
+
+		if ( is_array( $location['address'] ) ) {
 			$mapping = array(
 				'streetAddress'   => 'address',
 				'postalCode'      => 'zip',
@@ -66,12 +74,23 @@ class The_Events_Calendar extends Base {
 	/**
 	 * Add venue.
 	 *
+	 * @param Event $activitypub_event    The ActivityPub event object.
+	 * @param int   $event_source_post_id The WordPress Post ID of the event source.
+	 *
 	 * @return int|bool $post_id The venues post ID.
 	 */
-	private function add_venue() {
-		$location = $this->activitypub_event->get_location();
+	private static function add_venue( $activitypub_event, $event_source_post_id ) {
+		$location = $activitypub_event->get_location();
 
 		if ( ! $location ) {
+			return;
+		}
+
+		if ( $location instanceof Place ) {
+			$location = $location->to_array();
+		}
+
+		if ( ! is_array( $location ) ) {
 			return;
 		}
 
@@ -96,15 +115,15 @@ class The_Events_Calendar extends Base {
 		}
 
 		if ( $post_id && get_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', true ) ) {
-			$result = tribe_venues()->where( 'id', $post_id )->set_args( $this->get_venue_args( $location ) )->save();
+			$result = tribe_venues()->where( 'id', $post_id )->set_args( self::get_venue_args( $location ) )->save();
 			if ( array_key_exists( $post_id, $result ) && $result[ $post_id ] ) {
 				return $post_id;
 			}
 		} else {
-			$post = tribe_venues()->set_args( $this->get_venue_args( $location ) )->create();
+			$post = tribe_venues()->set_args( self::get_venue_args( $location ) )->create();
 			if ( $post ) {
 				$post_id = $post->ID;
-				update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', $this->event_source_post_id );
+				update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', $event_source_post_id );
 			}
 		}
 
@@ -114,11 +133,13 @@ class The_Events_Calendar extends Base {
 	/**
 	 * Add organizer.
 	 *
+	 * @param Event $activitypub_event    The ActivityPub event object.
+	 *
 	 * @return int|bool $post_id The organizers post ID.
 	 */
-	private function add_organizer() {
+	private static function add_organizer( $activitypub_event ) {
 		// This might likely change, because of FEP-8a8e.
-		$actor = $this->activitypub_event->get_attributed_to();
+		$actor = $activitypub_event->get_attributed_to();
 		if ( is_null( $actor ) ) {
 			return false;
 		}
@@ -167,27 +188,27 @@ class The_Events_Calendar extends Base {
 	/**
 	 * Save the ActivityPub event object as GatherPress Event.
 	 *
+	 * @param Event $activitypub_event    The ActivityPub event as associative array.
+	 * @param int   $event_source_post_id The Post ID of the Event Source that owns the outbox.
+	 *
 	 * @return false|int
 	 */
-	public function save_event() {
+	protected static function save_event( $activitypub_event, $event_source_post_id ) {
 		// Limit this as a safety measure.
 		add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
-		$post_id = self::get_post_id_from_activitypub_id( $this->activitypub_event->get_id() );
-
-		$duration = $this->get_duration();
-
-		$venue_id = $this->add_venue();
-
-		$organizer_id = $this->add_organizer();
+		$post_id      = self::get_post_id_from_activitypub_id( $activitypub_event->get_id() );
+		$duration     = self::get_duration( $activitypub_event );
+		$venue_id     = self::add_venue( $activitypub_event, $event_source_post_id );
+		$organizer_id = self::add_organizer( $activitypub_event );
 
 		$args = array(
-			'title'      => sanitize_text_field( $this->activitypub_event->get_name() ),
-			'content'    => wp_kses_post( $this->activitypub_event->get_content() ?? '' ),
-			'start_date' => gmdate( 'Y-m-d H:i:s', strtotime( $this->activitypub_event->get_start_time() ) ),
+			'title'      => $activitypub_event->get_name(),
+			'content'    => $activitypub_event->get_content() ?? '',
+			'start_date' => gmdate( 'Y-m-d H:i:s', strtotime( $activitypub_event->get_start_time() ) ),
 			'duration'   => $duration,
 			'status'     => 'publish',
-			'guid'       => sanitize_url( $this->activitypub_event->get_id() ),
+			'guid'       => $activitypub_event->get_id(),
 		);
 
 		if ( $venue_id ) {
@@ -203,15 +224,13 @@ class The_Events_Calendar extends Base {
 		$tribe_event = new The_Events_Calendar_Event_Repository();
 
 		if ( $post_id ) {
-			$args['post_title']   = $args['title'];
-			$args['post_content'] = $args['content'];
-			// Update existing The Events Calendar event post.
-			$post_id = \Tribe__Events__API::updateEvent( $post_id, $args );
+			$post = $tribe_event->where( 'id', $post_id )->set_args( $args )->save();
 		} else {
 			$post = $tribe_event->set_args( $args )->create();
-			if ( $post instanceof \WP_Post ) {
-				$post_id = $post->ID;
-			}
+		}
+
+		if ( $post instanceof \WP_Post ) {
+			$post_id = $post->ID;
 		}
 
 		if ( ! $post_id || is_wp_error( $post_id ) ) {
@@ -219,7 +238,7 @@ class The_Events_Calendar extends Base {
 		}
 
 		// Insert featured image.
-		$image = $this->get_featured_image();
+		$image = self::get_featured_image( $activitypub_event );
 		self::set_featured_image_with_alt( $post_id, $image['url'], $image['alt'] );
 
 		// Limit this as a safety measure.
@@ -231,13 +250,15 @@ class The_Events_Calendar extends Base {
 	/**
 	 * Get the events duration in seconds.
 	 *
+	 * @param Event $activitypub_event    The ActivityPub event object.
+	 *
 	 * @return int
 	 */
-	private function get_duration() {
-		$end_time = $this->activitypub_event->get_end_time();
+	private static function get_duration( $activitypub_event ) {
+		$end_time = $activitypub_event->get_end_time();
 		if ( ! $end_time ) {
 			return 2 * HOUR_IN_SECONDS;
 		}
-		return abs( strtotime( $end_time ) - strtotime( $this->activitypub_event->get_start_time() ) );
+		return abs( strtotime( $end_time ) - strtotime( $activitypub_event->get_start_time() ) );
 	}
 }

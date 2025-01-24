@@ -75,6 +75,6 @@ class Create {
 			return;
 		}
 
-		$transmogrifier->save( $activity['object'], $event_source_post_id );
+		$transmogrifier::save( $activity['object'], $event_source_post_id );
 	}
 }

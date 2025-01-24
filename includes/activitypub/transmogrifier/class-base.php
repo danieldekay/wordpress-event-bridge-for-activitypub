@@ -13,6 +13,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event;
+use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use WP_Error;
 
@@ -25,25 +26,14 @@ use function Activitypub\sanitize_url;
  */
 abstract class Base {
 	/**
-	 * The current Event object.
-	 *
-	 * @var Event
-	 */
-	protected $activitypub_event;
-
-	/**
-	 * The current Event object.
-	 *
-	 * @var int
-	 */
-	protected $event_source_post_id;
-
-	/**
 	 * Internal function to actually save the event.
+	 *
+	 * @param Event $activitypub_event    The ActivityPub event as associative array.
+	 * @param int   $event_source_post_id The Post ID of the Event Source that owns the outbox.
 	 *
 	 * @return false|int Post-ID on success, false on failure.
 	 */
-	abstract protected function save_event();
+	abstract protected static function save_event( $activitypub_event, $event_source_post_id );
 
 	/**
 	 * Save the ActivityPub event object within WordPress.
@@ -51,36 +41,139 @@ abstract class Base {
 	 * @param array $activitypub_event    The ActivityPub event as associative array.
 	 * @param int   $event_source_post_id The Post ID of the Event Source that owns the outbox.
 	 */
-	public function save( $activitypub_event, $event_source_post_id ) {
-		$activitypub_event = Event::init_from_array( $activitypub_event );
+	public static function save( $activitypub_event, $event_source_post_id ) {
+		$activitypub_event = self::init_and_sanitize_event_object_from_array( $activitypub_event );
 
 		if ( is_wp_error( $activitypub_event ) ) {
 			return;
 		}
 
-		$this->activitypub_event    = $activitypub_event;
-		$this->event_source_post_id = $event_source_post_id;
-
 		// Pass the saving to the actual Transmogrifier implementation.
-		$post_id = $this->save_event();
+		$post_id = static::save_event( $activitypub_event, $event_source_post_id );
 
 		// Post processing: Logging and marking the imported event's origin.
-		$event_id                    = $activitypub_event->get_id();
+		$event_activitypub_id        = $activitypub_event->get_id();
 		$event_source_activitypub_id = \get_the_guid( $event_source_post_id );
 
 		if ( $post_id ) {
 			\do_action(
 				'event_bridge_for_activitypub_write_log',
-				array( "[ACTIVITYPUB] Processed incoming event {$event_id} from {$event_source_activitypub_id}" )
+				array( "[ACTIVITYPUB] Processed incoming event {$event_activitypub_id} from {$event_source_activitypub_id}" )
 			);
-			update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', absint( $event_source_post_id ) );
-			update_post_meta( $post_id, 'activitypub_content_visibility', constant( 'ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL' ) ?? '' );
+			\update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', absint( $event_source_post_id ) );
+			\update_post_meta( $post_id, 'activitypub_content_visibility', constant( 'ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL' ) ?? '' );
 		} else {
 			\do_action(
 				'event_bridge_for_activitypub_write_log',
-				array( "[ACTIVITYPUB] Failed processing incoming event {$event_id} from {$event_source_activitypub_id}" )
+				array( "[ACTIVITYPUB] Failed processing incoming event {$event_activitypub_id} from {$event_source_activitypub_id}" )
 			);
 		}
+	}
+
+	/**
+	 * Convert input array to an Event.
+	 *
+	 * @param array $data The object array.
+	 *
+	 * @return Event|WP_Error An Object built from the input array or WP_Error when it's not an array.
+	 */
+	public static function init_and_sanitize_event_object_from_array( $data ) {
+		if ( ! is_array( $data ) ) {
+			return new WP_Error( 'invalid_array', __( 'Invalid array', 'event-bridge-for-activitypub' ), array( 'status' => 404 ) );
+		}
+
+		$event = new Event();
+
+		if ( isset( $data['content'] ) ) {
+			$event->set_content( \wp_kses_post( $data['content'] ) );
+		}
+
+		if ( isset( $data['summary'] ) ) {
+			$event->set_summary( \wp_kses_post( $data['summary'] ) );
+		}
+
+		if ( isset( $data['name'] ) ) {
+			$event->set_name( \sanitize_text_field( $data['name'] ) );
+		}
+
+		if ( isset( $data['startTime'] ) ) {
+			$event->set_start_time( \sanitize_text_field( $data['startTime'] ) );
+		}
+
+		if ( isset( $data['endTime'] ) ) {
+			$event->set_end_time( \sanitize_text_field( $data['endTime'] ) );
+		}
+
+		if ( isset( $data['id'] ) ) {
+			$event->set_id( sanitize_url( $data['id'] ) );
+		}
+
+		if ( isset( $data['url'] ) ) {
+			$event->set_url( sanitize_url( $data['url'] ) );
+		}
+
+		if ( isset( $data['location'] ) && is_array( $data['location'] ) ) {
+			$event->set_location( self::init_and_sanitize_place_object_from_array( $data['location'] ) );
+		}
+
+		return $event;
+	}
+
+	/**
+	 * Convert input array to an Location.
+	 *
+	 * @param array $data The object array.
+	 *
+	 * @return ?Place An Object built from the input array or null.
+	 */
+	public static function init_and_sanitize_place_object_from_array( $data ) {
+		if ( ! is_array( $data ) ) {
+			return null;
+		}
+
+		$place = new Place();
+
+		if ( isset( $data['name'] ) ) {
+			$place->set_name( \sanitize_text_field( $data['name'] ) );
+		}
+
+		if ( isset( $data['id'] ) ) {
+			$place->set_id( sanitize_url( $data['id'] ) );
+		}
+
+		if ( isset( $data['url'] ) ) {
+			$place->set_url( sanitize_url( $data['url'] ) );
+		}
+
+		if ( isset( $data['address'] ) ) {
+			if ( is_string( $data['address'] ) ) {
+				$place->set_address( \sanitize_text_field( $data['address'] ) );
+			}
+			if ( is_array( $data['address'] ) && isset( $data['address']['type'] ) && 'PostalAddress' === $data['address']['type'] ) {
+				$address = array();
+				if ( isset( $data['address']['streetAddress'] ) ) {
+					$address['streetAddress'] = \sanitize_text_field( $data['address']['streetAddress'] );
+				}
+				if ( isset( $data['address']['postalCode'] ) ) {
+					$address['postalCode'] = \sanitize_text_field( $data['address']['postalCode'] );
+				}
+				if ( isset( $data['address']['addressLocality'] ) ) {
+					$address['addressLocality'] = \sanitize_text_field( $data['address']['addressLocality'] );
+				}
+				if ( isset( $data['address']['streetAddress'] ) ) {
+					$address['addressState'] = \sanitize_text_field( $data['address']['addressState'] );
+				}
+				if ( isset( $data['address']['streetAddress'] ) ) {
+					$address['addressCountry'] = \sanitize_text_field( $data['address']['addressCountry'] );
+				}
+				if ( isset( $data['address']['url'] ) ) {
+					$address['url'] = \esc_url_raw( $data['address']['url'] );
+				}
+				$place->set_address( $address );
+			}
+		}
+
+		return $place;
 	}
 
 	/**
@@ -88,8 +181,8 @@ abstract class Base {
 	 *
 	 * @param int $activitypub_event_id The ActivityPub events ID.
 	 */
-	public function delete( $activitypub_event_id ) {
-		$post_id = self::get_post_id_from_activitypub_id( $activitypub_event_id );
+	public static function delete( $activitypub_event_id ) {
+		$post_id = static::get_post_id_from_activitypub_id( $activitypub_event_id );
 
 		if ( ! $post_id ) {
 			\do_action(
@@ -176,10 +269,11 @@ abstract class Base {
 	/**
 	 * Returns the URL of the featured image.
 	 *
+	 * @param Event $event The ActivityPub event object.
+	 *
 	 * @return array
 	 */
-	protected function get_featured_image() {
-		$event = $this->activitypub_event;
+	protected static function get_featured_image( $event ) {
 		$image = $event->get_image();
 		if ( $image ) {
 			return self::extract_image_alt_and_url( $image );
@@ -342,10 +436,12 @@ abstract class Base {
 	/**
 	 * Returns the URL of the online event link.
 	 *
+	 * @param Event $event The ActivityPub event object.
+	 *
 	 * @return ?string
 	 */
-	protected function get_online_event_link_from_attachments() {
-		$attachments = $this->activitypub_event->get_attachment();
+	protected static function get_online_event_link_from_attachments( $event ) {
+		$attachments = $event->get_attachment();
 
 		if ( ! is_array( $attachments ) || empty( $attachments ) ) {
 			return;

@@ -25,6 +25,7 @@ use WP_Error;
 
 use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\is_activitypub_request;
+use function Activitypub\sanitize_url;
 
 /**
  * Class for handling and saving the ActivityPub event sources (i.e. follows).
@@ -375,8 +376,49 @@ class Event_Sources {
 			return $valid;
 		}
 
-		return self::is_valid_activitypub_event_object( $json_params['object'] );
+		if ( ! self::is_valid_activitypub_event_object( $json_params['object'] ) ) {
+			return false;
+		}
+
+		if ( ! self::same_host( $json_params['actor'], $json_params['id'], $json_params['object']['id'] ) ) {
+			return false;
+		}
+
+		return true;
 	}
+
+	/**
+	 * Checks if all provided URLs belong to the same origin (host).
+	 *
+	 * @param string ...$urls List of URLs to compare.
+	 * @return bool True if all URLs have the same host, false otherwise.
+	 */
+	public static function same_host( ...$urls ) {
+		if ( empty( $urls ) ) {
+			return false; // No URLs given, can't compare hosts.
+		}
+
+		$first = \wp_parse_url( array_shift( $urls ) );
+		if ( ! isset( $first['host'] ) ) {
+			return false;
+		}
+
+		$first_host = $first['host'];
+
+		foreach ( $urls as $url ) {
+			$result = \wp_parse_url( $url );
+			if ( ! isset( $result['host'] ) ) {
+				return false;
+			}
+
+			if ( $result['host'] !== $first_host ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Check if the object is a valid ActivityPub event.
@@ -396,44 +438,43 @@ class Event_Sources {
 		);
 
 		if ( array_intersect( $required, array_keys( $event_object ) ) !== $required ) {
-			return new WP_Error(
-				'event_bridge_for_activitypub_invalid_event_object',
-				__( 'The Event object is missing a required attribute.', 'event-bridge-for-activitypub' )
-			);
+			return false;
 		}
 
 		if ( ! self::is_valid_activitypub_time_string( $event_object['startTime'] ) ) {
-			return new WP_Error(
-				'event_bridge_for_activitypub_event_object_is_not_in_the_future',
-				__( 'Ignoring event that has already started.', 'event-bridge-for-activitypub' )
-			);
+			return false;
+		}
+
+		if ( ! self::is_valid_activitypub_id( $event_object['id'] ) ) {
+			return false;
 		}
 
 		return true;
 	}
 
 	/**
-	 * Validate a time string if it is according to the ActivityPub specification.
+	 * Validate an ActivityPub ID.
 	 *
-	 * @param string $time_string The time string.
+	 * @link https://www.w3.org/TR/activitypub/#obj-id
+	 *
+	 * @param string $id The ID to validate.
 	 * @return bool
 	 */
-	public static function is_valid_activitypub_time_string( $time_string ) {
-		// Try to create a DateTime object from the input string.
-		try {
-			$date = new DateTime( $time_string );
-		} catch ( Exception $e ) {
-			// If parsing fails, it's not valid.
-			return false;
-		}
+	public static function is_valid_activitypub_id( $id ) {
+		return sanitize_url( $id ) ? true : false;
+	}
 
-		// Ensure the timezone is correctly formatted (e.g., 'Z' or a valid offset).
-		$timezone           = $date->getTimezone();
-		$formatted_timezone = $timezone->getName();
-
-		// Return true only if the time string includes 'Z' or a valid timezone offset.
-		$valid = 'Z' === $formatted_timezone || preg_match( '/^[+-]\d{2}:\d{2}$/ ', $formatted_timezone );
-		return $valid;
+	/**
+	 * Validate a time string if it is according to the ActivityPub specification.
+	 *
+	 * @link https://www.w3.org/TR/activitystreams-core/#dates
+	 *
+	 * @param string $time_string The xsd:datetime string.
+	 * @return bool
+	 */
+	public static function is_valid_activitypub_time_string( string $time_string ): bool {
+		// Regular expression based on AS2 rules.
+		return 1 === preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:\d{2})$/', $time_string );
 	}
 
 	/**
