@@ -438,10 +438,7 @@ class Event_Sources {
 		);
 
 		if ( array_intersect( $required, array_keys( $event_object ) ) !== $required ) {
-			return new WP_Error(
-				'event_bridge_for_activitypub_invalid_event_object',
-				__( 'The Event object is missing a required attribute.', 'event-bridge-for-activitypub' )
-			);
+			return false;
 		}
 
 		if ( ! self::is_valid_activitypub_time_string( $event_object['startTime'] ) ) {

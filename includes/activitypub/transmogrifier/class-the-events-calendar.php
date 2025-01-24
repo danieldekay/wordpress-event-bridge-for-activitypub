@@ -14,6 +14,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 
 use function Activitypub\object_to_uri;
@@ -39,7 +40,15 @@ class The_Events_Calendar extends Base {
 			'status' => 'publish',
 		);
 
-		if ( is_array( $location['address'] ) && isset( $location['address']['type'] ) && 'PostalAddress' === $location['address']['type'] ) {
+		if ( $location instanceof Place ) {
+			$location = $location->to_array();
+		}
+
+		if ( ! isset( $location['address'] ) ) {
+			return $args;
+		}
+
+		if ( is_array( $location['address'] ) ) {
 			$mapping = array(
 				'streetAddress'   => 'address',
 				'postalCode'      => 'zip',
@@ -77,6 +86,14 @@ class The_Events_Calendar extends Base {
 			return;
 		}
 
+		if ( $location instanceof Place ) {
+			$location = $location->to_array();
+		}
+
+		if ( ! is_array( $location ) ) {
+			return;
+		}
+
 		if ( ! isset( $location['name'] ) ) {
 			return;
 		}
@@ -98,12 +115,12 @@ class The_Events_Calendar extends Base {
 		}
 
 		if ( $post_id && get_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', true ) ) {
-			$result = tribe_venues()->where( 'id', $post_id )->set_args( $this->get_venue_args( $location ) )->save();
+			$result = tribe_venues()->where( 'id', $post_id )->set_args( self::get_venue_args( $location ) )->save();
 			if ( array_key_exists( $post_id, $result ) && $result[ $post_id ] ) {
 				return $post_id;
 			}
 		} else {
-			$post = tribe_venues()->set_args( $this->get_venue_args( $location ) )->create();
+			$post = tribe_venues()->set_args( self::get_venue_args( $location ) )->create();
 			if ( $post ) {
 				$post_id = $post->ID;
 				update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', $event_source_post_id );
@@ -207,18 +224,13 @@ class The_Events_Calendar extends Base {
 		$tribe_event = new The_Events_Calendar_Event_Repository();
 
 		if ( $post_id ) {
-			$args['post_title']   = $args['title'];
-			$args['post_content'] = $args['content'];
-			// Update existing The Events Calendar event post.
-			$post = $tribe_event->set_args( $args )->create();
-			if ( $post instanceof \WP_Post ) {
-				$post_id = $post->ID;
-			}
+			$post = $tribe_event->where( 'id', $post_id )->set_args( $args )->save();
 		} else {
 			$post = $tribe_event->set_args( $args )->create();
-			if ( $post instanceof \WP_Post ) {
-				$post_id = $post->ID;
-			}
+		}
+
+		if ( $post instanceof \WP_Post ) {
+			$post_id = $post->ID;
 		}
 
 		if ( ! $post_id || is_wp_error( $post_id ) ) {

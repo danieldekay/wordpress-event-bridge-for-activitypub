@@ -13,6 +13,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event;
+use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use WP_Error;
 
@@ -81,53 +82,98 @@ abstract class Base {
 			return new WP_Error( 'invalid_array', __( 'Invalid array', 'event-bridge-for-activitypub' ), array( 'status' => 404 ) );
 		}
 
-		$object = new Event();
+		$event = new Event();
 
-		foreach ( $data as $key => $value ) {
-			$key = \ActivityPub\camel_to_snake_case( $key );
-			switch ( $key ) {
-				case 'content':
-					$sanitized_value = \wp_kses_post( $value );
-					break;
-				case 'summary':
-					$sanitized_value = \wp_kses_post( $value );
-					break;
-				case 'contacts':
-					$sanitized_value = array_map(
-						function ( $contact ) {
-							return sanitize_url( $contact );
-						},
-						$value
-					);
-					break;
-				case 'comments_enabled':
-					$sanitized_value = \is_bool( $value ) ? $value : null;
-					break;
-				case 'external_participation_url':
-					$sanitized_value = sanitize_url( $value );
-					break;
-				case 'participant_count':
-					$sanitized_value = \absint( $value );
-					break;
-				case 'maximum_attendee_capacity':
-					$sanitized_value = \absint( $value );
-					break;
-				case 'remaining_attendee_capacity':
-					$sanitized_value = \absint( $value );
-					break;
-				case 'id':
-					$sanitized_value = sanitize_url( $value );
-					break;
-				case 'url':
-					$sanitized_value = sanitize_url( $value );
-					break;
-				default:
-					$sanitized_value = \sanitize_text_field( $value );
-			}
-			call_user_func( array( $object, 'set_' . $key ), $sanitized_value );
+		if ( isset( $data['content'] ) ) {
+			$event->set_content( \wp_kses_post( $data['content'] ) );
 		}
 
-		return $object;
+		if ( isset( $data['summary'] ) ) {
+			$event->set_summary( \wp_kses_post( $data['summary'] ) );
+		}
+
+		if ( isset( $data['name'] ) ) {
+			$event->set_name( \sanitize_text_field( $data['name'] ) );
+		}
+
+		if ( isset( $data['startTime'] ) ) {
+			$event->set_start_time( \sanitize_text_field( $data['startTime'] ) );
+		}
+
+		if ( isset( $data['endTime'] ) ) {
+			$event->set_end_time( \sanitize_text_field( $data['endTime'] ) );
+		}
+
+		if ( isset( $data['id'] ) ) {
+			$event->set_id( sanitize_url( $data['id'] ) );
+		}
+
+		if ( isset( $data['url'] ) ) {
+			$event->set_url( sanitize_url( $data['url'] ) );
+		}
+
+		if ( isset( $data['location'] ) && is_array( $data['location'] ) ) {
+			$event->set_location( self::init_and_sanitize_place_object_from_array( $data['location'] ) );
+		}
+
+		return $event;
+	}
+
+	/**
+	 * Convert input array to an Location.
+	 *
+	 * @param array $data The object array.
+	 *
+	 * @return ?Place An Object built from the input array or null.
+	 */
+	public static function init_and_sanitize_place_object_from_array( $data ) {
+		if ( ! is_array( $data ) ) {
+			return null;
+		}
+
+		$place = new Place();
+
+		if ( isset( $data['name'] ) ) {
+			$place->set_name( \sanitize_text_field( $data['name'] ) );
+		}
+
+		if ( isset( $data['id'] ) ) {
+			$place->set_id( sanitize_url( $data['id'] ) );
+		}
+
+		if ( isset( $data['url'] ) ) {
+			$place->set_url( sanitize_url( $data['url'] ) );
+		}
+
+		if ( isset( $data['address'] ) ) {
+			if ( is_string( $data['address'] ) ) {
+				$place->set_address( \sanitize_text_field( $data['address'] ) );
+			}
+			if ( is_array( $data['address'] ) && isset( $data['address']['type'] ) && 'PostalAddress' === $data['address']['type'] ) {
+				$address = array();
+				if ( isset( $data['address']['streetAddress'] ) ) {
+					$address['streetAddress'] = \sanitize_text_field( $data['address']['streetAddress'] );
+				}
+				if ( isset( $data['address']['postalCode'] ) ) {
+					$address['postalCode'] = \sanitize_text_field( $data['address']['postalCode'] );
+				}
+				if ( isset( $data['address']['addressLocality'] ) ) {
+					$address['addressLocality'] = \sanitize_text_field( $data['address']['addressLocality'] );
+				}
+				if ( isset( $data['address']['streetAddress'] ) ) {
+					$address['addressState'] = \sanitize_text_field( $data['address']['addressState'] );
+				}
+				if ( isset( $data['address']['streetAddress'] ) ) {
+					$address['addressCountry'] = \sanitize_text_field( $data['address']['addressCountry'] );
+				}
+				if ( isset( $data['address']['url'] ) ) {
+					$address['url'] = \esc_url_raw( $data['address']['url'] );
+				}
+				$place->set_address( $address );
+			}
+		}
+
+		return $place;
 	}
 
 	/**

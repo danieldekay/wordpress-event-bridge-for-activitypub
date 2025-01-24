@@ -15,6 +15,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\Integrations\VS_Event_List as IntegrationsVS_Event_List;
 
 /**
@@ -34,6 +35,10 @@ class VS_Event_List extends Base {
 	 */
 	private static function get_location_as_string( $location ): string {
 		$location_string = '';
+
+		if ( $location instanceof Place ) {
+			$location = $location->to_array();
+		}
 
 		// Return empty string when location is not an associative array.
 		if ( is_null( $location ) || ! is_array( $location ) ) {

@@ -81,7 +81,7 @@ final class Events_Manager extends Event_Transformer {
 			'type'            => 'PostalAddress',
 			'addressCountry'  => $em_location->location_country,
 			'addressLocality' => $em_location->location_town,
-			'postalAddress'   => $em_location->location_address,
+			'streetAddress'   => $em_location->location_address,
 			'postalCode'      => $em_location->location_postcode,
 			'name'            => $em_location->location_name,
 		);
