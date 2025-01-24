@@ -403,10 +403,7 @@ class Event_Sources {
 		}
 
 		if ( ! self::is_valid_activitypub_time_string( $event_object['startTime'] ) ) {
-			return new WP_Error(
-				'event_bridge_for_activitypub_event_object_is_not_in_the_future',
-				__( 'Ignoring event that has already started.', 'event-bridge-for-activitypub' )
-			);
+			return false;
 		}
 
 		return true;
@@ -415,25 +412,14 @@ class Event_Sources {
 	/**
 	 * Validate a time string if it is according to the ActivityPub specification.
 	 *
-	 * @param string $time_string The time string.
+	 * @link https://www.w3.org/TR/activitystreams-core/#dates
+	 *
+	 * @param string $time_string The xsd:datetime string.
 	 * @return bool
 	 */
-	public static function is_valid_activitypub_time_string( $time_string ) {
-		// Try to create a DateTime object from the input string.
-		try {
-			$date = new DateTime( $time_string );
-		} catch ( Exception $e ) {
-			// If parsing fails, it's not valid.
-			return false;
-		}
-
-		// Ensure the timezone is correctly formatted (e.g., 'Z' or a valid offset).
-		$timezone           = $date->getTimezone();
-		$formatted_timezone = $timezone->getName();
-
-		// Return true only if the time string includes 'Z' or a valid timezone offset.
-		$valid = 'Z' === $formatted_timezone || preg_match( '/^[+-]\d{2}:\d{2}$/ ', $formatted_timezone );
-		return $valid;
+	public static function is_valid_activitypub_time_string( string $time_string ): bool {
+		// Regular expression based on AS2 rules.
+		return 1 === preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:\d{2})$/', $time_string );
 	}
 
 	/**
