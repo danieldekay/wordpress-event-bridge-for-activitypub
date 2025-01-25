@@ -64,7 +64,7 @@ class Sanitizer {
 		}
 
 		if ( isset( $data['published'] ) ) {
-			$event->set_end_time( \sanitize_text_field( $data['endTime'] ) );
+			$event->set_published( \sanitize_text_field( $data['published'] ) );
 		}
 
 		if ( isset( $data['id'] ) ) {
