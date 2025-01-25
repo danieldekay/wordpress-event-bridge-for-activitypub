@@ -90,7 +90,7 @@ class VS_Event_List extends Base {
 
 		// Add the tags as terms to the post.
 		if ( ! empty( $tag_names ) ) {
-			wp_set_object_terms( $post_id, $tag_names, IntegrationsVS_Event_List::get_event_category_taxonomy(), true );
+			\wp_set_object_terms( $post_id, $tag_names, IntegrationsVS_Event_List::get_event_category_taxonomy(), true );
 		}
 
 		return true;
