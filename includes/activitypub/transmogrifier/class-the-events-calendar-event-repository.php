@@ -26,8 +26,6 @@ class The_Events_Calendar_Event_Repository extends \Tribe__Events__Repositories_
 	protected static $blocked_keys = array(
 		'ID',
 		'post_type',
-		'post_modified',
-		'post_modified_gmt',
 		'comment_count',
 	);
 
