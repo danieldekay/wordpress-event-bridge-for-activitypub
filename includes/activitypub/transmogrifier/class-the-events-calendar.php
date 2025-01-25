@@ -241,10 +241,43 @@ class The_Events_Calendar extends Base {
 		$image = self::get_featured_image( $activitypub_event );
 		self::set_featured_image_with_alt( $post_id, $image['url'], $image['alt'] );
 
+		// Add tags.
+		self::add_tags_to_post( $activitypub_event, $post_id );
+
 		// Limit this as a safety measure.
 		remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
 		return $post_id;
+	}
+
+	/**
+	 * Add tags to post.
+	 *
+	 * @param Event $activitypub_event The ActivityPub event object.
+	 * @param int   $post_id           The post ID.
+	 */
+	private static function add_tags_to_post( $activitypub_event, $post_id ) {
+		$tags_array = $activitypub_event->get_tag();
+
+		// Ensure the input is valid.
+		if ( empty( $tags_array ) || ! is_array( $tags_array ) || ! $post_id ) {
+			return false;
+		}
+
+		// Extract and process tag names.
+		$tag_names = array();
+		foreach ( $tags_array as $tag ) {
+			if ( isset( $tag['name'] ) && 'Hashtag' === $tag['type'] ) {
+				$tag_names[] = ltrim( $tag['name'], '#' ); // Remove the '#' from the name.
+			}
+		}
+
+		// Add the tags as terms to the post.
+		if ( ! empty( $tag_names ) ) {
+			\wp_set_object_terms( $post_id, $tag_names, 'post_tag', true );
+		}
+
+		return true;
 	}
 
 	/**
