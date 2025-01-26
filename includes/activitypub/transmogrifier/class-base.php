@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
-use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Sanitizer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Helper\Sanitizer;
 
 use WP_Error;
 

@@ -124,7 +124,7 @@ class Event_Source extends Actor {
 	}
 
 	/**
-	 * Get the Event Source Post ID by the ActivityPub ID.
+	 * Get the Event Source by the ActivityPub ID or WordPress Post ID.
 	 *
 	 * @param int|string $event_source_id The ActivityPub actor ID as string or the Post ID as int of the Event Source.
 	 * @return Event_Source|false The Event Sources if it exists, false otherwise.

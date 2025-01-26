@@ -16,6 +16,8 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Helper\The_Events_Calendar_Event_Repository;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Helper\The_Events_Calendar_Venue_Repository;
 
 use function Activitypub\object_to_uri;
 
@@ -68,6 +70,10 @@ class The_Events_Calendar extends Base {
 			$args['address'] = $location['address'];
 		}
 
+		if ( $location['id'] ) {
+			$args['guid'] = $location['id'];
+		}
+
 		return $args;
 	}
 
@@ -103,24 +109,49 @@ class The_Events_Calendar extends Base {
 			return;
 		}
 
-		$post_ids = tribe_venues()->search( $location['name'] )->all();
+		$tribe_venue = new The_Events_Calendar_Venue_Repository();
 
-		$post_id = false;
+		$post_id = null;
 
-		if ( count( $post_ids ) ) {
-			$post_id = reset( $post_ids );
-			if ( $post_id instanceof \WP_Post ) {
-				$post_id = $post_id->ID;
+		// Search if we already got this venue/place in our database.
+		if ( isset( $location['id'] ) ) {
+			global $wpdb;
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$post_id = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT ID FROM $wpdb->posts WHERE guid=%s AND post_type=%s",
+					$location['id'],
+					\Tribe__Events__Venue::POSTTYPE
+				)
+			);
+			if ( $post_id ) {
+				$post_id = \absint( $post_id );
 			}
 		}
 
-		if ( $post_id && get_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', true ) ) {
-			$result = tribe_venues()->where( 'id', $post_id )->set_args( self::get_venue_args( $location ) )->save();
+		if ( ! $post_id ) {
+			// Try to find a match by searching.
+			$post_ids = $tribe_venue->search( $location['name'] )->all();
+
+			if ( count( $post_ids ) ) {
+				$potential_matching_post_id = reset( $post_ids );
+				if ( $potential_matching_post_id instanceof \WP_Post ) {
+					$potential_matching_post_id = $potential_matching_post_id->ID;
+				}
+				if ( \get_post_meta( $potential_matching_post_id, '_event_bridge_for_activitypub_event_source' ) === $event_source_post_id ) {
+					$post_id = $potential_matching_post_id;
+				}
+			}
+		}
+
+		// Update if we found a match.
+		if ( $post_id ) {
+			$result = $tribe_venue->where( 'id', $post_id )->set_args( self::get_venue_args( $location ) )->save();
 			if ( array_key_exists( $post_id, $result ) && $result[ $post_id ] ) {
 				return $post_id;
 			}
-		} else {
-			$post = tribe_venues()->set_args( self::get_venue_args( $location ) )->create();
+		} else { // Create a new venue.
+			$post = $tribe_venue->set_args( self::get_venue_args( $location ) )->create();
 			if ( $post ) {
 				$post_id = $post->ID;
 				update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', $event_source_post_id );
@@ -152,15 +183,22 @@ class The_Events_Calendar extends Base {
 			return false;
 		}
 
+		$args = array(
+			'organizer'   => $event_source->get_name(),
+			'description' => $event_source->get_summary(),
+			'website'     => $event_source->get_url(),
+			'excerpt'     => $event_source->get_summary(),
+		);
+
+		if ( $event_source->get_published() ) {
+			$post_date             = self::format_time_string_to_wordpress_gmt( $event_source->get_published() );
+			$args['post_date']     = $post_date;
+			$args['post_date_gmt'] = $post_date;
+		}
+
 		$tribe_organizer = tribe_organizers()
 			->set_args(
-				array(
-					'organizer'     => $event_source->get_name(),
-					'description'   => $event_source->get_summary(),
-					'post_date_gmt' => $event_source->get_published(),
-					'website'       => $event_source->get_url(),
-					'excerpt'       => $event_source->get_summary(),
-				),
+				$args,
 				'publish',
 				true // This enables avoid_duplicates which includes exact matches of title, content, excerpt, and website.
 			)->create();
