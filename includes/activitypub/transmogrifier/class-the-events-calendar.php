@@ -211,7 +211,7 @@ class The_Events_Calendar extends Base {
 				if ( $potential_matching_post_id instanceof \WP_Post ) {
 					$potential_matching_post_id = $potential_matching_post_id->ID;
 				}
-				if ( \get_post_meta( $potential_matching_post_id, '_event_bridge_for_activitypub_event_source' ) === $event_source_post_id ) {
+				if ( \get_post_meta( $potential_matching_post_id, '_event_bridge_for_activitypub_event_source', true ) === $event_source_post_id ) {
 					$post_id = $potential_matching_post_id;
 				}
 			}
@@ -285,7 +285,7 @@ class The_Events_Calendar extends Base {
 			$is_create = false;
 		} else {
 			$tribe_organizer = \tribe_organizers()->set_args( $args )->create();
-			$is_create = true;
+			$is_create       = true;
 		}
 
 		if ( ! $tribe_organizer ) {
