@@ -143,7 +143,7 @@ class The_Events_Calendar extends Base {
 			$args['address'] = $location['address'];
 		}
 
-		if ( $location['id'] ) {
+		if ( isset( $location['id'] ) ) {
 			$args['guid'] = $location['id'];
 		}
 
