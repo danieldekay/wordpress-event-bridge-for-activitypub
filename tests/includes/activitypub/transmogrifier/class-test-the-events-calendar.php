@@ -335,4 +335,52 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
+
+	/**
+	 * Test receiving an update from Gancio style event.
+	 */
+	public function test_gancio_event_receive_updated_location() {
+		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
+
+		$activity = array(
+			'id'     => 'https://remote.example/@organizer/events/new-year-party#create',
+			'type'   => 'Create',
+			'actor'  => 'https://remote.example/@organizer',
+			'object' => Helper::get_gancio_event(),
+		);
+
+		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
+		$request->set_header( 'Content-Type', 'application/activity+json' );
+		$request->set_body( \wp_json_encode( $activity ) );
+		\rest_do_request( $request );
+
+		// Check that event, venue and organizer post has been created.
+		$events     = tribe_get_events();
+		$venues     = tribe_get_venues();
+		$organizers = tribe_get_organizers();
+		$this->assertCount( 1, $events );
+		$this->assertCount( 1, $venues );
+		$this->assertCount( 1, $organizers );
+
+		// Send update.
+		$activity['type']                       = 'Update';
+		$activity['object']['location']['name'] = 'New Location Name';
+		$request->set_body( \wp_json_encode( $activity ) );
+		\rest_do_request( $request );
+
+		// No duplicates.
+		$events     = tribe_get_events();
+		$venues     = tribe_get_venues();
+		$organizers = tribe_get_organizers();
+		$this->assertCount( 1, $events );
+		$this->assertCount( 1, $venues );
+		$this->assertCount( 1, $organizers );
+
+		// Check that the location is updated.
+		$event = tribe_get_event( $events[0] );
+		$venue = self::get_first_tribe_venue_of_tribe_event( $event );
+		$this->assertEquals( 'New Location Name', $venue->post_title );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
+	}
 }

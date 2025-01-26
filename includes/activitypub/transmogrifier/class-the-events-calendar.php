@@ -261,6 +261,7 @@ class The_Events_Calendar extends Base {
 			'description' => $event_source->get_summary(),
 			'website'     => $event_source->get_url(),
 			'excerpt'     => $event_source->get_summary(),
+			'post_parent' => $event_source->get__id(),
 		);
 
 		if ( $event_source->get_published() ) {
@@ -288,21 +289,14 @@ class The_Events_Calendar extends Base {
 			$is_create       = true;
 		}
 
-		if ( ! $tribe_organizer ) {
+		if ( ! $tribe_organizer instanceof \WP_Post ) {
 			return;
 		}
 
+		// Make a relationship between the event source WP_Post and the organizer WP_Post.
 		if ( $is_create ) {
 			\update_post_meta( $tribe_organizer->ID, '_event_bridge_for_activitypub_event_source', true );
 		}
-
-		// Make a relationship between the event source WP_Post and the organizer WP_Post.
-		\wp_update_post(
-			array(
-				'ID'          => $tribe_organizer->ID,
-				'post_parent' => $event_source->get__id(),
-			)
-		);
 
 		// Add the thumbnail of the event source to the organizer.
 		if ( \get_post_thumbnail_id( $event_source ) ) {

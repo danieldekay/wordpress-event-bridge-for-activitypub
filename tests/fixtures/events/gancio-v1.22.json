@@ -33,7 +33,7 @@
             "href": "https://remote.example/tag/Cello"
         }
     ],
-    "attributedTo": "https://remote.example/federation/u/customized",
+    "attributedTo": "https://remote.example/@organizer",
     "to": [
         "https://www.w3.org/ns/activitystreams#Public"
     ],
