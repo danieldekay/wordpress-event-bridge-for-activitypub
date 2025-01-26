@@ -19,7 +19,7 @@ class Helper {
 	 * @return array The ActivityPub event object.
 	 */
 	public static function get_gancio_event() {
-		\define( 'FS_METHOD', 'direct' );
+		\defined( 'FS_METHOD' ) ?? \define( 'FS_METHOD', 'direct' );
 
 		global $wp_filesystem;
 		if ( empty( $wp_filesystem ) ) {
