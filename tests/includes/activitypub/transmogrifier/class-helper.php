@@ -14,6 +14,35 @@ namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transmogrifier;
  */
 class Helper {
 	/**
+	 * Get an Gancio mockup event.
+	 *
+	 * @return array The ActivityPub event object.
+	 */
+	public static function get_gancio_event() {
+		\define( 'FS_METHOD', 'direct' );
+
+		global $wp_filesystem;
+		if ( empty( $wp_filesystem ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+
+		$event = json_decode( $wp_filesystem->get_contents( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'tests/fixtures/events/gancio-v1.22.json' ), true );
+
+		$args = array(
+			'offset'       => '+1 hour',
+			'milliseconds' => true,
+		);
+
+		$event = self::event_set_dates( $event, $args );
+
+		// Set mockup attachment url.
+		$event['attachment'][0]['url'] = EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_URL . '.wordpress-org/banner-772x250.jpg';
+
+		return $event;
+	}
+
+	/**
 	 * Set startDate
 	 *
 	 * @param array $event The ActivityPub event object as an associative array.

@@ -127,6 +127,12 @@ class VS_Event_List extends Base {
 			),
 		);
 
+		if ( $activitypub_event->get_published() ) {
+			$post_date             = self::format_time_string_to_wordpress_gmt( $activitypub_event->get_published() );
+			$args['post_date']     = $post_date;
+			$args['post_date_gmt'] = $post_date;
+		}
+
 		// Add end time.
 		$end_time = $activitypub_event->get_end_time();
 		if ( $end_time ) {

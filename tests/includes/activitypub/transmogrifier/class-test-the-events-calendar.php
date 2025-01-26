@@ -293,30 +293,13 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 	 */
 	public function test_incoming_gancio_event() {
 		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
-		define( 'FS_METHOD', 'direct' );
-
-		global $wp_filesystem;
-		if ( empty( $wp_filesystem ) ) {
-			require_once ABSPATH . 'wp-admin/includes/file.php';
-			WP_Filesystem();
-		}
 
 		$activity = array(
 			'id'     => 'https://remote.example/@organizer/events/new-year-party#create',
 			'type'   => 'Create',
 			'actor'  => 'https://remote.example/@organizer',
-			'object' => json_decode( $wp_filesystem->get_contents( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'tests/fixtures/events/gancio-v1.22.json' ), true ),
+			'object' => Helper::get_gancio_event(),
 		);
-
-		$args = array(
-			'offset'       => '+1 hour',
-			'milliseconds' => true,
-		);
-
-		$activity['object'] = Helper::event_set_dates( $activity['object'], $args );
-
-		// Set mockup attachment url.
-		$activity['object']['attachment'][0]['url'] = EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_URL . '.wordpress-org/banner-772x250.jpg';
 
 		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
 		$request->set_header( 'Content-Type', 'application/activity+json' );
