@@ -19,15 +19,7 @@ class Helper {
 	 * @return array The ActivityPub event object.
 	 */
 	public static function get_gancio_event() {
-		\defined( 'FS_METHOD' ) ?? \define( 'FS_METHOD', 'direct' );
-
-		global $wp_filesystem;
-		if ( empty( $wp_filesystem ) ) {
-			require_once ABSPATH . 'wp-admin/includes/file.php';
-			WP_Filesystem();
-		}
-
-		$event = json_decode( $wp_filesystem->get_contents( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'tests/fixtures/events/gancio-v1.22.json' ), true );
+		$event = json_decode( file_get_contents( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'tests/fixtures/events/gancio-v1.22.json' ), true );
 
 		$args = array(
 			'offset'       => '+1 hour',
