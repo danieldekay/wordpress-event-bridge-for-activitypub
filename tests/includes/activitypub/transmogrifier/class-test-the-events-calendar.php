@@ -346,9 +346,9 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$this->assertEquals( $activity['object']['location']['name'], $venue->post_title );
 
 		// Check the thumbnails alt text.
-		// $thumbnail_id       = \get_post_thumbnail_id( $event->ID );
-		// $thumbnail_alt_text = \get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true );
-		// $this->assertEquals( $activity['object']['attachment'][0]['name'], $thumbnail_alt_text );
+		$thumbnail_id       = \get_post_thumbnail_id( $event->ID );
+		$thumbnail_alt_text = \get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true );
+		// We have to mockup the attachment sideload to be able to text this.
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
