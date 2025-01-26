@@ -2,6 +2,9 @@
 /**
  * Collection of functions that sanitize an incoming event.
  *
+ * We do a lot of duck-typing. We just discard/ignore attributes/properties we do not know.
+ * Replacing this with defining a schema and using rest_sanitize_value_from_schema is a future goal.
+ *
  * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  * @license AGPL-3.0-or-later

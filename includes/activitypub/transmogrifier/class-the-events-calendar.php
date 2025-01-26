@@ -38,7 +38,7 @@ class The_Events_Calendar extends Base {
 	 * @return false|int
 	 */
 	protected static function save_event( $activitypub_event, $event_source_post_id ) {
-		// Limit this as a safety measure.
+		// Limit the number of saved post revisions as a safety measure.
 		add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
 		$post_id      = self::get_post_id_from_activitypub_id( $activitypub_event->get_id() );
@@ -96,7 +96,7 @@ class The_Events_Calendar extends Base {
 		// Add tags.
 		self::add_tags_to_post( $activitypub_event, $post_id );
 
-		// Limit this as a safety measure.
+		// Remove revision limit.
 		remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
 		return $post_id;
@@ -161,6 +161,7 @@ class The_Events_Calendar extends Base {
 	private static function add_venue( $activitypub_event, $event_source_post_id ) {
 		$location = $activitypub_event->get_location();
 
+		// Make sure we have a valid location in the right format.
 		if ( ! $location ) {
 			return;
 		}
@@ -184,6 +185,7 @@ class The_Events_Calendar extends Base {
 
 		$tribe_venue = new The_Events_Calendar_Venue_Repository();
 
+		// If the venue already exists try to find it's post id.
 		$post_id = null;
 
 		// Search if we already got this venue/place in our database.
@@ -204,26 +206,28 @@ class The_Events_Calendar extends Base {
 
 		if ( ! $post_id ) {
 			// Try to find a match by searching.
-			$post_ids = $tribe_venue->search( $location['name'] )->all();
+			$results = $tribe_venue->search( $location['name'] )->all();
 
-			if ( count( $post_ids ) ) {
-				$potential_matching_post_id = reset( $post_ids );
+			foreach ( $results as $potential_matching_post_id ) {
 				if ( $potential_matching_post_id instanceof \WP_Post ) {
 					$potential_matching_post_id = $potential_matching_post_id->ID;
 				}
+				// Only accept a match for the venue/location if it was received by the same actor.
 				if ( \get_post_meta( $potential_matching_post_id, '_event_bridge_for_activitypub_event_source', true ) === $event_source_post_id ) {
 					$post_id = $potential_matching_post_id;
+					break;
 				}
 			}
 		}
 
-		// Update if we found a match.
 		if ( $post_id ) {
+			// Update if we found a match.
 			$result = $tribe_venue->where( 'id', $post_id )->set_args( self::get_venue_args( $location ) )->save();
 			if ( array_key_exists( $post_id, $result ) && $result[ $post_id ] ) {
 				return $post_id;
 			}
-		} else { // Create a new venue.
+		} else {
+			// Create a new venue.
 			$post = $tribe_venue->set_args( self::get_venue_args( $location ) )->create();
 			if ( $post ) {
 				$post_id = $post->ID;
@@ -244,11 +248,12 @@ class The_Events_Calendar extends Base {
 	private static function add_organizer( $activitypub_event ) {
 		// This might likely change, because of FEP-8a8e.
 		$actor = $activitypub_event->get_attributed_to();
+
 		if ( is_null( $actor ) ) {
 			return false;
 		}
-		$actor_id = object_to_uri( $actor );
 
+		$actor_id     = object_to_uri( $actor );
 		$event_source = Event_Source::get_by_id( $actor_id );
 
 		// As long as we do not support announces, we expect the attributedTo to be an existing event source.
@@ -256,12 +261,13 @@ class The_Events_Calendar extends Base {
 			return false;
 		}
 
+		// Prepare arguments for inserting/updating the organizer post.
 		$args = array(
 			'organizer'   => $event_source->get_name(),
 			'description' => $event_source->get_summary(),
 			'website'     => $event_source->get_url(),
 			'excerpt'     => $event_source->get_summary(),
-			'post_parent' => $event_source->get__id(),
+			'post_parent' => $event_source->get__id(), // Maybe just use post meta too here.
 		);
 
 		if ( $event_source->get_published() ) {
@@ -270,6 +276,7 @@ class The_Events_Calendar extends Base {
 			$args['post_date_gmt'] = $post_date;
 		}
 
+		// Get organizer if it is already present.
 		$children = \get_children(
 			array(
 				'post_parent' => $event_source->get__id(),
@@ -278,32 +285,41 @@ class The_Events_Calendar extends Base {
 		);
 
 		if ( count( $children ) ) {
-			$child           = array_pop( $children );
-			$tribe_organizer = \tribe_organizers()->where( 'id', $child->ID )->set_args( $args )->save();
+			// Update organizer post.
+			$child                    = array_pop( $children );
+			$tribe_organizer_post_ids = \tribe_organizers()->where( 'id', $child->ID )->set_args( $args )->save();
+
+			// Fallback to delete duplicates.
 			foreach ( $children as $to_delete ) {
 				\wp_delete_post( $to_delete->ID, true );
 			}
-			$is_create = false;
+
+			// If updating failed return.
+			if ( 1 !== count( $tribe_organizer_post_ids ) || ! reset( $tribe_organizer_post_ids ) ) {
+				return;
+			}
+
+			$tribe_organizer_post_id = array_key_first( $tribe_organizer_post_ids );
 		} else {
-			$tribe_organizer = \tribe_organizers()->set_args( $args )->create();
-			$is_create       = true;
-		}
+			// Create new organizer post.
+			$tribe_organizer_post = \tribe_organizers()->set_args( $args )->create();
 
-		if ( ! $tribe_organizer instanceof \WP_Post ) {
-			return;
-		}
+			if ( ! $tribe_organizer_post ) {
+				return;
+			}
 
-		// Make a relationship between the event source WP_Post and the organizer WP_Post.
-		if ( $is_create ) {
-			\update_post_meta( $tribe_organizer->ID, '_event_bridge_for_activitypub_event_source', true );
+			$tribe_organizer_post_id = $tribe_organizer_post->ID;
+
+			// Make a relationship between the event source WP_Post and the organizer WP_Post.
+			\update_post_meta( $tribe_organizer_post_id, '_event_bridge_for_activitypub_event_source', true );
 		}
 
 		// Add the thumbnail of the event source to the organizer.
 		if ( \get_post_thumbnail_id( $event_source ) ) {
-			\set_post_thumbnail( $tribe_organizer, \get_post_thumbnail_id( $event_source ) );
+			\set_post_thumbnail( $tribe_organizer_post_id, \get_post_thumbnail_id( $event_source ) );
 		}
 
-		return $tribe_organizer->ID;
+		return $tribe_organizer_post_id;
 	}
 
 	/**

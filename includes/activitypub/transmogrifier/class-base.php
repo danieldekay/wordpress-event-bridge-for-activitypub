@@ -41,6 +41,7 @@ abstract class Base {
 	 * @param int   $event_source_post_id The Post ID of the Event Source that owns the outbox.
 	 */
 	public static function save( $activitypub_event, $event_source_post_id ) {
+		// Sanitize the incoming event and set only the properties used by the transmogrifier classes.
 		$activitypub_event = Sanitizer::init_and_sanitize_event_object_from_array( $activitypub_event );
 
 		if ( is_wp_error( $activitypub_event ) ) {
@@ -59,6 +60,7 @@ abstract class Base {
 				'event_bridge_for_activitypub_write_log',
 				array( "[ACTIVITYPUB] Processed incoming event {$event_activitypub_id} from {$event_source_activitypub_id}" )
 			);
+			// Use post meta to remember who we received this event from.
 			\update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', absint( $event_source_post_id ) );
 			\update_post_meta( $post_id, 'activitypub_content_visibility', constant( 'ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL' ) ?? '' );
 		} else {
@@ -179,11 +181,17 @@ abstract class Base {
 	 * @return array
 	 */
 	protected static function get_featured_image( $event ) {
+		// Search for the featured image in the image property.
 		$image = $event->get_image();
+
 		if ( $image ) {
 			return self::extract_image_alt_and_url( $image );
 		}
+
+		// Fallback attachment.
 		$attachment = $event->get_attachment();
+
+		// If attachment is an array get the first fitting one.
 		if ( is_array( $attachment ) && ! empty( $attachment ) ) {
 			$supported_types = array( 'Image', 'Document' );
 			$match           = null;
@@ -194,8 +202,10 @@ abstract class Base {
 					break;
 				}
 			}
+
 			$attachment = $match;
 		}
+
 		return self::extract_image_alt_and_url( $attachment );
 	}
 
@@ -283,8 +293,7 @@ abstract class Base {
 			);
 		}
 
-		$address = array();
-
+		$address          = array();
 		$known_attributes = array(
 			'streetAddress',
 			'postalCode',
