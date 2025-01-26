@@ -9,9 +9,10 @@
 
 namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transmogrifier;
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 use WP_REST_Request;
 use WP_REST_Server;
+
+require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . '/tests/includes/activitypub/transmogrifier/class-helper.php';
 
 /**
  * Test class for the Transmogrifier (import of ActivityPub Event objects) of "The Events Calendar".
@@ -283,6 +284,71 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		// We do expect the event to be removed.
 		$events = tribe_get_events();
 		$this->assertEmpty( $events );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
+	}
+
+	/**
+	 * Test incoming Gancio style event.
+	 */
+	public function test_incoming_gancio_event() {
+		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
+		define( 'FS_METHOD', 'direct' );
+
+		global $wp_filesystem;
+		if ( empty( $wp_filesystem ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			WP_Filesystem();
+		}
+
+		$activity = array(
+			'id'     => 'https://remote.example/@organizer/events/new-year-party#create',
+			'type'   => 'Create',
+			'actor'  => 'https://remote.example/@organizer',
+			'object' => json_decode( $wp_filesystem->get_contents( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'tests/fixtures/events/gancio-v1.22.json' ), true ),
+		);
+
+		$args = array(
+			'offset'       => '+1 hour',
+			'milliseconds' => true,
+		);
+
+		$activity['object'] = Helper::event_set_dates( $activity['object'], $args );
+
+		// Set mockup attachment url.
+		$activity['object']['attachment'][0]['url'] = EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_URL . '.wordpress-org/banner-772x250.jpg';
+
+		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
+		$request->set_header( 'Content-Type', 'application/activity+json' );
+		$request->set_body( \wp_json_encode( $activity ) );
+
+		// Dispatch the request.
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+
+		// Check if post has been created.
+		$events = tribe_get_events();
+
+		$this->assertEquals( 1, count( $events ) );
+
+		// Initialize new Tribe Event object.
+		$event = tribe_get_event( $events[0] );
+
+		$this->assertEquals( $activity['object']['name'], $event->post_title );
+		$this->assertEquals( strtotime( $activity['object']['startTime'] ), $event->dates->start->getTimestamp() );
+		$this->assertEquals( strtotime( $activity['object']['endTime'] ), $event->dates->end->getTimestamp() );
+		$this->assertEquals( strtotime( $activity['object']['published'] ), strtotime( $event->post_date_gmt ) );
+		$this->assertEquals( $activity['object']['id'], $event->guid );
+
+		$venue = self::get_first_tribe_venue_of_tribe_event( $event );
+
+		$this->assertEquals( $activity['object']['location']['address'], $venue->address );
+		$this->assertEquals( $activity['object']['location']['name'], $venue->post_title );
+
+		// Check the thumbnails alt text.
+		// $thumbnail_id       = \get_post_thumbnail_id( $event->ID );
+		// $thumbnail_alt_text = \get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true );
+		// $this->assertEquals( $activity['object']['attachment'][0]['name'], $thumbnail_alt_text );
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}

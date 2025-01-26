@@ -221,6 +221,12 @@ class The_Events_Calendar extends Base {
 			$args['OrganizerID'] = $organizer_id;
 		}
 
+		if ( $activitypub_event->get_published() ) {
+			$post_date             = self::format_time_string_to_wordpress_gmt( $activitypub_event->get_published() );
+			$args['post_date']     = $post_date;
+			$args['post_date_gmt'] = $post_date;
+		}
+
 		$tribe_event = new The_Events_Calendar_Event_Repository();
 
 		if ( $post_id ) {
@@ -239,7 +245,9 @@ class The_Events_Calendar extends Base {
 
 		// Insert featured image.
 		$image = self::get_featured_image( $activitypub_event );
-		self::set_featured_image_with_alt( $post_id, $image['url'], $image['alt'] );
+		if ( isset( $image['url'] ) ) {
+			self::set_featured_image_with_alt( $post_id, $image['url'], $image['alt'] );
+		}
 
 		// Add tags.
 		self::add_tags_to_post( $activitypub_event, $post_id );

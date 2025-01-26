@@ -105,6 +105,18 @@ abstract class Base {
 	}
 
 	/**
+	 * Format an ActivityStreams xds:datetime to WordPress GMT format.
+	 *
+	 * @param string $time_string The ActivityStreams xds:datetime (may include offset).
+	 * @return string The GMT string in format 'Y-m-d H:i:s'.
+	 */
+	protected static function format_time_string_to_wordpress_gmt( $time_string ) {
+		$datetime = new \DateTime( $time_string );
+		$datetime->setTimezone( new \DateTimeZone( 'GMT' ) );
+		return $datetime->format( 'Y-m-d H:i:s' );
+	}
+
+	/**
 	 * Get WordPress post by ActivityPub object ID.
 	 *
 	 * @param int $activitypub_id The ActivityPub object ID.
@@ -124,7 +136,7 @@ abstract class Base {
 	 * Get the image URL and alt-text of an ActivityPub object.
 	 *
 	 * @param array $data The ActivityPub object as ann associative array.
-	 * @return ?array Array containing the images URL and alt-text.
+	 * @return array Array containing the images URL and alt-text.
 	 */
 	private static function extract_image_alt_and_url( $data ) {
 		$image = array(

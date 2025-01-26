@@ -1,0 +1,45 @@
+{
+    "id": "https://remote.example/federation/m/13500",
+    "name": "Picture Show",
+    "url": "https://remote.example/event/picture-show",
+    "type": "Event",
+    "location": {
+        "id": "https://remote.gancio.org/federation/p/33",
+        "type": "Place",
+        "name": "Fediverse TV",
+        "address": "C/ Falsa 123"
+    },
+    "attachment": [
+        {
+            "type": "Document",
+            "mediaType": "image/jpeg",
+            "url": "http://remote.example/media/36755574a6e48a1ccd3351d35e1a371f.jpg",
+            "name": "Picture Show alt",
+            "focalPoint": [
+            0,
+            0
+            ]
+        }
+    ],
+    "tag": [
+        {
+            "type": "Hashtag",
+            "name": "#Sport",
+            "href": "https://remote.example/tag/Sport"
+        },
+        {
+            "type": "Hashtag",
+            "name": "#Cello",
+            "href": "https://remote.example/tag/Cello"
+        }
+    ],
+    "attributedTo": "https://remote.example/federation/u/customized",
+    "to": [
+        "https://www.w3.org/ns/activitystreams#Public"
+    ],
+    "cc": [
+        "https://remote.example/federation/u/customized/followers"
+    ],
+    "content": "<strong> This is the the <i>content</i></strong>",
+    "summary": "<p>Fediverse tv, Saturday/p>"
+}
