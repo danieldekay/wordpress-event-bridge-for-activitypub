@@ -30,6 +30,79 @@ use function Activitypub\object_to_uri;
  */
 class The_Events_Calendar extends Base {
 	/**
+	 * Save the ActivityPub event object as GatherPress Event.
+	 *
+	 * @param Event $activitypub_event    The ActivityPub event as associative array.
+	 * @param int   $event_source_post_id The Post ID of the Event Source that owns the outbox.
+	 *
+	 * @return false|int
+	 */
+	protected static function save_event( $activitypub_event, $event_source_post_id ) {
+		// Limit this as a safety measure.
+		add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
+
+		$post_id      = self::get_post_id_from_activitypub_id( $activitypub_event->get_id() );
+		$duration     = self::get_duration( $activitypub_event );
+		$venue_id     = self::add_venue( $activitypub_event, $event_source_post_id );
+		$organizer_id = self::add_organizer( $activitypub_event );
+
+		$args = array(
+			'title'      => $activitypub_event->get_name(),
+			'content'    => $activitypub_event->get_content() ?? '',
+			'start_date' => gmdate( 'Y-m-d H:i:s', strtotime( $activitypub_event->get_start_time() ) ),
+			'duration'   => $duration,
+			'status'     => 'publish',
+			'guid'       => $activitypub_event->get_id(),
+		);
+
+		if ( $venue_id ) {
+			$args['venue']   = $venue_id;
+			$args['VenueID'] = $venue_id;
+		}
+
+		if ( $organizer_id ) {
+			$args['organizer']   = $organizer_id;
+			$args['OrganizerID'] = $organizer_id;
+		}
+
+		if ( $activitypub_event->get_published() ) {
+			$post_date             = self::format_time_string_to_wordpress_gmt( $activitypub_event->get_published() );
+			$args['post_date']     = $post_date;
+			$args['post_date_gmt'] = $post_date;
+		}
+
+		$tribe_event = new The_Events_Calendar_Event_Repository();
+
+		if ( $post_id ) {
+			$post = $tribe_event->where( 'id', $post_id )->set_args( $args )->save();
+		} else {
+			$post = $tribe_event->set_args( $args )->create();
+		}
+
+		if ( $post instanceof \WP_Post ) {
+			$post_id = $post->ID;
+		}
+
+		if ( ! $post_id || is_wp_error( $post_id ) ) {
+			return false;
+		}
+
+		// Insert featured image.
+		$image = self::get_featured_image( $activitypub_event );
+		if ( isset( $image['url'] ) ) {
+			self::set_featured_image_with_alt( $post_id, $image['url'], $image['alt'] );
+		}
+
+		// Add tags.
+		self::add_tags_to_post( $activitypub_event, $post_id );
+
+		// Limit this as a safety measure.
+		remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
+
+		return $post_id;
+	}
+
+	/**
 	 * Map an ActivityStreams Place to the Events Calendar venue.
 	 *
 	 * @param array $location An ActivityPub location as an associative array.
@@ -221,79 +294,6 @@ class The_Events_Calendar extends Base {
 		}
 
 		return $tribe_organizer->ID;
-	}
-
-	/**
-	 * Save the ActivityPub event object as GatherPress Event.
-	 *
-	 * @param Event $activitypub_event    The ActivityPub event as associative array.
-	 * @param int   $event_source_post_id The Post ID of the Event Source that owns the outbox.
-	 *
-	 * @return false|int
-	 */
-	protected static function save_event( $activitypub_event, $event_source_post_id ) {
-		// Limit this as a safety measure.
-		add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
-
-		$post_id      = self::get_post_id_from_activitypub_id( $activitypub_event->get_id() );
-		$duration     = self::get_duration( $activitypub_event );
-		$venue_id     = self::add_venue( $activitypub_event, $event_source_post_id );
-		$organizer_id = self::add_organizer( $activitypub_event );
-
-		$args = array(
-			'title'      => $activitypub_event->get_name(),
-			'content'    => $activitypub_event->get_content() ?? '',
-			'start_date' => gmdate( 'Y-m-d H:i:s', strtotime( $activitypub_event->get_start_time() ) ),
-			'duration'   => $duration,
-			'status'     => 'publish',
-			'guid'       => $activitypub_event->get_id(),
-		);
-
-		if ( $venue_id ) {
-			$args['venue']   = $venue_id;
-			$args['VenueID'] = $venue_id;
-		}
-
-		if ( $organizer_id ) {
-			$args['organizer']   = $organizer_id;
-			$args['OrganizerID'] = $organizer_id;
-		}
-
-		if ( $activitypub_event->get_published() ) {
-			$post_date             = self::format_time_string_to_wordpress_gmt( $activitypub_event->get_published() );
-			$args['post_date']     = $post_date;
-			$args['post_date_gmt'] = $post_date;
-		}
-
-		$tribe_event = new The_Events_Calendar_Event_Repository();
-
-		if ( $post_id ) {
-			$post = $tribe_event->where( 'id', $post_id )->set_args( $args )->save();
-		} else {
-			$post = $tribe_event->set_args( $args )->create();
-		}
-
-		if ( $post instanceof \WP_Post ) {
-			$post_id = $post->ID;
-		}
-
-		if ( ! $post_id || is_wp_error( $post_id ) ) {
-			return false;
-		}
-
-		// Insert featured image.
-		$image = self::get_featured_image( $activitypub_event );
-		if ( isset( $image['url'] ) ) {
-			self::set_featured_image_with_alt( $post_id, $image['url'], $image['alt'] );
-		}
-
-		// Add tags.
-		self::add_tags_to_post( $activitypub_event, $post_id );
-
-		// Limit this as a safety measure.
-		remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
-
-		return $post_id;
 	}
 
 	/**
