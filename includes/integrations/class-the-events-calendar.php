@@ -74,6 +74,15 @@ final class The_Events_Calendar extends Event_plugin_Integration implements Feat
 	}
 
 	/**
+	 * Return the organizers post type used by tribe.
+	 *
+	 * @return ?string
+	 */
+	public static function get_organizer_post_type() {
+		return class_exists( '\Tribe__Events__Organizer' ) ? \Tribe__Events__Organizer::POSTTYPE : 'tribe_organizer';
+	}
+
+	/**
 	 * Returns the IDs of the admin pages of the plugin.
 	 *
 	 * @return array The settings page urls.

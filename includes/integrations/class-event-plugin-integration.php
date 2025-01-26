@@ -65,6 +65,15 @@ abstract class Event_Plugin_Integration {
 	}
 
 	/**
+	 * In case an event plugin used a custom post type for organizers return it here.
+	 *
+	 * @return ?string
+	 */
+	public static function get_organizer_post_type() {
+		return null;
+	}
+
+	/**
 	 * Returns the IDs of the admin pages of the plugin.
 	 *
 	 * @return array The IDs of one or several admin/settings pages.

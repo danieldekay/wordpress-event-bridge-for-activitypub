@@ -16,6 +16,7 @@ use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
 use WP_Error;
 
+use function Activitypub\object_to_uri;
 use function Activitypub\sanitize_url;
 
 /**
@@ -76,6 +77,10 @@ class Sanitizer {
 			$event->set_url( sanitize_url( $data['url'] ) );
 		}
 
+		if ( isset( $data['attributedTo'] ) ) {
+			$event->set_attributed_to( self::sanitize_attributed_to( $data['attributedTo'] ) );
+		}
+
 		if ( isset( $data['location'] ) ) {
 			$event->set_location( self::sanitize_place_object_from_array( $data['location'] ) );
 		}
@@ -89,6 +94,23 @@ class Sanitizer {
 		}
 
 		return $event;
+	}
+
+	/**
+	 * Sanitize attributedTo.
+	 *
+	 * Currently only multiple attributedTo's are not supported.
+	 *
+	 * @param mixed $data The object array.
+	 *
+	 * @return ?string
+	 */
+	private static function sanitize_attributed_to( $data ) {
+		if ( is_array( $data ) && self::array_is_list( $data ) ) {
+			$data = reset( $data );
+		}
+		$attributed_to = object_to_uri( $data );
+		return is_string( $attributed_to ) ? sanitize_url( $attributed_to ) : null;
 	}
 
 	/**

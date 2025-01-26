@@ -20,7 +20,6 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 use Event_Bridge_For_ActivityPub\Admin\User_Interface;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration;
 use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
-use Exception;
 use WP_Error;
 
 use function Activitypub\get_remote_metadata_by_actor;
@@ -67,7 +66,7 @@ class Event_Sources {
 		\add_action( 'init', array( self::class, 'register_post_meta' ) );
 
 		// Register filters that prevent cached remote events from being federated again.
-		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'is_cached_external_post' ), 10, 2 );
+		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'disable_scheduler_for_cached_external_post' ), 10, 2 );
 		\add_filter( 'template_include', array( self::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
 
 		// Register daily schedule to cleanup cached remote events that have ended.
@@ -86,6 +85,8 @@ class Event_Sources {
 
 	/**
 	 * Register post meta.
+	 *
+	 * @return void
 	 */
 	public static function register_post_meta() {
 		$setup = Setup::get_instance();
@@ -95,31 +96,37 @@ class Event_Sources {
 				continue;
 			}
 
-			\register_post_meta(
-				$event_plugin_integration::get_post_type(),
-				'_event_bridge_for_activitypub_event_source',
-				array(
-					'type'              => 'integer',
-					'single'            => true,
-					'sanitize_callback' => 'absint',
-				)
-			);
+			$post_type = $event_plugin_integration::get_post_type();
+			self::register_post_meta_event_bridge_for_activitypub_event_source( $post_type );
 
-			$location_post_type = $event_plugin_integration::get_location_post_type();
-			if ( $location_post_type ) {
-				\register_post_meta(
-					$location_post_type,
-					'_event_bridge_for_activitypub_event_source',
-					array(
-						'type'              => 'string',
-						'single'            => false,
-						'sanitize_callback' => function ( $value ) {
-							return sanitize_url( $value );
-						},
-					)
-				);
+			$post_type = $event_plugin_integration::get_location_post_type();
+			if ( $post_type ) {
+				self::register_post_meta_event_bridge_for_activitypub_event_source( $post_type );
+			}
+
+			$post_type = $event_plugin_integration::get_organizer_post_type();
+			if ( $post_type ) {
+				self::register_post_meta_event_bridge_for_activitypub_event_source( $post_type );
 			}
 		}
+	}
+
+	/**
+	 * Register post meta _event_bridge_for_activitypub_event_source for a given post type.
+	 *
+	 * @param string $post_type The post type to register the meta for.
+	 * @return void
+	 */
+	private static function register_post_meta_event_bridge_for_activitypub_event_source( $post_type ) {
+		\register_post_meta(
+			$post_type,
+			'_event_bridge_for_activitypub_event_source',
+			array(
+				'type'              => 'integer',
+				'single'            => true,
+				'sanitize_callback' => 'absint',
+			)
+		);
 	}
 
 	/**
@@ -184,21 +191,23 @@ class Event_Sources {
 	 * @param WP_Post $post The WordPress post object.
 	 * @return bool True if the post can be federated via ActivityPub.
 	 */
-	public static function is_cached_external_post( $disabled, $post = null ): bool {
+	public static function disable_scheduler_for_cached_external_post( $disabled, $post = null ): bool {
 		if ( $disabled || ! $post ) {
 			return $disabled;
 		}
-		return ! self::is_cached_external_event_post( $post );
+		return ! self::is_cached_external_post( $post );
 	}
 
 	/**
 	 * Determine whether a WP post is a cached external event.
 	 *
-	 * @param WP_Post $post The WordPress post object.
+	 * @param WP_Post|int $post The WordPress post object or post ID.
 	 * @return bool
 	 */
-	public static function is_cached_external_event_post( $post ): bool {
-		if ( get_post_meta( $post->ID, '_event_bridge_for_activitypub_event_source', true ) ) {
+	public static function is_cached_external_post( $post ): bool {
+		$post_id = $post instanceof \WP_Post ? $post->ID : $post;
+
+		if ( get_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', true ) ) {
 			return true;
 		}
 
@@ -226,7 +235,7 @@ class Event_Sources {
 
 		global $post;
 
-		if ( self::is_cached_external_event_post( $post ) ) {
+		if ( self::is_cached_external_post( $post ) ) {
 			\wp_safe_redirect( $post->guid, 301 );
 			exit;
 		}

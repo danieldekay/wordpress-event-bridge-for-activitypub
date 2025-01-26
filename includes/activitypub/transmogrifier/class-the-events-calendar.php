@@ -269,19 +269,35 @@ class The_Events_Calendar extends Base {
 			$args['post_date_gmt'] = $post_date;
 		}
 
-		$tribe_organizer = tribe_organizers()
-			->set_args(
-				$args,
-				'publish',
-				true // This enables avoid_duplicates which includes exact matches of title, content, excerpt, and website.
-			)->create();
+		$children = \get_children(
+			array(
+				'post_parent' => $event_source->get__id(),
+				'post_type'   => \Tribe__Events__Organizer::POSTTYPE,
+			),
+		);
+
+		if ( count( $children ) ) {
+			$child           = array_pop( $children );
+			$tribe_organizer = \tribe_organizers()->where( 'id', $child->ID )->set_args( $args )->save();
+			foreach ( $children as $to_delete ) {
+				\wp_delete_post( $to_delete->ID, true );
+			}
+			$is_create = false;
+		} else {
+			$tribe_organizer = \tribe_organizers()->set_args( $args )->create();
+			$is_create = true;
+		}
 
 		if ( ! $tribe_organizer ) {
 			return;
 		}
 
+		if ( $is_create ) {
+			\update_post_meta( $tribe_organizer->ID, '_event_bridge_for_activitypub_event_source', true );
+		}
+
 		// Make a relationship between the event source WP_Post and the organizer WP_Post.
-		wp_update_post(
+		\wp_update_post(
 			array(
 				'ID'          => $tribe_organizer->ID,
 				'post_parent' => $event_source->get__id(),
@@ -289,8 +305,8 @@ class The_Events_Calendar extends Base {
 		);
 
 		// Add the thumbnail of the event source to the organizer.
-		if ( get_post_thumbnail_id( $event_source ) ) {
-			set_post_thumbnail( $tribe_organizer, get_post_thumbnail_id( $event_source ) );
+		if ( \get_post_thumbnail_id( $event_source ) ) {
+			\set_post_thumbnail( $tribe_organizer, \get_post_thumbnail_id( $event_source ) );
 		}
 
 		return $tribe_organizer->ID;
