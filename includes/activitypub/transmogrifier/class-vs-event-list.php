@@ -90,7 +90,7 @@ class VS_Event_List extends Base {
 
 		// Add the tags as terms to the post.
 		if ( ! empty( $tag_names ) ) {
-			wp_set_object_terms( $post_id, $tag_names, IntegrationsVS_Event_List::get_event_category_taxonomy(), true );
+			\wp_set_object_terms( $post_id, $tag_names, IntegrationsVS_Event_List::get_event_category_taxonomy(), true );
 		}
 
 		return true;
@@ -126,6 +126,12 @@ class VS_Event_List extends Base {
 				'event-link-image'  => 'no', // Whether to redirect events featured image to original source.
 			),
 		);
+
+		if ( $activitypub_event->get_published() ) {
+			$post_date             = self::format_time_string_to_wordpress_gmt( $activitypub_event->get_published() );
+			$args['post_date']     = $post_date;
+			$args['post_date_gmt'] = $post_date;
+		}
 
 		// Add end time.
 		$end_time = $activitypub_event->get_end_time();

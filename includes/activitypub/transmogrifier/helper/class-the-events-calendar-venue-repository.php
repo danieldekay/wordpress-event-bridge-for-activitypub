@@ -1,23 +1,23 @@
 <?php
 /**
- * Extending the Tribe Events API to allow setting of the guid.
+ * Extending the Tribe Venue API to allow setting of the guid.
  *
  * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Helper;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 /**
- * Extending the Tribe Events API to allow setting of the guid.
+ * Extending the Tribe Venue API to allow setting of the guid.
  *
  * @since 1.0.0
  */
-class The_Events_Calendar_Event_Repository extends \Tribe__Events__Repositories__Event {
+class The_Events_Calendar_Venue_Repository extends \Tribe__Events__Repositories__Venue {
 	/**
 	 * Override diff: allow setting of guid.
 	 *
@@ -26,8 +26,6 @@ class The_Events_Calendar_Event_Repository extends \Tribe__Events__Repositories_
 	protected static $blocked_keys = array(
 		'ID',
 		'post_type',
-		'post_modified',
-		'post_modified_gmt',
 		'comment_count',
 	);
 

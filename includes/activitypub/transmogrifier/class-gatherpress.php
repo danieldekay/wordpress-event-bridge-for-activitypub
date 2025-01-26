@@ -153,6 +153,12 @@ class GatherPress extends Base {
 			'guid'         => sanitize_url( $activitypub_event->get_id() ),
 		);
 
+		if ( $activitypub_event->get_published() ) {
+			$post_date             = self::format_time_string_to_wordpress_gmt( $activitypub_event->get_published() );
+			$args['post_date']     = $post_date;
+			$args['post_date_gmt'] = $post_date;
+		}
+
 		if ( $post_id ) {
 			// Update existing GatherPress event post.
 			$args['ID'] = $post_id;

@@ -9,9 +9,10 @@
 
 namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transmogrifier;
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 use WP_REST_Request;
 use WP_REST_Server;
+
+require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . '/tests/includes/activitypub/transmogrifier/class-helper.php';
 
 /**
  * Test class for the Transmogrifier (import of ActivityPub Event objects) of "The Events Calendar".
@@ -283,6 +284,102 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		// We do expect the event to be removed.
 		$events = tribe_get_events();
 		$this->assertEmpty( $events );
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
+	}
+
+	/**
+	 * Test incoming Gancio style event.
+	 */
+	public function test_incoming_gancio_event() {
+		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
+
+		$activity = array(
+			'id'     => 'https://remote.example/@organizer/events/new-year-party#create',
+			'type'   => 'Create',
+			'actor'  => 'https://remote.example/@organizer',
+			'object' => Helper::get_gancio_event(),
+		);
+
+		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
+		$request->set_header( 'Content-Type', 'application/activity+json' );
+		$request->set_body( \wp_json_encode( $activity ) );
+
+		// Dispatch the request.
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+
+		// Check if post has been created.
+		$events = tribe_get_events();
+
+		$this->assertEquals( 1, count( $events ) );
+
+		// Initialize new Tribe Event object.
+		$event = tribe_get_event( $events[0] );
+
+		$this->assertEquals( $activity['object']['name'], $event->post_title );
+		$this->assertEquals( strtotime( $activity['object']['startTime'] ), $event->dates->start->getTimestamp() );
+		$this->assertEquals( strtotime( $activity['object']['endTime'] ), $event->dates->end->getTimestamp() );
+		$this->assertEquals( strtotime( $activity['object']['published'] ), strtotime( $event->post_date_gmt ) );
+		$this->assertEquals( $activity['object']['id'], $event->guid );
+
+		$venue = self::get_first_tribe_venue_of_tribe_event( $event );
+
+		$this->assertEquals( $activity['object']['location']['address'], $venue->address );
+		$this->assertEquals( $activity['object']['location']['name'], $venue->post_title );
+
+		// Check the thumbnails alt text.
+		$thumbnail_id       = \get_post_thumbnail_id( $event->ID );
+		$thumbnail_alt_text = \get_post_meta( $thumbnail_id, '_wp_attachment_image_alt', true );
+		// We have to mockup the attachment sideload to be able to text this.
+
+		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
+	}
+
+	/**
+	 * Test receiving an update from Gancio style event.
+	 */
+	public function test_gancio_event_receive_updated_location() {
+		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
+
+		$activity = array(
+			'id'     => 'https://remote.example/@organizer/events/new-year-party#create',
+			'type'   => 'Create',
+			'actor'  => 'https://remote.example/@organizer',
+			'object' => Helper::get_gancio_event(),
+		);
+
+		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
+		$request->set_header( 'Content-Type', 'application/activity+json' );
+		$request->set_body( \wp_json_encode( $activity ) );
+		\rest_do_request( $request );
+
+		// Check that event, venue and organizer post has been created.
+		$events     = tribe_get_events();
+		$venues     = tribe_get_venues();
+		$organizers = tribe_get_organizers();
+		$this->assertCount( 1, $events );
+		$this->assertCount( 1, $venues );
+		$this->assertCount( 1, $organizers );
+
+		// Send update.
+		$activity['type']                       = 'Update';
+		$activity['object']['location']['name'] = 'New Location Name';
+		$request->set_body( \wp_json_encode( $activity ) );
+		\rest_do_request( $request );
+
+		// No duplicates.
+		$events     = tribe_get_events();
+		$venues     = tribe_get_venues();
+		$organizers = tribe_get_organizers();
+		$this->assertCount( 1, $events );
+		$this->assertCount( 1, $venues );
+		$this->assertCount( 1, $organizers );
+
+		// Check that the location is updated.
+		$event = tribe_get_event( $events[0] );
+		$venue = self::get_first_tribe_venue_of_tribe_event( $event );
+		$this->assertEquals( 'New Location Name', $venue->post_title );
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
