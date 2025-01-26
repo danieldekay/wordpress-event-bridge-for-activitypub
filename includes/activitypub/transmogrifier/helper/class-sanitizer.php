@@ -224,10 +224,10 @@ class Sanitizer {
 				if ( isset( $data['address']['addressLocality'] ) ) {
 					$address['addressLocality'] = \sanitize_text_field( $data['address']['addressLocality'] );
 				}
-				if ( isset( $data['address']['streetAddress'] ) ) {
+				if ( isset( $data['address']['addressState'] ) ) {
 					$address['addressState'] = \sanitize_text_field( $data['address']['addressState'] );
 				}
-				if ( isset( $data['address']['streetAddress'] ) ) {
+				if ( isset( $data['address']['addressCountry'] ) ) {
 					$address['addressCountry'] = \sanitize_text_field( $data['address']['addressCountry'] );
 				}
 				if ( isset( $data['address']['url'] ) ) {
