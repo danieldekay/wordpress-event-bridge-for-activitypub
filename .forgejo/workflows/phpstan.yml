@@ -1,0 +1,53 @@
+name: PHPStan Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test-phpstan:
+    name: PHPStan for WordPress
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions: ['8.1']
+    steps:
+     steps:
+      - name: Checkout
+        uses: https://code.forgejo.org/actions/checkout@v4
+
+      - name: Cache Composer
+        id: cache-composer
+        uses: https://code.forgejo.org/actions/cache@v4
+        with:
+          path: |
+            ./vendor/
+          key: cache-composer-phpstan-1
+
+      - name: Setup PHP
+        uses: https://github.com/shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+            extensions: dom, iconv, json, libxml, zip
+            coverage: none
+          tools: composer, cs2pr
+        env:
+          runner: self-hosted
+
+      - name: Install Composer dependencies for PHP
+        if: steps.cache-composer.outputs.cache-hit != 'true'
+        uses: ramsey/composer-install@v3
+
+      - name: Log debug information
+        run: |
+          git --version
+          php --version
+          composer --version
+
+      - name: Running PHPStan Analyze
+        if: ${{ success() || failure() }}
+        run: |
+          ./vendor/bin/phpstan --version
+          ./vendor/bin/phpstan analyze -vv --memory-limit=2G --error-format=checkstyle | cs2pr
