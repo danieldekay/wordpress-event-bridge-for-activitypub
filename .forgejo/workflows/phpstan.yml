@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['8.1']
+        php-versions: ['7.4', '8.1']
     steps:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
@@ -23,7 +23,7 @@ jobs:
         with:
           path: |
             ./vendor/
-          key: cache-composer-phpstan-1
+          key: cache-composer-phpstan-2
 
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
@@ -44,6 +44,13 @@ jobs:
           git --version
           php --version
           composer --version
+
+      - name: Install third party plugins, so that PHP Stan finds that functions
+        if: steps.cache-wordpress.outputs.cache-hit != 'true'
+        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1
+        env:
+          SKIP_TEST_SUITE_INSTALL: true
+          SKIP_DB_CREATE: true
 
       - name: Running PHPStan Analyze
         if: ${{ success() || failure() }}
