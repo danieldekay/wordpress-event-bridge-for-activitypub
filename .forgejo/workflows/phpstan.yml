@@ -7,7 +7,7 @@ on:
   pull_request:
 
 jobs:
-  test-phpstan:
+  phpstan:
     name: PHPStan for WordPress
     runs-on: ubuntu-latest
     strategy:
@@ -30,8 +30,8 @@ jobs:
         uses: https://github.com/shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-            extensions: dom, iconv, json, libxml, zip
-            coverage: none
+          extensions: dom, iconv, json, libxml, zip
+          coverage: none
           tools: composer, cs2pr
         env:
           runner: self-hosted
