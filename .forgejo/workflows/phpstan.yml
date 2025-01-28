@@ -51,4 +51,6 @@ jobs:
 
       - name: Running PHPStan Analyze
         if: ${{ success() || failure() }}
-        run: echo 1
+        run: |
+          ./vendor/bin/phpstan --version
+          ./vendor/bin/phpstan analyze -vv --memory-limit=2G --error-format=checkstyle | cs2pr
