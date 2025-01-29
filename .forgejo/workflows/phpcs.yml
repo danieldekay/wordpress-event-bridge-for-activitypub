@@ -6,9 +6,6 @@ on:
       - main
   pull_request:
 
-env:
-  GITHUB_TOKEN: ${{ env.COMPOSER_TOKEN }}
-
 jobs:
   phpcs:
     name: PHP Code Checker
@@ -51,10 +48,14 @@ jobs:
           tools: composer
         env:
           runner: self-hosted
+        env:
+          GITHUB_TOKEN: ${{ env.COMPOSER_TOKEN }}
 
       - name: Install Composer dependencies for PHP
         if: steps.cache-composer.outputs.cache-hit != 'true'
         uses: ramsey/composer-install@v3
+        env:
+          GITHUB_TOKEN: ${{ env.COMPOSER_TOKEN }}
 
       - name: Run PHP_CodeSniffer
         run: ./vendor/bin/phpcs
