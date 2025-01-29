@@ -37,7 +37,7 @@ class The_Events_Calendar_Organizer_Repository extends \Tribe__Events__Repositor
 	 * @param string $key The key.
 	 * @return bool
 	 */
-	protected function can_be_updated( $key ) {
+	protected function can_be_updated( $key ): bool {
 		return ! in_array( $key, self::$blocked_keys, true );
 	}
 }

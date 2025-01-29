@@ -52,7 +52,7 @@ final class VS_Event_List extends Event_Transformer {
 		if ( is_null( $end_time ) || empty( $end_time ) || 'no' === $end_time ) {
 			return null;
 		}
-		return $end_time ? \gmdate( 'Y-m-d\TH:i:s\Z', $end_time ) : null;
+		return is_int( $end_time ) ? \gmdate( 'Y-m-d\TH:i:s\Z', $end_time ) : null;
 	}
 
 	/**
@@ -84,8 +84,10 @@ final class VS_Event_List extends Event_Transformer {
 
 	/**
 	 * Overrides/extends the get_attachments function to also add the event Link.
+	 *
+	 * @return array
 	 */
-	protected function get_attachment(): ?array {
+	protected function get_attachment(): array {
 		$attachments = parent::get_attachment();
 		if ( count( $attachments ) ) {
 			$attachments[0]['type'] = 'Document';

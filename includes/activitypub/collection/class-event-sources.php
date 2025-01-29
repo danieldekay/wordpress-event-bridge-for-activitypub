@@ -227,7 +227,7 @@ class Event_Sources {
 	 * @param string|int $attachment_id The numeric post ID of the attachment.
 	 * @return bool
 	 */
-	public static function is_attachment_featured_image( $attachment_id ) {
+	public static function is_attachment_featured_image( $attachment_id ): bool {
 		if ( ! is_numeric( $attachment_id ) ) {
 			return false;
 		}
@@ -257,7 +257,7 @@ class Event_Sources {
 	 * @param int $event_source_post_id The WordPress Post ID of the event source.
 	 * @return void
 	 */
-	public static function delete_events_by_event_source( $event_source_post_id ) {
+	public static function delete_events_by_event_source( $event_source_post_id ): void {
 		global $wpdb;
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
@@ -297,12 +297,12 @@ class Event_Sources {
 	/**
 	 * Remove an Event Source (=Followed ActivityPub actor).
 	 *
-	 * @param int|string $event_source The Events Sources Post ID or ActivityPub ID.
+	 * @param int|string $event_source_post_id The Events Sources Post ID or ActivityPub ID.
 	 *
-	 * @return WP_Post|false|null Post data on success, false or null on failure.
+	 * @return \WP_Post|false|null Post data on success, false or null on failure.
 	 */
-	public static function remove_event_source( $event_source ) {
-		$event_source = Event_Source::get_by_id( $event_source );
+	public static function remove_event_source( $event_source_post_id ): void {
+		$event_source = Event_Source::get_by_id( $event_source_post_id );
 
 		if ( ! $event_source ) {
 			return;
@@ -332,10 +332,10 @@ class Event_Sources {
 	 *
 	 * @return array List of `Event Sources`: <WP_Post-ID> => <ActivityPub-ID>
 	 */
-	public static function get_event_sources() {
+	public static function get_event_sources(): array {
 		$event_sources = get_transient( 'event_bridge_for_activitypub_event_sources' );
 
-		if ( $event_sources ) {
+		if ( $event_sources && is_array( $event_sources ) ) {
 			return $event_sources;
 		}
 
@@ -356,11 +356,11 @@ class Event_Sources {
 	 * @return array {
 	 *      Data about the event sources.
 	 *
-	 *      @type array $followers List of `Event Sources`: <WP_Post-ID> => <ActivityPub-ID>
-	 *      @type int   $total     Total number of followers.
+	 *      @type array $actors  List of `Event Sources`: <WP_Post-ID> => <ActivityPub-ID>
+	 *      @type int   $total   Total number of followers.
 	 *  }
 	 */
-	public static function get_event_sources_with_count( $number = -1, $page = null, $args = array() ) {
+	public static function get_event_sources_with_count( $number = -1, $page = null, $args = array() ): array {
 		$defaults = array(
 			'post_type'      => self::POST_TYPE,
 			'posts_per_page' => $number,
@@ -412,9 +412,9 @@ class Event_Sources {
 	 *
 	 * @param      string $actor  The ActivityPub actor.
 	 *
-	 * @return     bool|WP_Error  Whether the event was queued.
+	 * @return     bool  Whether the event was queued.
 	 */
-	public static function queue_follow_actor( $actor ) {
+	public static function queue_follow_actor( $actor ): bool {
 		$queued = self::queue(
 			'event_bridge_for_activitypub_follow',
 			array( $actor ),
@@ -459,7 +459,7 @@ class Event_Sources {
 	 *
 	 * @return     bool|WP_Error              Whether the event was queued.
 	 */
-	public static function queue_unfollow_actor( $actor ) {
+	public static function queue_unfollow_actor( $actor ): bool {
 		$queued = self::queue(
 			'event_bridge_for_activitypub_unfollow',
 			array( $actor ),
@@ -473,8 +473,9 @@ class Event_Sources {
 	 * Unfollow an ActivityPub actor.
 	 *
 	 * @param string $actor The ActivityPub ID of the actor to unfollow.
+	 * @return void
 	 */
-	public static function activitypub_unfollow_actor( $actor ) {
+	public static function activitypub_unfollow_actor( $actor ): void {
 		$actor = Event_Source::get_by_id( $actor );
 
 		if ( ! $actor ) {
@@ -487,7 +488,7 @@ class Event_Sources {
 		$from_actor = new Blog();
 
 		if ( is_wp_error( $inbox ) ) {
-			return $inbox;
+			return;
 		}
 
 		$activity = new \Activitypub\Activity\Activity();

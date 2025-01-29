@@ -66,7 +66,7 @@ final class GatherPress extends Event_Plugin_Integration implements Feature_Even
 	/**
 	 * Returns the ActivityPub transformer for a GatherPress event post.
 	 *
-	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @param \WP_Post $post The WordPress post object of the Event.
 	 * @return GatherPress_Transformer
 	 */
 	public static function get_activitypub_event_transformer( $post ): GatherPress_Transformer {
@@ -118,7 +118,7 @@ final class GatherPress extends Event_Plugin_Integration implements Feature_Even
 	/**
 	 * Init function: force displaying online event link for federated events.
 	 */
-	public static function init() {
+	public static function init(): void {
 		\add_filter(
 			'gatherpress_force_online_event_link',
 			function ( $force_online_event_link ) {

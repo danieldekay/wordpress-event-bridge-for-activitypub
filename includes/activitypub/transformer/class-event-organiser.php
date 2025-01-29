@@ -13,6 +13,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
+use WP_Post;
 
 /**
  * ActivityPub Transformer for Event Organiser.
@@ -44,7 +45,7 @@ final class Event_Organiser extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	public function get_end_time(): ?string {
+	public function get_end_time(): string {
 		return eo_get_the_end( 'Y-m-d\TH:i:s\Z', $this->wp_object->ID, $this->wp_object->occurrence_id );
 	}
 
@@ -86,10 +87,17 @@ final class Event_Organiser extends Event {
 
 		$address['type'] = 'PostalAddress';
 
+		$longitude = eo_get_venue_lng( $this->wp_object->ID );
+		$latitude  = eo_get_venue_lat( $this->wp_object->ID );
+
 		$location = new Place();
 		$location->set_name( eo_get_venue_name( $this->wp_object->ID ) );
-		$location->set_latitude( eo_get_venue_lat( $this->wp_object->ID ) ?? null );
-		$location->set_longitude( eo_get_venue_lng( $this->wp_object->ID ) ?? null );
+		if ( 0 !== $latitude ) {
+			$location->set_latitude( $latitude );
+		}
+		if ( 0 !== $longitude ) {
+			$location->set_longitude( $longitude );
+		}
 		$location->set_address( $address );
 		$location->set_name( $venue_name );
 		$location->set_content( eo_get_venue_description( $venue_id ) );

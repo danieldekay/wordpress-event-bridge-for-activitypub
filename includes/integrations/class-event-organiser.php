@@ -65,7 +65,7 @@ final class Event_Organiser extends Event_Plugin_Integration {
 	/**
 	 * Returns the ActivityPub transformer for a Event_Organiser event post.
 	 *
-	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @param \WP_Post $post The WordPress post object of the Event.
 	 * @return Event_Organiser_Transformer
 	 */
 	public static function get_activitypub_event_transformer( $post ): Event_Organiser_Transformer {

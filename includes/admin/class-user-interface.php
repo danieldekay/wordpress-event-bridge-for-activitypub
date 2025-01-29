@@ -53,7 +53,7 @@ class User_Interface {
 	 *
 	 * @return array The modified actions.
 	 */
-	public static function row_actions( $actions, $post ) {
+	public static function row_actions( $actions, $post ): array {
 		// check if the post is enabled for ActivityPub.
 		if ( ! Event_Sources::is_cached_external_post( $post ) ) {
 			return $actions;
@@ -80,7 +80,7 @@ class User_Interface {
 	 * Modify the user capabilities so that nobody can edit external events.
 	 *
 	 * @param array $caps     Concerned user's capabilities.
-	 * @param array $cap      Required primitive capabilities for the requested capability.
+	 * @param mixed $cap      Required primitive capabilities for the requested capability.
 	 * @param array $user_id  The WordPress user ID.
 	 * @param array $args     Additional args.
 	 *

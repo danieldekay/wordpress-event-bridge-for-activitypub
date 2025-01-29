@@ -19,10 +19,9 @@ use WP_List_Table;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 
-use function Activitypub\object_to_uri;
-
 if ( ! \class_exists( '\WP_List_Table' ) ) {
-		require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+	// @phpstan-ignore-next-line
+	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
 /**
@@ -47,7 +46,7 @@ class Event_Sources extends WP_List_Table {
 	 *
 	 * @return array
 	 */
-	public function get_columns() {
+	public function get_columns(): array {
 		return array(
 			'cb'        => '<input type="checkbox" />',
 			'icon'      => \__( 'Icon', 'event-bridge-for-activitypub' ),
@@ -64,7 +63,7 @@ class Event_Sources extends WP_List_Table {
 	 *
 	 * @return array
 	 */
-	public function get_sortable_columns() {
+	public function get_sortable_columns(): array {
 		return array(
 			'name'      => array( 'name', true ),
 			'modified'  => array( 'modified', false ),
@@ -75,7 +74,7 @@ class Event_Sources extends WP_List_Table {
 	/**
 	 * Prepare items.
 	 */
-	public function prepare_items() {
+	public function prepare_items(): void {
 		$columns = $this->get_columns();
 		$hidden  = array();
 
@@ -111,7 +110,7 @@ class Event_Sources extends WP_List_Table {
 		$this->set_pagination_args(
 			array(
 				'total_items' => $total_count,
-				'total_pages' => ceil( $total_count / $per_page ),
+				'total_pages' => (int) ceil( $total_count / $per_page ),
 				'per_page'    => $per_page,
 			)
 		);
@@ -119,7 +118,7 @@ class Event_Sources extends WP_List_Table {
 		foreach ( $event_sources['actors'] as $event_source_post_id => $event_source_activitypub_id ) {
 			$event_source = Event_Source::get_by_id( (int) $event_source_post_id );
 
-			if ( \is_wp_error( $event_source ) || ! in_array( $event_source->get_status(), array( 'publish', 'pending' ), true ) ) {
+			if ( ! $event_source || ! in_array( $event_source->get_status(), array( 'publish', 'pending' ), true ) ) {
 				continue;
 			}
 
@@ -142,7 +141,7 @@ class Event_Sources extends WP_List_Table {
 	 *
 	 * @return array
 	 */
-	public function get_bulk_actions() {
+	public function get_bulk_actions(): array {
 		return array(
 			'delete' => __( 'Delete', 'event-bridge-for-activitypub' ),
 		);
@@ -155,7 +154,7 @@ class Event_Sources extends WP_List_Table {
 	 * @param string $column_name Column name.
 	 * @return string
 	 */
-	public function column_default( $item, $column_name ) {
+	public function column_default( $item, $column_name ): mixed {
 		if ( ! array_key_exists( $column_name, $item ) ) {
 			return __( 'None', 'event-bridge-for-activitypub' );
 		}
@@ -168,7 +167,7 @@ class Event_Sources extends WP_List_Table {
 	 * @param array $item Item.
 	 * @return string
 	 */
-	public function column_icon( $item ) {
+	public function column_icon( $item ): string {
 		return sprintf(
 			'<img src="%s" width="25px;" />',
 			$item['icon']
@@ -181,7 +180,7 @@ class Event_Sources extends WP_List_Table {
 	 * @param array $item Item.
 	 * @return string
 	 */
-	public function column_url( $item ) {
+	public function column_url( $item ): string {
 		return sprintf(
 			'<a href="%s" target="_blank">%s</a>',
 			esc_url( $item['url'] ),
@@ -195,7 +194,7 @@ class Event_Sources extends WP_List_Table {
 	 * @param array $item Item.
 	 * @return string
 	 */
-	public function column_cb( $item ) {
+	public function column_cb( $item ): string {
 		return sprintf( '<input type="checkbox" name="event_sources[]" value="%s" />', esc_attr( $item['identifier'] ) );
 	}
 
@@ -205,7 +204,7 @@ class Event_Sources extends WP_List_Table {
 	 * @param array $item Item.
 	 * @return string
 	 */
-	public function column_accepted( $item ) {
+	public function column_accepted( $item ): string {
 		if ( $item['accepted'] ) {
 			return esc_html__( 'Accepted', 'event-bridge-for-activitypub' );
 		} else {
@@ -216,7 +215,7 @@ class Event_Sources extends WP_List_Table {
 	/**
 	 * Process action.
 	 */
-	public function process_action() {
+	public function process_action(): void {
 		if ( ! isset( $_REQUEST['event_sources'] ) || ! isset( $_REQUEST['_wpnonce'] ) ) {
 			return;
 		}

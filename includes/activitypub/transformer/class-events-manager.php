@@ -36,13 +36,13 @@ final class Events_Manager extends Event_Transformer {
 	protected $em_event;
 
 	/**
-	 * Extend the constructor, to also set the Eventsmanager objects.
+	 * Extend the constructor, to also set the Events Manager objects.
 	 *
 	 * This is a special class object form The Events Calendar which
 	 * has a lot of useful functions, we make use of our getter functions.
 	 *
-	 * @param WP_Post $wp_object The WordPress object.
-	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
+	 * @param \WP_Post $wp_object The WordPress object.
+	 * @param string   $wp_taxonomy The taxonomy slug of the event post type.
 	 */
 	public function __construct( $wp_object, $wp_taxonomy ) {
 		parent::__construct( $wp_object, $wp_taxonomy );
@@ -54,14 +54,14 @@ final class Events_Manager extends Event_Transformer {
 	 *
 	 * @return bool
 	 */
-	protected function get_is_online() {
+	protected function get_is_online(): bool {
 		return 'url' === $this->em_event->event_location_type;
 	}
 
 	/**
 	 * Get the event location.
 	 *
-	 * @return array The Place.
+	 * @return ?Place The Place.
 	 */
 	public function get_location(): ?Place {
 		if ( 'url' === $this->em_event->event_location_type ) {
@@ -124,7 +124,7 @@ final class Events_Manager extends Event_Transformer {
 	 *
 	 * @return int
 	 */
-	public function get_maximum_attendee_capacity() {
+	public function get_maximum_attendee_capacity(): int {
 		return $this->em_event->event_spaces;
 	}
 
@@ -168,7 +168,7 @@ final class Events_Manager extends Event_Transformer {
 	/**
 	 * Overrides/extends the get_attachments function to also add the event Link.
 	 */
-	protected function get_attachment() {
+	protected function get_attachment(): array {
 		// Get attachments via parent function.
 		$attachments = parent::get_attachment();
 
@@ -187,7 +187,7 @@ final class Events_Manager extends Event_Transformer {
 	/**
 	 * Compose the events tags.
 	 */
-	public function get_tag() {
+	public function get_tag(): array {
 		// The parent tag function also fetches the mentions.
 		$tags = parent::get_tag();
 

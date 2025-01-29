@@ -28,7 +28,12 @@ final class The_Events_Calendar extends Event {
 	/**
 	 * The Tribe Event object.
 	 *
-	 * @var array|WP_Post|null
+	 * @var WP_Post|null
+	 *
+	 * @property string                                                 $timezone
+	 * @property string                                                 $event_status
+	 * @property \Tribe\Events\Collections\Lazy_Post_Collection|WP_Post $venues
+	 * @property string                                                 $start_date
 	 */
 	protected $tribe_event;
 
@@ -49,9 +54,9 @@ final class The_Events_Calendar extends Event {
 	/**
 	 * Get the tags, including also the set categories from The Events Calendar.
 	 *
-	 * @return ?array The array if tags,
+	 * @return array The array if tags,
 	 */
-	public function get_tag(): ?array {
+	public function get_tag(): array {
 		$tags         = array();
 		$category_ids = tribe_get_event_cat_ids();
 		if ( $category_ids ) {
@@ -85,6 +90,7 @@ final class The_Events_Calendar extends Event {
 	 * Get the end time from the event object.
 	 */
 	public function get_start_time(): string {
+		// @phpstan-ignore-next-line
 		$date = date_create( $this->tribe_event->start_date, wp_timezone() );
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $date->getTimestamp() );
 	}
@@ -94,13 +100,18 @@ final class The_Events_Calendar extends Event {
 	 *
 	 * @return string status of the event
 	 */
-	public function get_status(): ?string {
-		if ( 'canceled' === $this->tribe_event->event_status ) {
+	public function get_status(): string {
+		// @phpstan-ignore-next-line
+		$event_status = $this->tribe_event->event_status;
+
+		if ( 'canceled' === $event_status ) {
 			return 'CANCELLED';
 		}
-		if ( 'postponed' === $this->tribe_event->event_status ) {
+
+		if ( 'postponed' === $event_status ) {
 			return 'CANCELLED'; // This will be reflected in the cancelled reason.
 		}
+
 		return 'CONFIRMED';
 	}
 
@@ -126,6 +137,8 @@ final class The_Events_Calendar extends Event {
 	 */
 	public function get_location(): ?Place {
 		// Get short handle for the venues.
+
+		// @phpstan-ignore-next-line
 		$venues = $this->tribe_event->venues;
 
 		// Get first venue. We currently only support a single venue.
@@ -186,6 +199,7 @@ final class The_Events_Calendar extends Event {
 	 * @return string  The timezone string of the site.
 	 */
 	public function get_timezone(): string {
+		// @phpstan-ignore-next-line
 		return $this->tribe_event->timezone;
 	}
 
@@ -207,7 +221,7 @@ final class The_Events_Calendar extends Event {
 	 * @param mixed $block_content The blocks content.
 	 * @param mixed $block         The block.
 	 */
-	public static function filter_tribe_blocks( $block_content, $block ) {
+	public static function filter_tribe_blocks( $block_content, $block ): mixed {
 		// Check if the block name starts with 'tribe' and is not an exception.
 		if ( isset( $block['blockName'] ) && 0 === strpos( $block['blockName'], 'tribe/' ) ) {
 			return ''; // Skip rendering this block.

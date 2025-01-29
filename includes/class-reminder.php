@@ -18,8 +18,9 @@ use Activitypub\Activity\Activity;
 use Activitypub\Activity_Dispatcher;
 use Activitypub\Transformer\Factory as Transformer_Factory;
 use Event_Bridge_For_ActivityPub\Setup;
-use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event as Event_Transformer;
 use DateTime;
+use WP_Post;
 
 use function Activitypub\is_user_disabled;
 use function Activitypub\safe_remote_post;
@@ -92,15 +93,12 @@ class Reminder {
 	/**
 	 * Schedule Activities.
 	 *
-	 * @param string  $new_status  New post status.
-	 * @param string  $old_status  Old post status.
-	 * @param WP_Post $post        Post object.
+	 * @param string   $new_status  New post status.
+	 * @param string   $old_status  Old post status.
+	 * @param ?WP_Post $post        Post object.
 	 */
 	public static function maybe_schedule_event_reminder( $new_status, $old_status, $post ): void {
-		// Re-Check that we got a valid post.
-		$post = get_post( $post );
-
-		if ( ! $post ) {
+		if ( ! $post instanceof WP_Post ) {
 			return;
 		}
 

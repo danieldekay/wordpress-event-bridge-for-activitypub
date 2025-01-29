@@ -14,6 +14,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
 use DateTime;
 use Event_Bridge_For_ActivityPub\Integrations\GatherPress as IntegrationsGatherPress;
@@ -168,6 +169,7 @@ class GatherPress extends Base {
 			$post_id = \wp_insert_post( $args );
 		}
 
+		// @phpstan-ignore-next-line
 		if ( ! $post_id || \is_wp_error( $post_id ) ) {
 			return false;
 		}

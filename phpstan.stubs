@@ -1,0 +1,13 @@
+<?php
+/**
+ * Constants, functions, etc. used by GatherPress
+ * should be understood by PHPStan.
+ */
+
+namespace {
+
+    define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR', './');
+    define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE', './event-bridge-for-activitypub.php');
+    define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_BASENAME', './event-bridge-for-activitypub.php');
+    define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_VERSION', '0.3.5');
+}
