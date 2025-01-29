@@ -6,24 +6,28 @@ on:
       - main
   pull_request:
 
+env:
+  GITHUB_TOKEN: ${{ env.COMPOSER_TOKEN }}
+
 jobs:
   phpstan:
-    name: PHPStan for WordPress
+    name: PHPStan for WordPress ${{ matrix.php-version }}
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mariadb
-        env:
-          MYSQL_ROOT_PASSWORD: root
     strategy:
       matrix:
-        php-versions: ['7.4', '8.1']
-    env:
-      extensions: mysql
-      key: cache-v1
+        php-versions: ['7.4']
     steps:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
+
+      - name: Cache WordPress Setup and installed plugins (Event plugins and ActivityPub plugin).
+        id: cache-wordpress
+        uses: https://code.forgejo.org/actions/cache@v4
+        with:
+          path: |
+            ${{ env.WP_CORE_DIR }}
+            ${{ env.WP_TESTS_DIR }}
+          key: cache-wordpress-67-5
 
       - name: Cache Composer
         id: cache-composer
