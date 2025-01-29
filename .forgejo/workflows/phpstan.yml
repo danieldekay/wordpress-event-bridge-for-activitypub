@@ -9,7 +9,7 @@ on:
 jobs:
   phpstan:
     name: PHPStan for WordPress
-        runs-on: ubuntu-latest
+    runs-on: ubuntu-latest
     services:
       mysql:
         image: mariadb
