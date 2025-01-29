@@ -19,5 +19,8 @@ parameters:
     # https://phpstan.org/user-guide/rule-levels
     level: 5
 
+    paths:
+        - includes/
+
     scanDirectories:
         - /workspace/wordpress/wp-content/plugins/
