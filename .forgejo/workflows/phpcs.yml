@@ -23,7 +23,7 @@ jobs:
         with:
           path: |
             ./vendor/
-          key: cache-composer-4
+          key: cache-composer-3
 
       - name: Setup cache environment for PHP Extensions
         id: php-extensions-cache
