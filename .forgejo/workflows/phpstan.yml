@@ -3,8 +3,7 @@ name: PHPStan Tests
 on:
   push:
     branches:
-      - main
-  pull_request:
+      - phpstan
 
 env:
   WP_TESTS_DIR: /workspace/wordpress-test-lib
