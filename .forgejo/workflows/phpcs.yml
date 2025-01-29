@@ -44,11 +44,11 @@ jobs:
         uses: https://github.com/shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
+          extensions: dom, iconv, json, libxml, zip
           coverage: none
-          tools: composer
+          tools: composer, cs2pr
         env:
           runner: self-hosted
-        env:
           GITHUB_TOKEN: ${{ env.COMPOSER_TOKEN }}
 
       - name: Install Composer dependencies for PHP
