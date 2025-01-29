@@ -75,7 +75,7 @@ jobs:
         if: steps.cache-composer.outputs.cache-hit != 'true'
         uses: ramsey/composer-install@v3
         env:
-          GITHUB_TOKEN: ${{ env.COMPOSER_TOKEN }}
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.COMPOSER_TOKEN }}"}}'
 
       - name: Install and cache mysqladmin needed to initialize the test database
         uses: https://github.com/awalsh128/cache-apt-pkgs-action@latest

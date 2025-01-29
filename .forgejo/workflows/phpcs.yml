@@ -23,7 +23,7 @@ jobs:
         with:
           path: |
             ./vendor/
-          key: cache-composer-3
+          key: cache-composer-4
 
       - name: Setup cache environment for PHP Extensions
         id: php-extensions-cache
@@ -55,7 +55,7 @@ jobs:
         if: steps.cache-composer.outputs.cache-hit != 'true'
         uses: ramsey/composer-install@v3
         env:
-          GITHUB_TOKEN: ${{ env.COMPOSER_TOKEN }}
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.COMPOSER_TOKEN }}"}}'
 
       - name: Run PHP_CodeSniffer
         run: ./vendor/bin/phpcs
