@@ -45,14 +45,31 @@ jobs:
             ./vendor/
           key: cache-composer-3
 
+      - name: Setup cache environment for PHP Extensions
+        id: php-extensions-cache
+        uses: https://github.com/shivammathur/cache-extensions@v1
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: dom, iconv, json, libxml, zip
+          key: php-extensions-cache-v1
+
+      - name: Cache PHP extensions
+        uses: https://code.forgejo.orgactions/cache@v4
+        with:
+          path: ${{ steps.extension-cache.outputs.dir }}
+          key: ${{ steps.extension-cache.outputs.key }}
+          restore-keys: ${{ steps.php-extensions-cache.outputs.key }}
+
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-version }}
+          php-version: ${{ matrix.php-versions }}
+          extensions: dom, iconv, json, libxml, zip
           coverage: none
-          tools: composer
+          tools: composer, cs2pr
         env:
           runner: self-hosted
+          GITHUB_TOKEN: ${{ env.COMPOSER_TOKEN }}
 
       - name: Install Composer dependencies for PHP
         if: steps.cache-composer.outputs.cache-hit != 'true'
