@@ -49,8 +49,8 @@ jobs:
       - name: Cache PHP extensions
         uses: https://code.forgejo.org/actions/cache@v4
         with:
-          path: ${{ steps.extension-cache.outputs.dir }}
-          key: ${{ steps.extension-cache.outputs.key }}
+          path: ${{ steps.php-extensions-cache.outputs.dir }}
+          key: ${{ steps.php-extensions-cache.outputs.key }}
           restore-keys: ${{ steps.php-extensions-cache.outputs.key }}
 
       - name: Setup PHP
