@@ -15,6 +15,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\Integrations\VS_Event_List as IntegrationsVS_Event_List;
 
@@ -30,7 +31,7 @@ class VS_Event_List extends Base {
 	/**
 	 * Extract location and address as string.
 	 *
-	 * @param ?array $location The ActivitySTreams location as an associative array.
+	 * @param mixed $location The ActivityStreams location.
 	 * @return string The location and address formatted as a single string.
 	 */
 	private static function get_location_as_string( $location ): string {
@@ -41,7 +42,7 @@ class VS_Event_List extends Base {
 		}
 
 		// Return empty string when location is not an associative array.
-		if ( is_null( $location ) || ! is_array( $location ) ) {
+		if ( ! is_array( $location ) || 0 === count( $location ) ) {
 			return $location_string;
 		}
 
@@ -154,7 +155,8 @@ class VS_Event_List extends Base {
 			$post_id = \wp_insert_post( $args );
 		}
 
-		if ( ! $post_id || \is_wp_error( $post_id ) ) {
+		// @phpstan-ignore-next-line
+		if ( 0 === $post_id || \is_wp_error( $post_id ) ) {
 			return false;
 		}
 

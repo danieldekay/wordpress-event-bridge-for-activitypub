@@ -36,7 +36,7 @@ class Sanitizer {
 	/**
 	 * Convert input array to an Event.
 	 *
-	 * @param array $data The object array.
+	 * @param mixed $data The object array.
 	 *
 	 * @return Event|WP_Error An Object built from the input array or WP_Error when it's not an array.
 	 */
@@ -108,22 +108,24 @@ class Sanitizer {
 	 *
 	 * @return ?string
 	 */
-	private static function sanitize_attributed_to( $data ) {
+	private static function sanitize_attributed_to( $data ): ?string {
 		if ( is_array( $data ) && self::array_is_list( $data ) ) {
 			$data = reset( $data );
 		}
 		$attributed_to = object_to_uri( $data );
+
+		// @phpstan-ignore-next-line
 		return is_string( $attributed_to ) ? sanitize_url( $attributed_to ) : null;
 	}
 
 	/**
 	 * Sanitize attachments.
 	 *
-	 * @param array $data The object array.
+	 * @param mixed $data The object array.
 	 *
 	 * @return ?array
 	 */
-	private static function sanitize_attachment( $data ) {
+	private static function sanitize_attachment( $data ): ?array {
 		if ( ! is_array( $data ) ) {
 			return null;
 		}
@@ -181,11 +183,11 @@ class Sanitizer {
 	/**
 	 * Convert input array to an Location.
 	 *
-	 * @param array $data The object array.
+	 * @param mixed $data The object array.
 	 *
 	 * @return ?Place An Object built from the input array or null.
 	 */
-	private static function sanitize_place_object_from_array( $data ) {
+	private static function sanitize_place_object_from_array( $data ): ?Place {
 		if ( ! is_array( $data ) ) {
 			return null;
 		}

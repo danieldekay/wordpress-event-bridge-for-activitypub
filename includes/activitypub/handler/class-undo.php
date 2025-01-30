@@ -24,7 +24,7 @@ class Undo {
 	/**
 	 * Initialize the class, registering the handler for incoming `Uno` activities to the ActivityPub plugin.
 	 */
-	public static function init() {
+	public static function init(): void {
 		\add_action(
 			'activitypub_inbox_undo',
 			array( self::class, 'handle_undo' ),
@@ -39,7 +39,7 @@ class Undo {
 	 * @param array $activity The activity-object.
 	 * @param int   $user_id  The id of the local blog-user.
 	 */
-	public static function handle_undo( $activity, $user_id ) {
+	public static function handle_undo( $activity, $user_id ): void {
 		// We only process activities that are target to the blog actor.
 		if ( Actors::BLOG_USER_ID !== $user_id ) {
 			return;
@@ -63,7 +63,7 @@ class Undo {
 		);
 
 		// If no event source with that accept ID is found return.
-		if ( empty( $results ) || ! $results ) {
+		if ( empty( $results ) ) {
 			return;
 		}
 

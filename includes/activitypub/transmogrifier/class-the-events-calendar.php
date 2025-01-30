@@ -14,6 +14,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Activitypub\Activity\Extended_Object\Event;
 use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Helper\The_Events_Calendar_Event_Repository;
@@ -83,7 +84,7 @@ class The_Events_Calendar extends Base {
 			$post_id = $post->ID;
 		}
 
-		if ( ! $post_id || is_wp_error( $post_id ) ) {
+		if ( ! $post_id ) {
 			return false;
 		}
 
@@ -105,11 +106,11 @@ class The_Events_Calendar extends Base {
 	/**
 	 * Map an ActivityStreams Place to the Events Calendar venue.
 	 *
-	 * @param array $location An ActivityPub location as an associative array.
+	 * @param array|Place $location An ActivityPub location as an associative array or Place object.
 	 * @link https://www.w3.org/TR/activitystreams-vocabulary/#dfn-place
 	 * @return array
 	 */
-	private static function get_venue_args( $location ) {
+	private static function get_venue_args( $location ): array {
 		$args = array(
 			'venue'  => $location['name'],
 			'status' => 'publish',
@@ -156,14 +157,14 @@ class The_Events_Calendar extends Base {
 	 * @param Event $activitypub_event    The ActivityPub event object.
 	 * @param int   $event_source_post_id The WordPress Post ID of the event source.
 	 *
-	 * @return int|bool $post_id The venues post ID.
+	 * @return ?int $post_id The venues post ID.
 	 */
-	private static function add_venue( $activitypub_event, $event_source_post_id ) {
+	private static function add_venue( $activitypub_event, $event_source_post_id ): ?int {
 		$location = $activitypub_event->get_location();
 
 		// Make sure we have a valid location in the right format.
 		if ( ! $location ) {
-			return;
+			return null;
 		}
 
 		if ( $location instanceof Place ) {
@@ -171,16 +172,16 @@ class The_Events_Calendar extends Base {
 		}
 
 		if ( ! is_array( $location ) ) {
-			return;
+			return null;
 		}
 
 		if ( ! isset( $location['name'] ) ) {
-			return;
+			return null;
 		}
 
 		// Fallback for Gancio instances.
 		if ( 'online' === $location['name'] ) {
-			return;
+			return null;
 		}
 
 		$tribe_venue = new The_Events_Calendar_Venue_Repository();
@@ -200,7 +201,7 @@ class The_Events_Calendar extends Base {
 				)
 			);
 			if ( $post_id ) {
-				$post_id = \absint( $post_id );
+				$post_id = (int) $post_id;
 			}
 		}
 
@@ -209,6 +210,7 @@ class The_Events_Calendar extends Base {
 			$results = $tribe_venue->search( $location['name'] )->all();
 
 			foreach ( $results as $potential_matching_post_id ) {
+				// @phpstan-ignore-next-line
 				if ( $potential_matching_post_id instanceof \WP_Post ) {
 					$potential_matching_post_id = $potential_matching_post_id->ID;
 				}
@@ -296,7 +298,7 @@ class The_Events_Calendar extends Base {
 
 			// If updating failed return.
 			if ( 1 !== count( $tribe_organizer_post_ids ) || ! reset( $tribe_organizer_post_ids ) ) {
-				return;
+				return false;
 			}
 
 			$tribe_organizer_post_id = array_key_first( $tribe_organizer_post_ids );
@@ -305,7 +307,7 @@ class The_Events_Calendar extends Base {
 			$tribe_organizer_post = \tribe_organizers()->set_args( $args )->create();
 
 			if ( ! $tribe_organizer_post ) {
-				return;
+				return false;
 			}
 
 			$tribe_organizer_post_id = $tribe_organizer_post->ID;
@@ -315,8 +317,8 @@ class The_Events_Calendar extends Base {
 		}
 
 		// Add the thumbnail of the event source to the organizer.
-		if ( \get_post_thumbnail_id( $event_source ) ) {
-			\set_post_thumbnail( $tribe_organizer_post_id, \get_post_thumbnail_id( $event_source ) );
+		if ( \get_post_thumbnail_id( $event_source->get__id() ) ) {
+			\set_post_thumbnail( $tribe_organizer_post_id, \get_post_thumbnail_id( $event_source->get__id() ) );
 		}
 
 		return $tribe_organizer_post_id;
@@ -328,7 +330,7 @@ class The_Events_Calendar extends Base {
 	 * @param Event $activitypub_event The ActivityPub event object.
 	 * @param int   $post_id           The post ID.
 	 */
-	private static function add_tags_to_post( $activitypub_event, $post_id ) {
+	private static function add_tags_to_post( $activitypub_event, $post_id ): bool {
 		$tags_array = $activitypub_event->get_tag();
 
 		// Ensure the input is valid.
@@ -359,7 +361,7 @@ class The_Events_Calendar extends Base {
 	 *
 	 * @return int
 	 */
-	private static function get_duration( $activitypub_event ) {
+	private static function get_duration( $activitypub_event ): int {
 		$end_time = $activitypub_event->get_end_time();
 		if ( ! $end_time ) {
 			return 2 * HOUR_IN_SECONDS;

@@ -18,7 +18,6 @@ use Activitypub\Webfinger;
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
 use Event_Bridge_For_ActivityPub\Event_Sources;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Source_Collection;
-use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration;
 use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
 use Event_Bridge_For_ActivityPub\Setup;
@@ -41,7 +40,7 @@ class Settings_Page {
 	 * @return void
 	 */
 	public static function admin_menu(): void {
-		add_action(
+		\add_action(
 			'admin_init',
 			array( self::STATIC, 'maybe_add_event_source' ),
 		);
@@ -63,25 +62,25 @@ class Settings_Page {
 		}
 
 		// Check and verify request and check capabilities.
-		if ( ! wp_verify_nonce( sanitize_key( $_REQUEST['_wpnonce'] ), 'event-bridge-for-activitypub-event-sources-options' ) ) {
+		if ( ! \wp_verify_nonce( sanitize_key( $_REQUEST['_wpnonce'] ), 'event-bridge-for-activitypub-event-sources-options' ) ) {
 			return;
 		}
 
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! \current_user_can( 'manage_options' ) ) {
 			return;
 		}
 
-		$event_source = sanitize_text_field( $_POST['event_bridge_for_activitypub_event_source'] );
+		$event_source = \sanitize_text_field( $_POST['event_bridge_for_activitypub_event_source'] );
 
 		$actor_url = false;
 
-		$url = wp_parse_url( $event_source );
+		$url = \wp_parse_url( $event_source );
 
 		if ( isset( $url['path'] ) && isset( $url['host'] ) && isset( $url['scheme'] ) ) {
-			$actor_url = $event_source;
+			$actor_url = \sanitize_url( $event_source );
 		} elseif ( preg_match( '/^@?' . Event_Source::ACTIVITYPUB_USER_HANDLE_REGEXP . '$/i', $event_source ) ) {
 			$actor_url = Webfinger::resolve( $event_source );
-			if ( is_wp_error( $actor_url ) ) {
+			if ( \is_wp_error( $actor_url ) ) {
 				return;
 			}
 		} else {
@@ -131,7 +130,7 @@ class Settings_Page {
 	/**
 	 * Receive the event categories (terms) used by the event plugin.
 	 *
-	 * @param Event_Plugin $event_plugin Contains info about a certain event plugin.
+	 * @param Event_Plugin_Integration $event_plugin Contains info about a certain event plugin.
 	 *
 	 * @return array An array of Terms.
 	 */
@@ -161,7 +160,7 @@ class Settings_Page {
 			$tab = 'welcome';
 		} else {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$tab = sanitize_key( $_GET['tab'] );
+			$tab = \sanitize_key( $_GET['tab'] );
 		}
 
 		// Fallback to always re-scan active event plugins, when user visits admin area of this plugin.
@@ -180,7 +179,7 @@ class Settings_Page {
 				$supports_event_sources = array();
 
 				foreach ( $event_plugins as $event_plugin_integration ) {
-					if ( $event_plugin_integration instanceof Feature_Event_Sources && $event_plugin_integration instanceof Event_Plugin_Integration ) {
+					if ( is_a( $event_plugin_integration, Feature_Event_Sources::class ) ) {
 						$class_name                            = get_class( $event_plugin_integration );
 						$supports_event_sources[ $class_name ] = $event_plugin_integration::get_plugin_name();
 					}
@@ -195,15 +194,15 @@ class Settings_Page {
 				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/settings.php', true, $args );
 				break;
 			case 'event-sources':
-				wp_enqueue_script( 'thickbox' );
-				wp_enqueue_style( 'thickbox' );
+				\wp_enqueue_script( 'thickbox' );
+				\wp_enqueue_style( 'thickbox' );
 				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/event-sources.php', true );
 				break;
 			case 'welcome':
 			default:
-				wp_enqueue_script( 'plugin-install' );
-				add_thickbox();
-				wp_enqueue_script( 'updates' );
+				\wp_enqueue_script( 'plugin-install' );
+				\add_thickbox();
+				\wp_enqueue_script( 'updates' );
 
 				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/welcome.php', true );
 				break;

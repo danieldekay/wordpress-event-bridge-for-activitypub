@@ -38,7 +38,7 @@ class Delete {
 	 * @param array $activity The activity-object.
 	 * @param int   $user_id  The id of the local blog-user.
 	 */
-	public static function handle_delete( $activity, $user_id ) {
+	public static function handle_delete( $activity, $user_id ): void {
 		// We only process activities that are target to the application user.
 		if ( Actors::BLOG_USER_ID !== $user_id ) {
 			return;
@@ -46,7 +46,7 @@ class Delete {
 
 		// Check that we are actually following this actor.
 		if ( ! Event_Sources::actor_is_event_source( $activity['actor'] ) ) {
-			return false;
+			return;
 		}
 
 		$id = object_to_uri( $activity['object'] );

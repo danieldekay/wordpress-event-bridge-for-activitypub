@@ -26,7 +26,7 @@ class Test_VS_Event_List extends \WP_UnitTestCase {
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
 		// Delete all posts afterwards.
-		_delete_all_posts();
+		\_delete_all_posts();
 	}
 
 	/**
@@ -175,13 +175,13 @@ class Test_VS_Event_List extends \WP_UnitTestCase {
 		$category_id_theatre = \wp_insert_term( 'Theatre', 'event_cat', array( 'slug' => 'theatre' ) );
 
 		// Set default mapping for event categories.
-		update_option( 'event_bridge_for_activitypub_default_event_category', 'MUSIC' );
+		\update_option( 'event_bridge_for_activitypub_default_event_category', 'MUSIC' );
 
 		// Set an override for the category with the slug theatre.
-		update_option( 'event_bridge_for_activitypub_event_category_mappings', array( 'theatre' => 'THEATRE' ) );
+		\update_option( 'event_bridge_for_activitypub_event_category_mappings', array( 'theatre' => 'THEATRE' ) );
 
 		// Create a VS Event List event with the music category.
-		$wp_post_id = wp_insert_post(
+		$wp_post_id = \wp_insert_post(
 			array(
 				'post_title'  => 'VSEL Test Event',
 				'post_status' => 'publish',

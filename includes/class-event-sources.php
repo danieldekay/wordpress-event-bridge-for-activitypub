@@ -21,6 +21,8 @@ use Event_Bridge_For_ActivityPub\Admin\User_Interface;
 use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration;
 use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
 use WP_Error;
+use WP_Post;
+use WP_REST_Request;
 
 use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\is_activitypub_request;
@@ -92,7 +94,7 @@ class Event_Sources {
 		$setup = Setup::get_instance();
 
 		foreach ( $setup->get_active_event_plugins() as $event_plugin_integration ) {
-			if ( ! $event_plugin_integration instanceof Feature_Event_Sources && $event_plugin_integration instanceof Event_Plugin_Integration ) {
+			if ( ! is_a( $event_plugin_integration, Feature_Event_Sources::class ) ) {
 				continue;
 			}
 
@@ -127,24 +129,6 @@ class Event_Sources {
 				'sanitize_callback' => 'absint',
 			)
 		);
-	}
-
-	/**
-	 * Get metadata of ActivityPub Actor by ID/URL.
-	 *
-	 * @param string $url The URL or ID of the ActivityPub actor.
-	 */
-	public static function get_metadata( $url ) {
-		if ( ! is_string( $url ) ) {
-			return array();
-		}
-
-		if ( false !== strpos( $url, '@' ) ) {
-			if ( false === strpos( $url, '/' ) && preg_match( '#^https?://#', $url, $m ) ) {
-				$url = substr( $url, strlen( $m[0] ) );
-			}
-		}
-		return get_remote_metadata_by_actor( $url );
 	}
 
 	/**
@@ -205,7 +189,7 @@ class Event_Sources {
 	 * @return bool
 	 */
 	public static function is_cached_external_post( $post ): bool {
-		$post_id = $post instanceof \WP_Post ? $post->ID : $post;
+		$post_id = $post instanceof WP_Post ? $post->ID : $post;
 
 		if ( get_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', true ) ) {
 			return true;
@@ -273,21 +257,17 @@ class Event_Sources {
 	 * Add the Blog Authors to the following list of the Blog Actor
 	 * if Blog not in single mode.
 	 *
-	 * @param array                   $follow_list The array of following urls.
-	 * @param \Activitypub\Model\User $user        The user object.
+	 * @param array $follow_list The array of following urls.
+	 * @param mixed $user        The user object, a subtype of \Activitypub\Model\User.
 	 *
 	 * @return array The array of following urls.
 	 */
-	public static function add_event_sources_to_follow_collection( $follow_list, $user ) {
+	public static function add_event_sources_to_follow_collection( $follow_list, $user ): array {
 		if ( ! $user instanceof Blog ) {
 			return $follow_list;
 		}
 
 		$event_sources_activitypub_ids = array_values( Event_Sources_Collection::get_event_sources() );
-
-		if ( ! is_array( $event_sources_activitypub_ids ) ) {
-			return $follow_list;
-		}
 
 		return array_merge( $follow_list, $event_sources_activitypub_ids );
 	}
@@ -335,9 +315,9 @@ class Event_Sources {
 	/**
 	 * Mark incoming accept activities as valid.
 	 *
-	 * @param bool             $valid   The validation state.
-	 * @param string           $param   The object parameter.
-	 * @param \WP_REST_Request $request The request object.
+	 * @param bool            $valid   The validation state.
+	 * @param string          $param   The object parameter.
+	 * @param WP_REST_Request $request The request object.
 	 *
 	 * @return bool|WP_Error The validation state: true if valid, false if not.
 	 */
@@ -357,9 +337,9 @@ class Event_Sources {
 	/**
 	 * Validate the event object.
 	 *
-	 * @param bool             $valid   The validation state.
-	 * @param string           $param   The object parameter.
-	 * @param \WP_REST_Request $request The request object.
+	 * @param bool            $valid   The validation state.
+	 * @param string          $param   The object parameter.
+	 * @param WP_REST_Request $request The request object.
 	 *
 	 * @return bool|WP_Error The validation state: true if valid, false if not.
 	 */
@@ -381,7 +361,7 @@ class Event_Sources {
 			return false;
 		}
 
-		if ( ! in_array( $json_params['type'], array( 'Create', 'Update', 'Delete', 'Announce' ), true ) || is_wp_error( $request ) ) {
+		if ( ! in_array( $json_params['type'], array( 'Create', 'Update', 'Delete', 'Announce' ), true ) ) {
 			return $valid;
 		}
 
@@ -432,10 +412,10 @@ class Event_Sources {
 	/**
 	 * Check if the object is a valid ActivityPub event.
 	 *
-	 * @param array $event_object The (event) object as an associative array.
-	 * @return bool|WP_Error True if the object is an valid ActivityPub Event, false or WP_Error if not.
+	 * @param mixed $event_object The (event) object as an associative array.
+	 * @return bool True if the object is an valid ActivityPub Event, false if not.
 	 */
-	public static function is_valid_activitypub_event_object( $event_object ) {
+	public static function is_valid_activitypub_event_object( $event_object ): bool {
 		if ( ! is_array( $event_object ) ) {
 			return false;
 		}

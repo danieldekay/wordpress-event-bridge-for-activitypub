@@ -15,6 +15,7 @@ namespace Event_Bridge_For_ActivityPub\Integrations;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event as ActivityPub_Event_Transformer;
+use WP_Post;
 
 require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'includes/integrations/interface-feature-event-sources.php';
 
@@ -50,7 +51,7 @@ abstract class Event_Plugin_Integration {
 	/**
 	 * Returns the Activitypub transformer for the event plugins event post type.
 	 *
-	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @param WP_Post $post           The WordPress post object of the Event.
 	 * @return ActivityPub_Event_Transformer
 	 */
 	abstract public static function get_activitypub_event_transformer( $post ): ActivityPub_Event_Transformer;

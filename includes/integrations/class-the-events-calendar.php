@@ -26,7 +26,7 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\The_Events_Calendar 
  *
  * @since 1.0.0
  */
-final class The_Events_Calendar extends Event_plugin_Integration implements Feature_Event_Sources {
+final class The_Events_Calendar extends Event_Plugin_Integration implements Feature_Event_Sources {
 	/**
 	 * Returns the full plugin file.
 	 *
@@ -57,7 +57,7 @@ final class The_Events_Calendar extends Event_plugin_Integration implements Feat
 	/**
 	 * Returns the ActivityPub transformer for a The_Events_Calendar event post.
 	 *
-	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @param \WP_Post $post The WordPress post object of the Event.
 	 * @return The_Events_Calendar_Transformer
 	 */
 	public static function get_activitypub_event_transformer( $post ): The_Events_Calendar_Transformer {
@@ -67,18 +67,18 @@ final class The_Events_Calendar extends Event_plugin_Integration implements Feat
 	/**
 	 * Return the location/venue post type used by tribe.
 	 *
-	 * @return ?string
+	 * @return string
 	 */
-	public static function get_location_post_type() {
+	public static function get_location_post_type(): string {
 		return class_exists( '\Tribe__Events__Venue' ) ? \Tribe__Events__Venue::POSTTYPE : 'tribe_venue';
 	}
 
 	/**
 	 * Return the organizers post type used by tribe.
 	 *
-	 * @return ?string
+	 * @return string
 	 */
-	public static function get_organizer_post_type() {
+	public static function get_organizer_post_type(): string {
 		return class_exists( '\Tribe__Events__Organizer' ) ? \Tribe__Events__Organizer::POSTTYPE : 'tribe_organizer';
 	}
 

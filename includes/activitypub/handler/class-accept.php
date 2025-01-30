@@ -25,7 +25,7 @@ class Accept {
 	/**
 	 * Initialize the class, registering the handler for incoming `Accept` activities to the ActivityPub plugin.
 	 */
-	public static function init() {
+	public static function init(): void {
 		\add_action(
 			'activitypub_inbox_accept',
 			array( self::class, 'handle_accept' ),
@@ -40,7 +40,7 @@ class Accept {
 	 * @param array $activity The activity-object.
 	 * @param int   $user_id  The id of the local blog-user.
 	 */
-	public static function handle_accept( $activity, $user_id ) {
+	public static function handle_accept( $activity, $user_id ): void {
 		// We only process activities that are target to the blog actor.
 		if ( Actors::BLOG_USER_ID !== $user_id ) {
 			return;

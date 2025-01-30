@@ -28,7 +28,7 @@ final class WP_Event_Manager extends Event_Transformer {
 	 *
 	 * @return bool
 	 */
-	protected function get_is_online() {
+	protected function get_is_online(): bool {
 		$is_online_text = get_post_meta( $this->wp_object->ID, '_event_online', true );
 		$is_online      = false;
 		// Radio buttons.
@@ -45,7 +45,7 @@ final class WP_Event_Manager extends Event_Transformer {
 	/**
 	 * Get the event location.
 	 *
-	 * @return array The Place.
+	 * @return ?Place The Place.
 	 */
 	public function get_location(): ?Place {
 		$location_name = get_post_meta( $this->wp_object->ID, '_event_location', true );

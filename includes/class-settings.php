@@ -154,10 +154,10 @@ class Settings {
 	/**
 	 * Sanitize the option which event plugin.
 	 *
-	 * @param string $event_plugin_integration The setting.
+	 * @param mixed $event_plugin_integration The setting.
 	 * @return string
 	 */
-	public static function sanitize_event_plugin_integration_used_for_event_sources( $event_plugin_integration ) {
+	public static function sanitize_event_plugin_integration_used_for_event_sources( $event_plugin_integration ): string {
 		if ( ! is_string( $event_plugin_integration ) ) {
 			return '';
 		}

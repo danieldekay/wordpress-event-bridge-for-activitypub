@@ -15,8 +15,8 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 use Activitypub\Activity\Extended_Object\Event;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Helper\Sanitizer;
-
 use WP_Error;
+use WP_Post;
 
 /**
  * Base class with common functions for transforming an ActivityPub Event object to a WordPress object.
@@ -40,7 +40,7 @@ abstract class Base {
 	 * @param array $activitypub_event    The ActivityPub event as associative array.
 	 * @param int   $event_source_post_id The Post ID of the Event Source that owns the outbox.
 	 */
-	public static function save( $activitypub_event, $event_source_post_id ) {
+	public static function save( $activitypub_event, $event_source_post_id ): void {
 		// Sanitize the incoming event and set only the properties used by the transmogrifier classes.
 		$activitypub_event = Sanitizer::init_and_sanitize_event_object_from_array( $activitypub_event );
 
@@ -62,7 +62,7 @@ abstract class Base {
 			);
 			// Use post meta to remember who we received this event from.
 			\update_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', absint( $event_source_post_id ) );
-			\update_post_meta( $post_id, 'activitypub_content_visibility', constant( 'ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL' ) ?? '' );
+			\update_post_meta( $post_id, 'activitypub_content_visibility', defined( 'ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL' ) ? constant( 'ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL' ) : '' );
 		} else {
 			\do_action(
 				'event_bridge_for_activitypub_write_log',
@@ -74,7 +74,8 @@ abstract class Base {
 	/**
 	 * Delete a local event in WordPress that is a cached remote one.
 	 *
-	 * @param int $activitypub_event_id The ActivityPub events ID.
+	 * @param string $activitypub_event_id The ActivityPub events ID.
+	 * @return bool|WP_Post|null|WP_Error
 	 */
 	public static function delete( $activitypub_event_id ) {
 		$post_id = static::get_post_id_from_activitypub_id( $activitypub_event_id );
@@ -104,6 +105,8 @@ abstract class Base {
 		} else {
 			\do_action( 'event_bridge_for_activitypub_write_log', array( "[ACTIVITYPUB] Failed deleting cached event {$activitypub_event_id}" ) );
 		}
+
+		return $result;
 	}
 
 	/**
@@ -112,21 +115,21 @@ abstract class Base {
 	 * @param string $time_string The ActivityStreams xds:datetime (may include offset).
 	 * @return string The GMT string in format 'Y-m-d H:i:s'.
 	 */
-	protected static function format_time_string_to_wordpress_gmt( $time_string ) {
+	protected static function format_time_string_to_wordpress_gmt( $time_string ): string {
 		$datetime = new \DateTime( $time_string );
 		$datetime->setTimezone( new \DateTimeZone( 'GMT' ) );
 		return $datetime->format( 'Y-m-d H:i:s' );
 	}
 
 	/**
-	 * Get WordPress post by ActivityPub object ID.
+	 * Get WordPress post by ActivityPub object ID using the guid.
 	 *
-	 * @param int $activitypub_id The ActivityPub object ID.
-	 * @return int The WordPress Post ID.
+	 * @param string $activitypub_id The ActivityPub object ID.
+	 * @return int The WordPress Post ID, 0 if not post with that ActivityPub object ID (by guid) is found.
 	 */
-	protected static function get_post_id_from_activitypub_id( $activitypub_id ) {
+	protected static function get_post_id_from_activitypub_id( $activitypub_id ): int {
 		global $wpdb;
-		return $wpdb->get_var(
+		return (int) $wpdb->get_var(
 			$wpdb->prepare(
 				"SELECT ID FROM $wpdb->posts WHERE guid=%s",
 				esc_sql( $activitypub_id ),
@@ -137,10 +140,10 @@ abstract class Base {
 	/**
 	 * Get the image URL and alt-text of an ActivityPub object.
 	 *
-	 * @param array $data The ActivityPub object as ann associative array.
+	 * @param mixed $data The ActivityPub object as ann associative array.
 	 * @return array Array containing the images URL and alt-text.
 	 */
-	private static function extract_image_alt_and_url( $data ) {
+	private static function extract_image_alt_and_url( $data ): array {
 		$image = array(
 			'url' => null,
 			'alt' => null,
@@ -180,7 +183,7 @@ abstract class Base {
 	 *
 	 * @return array
 	 */
-	protected static function get_featured_image( $event ) {
+	protected static function get_featured_image( $event ): array {
 		// Search for the featured image in the image property.
 		$image = $event->get_image();
 
@@ -224,8 +227,11 @@ abstract class Base {
 
 		// Include necessary WordPress file for media handling.
 		if ( ! function_exists( 'media_sideload_image' ) ) {
+			// @phpstan-ignore-next-line
 			require_once ABSPATH . 'wp-admin/includes/media.php';
+			// @phpstan-ignore-next-line
 			require_once ABSPATH . 'wp-admin/includes/file.php';
+			// @phpstan-ignore-next-line
 			require_once ABSPATH . 'wp-admin/includes/image.php';
 		}
 
@@ -254,23 +260,23 @@ abstract class Base {
 	 * @param int    $post_id   The post ID where the image will be set as featured image.
 	 * @param string $image_url The image URL.
 	 * @param string $alt_text  The alt-text of the image.
-	 * @return int The attachment ID
+	 * @return int|WP_Error The attachment ID
 	 */
 	protected static function set_featured_image_with_alt( $post_id, $image_url, $alt_text = '' ) {
 		// Maybe sideload the image or get the Attachment ID of an existing one.
 		$image_id = self::maybe_sideload_image( $post_id, $image_url );
 
-		if ( is_wp_error( $image_id ) ) {
+		if ( \is_wp_error( $image_id ) ) {
 			// Handle the error.
 			return $image_id;
 		}
 
 		// Set the image as the featured image for the post.
-		set_post_thumbnail( $post_id, $image_id );
+		\set_post_thumbnail( $post_id, $image_id );
 
 		// Update the alt text.
 		if ( ! empty( $alt_text ) ) {
-			update_post_meta( $image_id, '_wp_attachment_image_alt', $alt_text );
+			\update_post_meta( $image_id, '_wp_attachment_image_alt', $alt_text );
 		}
 
 		return $image_id; // Return the attachment ID for further use if needed.
@@ -284,8 +290,8 @@ abstract class Base {
 	 * @param array $postal_address The PostalAddress as an associative array.
 	 * @return string
 	 */
-	private static function postal_address_to_string( $postal_address ) {
-		if ( ! is_array( $postal_address ) || 'PostalAddress' !== $postal_address['type'] ) {
+	private static function postal_address_to_string( $postal_address ): string {
+		if ( ! isset( $postal_address['type'] ) || 'PostalAddress' !== $postal_address['type'] ) {
 			_doing_it_wrong(
 				__METHOD__,
 				'The parameter postal_address must be an associate array like schema.org/PostalAddress.',
@@ -319,7 +325,7 @@ abstract class Base {
 	 * @param mixed $address The address as an object, string or associative array.
 	 * @return string
 	 */
-	protected static function address_to_string( $address ) {
+	protected static function address_to_string( $address ): string {
 		if ( is_string( $address ) ) {
 			return $address;
 		}
@@ -341,9 +347,9 @@ abstract class Base {
 	/**
 	 * Return the number of revisions to keep.
 	 *
-	 * @return     int   The number of revisions to keep.
+	 * @return int The number of revisions to keep.
 	 */
-	public static function revisions_to_keep() {
+	public static function revisions_to_keep(): int {
 		return 5;
 	}
 
@@ -354,11 +360,11 @@ abstract class Base {
 	 *
 	 * @return ?string
 	 */
-	protected static function get_online_event_link_from_attachments( $event ) {
+	protected static function get_online_event_link_from_attachments( $event ): ?string {
 		$attachments = $event->get_attachment();
 
 		if ( ! is_array( $attachments ) || empty( $attachments ) ) {
-			return;
+			return null;
 		}
 
 		foreach ( $attachments as $attachment ) {
@@ -366,5 +372,7 @@ abstract class Base {
 				return $attachment['href'];
 			}
 		}
+
+		return null;
 	}
 }
