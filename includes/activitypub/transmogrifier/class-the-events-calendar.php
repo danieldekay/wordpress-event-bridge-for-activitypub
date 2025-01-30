@@ -317,7 +317,7 @@ class The_Events_Calendar extends Base {
 		}
 
 		// Add the thumbnail of the event source to the organizer.
-		if ( \get_post_thumbnail_id( $$event_source->get__id() ) ) {
+		if ( \get_post_thumbnail_id( $event_source->get__id() ) ) {
 			\set_post_thumbnail( $tribe_organizer_post_id, \get_post_thumbnail_id( $event_source->get__id() ) );
 		}
 
