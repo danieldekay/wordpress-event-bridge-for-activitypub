@@ -193,7 +193,7 @@ class Event_Sources {
 
 		$post_id = $event_source->save();
 
-		if ( is_wp_error( $post_id ) ) {
+		if ( \is_wp_error( $post_id ) ) {
 			return $post_id;
 		}
 

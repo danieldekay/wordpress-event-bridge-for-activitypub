@@ -55,6 +55,8 @@ class Settings_Page {
 
 	/**
 	 * Checks whether the current request wants to add an event source (ActivityPub follow) and passed on to actual handler.
+	 *
+	 * @return void
 	 */
 	public static function maybe_add_event_source() {
 		if ( ! isset( $_POST['event_bridge_for_activitypub_event_source'] ) ) {
