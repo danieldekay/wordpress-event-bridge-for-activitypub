@@ -44,7 +44,6 @@
 	<!-- Check up to 8 files simultaneously. -->
 	<arg name="parallel" value="8"/>
 
-
 	<!--
 	#############################################################################
 	SET UP THE RULESETS
@@ -160,6 +159,9 @@
 	</rule>
 	<rule ref="WordPress.Files.FileName">
 		<exclude-pattern>tests/*.php</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.AlternativeFunctions">
+    	<exclude-pattern>/tests/includes/activitypub/transmogrifier/class-helper.php</exclude-pattern>
 	</rule>
 
 </ruleset>

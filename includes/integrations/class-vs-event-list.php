@@ -67,7 +67,7 @@ final class VS_Event_List extends Event_Plugin_Integration implements Feature_Ev
 	/**
 	 * Returns the ActivityPub transformer for a VS_Event_List event post.
 	 *
-	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @param \WP_Post $post The WordPress post object of the Event.
 	 * @return VS_Event_List_Transformer
 	 */
 	public static function get_activitypub_event_transformer( $post ): VS_Event_List_Transformer {
@@ -77,8 +77,8 @@ final class VS_Event_List extends Event_Plugin_Integration implements Feature_Ev
 	/**
 	 * Returns the Transmogrifier for The_Events_Calendar.
 	 */
-	public static function get_transmogrifier(): VS_Event_List_Transmogrifier {
-		return new VS_Event_List_Transmogrifier();
+	public static function get_transmogrifier(): string {
+		return VS_Event_List_Transmogrifier::class;
 	}
 
 	/**

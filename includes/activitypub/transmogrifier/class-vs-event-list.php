@@ -15,6 +15,8 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
+use Activitypub\Activity\Extended_Object\Event;
+use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\Integrations\VS_Event_List as IntegrationsVS_Event_List;
 
 /**
@@ -29,14 +31,18 @@ class VS_Event_List extends Base {
 	/**
 	 * Extract location and address as string.
 	 *
-	 * @param ?array $location The ActivitySTreams location as an associative array.
+	 * @param mixed $location The ActivityStreams location.
 	 * @return string The location and address formatted as a single string.
 	 */
-	private function get_location_as_string( $location ): string {
+	private static function get_location_as_string( $location ): string {
 		$location_string = '';
 
+		if ( $location instanceof Place ) {
+			$location = $location->to_array();
+		}
+
 		// Return empty string when location is not an associative array.
-		if ( is_null( $location ) || ! is_array( $location ) ) {
+		if ( ! is_array( $location ) || 0 === count( $location ) ) {
 			return $location_string;
 		}
 
@@ -56,7 +62,7 @@ class VS_Event_List extends Base {
 
 		// Add address.
 		if ( isset( $location['address'] ) ) {
-			$location_string .= $this->address_to_string( $location['address'] );
+			$location_string .= self::address_to_string( $location['address'] );
 		}
 		return $location_string;
 	}
@@ -64,10 +70,11 @@ class VS_Event_List extends Base {
 	/**
 	 * Add tags to post.
 	 *
-	 * @param int $post_id The post ID.
+	 * @param Event $activitypub_event The ActivityPub event object.
+	 * @param int   $post_id           The post ID.
 	 */
-	private function add_tags_to_post( $post_id ) {
-		$tags_array = $this->activitypub_event->get_tag();
+	private static function add_tags_to_post( $activitypub_event, $post_id ) {
+		$tags_array = $activitypub_event->get_tag();
 
 		// Ensure the input is valid.
 		if ( empty( $tags_array ) || ! is_array( $tags_array ) || ! $post_id ) {
@@ -84,33 +91,36 @@ class VS_Event_List extends Base {
 
 		// Add the tags as terms to the post.
 		if ( ! empty( $tag_names ) ) {
-			wp_set_object_terms( $post_id, $tag_names, IntegrationsVS_Event_List::get_event_category_taxonomy(), true );
+			\wp_set_object_terms( $post_id, $tag_names, IntegrationsVS_Event_List::get_event_category_taxonomy(), true );
 		}
 
 		return true;
 	}
 
 	/**
-	 * Save the ActivityPub event object as GatherPress Event.
+	 * Save the ActivityPub event object as VS Event List event.
+	 *
+	 * @param Event $activitypub_event    The ActivityPub event object.
+	 * @param int   $event_source_post_id The Post ID of the Event Source that owns the outbox.
 	 *
 	 * @return false|int
 	 */
-	public function save_event() {
+	protected static function save_event( $activitypub_event, $event_source_post_id ) {
 		// Limit this as a safety measure.
 		\add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
-		$post_id = self::get_post_id_from_activitypub_id( $this->activitypub_event->get_id() );
+		$post_id = self::get_post_id_from_activitypub_id( $activitypub_event->get_id() );
 
 		$args = array(
-			'post_title'   => \sanitize_text_field( $this->activitypub_event->get_name() ),
+			'post_title'   => $activitypub_event->get_name(),
 			'post_type'    => \Event_Bridge_For_ActivityPub\Integrations\VS_Event_List::get_post_type(),
-			'post_content' => \wp_kses_post( $this->activitypub_event->get_content() ?? '' ),
-			'post_excerpt' => \wp_kses_post( $this->activitypub_event->get_summary() ?? '' ),
+			'post_content' => $activitypub_event->get_content() ?? '',
+			'post_excerpt' => $activitypub_event->get_summary() ?? '',
 			'post_status'  => 'publish',
-			'guid'         => \sanitize_url( $this->activitypub_event->get_id() ),
+			'guid'         => $activitypub_event->get_id(),
 			'meta_input'   => array(
-				'event-start-date'  => \strtotime( $this->activitypub_event->get_start_time() ),
-				'event-link'        => \sanitize_url( $this->activitypub_event->get_url() ?? $this->activitypub_event->get_id() ),
+				'event-start-date'  => \strtotime( $activitypub_event->get_start_time() ),
+				'event-link'        => $activitypub_event->get_url() ?? $activitypub_event->get_id(),
 				'event-link-label'  => \sanitize_text_field( __( 'Original Website', 'event-bridge-for-activitypub' ) ),
 				'event-link-target' => 'yes', // Open in new window.
 				'event-link-title'  => 'no', // Whether to redirect event title to original source.
@@ -118,14 +128,20 @@ class VS_Event_List extends Base {
 			),
 		);
 
+		if ( $activitypub_event->get_published() ) {
+			$post_date             = self::format_time_string_to_wordpress_gmt( $activitypub_event->get_published() );
+			$args['post_date']     = $post_date;
+			$args['post_date_gmt'] = $post_date;
+		}
+
 		// Add end time.
-		$end_time = $this->activitypub_event->get_end_time();
+		$end_time = $activitypub_event->get_end_time();
 		if ( $end_time ) {
 			$args['meta_input']['event-date'] = \strtotime( $end_time );
 		}
 
 		// Maybe add location.
-		$location = $this->get_location_as_string( $this->activitypub_event->get_location() );
+		$location = self::get_location_as_string( $activitypub_event->get_location() );
 		if ( $location ) {
 			$args['meta_input']['event-location'] = $location;
 		}
@@ -139,16 +155,17 @@ class VS_Event_List extends Base {
 			$post_id = \wp_insert_post( $args );
 		}
 
-		if ( ! $post_id || \is_wp_error( $post_id ) ) {
+		// @phpstan-ignore-next-line
+		if ( 0 === $post_id || \is_wp_error( $post_id ) ) {
 			return false;
 		}
 
 		// Insert featured image.
-		$image = $this->get_featured_image();
+		$image = self::get_featured_image( $activitypub_event );
 		self::set_featured_image_with_alt( $post_id, $image['url'], $image['alt'] );
 
 		// Add hashtags.
-		$this->add_tags_to_post( $post_id );
+		self::add_tags_to_post( $activitypub_event, $post_id );
 
 		// Limit this as a safety measure.
 		\remove_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );

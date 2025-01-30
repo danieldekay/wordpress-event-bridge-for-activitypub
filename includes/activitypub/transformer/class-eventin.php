@@ -15,8 +15,6 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
-use DateTime;
-use DateTimeZone;
 use Etn\Core\Event\Event_Model;
 
 use function Activitypub\esc_hashtag;
@@ -41,8 +39,8 @@ final class Eventin extends Event {
 	 * This is a special class object form The Events Calendar which
 	 * has a lot of useful functions, we make use of our getter functions.
 	 *
-	 * @param WP_Post $wp_object The WordPress object.
-	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
+	 * @param \WP_Post $wp_object The WordPress object.
+	 * @param string   $wp_taxonomy The taxonomy slug of the event post type.
 	 */
 	public function __construct( $wp_object, $wp_taxonomy ) {
 		parent::__construct( $wp_object, $wp_taxonomy );
@@ -88,6 +86,8 @@ final class Eventin extends Event {
 		$attachment = parent::get_attachment();
 
 		$location = (array) $this->event_model->__get( 'location' );
+
+		// @phpstan-ignore-next-line
 		if ( array_key_exists( 'integration', $location ) && array_key_exists( $location['integration'], $location ) ) {
 			$online_link  = array(
 				'type'      => 'Link',
@@ -103,7 +103,7 @@ final class Eventin extends Event {
 	/**
 	 * Compose the events tags.
 	 */
-	public function get_tag() {
+	public function get_tag(): ?array {
 		// The parent tag function also fetches the mentions.
 		$tags = parent::get_tag();
 
@@ -147,10 +147,12 @@ final class Eventin extends Event {
 	public function get_location(): ?Place {
 		$location = (array) $this->event_model->__get( 'location' );
 
+		// @phpstan-ignore-next-line
 		if ( ! array_key_exists( 'address', $location ) ) {
 			return null;
 		}
 
+		// @phpstan-ignore-next-line
 		$place = new Place();
 
 		$address = $location['address'];

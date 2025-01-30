@@ -65,7 +65,7 @@ final class Eventin extends Event_Plugin_Integration {
 	/**
 	 * Returns the ActivityPub transformer for a Eventin event post.
 	 *
-	 * @param WP_Post $post The WordPress post object of the Event.
+	 * @param \WP_Post $post The WordPress post object of the Event.
 	 * @return Eventin_Transformer
 	 */
 	public static function get_activitypub_event_transformer( $post ): Eventin_Transformer {

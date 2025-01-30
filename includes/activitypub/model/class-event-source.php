@@ -28,6 +28,24 @@ use function Activitypub\sanitize_url;
  * This class holds methods needed for relating an ActivityPub actor
  * that is followed with the custom post type structure how it is
  * stored within WordPress.
+ *
+ * @method ?string get_published()
+ * @method string get_id()
+ * @method ?string get_name()
+ * @method ?string get_updated()
+ * @method int    get__id()
+ * @method ?string get_status()
+ * @method ?string get_summary()
+ * @method Event_Source set_published(string $published)
+ * @method Event_Source set_id(string $id)
+ * @method Event_Source set_name(string $name)
+ * @method Event_Source set_updated(string $updated)
+ * @method Event_Source set__id(int $id)
+ * @method Event_Source set_status(string $status)
+ * @method Event_Source set_summary(string $summary)
+ * @method ?string get_inbox()
+ * @method string|array get_icon()
+ * @method array get_endpoints()
  */
 class Event_Source extends Actor {
 	const ACTIVITYPUB_USER_HANDLE_REGEXP = '(?:([A-Za-z0-9_.-]+)@((?:[A-Za-z0-9_-]+\.)+[A-Za-z]+))';
@@ -40,9 +58,9 @@ class Event_Source extends Actor {
 	protected $_id; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
 	/**
-	 * The WordPress Post ID which stores the event source.
+	 * The WordPress post status of the post which stores the event source.
 	 *
-	 * @var int
+	 * @var string
 	 */
 	protected $status; // phpcs:ignore PSR2.Classes.PropertyDeclaration.Underscore
 
@@ -51,18 +69,18 @@ class Event_Source extends Actor {
 	 *
 	 * @return string The URL to the Avatar.
 	 */
-	public function get_icon_url() {
+	public function get_icon_url(): string {
 		$icon = $this->get_icon();
 
-		if ( ! $icon ) {
-			return '';
+		if ( is_string( $icon ) ) {
+			return $icon;
 		}
 
-		if ( is_array( $icon ) ) {
+		if ( isset( $icon['url'] ) && is_string( $icon['url'] ) ) {
 			return $icon['url'];
 		}
 
-		return $icon;
+		return '';
 	}
 
 	/**
@@ -124,30 +142,30 @@ class Event_Source extends Actor {
 	}
 
 	/**
-	 * Get the Event Source Post ID by the ActivityPub ID.
+	 * Get the Event Source by the ActivityPub ID or WordPress Post ID.
 	 *
 	 * @param int|string $event_source_id The ActivityPub actor ID as string or the Post ID as int of the Event Source.
-	 * @return Event_Source|false The Event Sources if it exists, false otherwise.
+	 * @return ?Event_Source The Event Sources if it exists, false otherwise.
 	 */
-	public static function get_by_id( $event_source_id ) {
+	public static function get_by_id( $event_source_id ): ?Event_Source {
 		$post_id = is_integer( $event_source_id ) ? $event_source_id : self::get_post_id_by_activitypub_id( $event_source_id );
 
 		if ( ! $post_id ) {
-			return;
+			return null;
 		}
 
 		// Get Custom Post.
 		$event_source_post = \get_post( $post_id );
 
 		if ( ! $event_source_post ) {
-			return;
+			return null;
 		}
 
 		// Init From Custom Post.
 		$event_source = self::init_from_cpt( $event_source_post );
 
-		if ( \is_wp_error( $event_source ) ) {
-			return false;
+		if ( ! $event_source ) {
+			return null;
 		}
 
 		return $event_source;
@@ -157,14 +175,14 @@ class Event_Source extends Actor {
 	 * Convert a Custom-Post-Type input to an \Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source.
 	 *
 	 * @param \WP_Post $post The post object.
-	 * @return Event_Source|WP_Error
+	 * @return ?Event_Source
 	 */
-	public static function init_from_cpt( $post ) {
+	public static function init_from_cpt( $post ): ?Event_Source {
 		if ( Event_Sources::POST_TYPE !== $post->post_type ) {
-			return false;
+			return null;
 		}
 		$actor_json = get_post_meta( $post->ID, 'activitypub_actor_json', true );
-		$object     = self::init_from_json( $actor_json );
+		$object     = static::init_from_json( $actor_json );
 		$object->set__id( $post->ID );
 		$object->set_id( $post->guid );
 		$object->set_name( $post->post_title );
@@ -182,6 +200,10 @@ class Event_Source extends Actor {
 			);
 		}
 
+		if ( ! $object instanceof Event_Source ) { // To make phpstan happy.
+			return null;
+		}
+
 		return $object;
 	}
 
@@ -190,7 +212,7 @@ class Event_Source extends Actor {
 	 *
 	 * @return boolean True if the verification was successful.
 	 */
-	public function is_valid() {
+	public function is_valid(): bool {
 		// The minimum required attributes.
 		$required_attributes = array(
 			'id',
@@ -285,11 +307,13 @@ class Event_Source extends Actor {
 			$args['post_date_gmt'] = $post->post_date_gmt;
 		}
 
-		$post_id   = wp_insert_post( $args );
+		$post_id   = \wp_insert_post( $args );
 		$this->_id = $post_id;
 
 		// Abort if inserting or updating the post didn't work.
-		if ( 0 === $post_id || is_wp_error( $post_id ) ) {
+
+		// @phpstan-ignore-next-line
+		if ( is_wp_error( $post_id ) || 0 === $post_id ) {
 			return $post_id;
 		}
 

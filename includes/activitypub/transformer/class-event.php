@@ -15,8 +15,9 @@ use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
 use Activitypub\Shortcodes;
 use Activitypub\Transformer\Post;
-
 use DateTime;
+use WP_Comment;
+use WP_Post;
 
 /**
  * Base transformer for WordPress event post types to ActivityPub events.
@@ -34,7 +35,7 @@ abstract class Event extends Post {
 	/**
 	 * The WordPress event taxonomy.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	protected $wp_taxonomy;
 
@@ -80,8 +81,8 @@ abstract class Event extends Post {
 	/**
 	 * Extend the construction of the Post Transformer to also set the according taxonomy of the event post type.
 	 *
-	 * @param WP_Post $wp_object The WordPress post object (event).
-	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
+	 * @param \WP_Post $wp_object The WordPress post object (event).
+	 * @param string   $wp_taxonomy The taxonomy slug of the event post type.
 	 */
 	public function __construct( $wp_object, $wp_taxonomy = 'category' ) {
 		parent::__construct( $wp_object );
@@ -203,7 +204,7 @@ abstract class Event extends Post {
 		$start_datetime  = new DateTime( $time );
 		$start_timestamp = $start_datetime->getTimestamp();
 		$datetime_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
-		return wp_date( $datetime_format, $start_timestamp );
+		return \wp_date( $datetime_format, $start_timestamp );
 	}
 
 	/**
@@ -231,13 +232,13 @@ abstract class Event extends Post {
 	/**
 	 * Generates the formatted time output for a shortcode.
 	 *
-	 * @param int|null $timestamp  The timestamp for the event time.
-	 * @param array    $atts       The shortcode attributes.
-	 * @param string   $icon       The icon to display.
-	 * @param string   $label      The label to display (e.g., 'Start', 'End').
+	 * @param string|null $timestamp  The timestamp for the event time.
+	 * @param array       $atts       The shortcode attributes.
+	 * @param string      $icon       The icon to display.
+	 * @param string      $label      The label to display (e.g., 'Start', 'End').
 	 * @return string The formatted date and time, or an empty string if the timestamp is invalid.
 	 */
-	private function generate_time_output( $timestamp, $atts, $icon, $label ) {
+	private function generate_time_output( $timestamp, $atts, $icon, $label ): string {
 		if ( ! $timestamp ) {
 			return '';
 		}
@@ -410,7 +411,7 @@ abstract class Event extends Post {
 	public function unregister_shortcodes() {
 		foreach ( get_class_methods( self::class ) as $function ) {
 			if ( 'shortcode_' === substr( $function, 0, 10 ) ) {
-				remove_shortcode( 'ap_' . substr( $function, 10, strlen( $function ) ), array( $this, $function ) );
+				remove_shortcode( 'ap_' . substr( $function, 10, strlen( $function ) ) );
 			}
 		}
 	}
@@ -475,9 +476,8 @@ abstract class Event extends Post {
 	public function format_preset_summary(): ?string {
 		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2, 2 );
 		$excerpt = $this->retrieve_excerpt();
-		// BeforeFirstRelease: decide whether this should be a admin setting.
-		$fallback_to_content = false;
-		if ( is_null( $excerpt ) && $fallback_to_content ) {
+
+		if ( is_null( $excerpt ) ) {
 			$excerpt = $this->get_content();
 		}
 		remove_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ) );

@@ -14,7 +14,7 @@ namespace Event_Bridge_For_ActivityPub\Admin;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin;
+use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration;
 
 /**
  * Class responsible for Event Plugin related admin notices.
@@ -27,14 +27,14 @@ class Event_Plugin_Admin_Notices {
 	/**
 	 * Information about the event plugin.
 	 *
-	 * @var Event_Plugin
+	 * @var Event_Plugin_Integration
 	 */
 	protected $event_plugin;
 
 	/**
 	 * Adds admin notices to an active supported event plugin.
 	 *
-	 * @param Event_Plugin $event_plugin Class that has implements functions to handle a certain supported activate event plugin.
+	 * @param Event_Plugin_Integration $event_plugin Class that has implements functions to handle a certain supported activate event plugin.
 	 */
 	public function __construct( $event_plugin ) {
 		$this->event_plugin = $event_plugin;

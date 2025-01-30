@@ -15,6 +15,7 @@ use Activitypub\Collection\Actors;
 use Event_Bridge_For_ActivityPub\Event_Sources;
 
 use function Activitypub\object_to_uri;
+use function Activitypub\sanitize_url;
 
 /**
  * Handle Uno requests.
@@ -23,7 +24,7 @@ class Undo {
 	/**
 	 * Initialize the class, registering the handler for incoming `Uno` activities to the ActivityPub plugin.
 	 */
-	public static function init() {
+	public static function init(): void {
 		\add_action(
 			'activitypub_inbox_undo',
 			array( self::class, 'handle_undo' ),
@@ -38,7 +39,7 @@ class Undo {
 	 * @param array $activity The activity-object.
 	 * @param int   $user_id  The id of the local blog-user.
 	 */
-	public static function handle_undo( $activity, $user_id ) {
+	public static function handle_undo( $activity, $user_id ): void {
 		// We only process activities that are target to the blog actor.
 		if ( Actors::BLOG_USER_ID !== $user_id ) {
 			return;
@@ -49,7 +50,7 @@ class Undo {
 			return;
 		}
 
-		$accept_id = object_to_uri( $activity['object'] );
+		$accept_id = sanitize_url( object_to_uri( $activity['object'] ) );
 
 		global $wpdb;
 
@@ -57,12 +58,12 @@ class Undo {
 			$wpdb->prepare(
 				"SELECT post_id FROM $wpdb->postmeta WHERE meta_key = %s AND meta_value = %s",
 				'_event_bridge_for_activitypub_accept_of_follow',
-				esc_sql( $accept_id )
+				$accept_id
 			)
 		);
 
 		// If no event source with that accept ID is found return.
-		if ( empty( $results ) || ! $results ) {
+		if ( empty( $results ) ) {
 			return;
 		}
 

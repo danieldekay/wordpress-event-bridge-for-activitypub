@@ -17,6 +17,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Http;
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
+use WP_Error;
 
 use function Activitypub\object_to_uri;
 
@@ -35,7 +36,7 @@ class Outbox_Parser {
 	/**
 	 * Init actions.
 	 */
-	public static function init() {
+	public static function init(): void {
 		// Add action for backfilling the events.
 		\add_action( 'event_bridge_for_activitypub_backfill_events', array( self::class, 'backfill_events' ), 10, 1 );
 		\add_action( 'event_bridge_for_activitypub_import_events_from_outbox', array( self::class, 'import_events_from_outbox' ), 10, 2 );
@@ -45,9 +46,9 @@ class Outbox_Parser {
 	 * Initialize the backfilling of events via the outbox of an ActivityPub actor.
 	 *
 	 * @param int $event_source_post_id The Post ID of Event Source we want to backfill the events for.
-	 * @return bool|WP_Error
+	 * @return void
 	 */
-	public static function backfill_events( $event_source_post_id ) {
+	public static function backfill_events( $event_source_post_id ): void {
 		$event_source = Event_Source::get_by_id( $event_source_post_id );
 
 		if ( ! $event_source ) {
@@ -61,7 +62,7 @@ class Outbox_Parser {
 		}
 
 		// Schedule the import of events via the outbox.
-		return self::queue_importing_from_outbox( $outbox_url, $event_source->get__id(), 0 );
+		self::queue_importing_from_outbox( $outbox_url, $event_source->get__id(), 0 );
 	}
 
 	/**
@@ -156,8 +157,8 @@ class Outbox_Parser {
 			}
 
 			// Check if the Event object meets the minimum requirements and is valid.
-			$is_valid = Event_Sources::is_valid_activitypub_event_object( $activity['object'] );
-			if ( ! $is_valid || \is_wp_error( $is_valid ) ) {
+			$is_valid_event_object = Event_Sources::is_valid_activitypub_event_object( $activity['object'] );
+			if ( ! $is_valid_event_object ) {
 				continue;
 			}
 
@@ -178,19 +179,19 @@ class Outbox_Parser {
 	 * @param int   $limit                The limit of how many events to save locally.
 	 * @return int The number of saved events (at least attempted).
 	 */
-	private static function import_events_from_items( $items, $event_source_post_id, $limit = -1 ) {
+	private static function import_events_from_items( $items, $event_source_post_id, $limit = -1 ): int {
 		$events = self::parse_outbox_items_for_events( $items, $limit );
 
 		$transmogrifier = Setup::get_transmogrifier();
 
 		if ( ! $transmogrifier ) {
-			return;
+			return 0;
 		}
 
 		$imported_count = 0;
 
 		foreach ( $events as $event ) {
-			$transmogrifier->save( $event, $event_source_post_id );
+			$transmogrifier::save( $event, $event_source_post_id );
 			++$imported_count;
 			if ( $limit > 0 && $imported_count >= $limit ) {
 				break;
@@ -206,14 +207,14 @@ class Outbox_Parser {
 	 * @param string $url                  The url of the current page or outbox.
 	 * @param int    $event_source_post_id The Post ID of the Event Source that owns the outbox.
 	 * @param int    $delay                The delay of the current time in seconds.
-	 * @return void
+	 * @return bool
 	 */
-	private static function queue_importing_from_outbox( $url, $event_source_post_id, $delay = 10 ) {
+	private static function queue_importing_from_outbox( $url, $event_source_post_id, $delay = 10 ): bool {
 		$hook = 'event_bridge_for_activitypub_import_events_from_outbox';
 		$args = array( $url, $event_source_post_id );
 
 		if ( \wp_next_scheduled( $hook, $args ) ) {
-			return;
+			return false;
 		}
 
 		return \wp_schedule_single_event( \time() + $delay, $hook, $args );
@@ -225,7 +226,7 @@ class Outbox_Parser {
 	 * @param int $event_source_post_id The Post ID of the Event Source that owns the outbox.
 	 * @return int The current count of imported events.
 	 */
-	private static function get_import_count( $event_source_post_id ) {
+	private static function get_import_count( $event_source_post_id ): int {
 		return (int) \get_post_meta( $event_source_post_id, '_event_bridge_for_activitypub_event_count', true );
 	}
 

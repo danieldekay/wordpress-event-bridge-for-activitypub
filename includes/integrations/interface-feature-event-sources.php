@@ -16,8 +16,6 @@ namespace Event_Bridge_For_ActivityPub\Integrations;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Base as Transmogrifier;
-
 /**
  * Interface for an event plugin integration that supports the Event Sources feature.
  *
@@ -25,11 +23,11 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Base as Transmogrifi
  */
 interface Feature_Event_Sources {
 	/**
-	 * Returns the plugin file relative to the plugins dir.
+	 * Returns the full class name of the transmogrifier.
 	 *
-	 * @return Transmogrifier
+	 * @return string
 	 */
-	public static function get_transmogrifier(): Transmogrifier;
+	public static function get_transmogrifier(): string;
 
 	/**
 	 * Retrieves a list of post IDs for cached remote events that have ended.

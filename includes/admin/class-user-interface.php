@@ -13,6 +13,7 @@ namespace Event_Bridge_For_ActivityPub\Admin;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 use Event_Bridge_For_ActivityPub\Event_Sources;
 
 /**
@@ -52,15 +53,23 @@ class User_Interface {
 	 *
 	 * @return array The modified actions.
 	 */
-	public static function row_actions( $actions, $post ) {
+	public static function row_actions( $actions, $post ): array {
 		// check if the post is enabled for ActivityPub.
-		if ( ! Event_Sources::is_cached_external_event_post( $post ) ) {
+		if ( ! Event_Sources::is_cached_external_post( $post ) ) {
 			return $actions;
+		}
+
+		$url = $post->guid;
+
+		$parent = get_post_parent();
+
+		if ( $parent && Event_Sources_Collection::POST_TYPE === $parent->post_type ) {
+			$url = $parent->guid;
 		}
 
 		$actions['view_origin'] = sprintf(
 			'<a href="%s" target="_blank">⁂ %s</a>',
-			\esc_url( $post->guid ),
+			\esc_url( $url ),
 			\esc_html__( 'Open original page', 'event-bridge-for-activitypub' )
 		);
 
@@ -71,7 +80,7 @@ class User_Interface {
 	 * Modify the user capabilities so that nobody can edit external events.
 	 *
 	 * @param array $caps     Concerned user's capabilities.
-	 * @param array $cap      Required primitive capabilities for the requested capability.
+	 * @param mixed $cap      Required primitive capabilities for the requested capability.
 	 * @param array $user_id  The WordPress user ID.
 	 * @param array $args     Additional args.
 	 *
@@ -81,7 +90,7 @@ class User_Interface {
 		if ( 'edit_post' === $cap && isset( $args[0] ) ) {
 			$post_id = $args[0];
 			$post    = get_post( $post_id );
-			if ( $post && Event_Sources::is_cached_external_event_post( $post ) ) {
+			if ( $post && Event_Sources::is_cached_external_post( $post ) ) {
 				// Deny editing by returning 'do_not_allow'.
 				return array( 'do_not_allow' );
 			}
