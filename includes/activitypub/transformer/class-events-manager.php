@@ -122,21 +122,26 @@ final class Events_Manager extends Event_Transformer {
 	/**
 	 * Returns the maximum attendee capacity.
 	 *
-	 * @return int
+	 * @return ?int
 	 */
-	public function get_maximum_attendee_capacity(): int {
+	public function get_maximum_attendee_capacity(): ?int {
 		return $this->em_event->event_spaces;
 	}
 
 	/**
 	 * Return the remaining attendee capacity
 	 *
-	 * @return int
+	 * @return ?int
 	 */
-	public function get_remaining_attendee_capacity() {
-		$em_bookings_count           = $this->get_participant_count();
-		$remaining_attendee_capacity = $this->em_event->event_spaces - $em_bookings_count;
-		return $remaining_attendee_capacity;
+	public function get_remaining_attendee_capacity(): ?int {
+		$em_bookings_count = $this->get_participant_count();
+		$max_bookings      = $this->em_event->event_spaces;
+
+		if ( is_int( $max_bookings ) && is_int( $em_bookings_count ) ) {
+			return $this->em_event->event_spaces - $em_bookings_count;
+		}
+
+		return null;
 	}
 
 	/**
@@ -159,7 +164,7 @@ final class Events_Manager extends Event_Transformer {
 		$event_link_text = $this->em_event->event_location->data['text'];
 		return array(
 			'type'      => 'Link',
-			'name'      => $event_link_text ? $event_link_text : 'Website',
+			'name'      => $event_link_text ?? 'Website',
 			'href'      => \esc_url( $event_link_url ),
 			'mediaType' => 'text/html',
 		);
