@@ -11,11 +11,11 @@ env:
 
 jobs:
   phpstan:
-    name: PHPStan for WordPress ${{ matrix.php-version }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-versions: ['7.4','8.1','8.4']
+        php-version: ['7.4','8.1','8.4']
+    name: PHPStan for WordPress ${{ matrix.php-version }}
     steps:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
         id: php-extensions-cache
         uses: https://github.com/shivammathur/cache-extensions@v1
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php-version }}
           extensions: dom, iconv, json, libxml, zip
           key: php-extensions-cache-v1
 
@@ -55,7 +55,7 @@ jobs:
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php-versions }}
+          php-version: ${{ matrix.php-version }}
           extensions: dom, iconv, json, libxml, zip
           coverage: none
           tools: composer, cs2pr
