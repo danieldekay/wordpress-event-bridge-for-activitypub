@@ -9,7 +9,6 @@ on:
 env:
   WP_TESTS_DIR: /workspace/wordpress-test-lib
   WP_CORE_DIR: /workspace/wordpress
-  GITHUB_TOKEN: ${{ env.COMPOSER_TOKEN }}
 
 jobs:
   phpunit:
@@ -69,7 +68,7 @@ jobs:
           tools: composer, cs2pr
         env:
           runner: self-hosted
-          GITHUB_TOKEN: ${{ env.COMPOSER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.COMPOSER_TOKEN }}
 
       - name: Install Composer dependencies for PHP
         if: steps.cache-composer.outputs.cache-hit != 'true'
