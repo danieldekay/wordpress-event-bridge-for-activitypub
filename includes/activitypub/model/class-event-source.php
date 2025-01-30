@@ -247,7 +247,7 @@ class Event_Source extends Actor {
 	 *
 	 * @return string|null The URL to the shared inbox, the inbox or null.
 	 */
-	public function get_shared_inbox(): mixed {
+	public function get_shared_inbox() {
 		if ( ! empty( $this->get_endpoints()['sharedInbox'] ) ) {
 			return $this->get_endpoints()['sharedInbox'];
 		} elseif ( ! empty( $this->get_inbox() ) ) {

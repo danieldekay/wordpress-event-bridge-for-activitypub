@@ -173,7 +173,7 @@ class Event_Sources {
 	 *
 	 * @return Event_Source|WP_Error|null The Followed (WP_Post array) or an WP_Error.
 	 */
-	public static function add_event_source( $actor ): mixed {
+	public static function add_event_source( $actor ) {
 		$meta = get_remote_metadata_by_actor( $actor );
 
 		if ( is_tombstone( $meta ) ) {

@@ -134,9 +134,9 @@ class Event_Sources {
 	/**
 	 * Get metadata of ActivityPub Actor by ID/URL.
 	 *
-	 * @param mixed $url The URL or ID of the ActivityPub actor.
+	 * @param array|WP_Error $url The URL or ID of the ActivityPub actor.
 	 */
-	public static function get_metadata( $url ): mixed {
+	public static function get_metadata( $url ) {
 		if ( ! is_string( $url ) ) {
 			return array();
 		}
@@ -155,7 +155,7 @@ class Event_Sources {
 	 * @param string $domain  The domain without scheme.
 	 * @return bool|string    The URL/ID of the application actor, false if not found.
 	 */
-	public static function get_application_actor( $domain ): mixed {
+	public static function get_application_actor( $domain ) {
 		$result = wp_remote_get( 'https://' . $domain . '/.well-known/nodeinfo' );
 
 		if ( is_wp_error( $result ) ) {

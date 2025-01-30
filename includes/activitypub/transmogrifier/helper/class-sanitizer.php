@@ -40,7 +40,7 @@ class Sanitizer {
 	 *
 	 * @return Event|WP_Error An Object built from the input array or WP_Error when it's not an array.
 	 */
-	public static function init_and_sanitize_event_object_from_array( $data ): mixed {
+	public static function init_and_sanitize_event_object_from_array( $data ) {
 		if ( ! is_array( $data ) ) {
 			return new WP_Error( 'invalid_array', __( 'Invalid array', 'event-bridge-for-activitypub' ), array( 'status' => 404 ) );
 		}

@@ -154,7 +154,7 @@ class Event_Sources extends WP_List_Table {
 	 * @param string $column_name Column name.
 	 * @return string
 	 */
-	public function column_default( $item, $column_name ): mixed {
+	public function column_default( $item, $column_name ) {
 		if ( ! array_key_exists( $column_name, $item ) ) {
 			return __( 'None', 'event-bridge-for-activitypub' );
 		}

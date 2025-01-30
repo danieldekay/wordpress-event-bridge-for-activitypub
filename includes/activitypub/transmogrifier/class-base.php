@@ -77,7 +77,7 @@ abstract class Base {
 	 * @param string $activitypub_event_id The ActivityPub events ID.
 	 * @return bool|WP_Post|null|WP_Error
 	 */
-	public static function delete( $activitypub_event_id ): mixed {
+	public static function delete( $activitypub_event_id ) {
 		$post_id = static::get_post_id_from_activitypub_id( $activitypub_event_id );
 
 		if ( ! $post_id ) {

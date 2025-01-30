@@ -38,7 +38,7 @@ class The_Events_Calendar extends Base {
 	 *
 	 * @return false|int
 	 */
-	protected static function save_event( $activitypub_event, $event_source_post_id ): mixed {
+	protected static function save_event( $activitypub_event, $event_source_post_id ) {
 		// Limit the number of saved post revisions as a safety measure.
 		add_filter( 'wp_revisions_to_keep', array( self::class, 'revisions_to_keep' ) );
 
@@ -247,7 +247,7 @@ class The_Events_Calendar extends Base {
 	 *
 	 * @return int|bool $post_id The organizers post ID.
 	 */
-	private static function add_organizer( $activitypub_event ): mixed {
+	private static function add_organizer( $activitypub_event ) {
 		// This might likely change, because of FEP-8a8e.
 		$actor = $activitypub_event->get_attributed_to();
 

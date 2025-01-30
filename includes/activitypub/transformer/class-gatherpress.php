@@ -124,7 +124,7 @@ final class GatherPress extends Event {
 	 * @param mixed $block_content The blocks content.
 	 * @param mixed $block         The block.
 	 */
-	public static function filter_gatherpress_blocks( $block_content, $block ): mixed {
+	public static function filter_gatherpress_blocks( $block_content, $block ) {
 		// Check if the block name starts with 'gatherpress'.
 		if ( isset( $block['blockName'] ) && 0 === strpos( $block['blockName'], 'gatherpress/' ) ) {
 			return ''; // Skip rendering this block.
