@@ -46,6 +46,7 @@ final class Event_Organiser extends Event {
 	 * Get the end time from the event object.
 	 */
 	public function get_end_time(): string {
+		// @phpstan-ignore-next-line
 		return eo_get_the_end( 'Y-m-d\TH:i:s\Z', $this->wp_object->ID, $this->wp_object->occurrence_id );
 	}
 
@@ -53,6 +54,7 @@ final class Event_Organiser extends Event {
 	 * Get the end time from the event object.
 	 */
 	public function get_start_time(): string {
+		// @phpstan-ignore-next-line
 		return eo_get_the_start( 'Y-m-d\TH:i:s\Z', $this->wp_object->ID, $this->wp_object->occurrence_id );
 	}
 
@@ -92,10 +94,10 @@ final class Event_Organiser extends Event {
 
 		$location = new Place();
 		$location->set_name( eo_get_venue_name( $this->wp_object->ID ) );
-		if ( 0 !== $latitude ) {
+		if ( 0.0 !== $latitude ) {
 			$location->set_latitude( $latitude );
 		}
-		if ( 0 !== $longitude ) {
+		if ( 0.0 !== $longitude ) {
 			$location->set_longitude( $longitude );
 		}
 		$location->set_address( $address );

@@ -171,17 +171,21 @@ class Event_Sources {
 	 *
 	 * @param string $actor The Actor URL/ID.
 	 *
-	 * @return Event_Source|WP_Error The Followed (WP_Post array) or an WP_Error.
+	 * @return Event_Source|WP_Error|null The Followed (WP_Post array) or an WP_Error.
 	 */
-	public static function add_event_source( $actor ) {
+	public static function add_event_source( $actor ): mixed {
 		$meta = get_remote_metadata_by_actor( $actor );
 
 		if ( is_tombstone( $meta ) ) {
 			return $meta;
 		}
 
-		if ( empty( $meta ) || ! is_array( $meta ) || is_wp_error( $meta ) ) {
-			return new WP_Error( 'activitypub_invalid_actor', __( 'Invalid ActivityPub Actor', 'event-bridge-for-activitypub' ), array( 'status' => 400 ) );
+		if ( \is_wp_error( $meta ) ) {
+			return $meta;
+		}
+
+		if ( empty( $meta ) ) {
+			return null;
 		}
 
 		$event_source = new Event_Source();
@@ -268,7 +272,7 @@ class Event_Sources {
 		);
 
 		// If no matching posts are found, return early.
-		if ( empty( $results ) || ! $results ) {
+		if ( empty( $results ) ) {
 			return;
 		}
 
@@ -299,7 +303,7 @@ class Event_Sources {
 	 *
 	 * @param int|string $event_source_post_id The Events Sources Post ID or ActivityPub ID.
 	 *
-	 * @return \WP_Post|false|null Post data on success, false or null on failure.
+	 * @return void Post data on success, false or null on failure.
 	 */
 	public static function remove_event_source( $event_source_post_id ): void {
 		$event_source = Event_Source::get_by_id( $event_source_post_id );
@@ -315,7 +319,12 @@ class Event_Sources {
 		// Temporary hack.
 		$post              = \get_post( $event_source->get__id() );
 		$post->post_status = 'draft';
-		\wp_update_post( $post );
+
+		if ( $post instanceof \WP_Post ) {
+			$post = \get_object_vars( $post );
+			$post = \wp_slash( $post );
+			$post = \wp_update_post( $post );
+		}
 
 		self::queue_unfollow_actor( $event_source->get_id() );
 	}
@@ -455,9 +464,9 @@ class Event_Sources {
 	/**
 	 * Prepare to unfollow an actor via a scheduled event.
 	 *
-	 * @param      string $actor  The ActivityPub actor ID.
+	 * @param string $actor  The ActivityPub actor ID.
 	 *
-	 * @return     bool|WP_Error              Whether the event was queued.
+	 * @return bool Whether the event was queued.
 	 */
 	public static function queue_unfollow_actor( $actor ): bool {
 		$queued = self::queue(
@@ -487,7 +496,7 @@ class Event_Sources {
 
 		$from_actor = new Blog();
 
-		if ( is_wp_error( $inbox ) ) {
+		if ( ! $inbox ) {
 			return;
 		}
 

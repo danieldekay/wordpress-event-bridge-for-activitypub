@@ -233,9 +233,9 @@ abstract class Event extends Post {
 	 * Generates the formatted time output for a shortcode.
 	 *
 	 * @param string|null $timestamp  The timestamp for the event time.
-	 * @param array    $atts       The shortcode attributes.
-	 * @param string   $icon       The icon to display.
-	 * @param string   $label      The label to display (e.g., 'Start', 'End').
+	 * @param array       $atts       The shortcode attributes.
+	 * @param string      $icon       The icon to display.
+	 * @param string      $label      The label to display (e.g., 'Start', 'End').
 	 * @return string The formatted date and time, or an empty string if the timestamp is invalid.
 	 */
 	private function generate_time_output( $timestamp, $atts, $icon, $label ): string {

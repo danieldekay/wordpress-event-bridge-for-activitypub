@@ -36,15 +36,16 @@ use function Activitypub\sanitize_url;
  * @method int    get__id()
  * @method ?string get_status()
  * @method ?string get_summary()
- * @method string set_published()
- * @method string set_id()
- * @method string set_name()
- * @method string set_updated()
- * @method int    set__id()
- * @method string set_status(string $status)
- * @method string set_summary()
+ * @method Event_Source set_published(string $published)
+ * @method Event_Source set_id(string $id)
+ * @method Event_Source set_name(string $name)
+ * @method Event_Source set_updated(string $updated)
+ * @method Event_Source set__id(int $id)
+ * @method Event_Source set_status(string $status)
+ * @method Event_Source set_summary(string $summary)
  * @method ?string get_inbox()
- * @method
+ * @method string|array get_icon()
+ * @method array get_endpoints()
  */
 class Event_Source extends Actor {
 	const ACTIVITYPUB_USER_HANDLE_REGEXP = '(?:([A-Za-z0-9_.-]+)@((?:[A-Za-z0-9_-]+\.)+[A-Za-z]+))';
@@ -68,18 +69,18 @@ class Event_Source extends Actor {
 	 *
 	 * @return string The URL to the Avatar.
 	 */
-	public function get_icon_url() {
+	public function get_icon_url(): string {
 		$icon = $this->get_icon();
 
-		if ( ! $icon ) {
-			return '';
+		if ( is_string( $icon ) ) {
+			return $icon;
 		}
 
-		if ( is_array( $icon ) ) {
+		if ( isset( $icon['url'] ) && is_string( $icon['url'] ) ) {
 			return $icon['url'];
 		}
 
-		return $icon;
+		return '';
 	}
 
 	/**
@@ -163,7 +164,7 @@ class Event_Source extends Actor {
 		// Init From Custom Post.
 		$event_source = self::init_from_cpt( $event_source_post );
 
-		if ( \is_wp_error( $event_source ) ) {
+		if ( ! $event_source ) {
 			return null;
 		}
 
@@ -197,6 +198,10 @@ class Event_Source extends Actor {
 					'url'  => wp_get_attachment_image_url( $thumbnail_id, 'thumbnail', true ),
 				)
 			);
+		}
+
+		if ( ! $object instanceof Event_Source ) { // To make phpstan happy.
+			return null;
 		}
 
 		return $object;
@@ -302,11 +307,13 @@ class Event_Source extends Actor {
 			$args['post_date_gmt'] = $post->post_date_gmt;
 		}
 
-		$post_id   = wp_insert_post( $args );
+		$post_id   = \wp_insert_post( $args );
 		$this->_id = $post_id;
 
 		// Abort if inserting or updating the post didn't work.
-		if ( 0 === $post_id || is_wp_error( $post_id ) ) {
+
+		// @phpstan-ignore-next-line
+		if ( is_wp_error( $post_id ) || 0 === $post_id ) {
 			return $post_id;
 		}
 

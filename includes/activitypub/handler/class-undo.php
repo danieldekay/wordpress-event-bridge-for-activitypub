@@ -63,7 +63,7 @@ class Undo {
 		);
 
 		// If no event source with that accept ID is found return.
-		if ( empty( $results ) || ! $results ) {
+		if ( empty( $results ) ) {
 			return;
 		}
 
