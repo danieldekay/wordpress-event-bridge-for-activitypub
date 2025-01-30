@@ -124,7 +124,7 @@ final class Events_Manager extends Event_Transformer {
 	 *
 	 * @return ?int
 	 */
-	public function get_maximum_attendee_capacity(): ?int {
+	public function get_maximum_attendee_capacity() {
 		return $this->em_event->event_spaces;
 	}
 
@@ -137,7 +137,7 @@ final class Events_Manager extends Event_Transformer {
 		$em_bookings_count = $this->get_participant_count();
 		$max_bookings      = $this->em_event->event_spaces;
 
-		if ( is_int( $max_bookings ) && is_int( $em_bookings_count ) ) {
+		if ( $max_bookings && $em_bookings_count ) {
 			return $this->em_event->event_spaces - $em_bookings_count;
 		}
 
