@@ -52,7 +52,7 @@ final class VS_Event_List extends Event_Transformer {
 		if ( is_null( $end_time ) || empty( $end_time ) || 'no' === $end_time ) {
 			return null;
 		}
-		return is_int( $end_time ) ? \gmdate( 'Y-m-d\TH:i:s\Z', $end_time ) : null;
+		return $end_time ? \gmdate( 'Y-m-d\TH:i:s\Z', (int) $end_time ) : null;
 	}
 
 	/**
@@ -60,7 +60,7 @@ final class VS_Event_List extends Event_Transformer {
 	 */
 	public function get_start_time(): string {
 		$start_time = get_post_meta( $this->wp_object->ID, 'event-start-date', true );
-		return \gmdate( 'Y-m-d\TH:i:s\Z', $start_time );
+		return \gmdate( 'Y-m-d\TH:i:s\Z', (int) $start_time );
 	}
 
 	/**
