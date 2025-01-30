@@ -132,24 +132,6 @@ class Event_Sources {
 	}
 
 	/**
-	 * Get metadata of ActivityPub Actor by ID/URL.
-	 *
-	 * @param array|WP_Error $url The URL or ID of the ActivityPub actor.
-	 */
-	public static function get_metadata( $url ) {
-		if ( ! is_string( $url ) ) {
-			return array();
-		}
-
-		if ( false !== strpos( $url, '@' ) ) {
-			if ( false === strpos( $url, '/' ) && preg_match( '#^https?://#', $url, $m ) ) {
-				$url = substr( $url, strlen( $m[0] ) );
-			}
-		}
-		return get_remote_metadata_by_actor( $url );
-	}
-
-	/**
 	 * Get the Application actor via FEP-2677.
 	 *
 	 * @param string $domain  The domain without scheme.

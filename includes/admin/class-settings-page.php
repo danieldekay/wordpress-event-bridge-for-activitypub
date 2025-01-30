@@ -77,7 +77,7 @@ class Settings_Page {
 		$url = \wp_parse_url( $event_source );
 
 		if ( isset( $url['path'] ) && isset( $url['host'] ) && isset( $url['scheme'] ) ) {
-			$actor_url = $event_source;
+			$actor_url = \sanitize_url( $event_source );
 		} elseif ( preg_match( '/^@?' . Event_Source::ACTIVITYPUB_USER_HANDLE_REGEXP . '$/i', $event_source ) ) {
 			$actor_url = Webfinger::resolve( $event_source );
 			if ( \is_wp_error( $actor_url ) ) {
