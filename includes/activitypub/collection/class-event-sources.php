@@ -261,7 +261,7 @@ class Event_Sources {
 	 * @param int $event_source_post_id The WordPress Post ID of the event source.
 	 * @return void
 	 */
-	public static function delete_events_by_event_source( $event_source_post_id ): void {
+	public static function delete_posts_by_event_source( $event_source_post_id ): void {
 		global $wpdb;
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
@@ -312,7 +312,7 @@ class Event_Sources {
 			return;
 		}
 
-		self::delete_events_by_event_source( $event_source->get__id() );
+		self::delete_posts_by_event_source( $event_source->get__id() );
 
 		self::delete_event_source_transients();
 
