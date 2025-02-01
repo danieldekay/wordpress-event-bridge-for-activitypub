@@ -109,7 +109,7 @@ class Setup {
 	}
 
 	/**
-	 * LooksUp the current version of the ActivityPub.
+	 * Get the current version of the ActivityPub plugin.
 	 *
 	 * @return string The semantic Version.
 	 */
