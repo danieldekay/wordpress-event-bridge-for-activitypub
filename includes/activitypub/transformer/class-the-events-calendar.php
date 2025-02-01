@@ -79,20 +79,14 @@ final class The_Events_Calendar extends Event {
 	 * Get the end time from the event object.
 	 */
 	public function get_end_time(): ?string {
-		if ( empty( $this->tribe_event->end_date ) ) {
-			return null;
-		}
-		$date = date_create( $this->tribe_event->end_date, wp_timezone() );
-		return \gmdate( 'Y-m-d\TH:i:s\Z', $date->getTimestamp() );
+		return tribe_get_end_date( $this->tribe_event->ID, true, 'Y-m-d\TH:i:sP' );
 	}
 
 	/**
 	 * Get the end time from the event object.
 	 */
 	public function get_start_time(): string {
-		// @phpstan-ignore-next-line
-		$date = date_create( $this->tribe_event->start_date, wp_timezone() );
-		return \gmdate( 'Y-m-d\TH:i:s\Z', $date->getTimestamp() );
+		return tribe_get_start_date( $this->tribe_event->ID, true, 'Y-m-d\TH:i:sP' );
 	}
 
 	/**

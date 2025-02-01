@@ -112,8 +112,8 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'My Event', $event_array['name'] );
 		$this->assertEquals( 'Come to my event!', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
+		$this->assertEquals( strtotime( '+10 days 15:00:00' ), strtotime( $event_array['startTime'] ) );
+		$this->assertEquals( strtotime( '+10 days 16:00:00' ), strtotime( $event_array['endTime'] ) );
 		$this->assertTrue( $event_array['commentsEnabled'] );
 		$this->assertEquals( 'allow_all', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
@@ -173,9 +173,9 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'My Event', $event_array['name'] );
 		$this->assertEquals( 'Come to my event!', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['commentsEnabled'] );
+		$this->assertEquals( strtotime( '+10 days 15:00:00' ), strtotime( $event_array['startTime'] ) );
+		$this->assertEquals( strtotime( '+10 days 16:00:00' ), strtotime( $event_array['endTime'] ) );
+		$this->assertFalse( strtotime( $event_array['commentsEnabled'] ) );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( 'Place', $event_array['location']['type'] );
 		$this->assertEquals( self::MOCKUP_VENUS['minimal_venue']['venue'], $event_array['location']['name'] );
@@ -200,10 +200,8 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'My Event', $event_array['name'] );
 		$this->assertEquals( 'Come to my event!', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['commentsEnabled'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
+		$this->assertEquals( strtotime( '+10 days 15:00:00' ), strtotime( $event_array['startTime'] ) );
+		$this->assertEquals( strtotime( '+10 days 16:00:00' ), strtotime( $event_array['endTime'] ) );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( 'Place', $event_array['location']['type'] );
 		$this->assertEquals( 'PostalAddress', $event_array['location']['address']['type'] );
