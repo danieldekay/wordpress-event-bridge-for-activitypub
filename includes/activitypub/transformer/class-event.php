@@ -462,7 +462,13 @@ abstract class Event extends Post {
 	 * @return string
 	 */
 	public function get_formatted_address() {
-		return self::format_address( $this->get_location()->get_address() );
+		$location = $this->get_location();
+
+		if ( $location ) {
+			return self::format_address( $location->get_address() );
+		}
+
+		return '';
 	}
 
 	/**
