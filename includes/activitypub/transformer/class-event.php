@@ -457,7 +457,7 @@ abstract class Event extends Post {
 	 * Get the address as a string.
 	 *
 	 * @param bool  $include_location_name  Whether to include the locations name.
-     * @param array $args                   The arguments forwarded to format_address.
+	 * @param array $args                   The arguments forwarded to format_address.
 	 *
 	 * @return string
 	 */
@@ -510,7 +510,7 @@ abstract class Event extends Post {
 
 		$address = $this->get_formatted_address( true );
 
-		$time_atts  = array(
+		$time_atts = array(
 			'icon'  => true,
 			'label' => true,
 		);
