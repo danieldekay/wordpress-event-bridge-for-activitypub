@@ -284,7 +284,6 @@ abstract class Event extends Post {
 				'zip'     => 'true',
 				'city'    => 'true',
 				'street'  => 'true',
-				'name'    => 'true',
 			),
 			$atts,
 			'ap_location'
@@ -311,7 +310,7 @@ abstract class Event extends Post {
 			$output[] = esc_html__( 'Location', 'event-bridge-for-activitypub' ) . ':';
 		}
 
-		$output[] = self::format_address( $location->get_address(), $args );
+		$output[] = $this->get_formatted_address( true, $args );
 
 		// Join output array into a single string with spaces and return.
 		return implode( ' ', array_filter( $output ) );
@@ -324,12 +323,12 @@ abstract class Event extends Post {
 	 * @param array $args    The arguments for which components to include.
 	 * @return string The formatted address.
 	 */
-	protected static function format_address( $address, $args = null ) {
+	protected static function format_address( $address, $args = array() ) {
 		if ( is_string( $address ) ) {
 			return esc_html( $address );
 		}
 
-		if ( is_null( $args ) ) {
+		if ( empty( $args ) ) {
 			$args = array(
 				'icon'    => 'true',
 				'title'   => 'true',
@@ -457,13 +456,31 @@ abstract class Event extends Post {
 	/**
 	 * Get the address as a string.
 	 *
+	 * @param bool  $include_location_name  Whether to include the locations name.
+     * @param array $args                   The arguments forwarded to format_address.
+	 *
 	 * @return string
 	 */
-	public function get_formatted_address() {
+	public function get_formatted_address( $include_location_name = false, $args = array() ) {
 		$location = $this->get_location();
 
 		if ( $location ) {
-			return self::format_address( $location->get_address() );
+			$location_name    = $location->get_name();
+			$foramted_address = self::format_address( $location->get_address(), $args );
+
+			$loaction_parts = array();
+
+			if ( $location_name ) {
+				$location_parts[] = $location_name;
+			}
+
+			if ( $foramted_address ) {
+				$location_parts[] = $foramted_address;
+			}
+
+			if ( ! empty( $location_parts ) ) {
+				return implode( ', ', $location_parts );
+			}
 		}
 
 		return '';
@@ -489,7 +506,10 @@ abstract class Event extends Post {
 		$category   = $this->format_categories();
 		$start_time = $this->get_start_time();
 		$end_time   = $this->get_end_time();
-		$address    = self::format_address( $this->get_location() );
+		$location   = $this->get_location();
+
+		$address = $this->get_formatted_address( true );
+
 		$time_atts  = array(
 			'icon'  => true,
 			'label' => true,
