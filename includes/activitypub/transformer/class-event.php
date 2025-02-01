@@ -337,7 +337,6 @@ abstract class Event extends Post {
 				'zip'     => 'true',
 				'city'    => 'true',
 				'street'  => 'true',
-				'name'    => 'true',
 			);
 		}
 
@@ -345,7 +344,6 @@ abstract class Event extends Post {
 			$address_parts = array();
 
 			$components = array(
-				'name'    => 'name',
 				'street'  => 'streetAddress',
 				'zip'     => 'postalCode',
 				'city'    => 'addressLocality',

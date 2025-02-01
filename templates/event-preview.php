@@ -6,6 +6,7 @@
  */
 
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
+use function Activitypub\object_to_uri;
 
 $post        = \get_post(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 $transformer = \Activitypub\Transformer\Factory::get_transformer( $post );
@@ -39,7 +40,7 @@ if ( $transformer instanceof Event ) {
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title><?php echo esc_html( $object->get_name() ); ?>HUU</title>
+		<title><?php echo \esc_html( $object->get_name() ); ?>HUU</title>
 		<style>
 			html,body { min-height:100%; }
 			body {
@@ -195,16 +196,50 @@ if ( $transformer instanceof Event ) {
 				height: 30px;
 				width: auto;
 			}
-			.preview-navigation {
+			header {
 				display: flex;
 				justify-content: center;
-				background: #0d1117;
+				align-items: center;
+				flex-direction: column;
 				padding: 10px;
+				background: #fff;
+				padding-bottom: 0.25rem;
+				border-bottom: solid;
+				border-color:#6b7280;
+				border-width: 3px;
 			}
-			.preview-navigation > button {
+			header ul {
+				display: flex;
+				flex-direction: row;
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			header ul > li {
+				padding: 3px 10px;
 				margin: 5px;
 				cursor: pointer;
+				border: none;
+				height: 35px;
+				background: inherit;
+				font-size: 1.2rem;
+				position: relative;
+				padding-bottom: 17px;
+				background: none;
+				border: none;
+				cursor: pointer;
+				line-height: 30px;
 			}
+
+			header a {
+				text-decoration: none;
+					color: inherit;
+			}
+
+			header img {
+				height: 100%;
+			}
+
 			#gancio .font-weight-light {
 				font-weight: 300!important;
 			}
@@ -920,17 +955,25 @@ if ( $transformer instanceof Event ) {
 		</style>
 	</head>
 	<body>
-		<div class="preview-navigation">
-			<button onclick="openPreviewForApplication('mastodon')">
-				Mastodon
-			</button>
-			<button onclick="openPreviewForApplication('gancio')">Gancio</button>
-			<button onclick="openPreviewForApplication('mobilizon')">Mobilizon</button>
-		</div>
+		<header>
+			<nav class="menu">
+				<ul class="menu__list">
+					<li class="menu__item"><a href="#" class="menu__link" onclick="openPreviewForApplication('mobilizon')" class="application-navigation is-active">
+						<svg aria-labelledby="mobilizon" xmlns="http://www.w3.org/2000/svg" height="30" viewBox="0 0 248.16 46.78"><g data-name="Calque 2"><g data-name="header"><path fill="#474467" d="M0 45.82l3.18-40.8a29.88 29.88.0 015.07-.36 27.74 27.74.0 014.95.36l4.86 17.16a92.19 92.19.0 012.34 10.08h.36a92.19 92.19.0 012.34-10.08L28 5.02a29.23 29.23.0 015-.36 29.23 29.23.0 015 .36l3.18 40.8a13.61 13.61.0 01-3.63.42A23.41 23.41.0 0133.92 46l-1.2-19.92q-.36-5.52-.48-12.84h-.44l-7.32 26.51a25.62 25.62.0 01-4 .3 23.36 23.36.0 01-3.84-.3L9.36 13.24H9q-.3 8.94-.48 12.84L7.26 46a22.47 22.47.0 01-3.6.24A13.75 13.75.0 010 45.82zM74 31.06q0 8-4.26 12.3a12.21 12.21.0 01-9 3.42 12.21 12.21.0 01-9-3.42q-4.26-4.26-4.26-12.3t4.24-12.31a12.21 12.21.0 019-3.42 12.21 12.21.0 019 3.42Q74 23.02 74 31.06zM60.75 20.98q-5.67.0-5.67 10.08t5.67 10.08 5.67-10.08-5.67-10.08zm42.45-1.23q2.7 4.11 2.7 11.28T102 42.31a13.18 13.18.0 01-10 4.11 31.41 31.41.0 01-11.34-2V2.2l.4-.45h2.76A4 4 0 0187 2.83a5.38 5.38.0 01.93 3.57v11.94a12.08 12.08.0 017.56-2.7 8.71 8.71.0 017.71 4.11zm-9.72 2a7.28 7.28.0 00-5.58 2.82v16a15 15 0 004.08.54 5.25 5.25.0 004.68-2.67q1.68-2.67 1.68-7.59.0-9.03-4.86-9.1zM121 22v23.94a20.85 20.85.0 01-3.66.3 23 23 0 01-3.78-.3V24.75q0-3.24-2.7-3.24h-.72a9.32 9.32.0 01-.3-2.58 10.7 10.7.0 01.3-2.7 39.63 39.63.0 014.38-.24h1a5.19 5.19.0 014 1.62A6.27 6.27.0 01121 22z"></path><path fill="#ffd599" d="M119.82.84a7.37 7.37.0 01.6 3 7.37 7.37.0 01-.6 3 7.46 7.46.0 01-3.87.84 6.49 6.49.0 01-3.69-.93 7.37 7.37.0 01-.6-3 7.37 7.37.0 01.6-3 8.09 8.09.0 013.87-.84 7.05 7.05.0 013.69.93z"></path><path fill="#474467" d="M139.08 40.42h2a10.23 10.23.0 01.6 3.18 9.24 9.24.0 01-.18 2.1 38.47 38.47.0 01-5.64.54q-6.48.0-6.48-7v-37l.36-.42h2.88a3.94 3.94.0 013.12 1.05 5.52 5.52.0 01.9 3.57v31.31q-.02 2.67 2.44 2.67zM155.94 22v23.94a20.85 20.85.0 01-3.66.3 23 23 0 01-3.78-.3V24.75q0-3.24-2.7-3.24h-.72a9.32 9.32.0 01-.3-2.58 10.7 10.7.0 01.3-2.7 39.63 39.63.0 014.38-.24h1a5.19 5.19.0 014.05 1.62 6.27 6.27.0 011.43 4.39z"></path><path fill="#ffd599" d="M154.8 2.84a7.37 7.37.0 01.6 3 7.37 7.37.0 01-.6 3 7.46 7.46.0 01-3.87.84 6.49 6.49.0 01-3.69-.93 7.37 7.37.0 01-.6-3 7.37 7.37.0 01.6-3 8.09 8.09.0 013.87-.84 7.05 7.05.0 013.69.93z"></path><path fill="#474467" d="M163.08 39.22l8.76-11.82q1.32-1.8 4.8-5.7l-.18-.3a63.09 63.09.0 01-7.74.42H163a9.79 9.79.0 01-.24-2.34 15.8 15.8.0 01.42-3.3h20.4a16.31 16.31.0 011 4.26 4.1 4.1.0 01-.78 2.34L175 34.66a64.65 64.65.0 01-4.56 5.7l.18.24q3.12-.3 5.22-.3h2.58a15.35 15.35.0 006.12-.9 9.4 9.4.0 01.72 3.12q0 3.42-4.32 3.42h-18a14.27 14.27.0 01-.9-3.93 5.08 5.08.0 011.04-2.79zm52.8-8.16q0 8-4.26 12.3a13.63 13.63.0 01-18.06.0q-4.26-4.26-4.26-12.3t4.26-12.31a13.63 13.63.0 0118.06.0q4.26 4.27 4.26 12.31zm-13.29-10.08q-5.67.0-5.67 10.08t5.67 10.08 5.67-10.08-5.67-10.08zM247 25.84v13.32a11 11 0 001.2 5.64 7 7 0 01-4.41 1.56q-2.43.0-3.33-1.14a5.69 5.69.0 01-.9-3.54V27.4a7.74 7.74.0 00-.72-3.87 2.78 2.78.0 00-2.58-1.17 8.62 8.62.0 00-6.3 3v20.58a20.85 20.85.0 01-3.66.3 23 23 0 01-3.78-.3v-29.7l.42-.36h2.76q3.42.0 4.08 3.6 4.38-3.84 8.73-3.84t6.42 2.82a12.17 12.17.0 012.07 7.38z"></path><path fill="#ffd599" d="M57.26 10.75a7.37 7.37.0 01-.6-3 7.37 7.37.0 01.6-3 8.09 8.09.0 013.87-.84 7.05 7.05.0 013.69.84 7.37 7.37.0 01.6 3 7.37 7.37.0 01-.6 3 7.46 7.46.0 01-3.87.84 6.49 6.49.0 01-3.69-.84zm141 0a7.37 7.37.0 01-.6-3 7.37 7.37.0 01.6-3 8.09 8.09.0 013.87-.84 7.05 7.05.0 013.69.84 7.37 7.37.0 01.6 3 7.37 7.37.0 01-.6 3 7.46 7.46.0 01-3.87.84 6.49 6.49.0 01-3.69-.84z"></path></g></g></svg>
+					</li>
+					<li class="menu__item"><a href="#" class="menu__link" onclick="openPreviewForApplication('mastodon')" class="application-navigation">
+						<svg aria-labelledby="mastodon" style="height:38px!important; padding-top:5px;" height="39" viewBox="0 0 713.35878 175.8678"><use xlink:href="#mastodon-svg-logo-full"></use><symbol id="mastodon-svg-logo-full" viewBox="0 0 713.35878 175.8678"><path d="M160.55476 105.43125c-2.4125 12.40625-21.5975 25.9825-43.63375 28.61375-11.49125 1.3725-22.80375 2.63125-34.8675 2.07875-19.73-.90375-35.2975-4.71-35.2975-4.71.0 1.92125.11875 3.75.355 5.46 2.565 19.47 19.3075 20.6375 35.16625 21.18125 16.00625.5475 30.2575-3.9475 30.2575-3.9475l.65875 14.4725s-11.19625 6.01125-31.14 7.11625c-10.99875.605-24.65375-.27625-40.56-4.485C6.99851 162.08 1.06601 125.31.15851 88-.11899 76.9225.05226 66.47625.05226 57.74125c0-38.1525 24.99625-49.335 24.99625-49.335C37.65226 2.6175 59.27976.18375 81.76351.0h.5525c22.48375.18375 44.125 2.6175 56.72875 8.40625.0.0 24.99625 11.1825 24.99625 49.335.0.0.3125 28.1475-3.48625 47.69" fill="#3088d4"></path><path fill="var(--primary)" d="M34.65751 48.494c0-5.55375 4.5025-10.055 10.055-10.055 5.55375.0 10.055 4.50125 10.055 10.055.0 5.5525-4.50125 10.055-10.055 10.055-5.5525.0-10.055-4.5025-10.055-10.055M178.86476 60.69975v46.195h-18.30125v-44.8375c0-9.4525-3.9775-14.24875-11.9325-14.24875-8.79375.0-13.2025 5.69125-13.2025 16.94375V89.2935h-18.19375V64.75225c0-11.2525-4.40875-16.94375-13.2025-16.94375-7.955.0-11.9325 4.79625-11.9325 14.24875v44.8375H73.79851v-46.195c0-9.44125 2.40375-16.94375 7.2325-22.495 4.98-5.55 11.50125-8.395 19.595-8.395 9.36625.0 16.45875 3.59875 21.14625 10.79875l4.56 7.6425 4.55875-7.6425c4.68875-7.2 11.78-10.79875 21.1475-10.79875 8.09375.0 14.61375 2.845 19.59375 8.395 4.82875 5.55125 7.2325 13.05375 7.2325 22.495m63.048 22.963875c3.77625-3.99 5.595-9.015 5.595-15.075s-1.81875-11.085-5.595-14.9275c-3.63625-3.99125-8.25375-5.91125-13.84875-5.91125-5.59625.0-10.2125 1.92-13.84875 5.91125-3.6375 3.8425-5.45625 8.8675-5.45625 14.9275s1.81875 11.085 5.45625 15.075c3.63625 3.8425 8.2525 5.76375 13.84875 5.76375 5.595.0 10.2125-1.92125 13.84875-5.76375m5.595-52.025h18.04625v73.9h-18.04625v-8.72125c-5.455 7.2425-13.01 10.79-22.80125 10.79-9.3725.0-17.34625-3.695-24.06125-11.23375-6.57375-7.5375-9.93125-16.84875-9.93125-27.785.0-10.78875 3.3575-20.10125 9.93125-27.63875 6.715-7.5375 14.68875-11.38 24.06125-11.38 9.79125.0 17.34625 3.5475 22.80125 10.78875v-8.72zm78.76175 35.62c5.315 3.99 7.97375 9.60625 7.83375 16.7.0 7.53875-2.65875 13.45-8.11375 17.58875-5.45625 3.99125-12.03 6.06-20.00375 6.06-14.40875.0-24.20125-5.9125-29.3775-17.58875l15.66875-9.31c2.0975 6.35375 6.71375 9.60625 13.70875 9.60625 6.43375.0 9.6525-2.07 9.6525-6.35625.0-3.10375-4.1975-5.91125-12.73-8.1275-3.21875-.8875-5.87625-1.77375-7.97375-2.51375-2.9375-1.18125-5.455-2.5125-7.55375-4.1375-5.17625-3.99-7.83375-9.3125-7.83375-16.11.0-7.2425 2.5175-13.00625 7.55375-17.145 5.17625-4.28625 11.47-6.355 19.025-6.355 12.03.0 20.84375 5.1725 26.5775 15.66625l-15.38625 8.8675c-2.23875-5.02375-6.015-7.53625-11.19125-7.53625-5.45625.0-8.11375 2.06875-8.11375 6.05875.0 3.10375 4.19625 5.91125 12.73 8.12875 6.575 1.4775 11.75 3.695 15.5275 6.50375M383.626635 49.966125h-15.8075v30.7425c0 3.695 1.4 5.91125 4.0575 6.945 1.95875.74 5.875.8875 11.75.59125v17.29375c-12.16875 1.4775-20.9825.295-26.15875-3.69625-5.175-3.8425-7.69375-10.93625-7.69375-21.13375v-30.7425h-12.17v-18.3275h12.17v-14.9275l18.045-5.76375v20.69125h15.8075v18.3275zM441.124885 83.2205c3.6375-3.84375 5.455-8.72125 5.455-14.6325.0-5.91125-1.8175-10.78875-5.455-14.63125-3.6375-3.84375-8.11375-5.76375-13.57-5.76375-5.455.0-9.93125 1.92-13.56875 5.76375-3.4975 3.99-5.31625 8.8675-5.31625 14.63125.0 5.765 1.81875 10.6425 5.31625 14.6325 3.6375 3.8425 8.11375 5.76375 13.56875 5.76375 5.45625.0 9.9325-1.92125 13.57-5.76375m-39.86875 13.15375c-7.13375-7.5375-10.63125-16.70125-10.63125-27.78625.0-10.9375 3.4975-20.1 10.63125-27.6375s15.9475-11.38 26.29875-11.38c10.3525.0 19.165 3.8425 26.3 11.38s10.77125 16.84875 10.77125 27.6375c0 10.9375-3.63625 20.24875-10.77125 27.78625-7.135 7.53875-15.8075 11.2325-26.3 11.2325-10.49125.0-19.165-3.69375-26.29875-11.2325M524.92126 83.663625c3.6375-3.99 5.455-9.015 5.455-15.075s-1.8175-11.085-5.455-14.9275c-3.63625-3.99125-8.25375-5.91125-13.84875-5.91125-5.59625.0-10.2125 1.92-13.98875 5.91125-3.63625 3.8425-5.45625 8.8675-5.45625 14.9275s1.82 11.085 5.45625 15.075c3.77625 3.8425 8.5325 5.76375 13.98875 5.76375 5.595.0 10.2125-1.92125 13.84875-5.76375m5.455-81.585h18.04625v103.46h-18.04625v-8.72125c-5.315 7.2425-12.87 10.79-22.66125 10.79-9.3725.0-17.485-3.695-24.2-11.23375-6.575-7.5375-9.9325-16.84875-9.9325-27.785.0-10.78875 3.3575-20.10125 9.9325-27.63875 6.715-7.5375 14.8275-11.38 24.2-11.38 9.79125.0 17.34625 3.5475 22.66125 10.78875v-38.28zm81.42 81.141875c3.63625-3.84375 5.455-8.72125 5.455-14.6325.0-5.91125-1.81875-10.78875-5.455-14.63125-3.6375-3.84375-8.11375-5.76375-13.57-5.76375-5.455.0-9.9325 1.92-13.56875 5.76375-3.49875 3.99-5.31625 8.8675-5.31625 14.63125.0 5.765 1.8175 10.6425 5.31625 14.6325 3.63625 3.8425 8.11375 5.76375 13.56875 5.76375 5.45625.0 9.9325-1.92125 13.57-5.76375m-39.86875 13.15375c-7.135-7.5375-10.63125-16.70125-10.63125-27.78625.0-10.9375 3.49625-20.1 10.63125-27.6375s15.9475-11.38 26.29875-11.38c10.3525.0 19.165 3.8425 26.3 11.38s10.77125 16.84875 10.77125 27.6375c0 10.9375-3.63625 20.24875-10.77125 27.78625-7.135 7.53875-15.8075 11.2325-26.3 11.2325-10.49125.0-19.16375-3.69375-26.29875-11.2325M713.35876 60.163875v45.37375h-18.04625v-43.00875c0-4.8775-1.25875-8.5725-3.77625-11.38-2.37875-2.5125-5.73625-3.84375-10.0725-3.84375-10.2125.0-15.3875 6.06-15.3875 18.3275v39.905h-18.04625v-73.89875h18.04625v8.27625c4.33625-6.94625 11.19-10.345 20.84375-10.345 7.69375.0 13.98875 2.66 18.885 8.12875 5.035 5.46875 7.55375 12.85875 7.55375 22.465"></path></symbol></svg>
+					</li>
+					<li class="menu__item"><a href="#" class="menu__link" onclick="openPreviewForApplication('gancio')" class="application-navigation">
+						<img src="<?php echo esc_url( plugins_url( 'assets/img/gancio.png', EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE ) ); ?>"><div style="display: none;">G</div>ancio
+					</li>
+				</ul>
+			</nav>
+		</header>
 		<div id="mastodon" class="application-preview" style="display:none">
 			<div class="columns">
 			<aside class="sidebar">
-				<input type="search" disabled="disabled" placeholder="<?php esc_html_e( 'Search', 'event-bridge-for-activitypub' ); ?>" />
+				<input type="search" disabled="disabled" placeholder="<?php \esc_html_e( 'Search', 'event-bridge-for-activitypub' ); ?>" />
 				<div>
 					<div class="fake-image"></div>
 					<div>
@@ -942,7 +985,7 @@ if ( $transformer instanceof Event ) {
 						</div>
 					</div>
 				</div>
-				<textarea rows="10" cols="50" disabled="disabled" placeholder="<?php esc_html_e( 'What\'s up', 'event-bridge-for-activitypub' ); ?>"></textarea>
+				<textarea rows="10" cols="50" disabled="disabled" placeholder="<?php \esc_html_e( 'What\'s up', 'event-bridge-for-activitypub' ); ?>"></textarea>
 			</aside>
 			<main>
 				<h1 class="column-header">
@@ -950,32 +993,33 @@ if ( $transformer instanceof Event ) {
 				</h1>
 				<article>
 					<address>
-						<img src="<?php echo esc_url( $user->get_icon()['url'] ); ?>" alt="<?php echo esc_attr( $user->get_name() ); ?>" />
+						<img src="<?php echo \esc_url( $user->get_icon()['url'] ); ?>" alt="<?php echo \esc_attr( $user->get_name() ); ?>" />
 						<div>
 							<div class="name">
-								<?php echo esc_html( $user->get_name() ); ?>
+								<?php echo \esc_html( $user->get_name() ); ?>
 							</div>
 							<div class="webfinger">
-								<?php echo esc_html( '@' . $user->get_webfinger() ); ?>
+								<?php echo \esc_html( '@' . $user->get_webfinger() ); ?>
 							</div>
 						</div>
 					</address>
 					<div class="content">
-						<h2><?php echo esc_html( $object->get_name() ); ?></h2>
+						<br>
+						<h2><?php echo \esc_html( $object->get_name() ); ?></h2>
 						<?php echo wp_kses( 'Event' === $object->get_type() ? $object->get_summary() : $object->get_summary(), ACTIVITYPUB_MASTODON_HTML_SANITIZER ); ?>
-						<a href="<?php echo esc_html( $object->get_id() ); ?>"><?php echo esc_html( $object->get_url() ); ?></h2>
+						<a href="<?php echo \esc_html( $object->get_id() ); ?>"><?php echo \esc_html( $object->get_url() ); ?></h2>
 					</div>
 					<div class="attachments">
 						<?php foreach ( $object->get_attachment() as $attachment ) : ?>
 							<?php if ( 'Image' === $attachment['type'] ) : ?>
-								<img src="<?php echo esc_url( $attachment['url'] ); ?>" alt="<?php echo esc_attr( $attachment['name'] ?? '' ); ?>" />
+								<img src="<?php echo \esc_url( $attachment['url'] ); ?>" alt="<?php echo \esc_attr( $attachment['name'] ?? '' ); ?>" />
 							<?php endif; ?>
 						<?php endforeach; ?>
 					</div>
 					<div class="tags">
 						<?php foreach ( $object->get_tag() as $hashtag ) : ?>
 							<?php if ( 'Hashtag' === $hashtag['type'] ) : ?>
-								<a href="<?php echo esc_url( $hashtag['href'] ); ?>"><?php echo esc_html( $hashtag['name'] ); ?></a>
+								<a href="<?php echo \esc_url( $hashtag['href'] ); ?>"><?php echo \esc_html( $hashtag['name'] ); ?></a>
 							<?php endif; ?>
 						<?php endforeach; ?>
 					</div>
@@ -1030,14 +1074,14 @@ if ( $transformer instanceof Event ) {
 			<div id="gancio-event" itemscope="itemscope">
 				<div class="title text-center text-md-h4 text-h5 pa-6">
 					<strong itemprop="name" class="p-name text--primary">
-						<?php echo esc_html( $object->get_name() ); ?>
+						<?php echo \esc_html( $object->get_name() ); ?>
 					</strong>
 				</div>
 				<div class="row">
 					<div class="col-12 col-md-8 pr-sm-2 pr-md-0 col">
 						<?php if ( $attachment ) { ?>
 						<div class="img">
-							<img alt="<?php echo esc_attr( $attachment['name'] ) ?? ''; ?>" loading="eager" src="<?php echo esc_url( $attachment['url'] ); ?>" itemprop="image" height="826" width="826" class="u-featured" style="object-position:50% 50%;">
+							<img alt="<?php echo \esc_attr( $attachment['name'] ) ?? ''; ?>" loading="eager" src="<?php echo \esc_url( $attachment['url'] ); ?>" itemprop="image" height="826" width="826" class="u-featured" style="object-position:50% 50%;">
 						</div>
 						<?php } ?>
 						<div itemprop="description" class="p-description text-body-1 pa-3 rounded">
@@ -1053,16 +1097,16 @@ if ( $transformer instanceof Event ) {
 											<path d="M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z"></path>
 										</svg>
 									</span>
-									<span class="ml-2 text-uppercase"><?php echo esc_html( \wp_date( 'l, M j, h:i A-h:i A', strtotime( $object->get_start_time() ) ) ); ?></span>
+									<span class="ml-2 text-uppercase"><?php echo \esc_html( \wp_date( 'l, M j, h:i A-h:i A', strtotime( $object->get_start_time() ) ) ); ?></span>
 									<div itemprop="endDate" content="2025-03-11T21:00" class="d-none dt-end">2025-03-11T21:00</div>
 								</time><div class="font-weight-light mb-3">in 1 month<!----></div><div itemprop="location" itemscope="itemscope" itemtype="https://schema.org/Place" class="p-location h-adr"><span aria-hidden="true" class="v-icon notranslate theme--dark" style="font-size:16px;height:16px;width:16px;">
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img" aria-hidden="true" class="v-icon__svg" style="font-size:16px;height:16px;width:16px;">
 										<path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z"></path>
 									</svg>
-								</span><a href="/place/Mariahilferplatz%20Graz" class="vcard ml-2 p-name text-decoration-none text-uppercase">
-									<span itemprop="name"><?php echo esc_html( $location_name ); ?></span>
+								</span><a href="#" class="vcard ml-2 p-name text-decoration-none text-uppercase">
+									<span itemprop="name"><?php echo \esc_html( $location_name ); ?></span>
 								</a>
-								<div itemprop="address" class="font-weight-light p-street-address"><?php echo esc_html( $address ); ?></div>
+								<div itemprop="address" class="font-weight-light p-street-address"><?php echo \esc_html( $address ); ?></div>
 							</div>
 						</div>
 						<div class="container pt-0">
@@ -1132,12 +1176,12 @@ if ( $transformer instanceof Event ) {
 		</div>
 		</div>
 		<div id="mobilizon" class="application-preview px-2 py-4">
-			<div class="container mx-auto">
+			<div style="padding-bottom: 70px;" class="container mx-auto pt-4">
 			<div class="flex flex-col mb-3">
 				<div class="flex justify-center max-h-80">
 					<div class="flex-1">
 						<div class="h-full w-full max-w-100 min-h-[10rem]">
-						<img style="display: block" class="transition-opacity duration-500 rounded-lg object-cover mx-auto h-full opacity-100" alt="" src="https://lekalepin.fr/media/379410f9603a6fff8c165451c7fda37580f3a5c19c0a3690ebd5401bdecabeff.jpg?name=DUE%20DI%20COPPE.jpg" loading="lazy">
+						<img style="display: block" class="transition-opacity duration-500 rounded-lg object-cover mx-auto h-full opacity-100" alt="<?php echo \esc_attr( $attachment['name'] ) ?? ''; ?>" loading="eager" src="<?php echo \esc_url( $attachment['url'] ); ?>" loading="lazy">
 						</div>
 					</div>
 				</div>
@@ -1163,17 +1207,17 @@ if ( $transformer instanceof Event ) {
 							</path>
 						</svg>
 						</span>
-						<time data-v-16bfa768="" datetime="2025-02-07T19:00:00.000Z">8:00 PM</time>
+						<time data-v-16bfa768="" datetime="<?php echo esc_html( $object->get_start_time() ); ?>"><?php echo esc_html( \wp_date( 'g:i A', strtotime( $object->get_start_time() ) ) ); ?></time>
 					</div>
 					</div>
 				</div>
 				<section class="intro px-2 pt-4" dir="auto">
 					<div class="flex flex-wrap gap-2 justify-end">
 					<div class="flex-1 min-w-[300px]">
-						<h1 class="text-4xl font-bold m-0" dir="auto" lang="fr">Concert Due Di Coppe</h1>
+						<h1 class="text-4xl font-bold m-0" dir="auto" lang="fr"><?php echo \esc_html( $object->get_name() ); ?></h1>
 						<div class="organizer">
 						<span>
-							<div class="v-popper v-popper--theme-menu v-popper--theme-dropdown popover inline clickable">By <a href="/@groupe_le_ptit_clem" class="" dir="ltr">Le P'tit Clem</a>
+							<div class="v-popper v-popper--theme-menu v-popper--theme-dropdown popover inline clickable"><?php \esc_html_e( 'By', 'event-bridge-for-activitypub' ); ?> <a href="/#" class="" dir="ltr"><?php echo \esc_html( $user->get_name() ); ?></a>
 							</div>
 						</span>
 						</div>
@@ -1186,7 +1230,7 @@ if ( $transformer instanceof Event ) {
 								<!---->
 								</path>
 							</svg>
-							</span> Public event
+							</span> <?php \esc_html_e( 'Public event', 'event-bridge-for-activitypub' ); ?>
 						</p>
 						<!---->
 						<!---->
@@ -1203,56 +1247,16 @@ if ( $transformer instanceof Event ) {
 						<div>
 						<div class="event-participation">
 							<div class="ml-auto w-min">
-							<a href="/events/ec075ac8-7ba9-4dcb-ba9a-4cb7dde1fcb2/participate/with-account" class="o-btn btn o-btn--large &quot;btn-size-large o-btn--primary btn-primary" role="button" data-oruga="button" rel="nofollow">
+							<a href="#" class="o-btn btn o-btn--large &quot;btn-size-large o-btn--primary btn-primary" role="button" data-oruga="button" rel="nofollow">
 								<span class="o-btn__wrapper">
 								<!---->
-								<span class="o-btn__label">Participate</span>
+								<span class="o-btn__label"><?php \esc_html_e( 'Participate', 'event-bridge-for-activitypub' ); ?> </span>
 								<!---->
 								</span>
 							</a>
 							</div>
 							<!---->
 							<!---->
-						</div>
-						<div has-modal-card="" close-button-aria-label="Close" data-oruga="modal" class="o-modal modal" tabindex="-1" aria-modal="false" style="display: none;">
-							<div class="o-modal__overlay" tabindex="-1" aria-hidden="true"></div>
-							<div class="o-modal__content modal-content" style="max-width: 960px;">
-							<div class="modal-card">
-								<header class="modal-card-head">
-								<p class="modal-card-title">About anonymous participation</p>
-								</header>
-								<section class="modal-card-body">
-								<!---->
-								<p>Your participation status is saved only on this device and will be deleted one month after the event's passed.</p>
-								<p>You may clear all participation information for this device with the buttons below.</p>
-								<div class="buttons">
-									<button type="button" class="o-btn btn o-btn--danger btn-danger o-btn--outlined-danger btn-outlined-danger" role="button" data-oruga="button">
-									<span class="o-btn__wrapper">
-										<!---->
-										<span class="o-btn__label">Clear participation data for this event</span>
-										<!---->
-									</span>
-									</button>
-									<button type="button" class="o-btn btn o-btn--danger btn-danger" role="button" data-oruga="button">
-									<span class="o-btn__wrapper">
-										<!---->
-										<span class="o-btn__label">Clear participation data for all events</span>
-										<!---->
-									</span>
-									</button>
-								</div>
-								</section>
-							</div>
-							<span class="o-icon o-icon--clickable o-icon--medium o-modal__close" data-oruga="icon" style="display: none;">
-								<span class="material-design-icon close-icon" aria-hidden="true" role="img">
-								<svg fill="currentColor" class="material-design-icon__svg" width="18" height="18" viewBox="0 0 24 24">
-									<path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z">
-									<!---->
-									</path>
-								</svg>
-								</span>
-							</span>
-							</div>
 						</div>
 						</div>
 						<div class="flex flex-col gap-1 mt-1">
@@ -1293,338 +1297,38 @@ if ( $transformer instanceof Event ) {
 						</div>
 						</div>
 					</div>
-					<div has-modal-card="" close-button-aria-label="Close" data-oruga="modal" class="o-modal modal" tabindex="-1" aria-modal="false" style="display: none;">
-						<div class="o-modal__overlay" tabindex="-1" aria-hidden="true"></div>
-						<div class="o-modal__content modal-content" style="max-width: 960px;">
-						<div data-v-64bca4d3="" class="p-2">
-							<header data-v-64bca4d3="" class="mb-3">
-							<h2 data-v-64bca4d3="" class="text-2xl">Report this event</h2>
-							</header>
-							<section data-v-64bca4d3="">
-							<div data-v-64bca4d3="" class="flex gap-1 flex-row mb-3 bg-mbz-yellow dark:text-black p-3 rounded items-center">
-								<span data-v-64bca4d3="" class="o-icon o-icon--warning icon-warning hidden md:block flex-1" data-oruga="icon">
-								<span class="material-design-icon alert-icon" aria-hidden="true" role="img">
-									<svg fill="currentColor" class="material-design-icon__svg" width="48" height="48" viewBox="0 0 24 24">
-									<path d="M13 14H11V9H13M13 18H11V16H13M1 21H23L12 2L1 21Z">
-										<!---->
-									</path>
-									</svg>
-								</span>
-								</span>
-								<p data-v-64bca4d3="">The report will be sent to the moderators of your instance. You can explain why you report this content below.</p>
-							</div>
-							<div data-v-64bca4d3="">
-								<!---->
-								<div data-v-64bca4d3="" data-oruga="field" class="o-field field">
-								<label for="additional-comments" class="o-field__label field-label">Additional comments</label>
-								<div class="o-field__body">
-									<div class="o-field field o-field--addons">
-									<div data-v-64bca4d3="" data-oruga="input" class="o-input__wrapper o-input__wrapper--expanded">
-										<textarea autofocus="" id="additional-comments" data-oruga-input="textarea" class="o-input input o-input__textarea"></textarea>
-										<!---->
-										<!---->
-										<!---->
-									</div>
-									</div>
-								</div>
-								<!---->
-								</div>
-								<!---->
-							</div>
-							</section>
-							<footer data-v-64bca4d3="" class="flex gap-2 py-3">
-							<button data-v-64bca4d3="" type="button" class="o-btn btn o-btn--outlined btn-outlined-null" role="button" data-oruga="button">
-								<span class="o-btn__wrapper">
-								<!---->
-								<span class="o-btn__label">Cancel</span>
-								<!---->
-								</span>
-							</button>
-							<button data-v-64bca4d3="" type="button" class="o-btn btn o-btn--primary btn-primary" role="button" data-oruga="button">
-								<span class="o-btn__wrapper">
-								<!---->
-								<span class="o-btn__label">Send the report</span>
-								<!---->
-								</span>
-							</button>
-							</footer>
-						</div>
-						<span class="o-icon o-icon--clickable o-icon--medium o-modal__close" data-oruga="icon" style="display: none;">
-							<span class="material-design-icon close-icon" aria-hidden="true" role="img">
-							<svg fill="currentColor" class="material-design-icon__svg" width="18" height="18" viewBox="0 0 24 24">
-								<path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z">
-								<!---->
-								</path>
-							</svg>
-							</span>
-						</span>
-						</div>
-					</div>
-					<div close-button-aria-label="Close" has-modal-card="" data-oruga="modal" class="o-modal modal" tabindex="-1" aria-modal="false" style="display: none;">
-						<div class="o-modal__overlay" tabindex="-1" aria-hidden="true"></div>
-						<div class="o-modal__content modal-content" style="max-width: 960px;">
-						<div class="dark:text-white">
-							<div data-v-dfd20edc="" class="dark:text-white p-4">
-							<header data-v-dfd20edc="" class="">
-								<h2 data-v-dfd20edc="" class="text-2xl">Share this event</h2>
-							</header>
-							<section data-v-dfd20edc="" class="flex">
-								<div data-v-dfd20edc="" class="w-full">
-								<div data-v-dfd20edc="" data-oruga="field" class="o-field field o-field--filled">
-									<label for="url-text" class="o-field__label field-label">Event URL</label>
-									<div class="o-field__body">
-									<div class="o-field field o-field--addons">
-										<div data-v-dfd20edc="" data-oruga="input" class="o-input__wrapper o-input__wrapper--expanded">
-										<input id="url-text" data-oruga-input="text" type="text" class="o-input input" autocomplete="off">
-										<!---->
-										<!---->
-										<!---->
-										</div>
-										<p data-v-dfd20edc="" class="control">
-										<div data-v-dfd20edc="" class="o-tip tooltip" data-oruga="tooltip">
-										<div class="o-tip__content tooltip-content o-tip__content--left o-tip__content--success tooltip-content-success" style="display: none;">
-											<span class="o-tip__arrow tooltip-arrow o-tip__arrow--left o-tip__arrow--success"></span>URL copied to clipboard
-										</div>
-										<div class="o-tip__trigger" aria-haspopup="true"></div>
-										</div>
-										<button data-v-dfd20edc="" type="button" class="o-btn btn o-btn--primary btn-primary" role="button" data-oruga="button" title="Copy URL to clipboard">
-										<span class="o-btn__wrapper">
-											<!---->
-											<!---->
-											<span class="o-icon o-btn__icon o-btn__icon-right" data-oruga="icon">
-											<span class="material-design-icon content-paste-icon" aria-hidden="true" role="img">
-												<svg fill="currentColor" class="material-design-icon__svg" width="18" height="18" viewBox="0 0 24 24">
-												<path d="M19,20H5V4H7V7H17V4H19M12,2A1,1 0 0,1 13,3A1,1 0 0,1 12,4A1,1 0 0,1 11,3A1,1 0 0,1 12,2M19,2H14.82C14.4,0.84 13.3,0 12,0C10.7,0 9.6,0.84 9.18,2H5A2,2 0 0,0 3,4V20A2,2 0 0,0 5,22H19A2,2 0 0,0 21,20V4A2,2 0 0,0 19,2Z">
-													<!---->
-												</path>
-												</svg>
-											</span>
-											</span>
-										</span>
-										</button>
-										</p>
-									</div>
-									</div>
-									<!---->
-								</div>
-								<div data-v-dfd20edc="" class="flex flex-wrap gap-1">
-									<a data-v-dfd20edc="" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Flekalepin.fr%2Fevents%2Fec075ac8-7ba9-4dcb-ba9a-4cb7dde1fcb2&amp;text=Concert Due Di Coppe" target="_blank" rel="nofollow noopener" title="Twitter">
-									<span data-v-dfd20edc="" class="dark:text-white material-design-icon twitter-icon dark:text-white" aria-hidden="true" role="img">
-										<svg fill="currentColor" class="material-design-icon__svg" width="48" height="48" viewBox="0 0 24 24">
-										<path d="M22.46,6C21.69,6.35 20.86,6.58 20,6.69C20.88,6.16 21.56,5.32 21.88,4.31C21.05,4.81 20.13,5.16 19.16,5.36C18.37,4.5 17.26,4 16,4C13.65,4 11.73,5.92 11.73,8.29C11.73,8.63 11.77,8.96 11.84,9.27C8.28,9.09 5.11,7.38 3,4.79C2.63,5.42 2.42,6.16 2.42,6.94C2.42,8.43 3.17,9.75 4.33,10.5C3.62,10.5 2.96,10.3 2.38,10C2.38,10 2.38,10 2.38,10.03C2.38,12.11 3.86,13.85 5.82,14.24C5.46,14.34 5.08,14.39 4.69,14.39C4.42,14.39 4.15,14.36 3.89,14.31C4.43,16 6,17.26 7.89,17.29C6.43,18.45 4.58,19.13 2.56,19.13C2.22,19.13 1.88,19.11 1.54,19.07C3.44,20.29 5.7,21 8.12,21C16,21 20.33,14.46 20.33,8.79C20.33,8.6 20.33,8.42 20.32,8.23C21.16,7.63 21.88,6.87 22.46,6Z">
-											<!---->
-										</path>
-										</svg>
-									</span>
-									</a>
-									<a data-v-dfd20edc="" href="https://toot.kytta.dev/?text=Concert%20Due%20Di%20Coppe%0D%0Ahttps%3A%2F%2Flekalepin.fr%2Fevents%2Fec075ac8-7ba9-4dcb-ba9a-4cb7dde1fcb2" class="mastodon" target="_blank" rel="nofollow noopener" title="Mastodon">
-									<span data-v-dfd20edc="" class="text-primary dark:text-white">
-										<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 216.4144 232.00976">
-										<title>Mastodon logo</title>
-										<path d="M211.80734 139.0875c-3.18125 16.36625-28.4925 34.2775-57.5625 37.74875-15.15875 1.80875-30.08375 3.47125-45.99875 2.74125-26.0275-1.1925-46.565-6.2125-46.565-6.2125 0 2.53375.15625 4.94625.46875 7.2025 3.38375 25.68625 25.47 27.225 46.39125 27.9425 21.11625.7225 39.91875-5.20625 39.91875-5.20625l.8675 19.09s-14.77 7.93125-41.08125 9.39c-14.50875.7975-32.52375-.365-53.50625-5.91875C9.23234 213.82 1.40609 165.31125.20859 116.09125c-.365-14.61375-.14-28.39375-.14-39.91875 0-50.33 32.97625-65.0825 32.97625-65.0825C49.67234 3.45375 78.20359.2425 107.86484 0h.72875c29.66125.2425 58.21125 3.45375 74.8375 11.09 0 0 32.975 14.7525 32.975 65.0825 0 0 .41375 37.13375-4.59875 62.915"></path>
-										<path d="M177.50984 80.077v60.94125h-24.14375v-59.15c0-12.46875-5.24625-18.7975-15.74-18.7975-11.6025 0-17.4175 7.5075-17.4175 22.3525v32.37625H96.20734V85.42325c0-14.845-5.81625-22.3525-17.41875-22.3525-10.49375 0-15.74 6.32875-15.74 18.7975v59.15H38.90484V80.077c0-12.455 3.17125-22.3525 9.54125-29.675 6.56875-7.3225 15.17125-11.07625 25.85-11.07625 12.355 0 21.71125 4.74875 27.8975 14.2475l6.01375 10.08125 6.015-10.08125c6.185-9.49875 15.54125-14.2475 27.8975-14.2475 10.6775 0 19.28 3.75375 25.85 11.07625 6.36875 7.3225 9.54 17.22 9.54 29.675" fill="#fff"></path>
-										</svg>
-									</span>
-									</a>
-									<a data-v-dfd20edc="" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Flekalepin.fr%2Fevents%2Fec075ac8-7ba9-4dcb-ba9a-4cb7dde1fcb2" target="_blank" rel="nofollow noopener" title="Facebook">
-									<span data-v-dfd20edc="" class="dark:text-white material-design-icon facebook-icon dark:text-white" aria-hidden="true" role="img">
-										<svg fill="currentColor" class="material-design-icon__svg" width="48" height="48" viewBox="0 0 24 24">
-										<path d="M12 2.04C6.5 2.04 2 6.53 2 12.06C2 17.06 5.66 21.21 10.44 21.96V14.96H7.9V12.06H10.44V9.85C10.44 7.34 11.93 5.96 14.22 5.96C15.31 5.96 16.45 6.15 16.45 6.15V8.62H15.19C13.95 8.62 13.56 9.39 13.56 10.18V12.06H16.34L15.89 14.96H13.56V21.96A10 10 0 0 0 22 12.06C22 6.53 17.5 2.04 12 2.04Z">
-											<!---->
-										</path>
-										</svg>
-									</span>
-									</a>
-									<a data-v-dfd20edc="" href="https://wa.me/?text=Concert%20Due%20Di%20Coppe%0D%0Ahttps%3A%2F%2Flekalepin.fr%2Fevents%2Fec075ac8-7ba9-4dcb-ba9a-4cb7dde1fcb2" target="_blank" rel="nofollow noopener" title="WhatsApp">
-									<span data-v-dfd20edc="" class="dark:text-white material-design-icon whatsapp-icon dark:text-white" aria-hidden="true" role="img">
-										<svg fill="currentColor" class="material-design-icon__svg" width="48" height="48" viewBox="0 0 24 24">
-										<path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.03 14.69 2 12.04 2M12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.04 20.15C10.56 20.15 9.11 19.76 7.85 19L7.55 18.83L4.43 19.65L5.26 16.61L5.06 16.29C4.24 15 3.8 13.47 3.8 11.91C3.81 7.37 7.5 3.67 12.05 3.67M8.53 7.33C8.37 7.33 8.1 7.39 7.87 7.64C7.65 7.89 7 8.5 7 9.71C7 10.93 7.89 12.1 8 12.27C8.14 12.44 9.76 14.94 12.25 16C12.84 16.27 13.3 16.42 13.66 16.53C14.25 16.72 14.79 16.69 15.22 16.63C15.7 16.56 16.68 16.03 16.89 15.45C17.1 14.87 17.1 14.38 17.04 14.27C16.97 14.17 16.81 14.11 16.56 14C16.31 13.86 15.09 13.26 14.87 13.18C14.64 13.1 14.5 13.06 14.31 13.3C14.15 13.55 13.67 14.11 13.53 14.27C13.38 14.44 13.24 14.46 13 14.34C12.74 14.21 11.94 13.95 11 13.11C10.26 12.45 9.77 11.64 9.62 11.39C9.5 11.15 9.61 11 9.73 10.89C9.84 10.78 10 10.6 10.1 10.45C10.23 10.31 10.27 10.2 10.35 10.04C10.43 9.87 10.39 9.73 10.33 9.61C10.27 9.5 9.77 8.26 9.56 7.77C9.36 7.29 9.16 7.35 9 7.34C8.86 7.34 8.7 7.33 8.53 7.33Z">
-											<!---->
-										</path>
-										</svg>
-									</span>
-									</a>
-									<a data-v-dfd20edc="" href="https://t.me/share/url?url=https%3A%2F%2Flekalepin.fr%2Fevents%2Fec075ac8-7ba9-4dcb-ba9a-4cb7dde1fcb2&amp;text=Concert%20Due%20Di%20Coppe" class="telegram" target="_blank" rel="nofollow noopener" title="Telegram">
-									<span data-v-dfd20edc="" class="text-primary dark:text-white dark:fill-white">
-										<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-										<title>Telegram</title>
-										<path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"></path>
-										</svg>
-									</span>
-									</a>
-									<a data-v-dfd20edc="" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A%2F%2Flekalepin.fr%2Fevents%2Fec075ac8-7ba9-4dcb-ba9a-4cb7dde1fcb2&amp;title=Concert Due Di Coppe" target="_blank" rel="nofollow noopener" title="LinkedIn">
-									<span data-v-dfd20edc="" class="dark:text-white material-design-icon linkedin-icon dark:text-white" aria-hidden="true" role="img">
-										<svg fill="currentColor" class="material-design-icon__svg" width="48" height="48" viewBox="0 0 24 24">
-										<path d="M19 3A2 2 0 0 1 21 5V19A2 2 0 0 1 19 21H5A2 2 0 0 1 3 19V5A2 2 0 0 1 5 3H19M18.5 18.5V13.2A3.26 3.26 0 0 0 15.24 9.94C14.39 9.94 13.4 10.46 12.92 11.24V10.13H10.13V18.5H12.92V13.57C12.92 12.8 13.54 12.17 14.31 12.17A1.4 1.4 0 0 1 15.71 13.57V18.5H18.5M6.88 8.56A1.68 1.68 0 0 0 8.56 6.88C8.56 5.95 7.81 5.19 6.88 5.19A1.69 1.69 0 0 0 5.19 6.88C5.19 7.81 5.95 8.56 6.88 8.56M8.27 18.5V10.13H5.5V18.5H8.27Z">
-											<!---->
-										</path>
-										</svg>
-									</span>
-									</a>
-									<a data-v-dfd20edc="" href="https://share.diasporafoundation.org/?title=Concert%20Due%20Di%20Coppe&amp;url=https%3A%2F%2Flekalepin.fr%2Fevents%2Fec075ac8-7ba9-4dcb-ba9a-4cb7dde1fcb2" class="diaspora" target="_blank" rel="nofollow noopener" title="Diaspora">
-									<span data-v-dfd20edc="" class="text-black dark:text-white dark:fill-white">
-										<svg version="1.1" viewBox="0 0 65.131 65.131" xmlns="http://www.w3.org/2000/svg">
-										<title>Diaspora logo</title>
-										<path d="m28.214 64.754c-6.9441-0.80647-14.478-4.7044-19.429-10.053-8.1024-8.7516-10.823-21.337-7.0178-32.463 3.8465-11.248 12.917-19.153 24.746-21.569 7.2561-1.4817 14.813-0.27619 21.622 3.4495 7.517 4.1126 12.568 10.251 15.291 18.582 5.5678 17.038-4.1941 35.667-21.417 40.87-4.6929 1.4178-8.7675 1.7673-13.795 1.1834zm0.43913-17.263c2.0058-2.7986 3.7663-5.0883 3.9123-5.0883 0.14591 0 1.9109 2.2959 3.9221 5.102 2.0112 2.8061 3.827 5.0577 4.0349 5.0035 0.90081-0.23467 8.2871-5.9034 8.1633-6.265-0.07527-0.21984-1.7555-2.6427-3.7338-5.3842-1.9783-2.7414-3.552-5.0223-3.497-5.0686 0.05497-0.04629 2.8095-0.97845 6.1211-2.0715 3.3117-1.093 6.0224-2.1432 6.0239-2.3338 0.0073-0.92502-2.9094-9.4312-3.283-9.5746-0.23567-0.09043-2.9906 0.68953-6.1221 1.7332-3.1315 1.0437-5.8046 1.8977-5.9404 1.8977-0.13575 0-0.28828-2.9385-0.33895-6.53l-0.09213-6.53h-10.516l-0.09213 6.53c-0.05067 3.5915-0.20809 6.53-0.34982 6.53s-2.9544-0.90204-6.2504-2.0045l-5.9927-2.0045-1.5444 4.6339c-0.8494 2.5487-1.5444 4.866-1.5444 5.1496 0 0.36743 1.7311 1.087 6.0212 2.503 3.3117 1.093 6.0662 2.0252 6.1211 2.0715 0.05497 0.04629-1.5187 2.3272-3.497 5.0686-1.9783 2.7415-3.6605 5.1643-3.7382 5.3842-0.14163 0.40073 7.4833 6.2827 8.1896 6.3175 0.20673 0.01021 2.017-2.2712 4.0228-5.0698z" stroke-width=".33922"></path>
-										<path d="m23.631 51.953c-2.348-1.5418-6.9154-5.1737-7.0535-5.6088-0.06717-0.21164 0.45125-0.99318 3.3654-5.0734 2.269-3.177 3.7767-5.3581 3.7767-5.4637 0-0.03748-1.6061-0.60338-3.5691-1.2576-6.1342-2.0442-8.3916-2.9087-8.5288-3.2663-0.03264-0.08506 0.09511-0.68598 0.28388-1.3354 0.643-2.212 2.7038-8.4123 2.7959-8.4123 0.05052 0 2.6821 0.85982 5.848 1.9107 3.1659 1.0509 5.897 1.9222 6.0692 1.9362 0.3089 0.02514 0.31402 0.01925 0.38295-0.44107 0.09851-0.65784 0.26289-5.0029 0.2633-6.9599 1.87e-4 -0.90267 0.02801-2.5298 0.06184-3.6158l0.0615-1.9746h10.392l0.06492 4.4556c0.06287 4.3148 0.18835 7.8236 0.29865 8.3513 0.0295 0.14113 0.11236 0.2566 0.18412 0.2566 0.07176 0 1.6955-0.50861 3.6084-1.1303 4.5213-1.4693 6.2537-2.0038 7.3969-2.2822 0.87349-0.21269 0.94061-0.21704 1.0505-0.06806 0.45169 0.61222 3.3677 9.2365 3.1792 9.4025-0.33681 0.29628-2.492 1.1048-6.9823 2.6194-5.3005 1.7879-5.1321 1.7279-5.1321 1.8283 0 0.13754 0.95042 1.522 3.5468 5.1666 1.3162 1.8475 2.6802 3.7905 3.0311 4.3176l0.63804 0.95842-0.27216 0.28519c-1.1112 1.1644-7.3886 5.8693-7.8309 5.8693-0.22379 0-1.2647-1.2321-2.9284-3.4663-0.90374-1.2137-2.264-3.0402-3.0228-4.059-0.75878-1.0188-1.529-2.0203-1.7116-2.2256l-0.33201-0.37324-0.32674 0.37324c-0.43918 0.50169-2.226 2.867-3.8064 5.0388-2.1662 2.9767-3.6326 4.8055-3.8532 4.8055-0.05161 0-0.4788-0.25278-0.94931-0.56173z" fill="transparent" stroke-width=".093311"></path>
-										</svg>
-									</span>
-									</a>
-									<a data-v-dfd20edc="" href="mailto:?to=&amp;body=https://lekalepin.fr/events/ec075ac8-7ba9-4dcb-ba9a-4cb7dde1fcb2&amp;subject=Concert Due Di Coppe" target="_blank" rel="nofollow noopener" title="Email">
-									<span data-v-dfd20edc="" class="dark:text-white material-design-icon email-icon dark:text-white" aria-hidden="true" role="img">
-										<svg fill="currentColor" class="material-design-icon__svg" width="48" height="48" viewBox="0 0 24 24">
-										<path d="M20,8L12,13L4,8V6L12,11L20,6M20,4H4C2.89,4 2,4.89 2,6V18A2,2 0 0,0 4,20H20A2,2 0 0,0 22,18V6C22,4.89 21.1,4 20,4Z">
-											<!---->
-										</path>
-										</svg>
-									</span>
-									</a>
-								</div>
-								</div>
-							</section>
-							</div>
-						</div>
-						<span class="o-icon o-icon--clickable o-icon--medium o-modal__close" data-oruga="icon" style="display: none;">
-							<span class="material-design-icon close-icon" aria-hidden="true" role="img">
-							<svg fill="currentColor" class="material-design-icon__svg" width="18" height="18" viewBox="0 0 24 24">
-								<path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z">
-								<!---->
-								</path>
-							</svg>
-							</span>
-						</span>
-						</div>
-					</div>
-					<div has-modal-card="" close-button-aria-label="Close" data-oruga="modal" class="o-modal modal" tabindex="-1" aria-modal="false" style="display: none;">
-						<div class="o-modal__overlay" tabindex="-1" aria-hidden="true"></div>
-						<div class="o-modal__content modal-content" style="max-width: 960px;">
-						<div>
-							<header class="">
-							<h2 class="">Pick an identity</h2>
-							</header>
-							<section class="">
-							<ul class="grid grid-cols-1 gap-y-3 m-5 max-w-md"></ul>
-							</section>
-							<footer class="flex gap-2">
-							<button type="button" class="o-btn btn o-btn--outlined btn-outlined-null" role="button" data-oruga="button">
-								<span class="o-btn__wrapper">
-								<!---->
-								<span class="o-btn__label">Cancel</span>
-								<!---->
-								</span>
-							</button>
-							<button type="button" class="o-btn btn o-btn--primary btn-primary" role="button" data-oruga="button">
-								<span class="o-btn__wrapper">
-								<!---->
-								<span class="o-btn__label">Confirm my particpation</span>
-								<!---->
-								</span>
-							</button>
-							</footer>
-						</div>
-						<span class="o-icon o-icon--clickable o-icon--medium o-modal__close" data-oruga="icon" style="display: none;">
-							<span class="material-design-icon close-icon" aria-hidden="true" role="img">
-							<svg fill="currentColor" class="material-design-icon__svg" width="18" height="18" viewBox="0 0 24 24">
-								<path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z">
-								<!---->
-								</path>
-							</svg>
-							</span>
-						</span>
-						</div>
-					</div>
-					<div has-modal-card="" close-button-aria-label="Close" data-oruga="modal" class="o-modal modal" tabindex="-1" aria-modal="false" style="display: none;">
-						<div class="o-modal__overlay" tabindex="-1" aria-hidden="true"></div>
-						<div class="o-modal__content modal-content" style="max-width: 960px;">
-						<div class="modal-card">
-							<header class="modal-card-head">
-							<p class="modal-card-title">Participation confirmation</p>
-							</header>
-							<section class="modal-card-body">
-							<p>The event organiser has chosen to validate manually participations. Do you want to add a little note to explain why you want to participate to this event?</p>
-							<form>
-								<div data-oruga="field" class="o-field field">
-								<label class="o-field__label field-label" for="7743wmcw10e">Message</label>
-								<div class="o-field__body">
-									<div class="o-field field o-field--addons">
-									<div data-oruga="input" class="o-input__wrapper">
-										<textarea minlength="10" id="7743wmcw10e" data-oruga-input="textarea" class="o-input input o-input--medium input-size-medium o-input__textarea"></textarea>
-										<!---->
-										<!---->
-										<!---->
-									</div>
-									</div>
-								</div>
-								<!---->
-								</div>
-								<div class="buttons">
-								<button type="button" class="o-btn btn button" role="button" data-oruga="button">
-									<span class="o-btn__wrapper">
-									<!---->
-									<span class="o-btn__label">Cancel</span>
-									<!---->
-									</span>
-								</button>
-								<button type="submit" class="o-btn btn o-btn--primary btn-primary" role="button" data-oruga="button">
-									<span class="o-btn__wrapper">
-									<!---->
-									<span class="o-btn__label">Confirm my participation</span>
-									<!---->
-									</span>
-								</button>
-								</div>
-							</form>
-							</section>
-						</div>
-						<span class="o-icon o-icon--clickable o-icon--medium o-modal__close" data-oruga="icon" style="display: none;">
-							<span class="material-design-icon close-icon" aria-hidden="true" role="img">
-							<svg fill="currentColor" class="material-design-icon__svg" width="18" height="18" viewBox="0 0 24 24">
-								<path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z">
-								<!---->
-								</path>
-							</svg>
-							</span>
-						</span>
-						</div>
-					</div>
 					</div>
 				</section>
 				</div>
 				<div class="rounded-lg dark:border-violet-title flex flex-wrap flex-col md:flex-row-reverse gap-4">
 				<aside class="rounded bg-white dark:bg-zinc-700 shadow-md h-min max-w-screen-sm">
 					<div style="padding-top: 0.25rem" class="sticky p-4">
-					<div data-v-3aec49f0="">
-						<div data-v-9bd0e2da="" data-v-3aec49f0="" icon="map-marker">
-						<h2 data-v-9bd0e2da="">Location</h2>
-						<div data-v-9bd0e2da="" class="flex items-center mb-3 gap-1 eventMetadataBlock">
-							<span data-v-3aec49f0="" class="o-icon" data-oruga="icon">
+					<div >
+						<div  icon="map-marker">
+						<h2 data-v-9bd0e2da=""><?php \esc_html_e( 'Location', 'event-bridge-for-activitypub' ); ?></h2>
+						<div class="flex items-center mb-3 gap-1 eventMetadataBlock">
+							<span  class="o-icon" data-oruga="icon">
 							<span class="material-design-icon map-marker-icon" aria-hidden="true" role="img">
 								<svg fill="currentColor" class="material-design-icon__svg" width="36" height="36" viewBox="0 0 24 24">
 								<path d="M12,11.5A2.5,2.5 0 0,1 9.5,9A2.5,2.5 0 0,1 12,6.5A2.5,2.5 0 0,1 14.5,9A2.5,2.5 0 0,1 12,11.5M12,2A7,7 0 0,0 5,9C5,14.25 12,22 12,22C12,22 19,14.25 19,9A7,7 0 0,0 12,2Z">
-									<!---->
 								</path>
 								</svg>
 							</span>
 							</span>
-							<div data-v-9bd0e2da="" class="content-wrapper overflow-hidden w-full">
-							<div data-v-3aec49f0="" class="address-wrapper">
-								<!---->
-								<div data-v-3aec49f0="" class="address">
-								<address data-v-f1e7c41f="" data-v-3aec49f0="" dir="auto">
-									<!---->
-									<p data-v-f1e7c41f="">
-									<span data-v-f1e7c41f="" class="addressDescription" title="Le P'tit Clem">Le P'tit Clem</span>
-									<br data-v-f1e7c41f="">
-									<span data-v-f1e7c41f="">212 Grande Rue, 69930, Saint Clément Les Places</span>
-									<br data-v-f1e7c41f="">
-									<!---->
+							<div class="content-wrapper overflow-hidden w-full">
+							<div  class="address-wrapper">
+								<div  class="address">
+								<address   dir="auto">
+									<p >
+									<span  class="addressDescription" title="<?php echo \esc_html( $location->get_name() ); ?>"><?php echo \esc_html( $location->get_name() ); ?></span>
+									<br >
+									<span ><?php echo \esc_html( $address ); ?></span>
+									<br >
 									</p>
 								</address>
-								<button data-v-3aec49f0="" type="button" class="o-btn btn o-btn--text btn-text map-show-button" role="button" data-oruga="button">
+								<button  type="button" class="o-btn btn o-btn--text btn-text map-show-button" role="button" data-oruga="button">
 									<span class="o-btn__wrapper">
-									<!---->
 									<span class="o-btn__label">Show map</span>
-									<!---->
 									</span>
 								</button>
 								</div>
@@ -1632,78 +1336,89 @@ if ( $transformer instanceof Event ) {
 							</div>
 						</div>
 						</div>
-						<div data-v-9bd0e2da="" data-v-3aec49f0="">
-						<h2 data-v-9bd0e2da="">Date and time</h2>
-						<div data-v-9bd0e2da="" class="flex items-center mb-3 gap-1 eventMetadataBlock">
-							<span data-v-3aec49f0="" aria-hidden="true" class="material-design-icon calendar-icon" role="img">
+						<div>
+						<h2 data-v-9bd0e2da=""><?php \esc_html_e( 'Date and time', 'event-bridge-for-activitypub' ); ?></h2>
+						<div class="flex items-center mb-3 gap-1 eventMetadataBlock">
+							<span  aria-hidden="true" class="material-design-icon calendar-icon" role="img">
 							<svg fill="currentColor" class="material-design-icon__svg" width="36" height="36" viewBox="0 0 24 24">
 								<path d="M19,19H5V8H19M16,1V3H8V1H6V3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3H18V1M17,12H12V17H17V12Z">
-								<!---->
 								</path>
 							</svg>
 							</span>
-							<div data-v-9bd0e2da="" class="content-wrapper overflow-hidden w-full">
-							<p>On Friday, February 7, 2025 starting at 8:00 PM</p>
-							<!---->
+							<div class="content-wrapper overflow-hidden w-full">
+							<?php
+							$start_timestamp = strtotime( $object->get_start_time() );
+							$formatted_date  = sprintf(
+								/* translators: %1$s: Day of the week, %2$s: Month and day, %3$s: Year, %4$s: Time */
+								__( 'On %1$s, %2$s %3$s starting at %4$s', 'text-domain' ),
+								\wp_date( 'l', $start_timestamp ),
+								\wp_date( 'F j,', $start_timestamp ),
+								\wp_date( 'Y', $start_timestamp ),
+								\wp_date( 'g:i A', $start_timestamp )
+							);
+							?>
+							<p><?php echo \esc_html( $formatted_date ); ?></p>
 							</div>
 						</div>
 						</div>
-						<div data-v-9bd0e2da="" data-v-3aec49f0="" class="metadata-organized-by">
-						<h2 data-v-9bd0e2da="">Organized by</h2>
-						<div data-v-9bd0e2da="" class="flex items-center mb-3 gap-1 eventMetadataBlock">
-							<div data-v-9bd0e2da="" class="content-wrapper overflow-hidden w-full">
-							<a data-v-3aec49f0="" href="/@groupe_le_ptit_clem" class="hover:underline">
-								<div data-v-ec6d6c8c="" data-v-3aec49f0="" class="bg-white dark:bg-mbz-purple rounded-lg flex space-x-4 items-center">
+						<div class="metadata-organized-by">
+						<h2 data-v-9bd0e2da=""><?php \esc_html_e( 'Organized by', 'event-bridge-for-activitypub' ); ?></h2>
+						<div class="flex items-center mb-3 gap-1 eventMetadataBlock">
+							<div class="content-wrapper overflow-hidden w-full">
+							<a  href="/@groupe_le_ptit_clem" class="hover:underline">
+								<div data-v-ec6d6c8c=""  class="bg-white dark:bg-mbz-purple rounded-lg flex space-x-4 items-center">
 								<div data-v-ec6d6c8c="" class="flex pl-2">
 									<figure data-v-ec6d6c8c="" class="w-12 h-12">
-									<img data-v-ec6d6c8c="" class="rounded-full object-cover h-full" src="https://lekalepin.fr/media/26b04d58ce387b219b5cb46be874141dd7b8ae87c21201de94f476b53b3ca21a.jpg?name=P%27tit%20Clem_TEST%202_TEST%202%284%29.jpg" alt="" width="48" height="48" loading="lazy">
+									<img data-v-ec6d6c8c="" class="rounded-full object-cover h-full" src="<?php echo esc_url( object_to_uri( $user->get_icon() ) ); ?>" alt="" width="48" height="48" loading="lazy">
 									</figure>
 								</div>
 								<div data-v-ec6d6c8c="" class="overflow-hidden w-full">
-									<h5 data-v-ec6d6c8c="" class="text-xl font-medium violet-title tracking-tight text-gray-900 dark:text-gray-200 whitespace-pre-line line-clamp-2">Le P'tit Clem</h5>
+									<h5 data-v-ec6d6c8c="" class="text-xl font-medium violet-title tracking-tight text-gray-900 dark:text-gray-200 whitespace-pre-line line-clamp-2"><?php echo esc_html( $user->get_name() ); ?></h5>
 									<p data-v-ec6d6c8c="" class="text-gray-500 dark:text-gray-200 truncate">
-									<span data-v-ec6d6c8c="" dir="ltr">@groupe_le_ptit_clem</span>
+									<span data-v-ec6d6c8c="" dir="ltr"><?php echo '@' . \esc_html( \wp_parse_url( \get_home_url(), PHP_URL_HOST ) ) . '@' . \esc_html( $user->get_preferred_username() ); ?></span>
 									</p>
-									<!---->
-									<!---->
 								</div>
-								<!---->
 								</div>
 							</a>
 							</div>
 						</div>
 						</div>
-						<div data-v-9bd0e2da="" data-v-3aec49f0="">
-							<h2 data-v-9bd0e2da="">Website</h2>
-							<div data-v-9bd0e2da="" class="flex items-center mb-3 gap-1 eventMetadataBlock">
-								<span data-v-3aec49f0="" aria-hidden="true" class="material-design-icon link-icon" role="img">
+						<div >
+							<h2 data-v-9bd0e2da=""><?php \esc_html_e( 'Website', 'event-bridge-for-activitypub' ); ?></h2>
+							<div class="flex items-center mb-3 gap-1 eventMetadataBlock">
+								<span  aria-hidden="true" class="material-design-icon link-icon" role="img">
 									<svg fill="currentColor" class="material-design-icon__svg" width="36" height="36" viewBox="0 0 24 24"><path d="M3.9,12C3.9,10.29 5.29,8.9 7,8.9H11V7H7A5,5 0 0,0 2,12A5,5 0 0,0 7,17H11V15.1H7C5.29,15.1 3.9,13.71 3.9,12M8,13H16V11H8V13M17,7H13V8.9H17C18.71,8.9 20.1,10.29 20.1,12C20.1,13.71 18.71,15.1 17,15.1H13V17H17A5,5 0 0,0 22,12A5,5 0 0,0 17,7Z"><!----></path></svg>
 								</span>
-								<div data-v-9bd0e2da="" class="content-wrapper overflow-hidden w-full">
-									<a data-v-3aec49f0="" target="_blank" class="underline" rel="noopener noreferrer ugc" href="https://trotzallem.noblogs.org/post/2025/01/06/fr-7-februar-filmabend-feminism-wtf/" title="View page on trotzallem.noblogs.org (in a new window)">trotzallem.noblogs.org/post/2025/01/06/fr-7-februar-filmabend-feminism-wtf/</a>
+								<div class="content-wrapper overflow-hidden w-full">
+									<?php
+									$mobilizon_link_note = sprintf(
+									/* translators: %1$s: The external host */
+										__( 'View page on %1$s (in a new window)', 'event-bridge-for-activitypub' ),
+										\wp_parse_url( $object->get_url(), PHP_URL_HOST )
+									);
+									?>
+									<a  target="_blank" class="underline" rel="noopener noreferrer ugc" href="<?php echo esc_url( $object->get_url() ); ?>" title="<?php echo esc_html( $mobilizon_link_note ); ?>"><?php echo esc_html( $object->get_url() ); ?></a>
 								</div>
 							</div>
 						</div>
-						<!---->
 					</div>
 					</div>
 				</aside>
 				<div class="flex-1">
 					<section class="event-description bg-white dark:bg-zinc-700 px-3 pt-1 pb-3 rounded mb-4">
-					<h2 class="text-2xl">About this event</h2>
+					<h2 class="text-2xl"><?php \esc_html_e( 'About this event', 'event-bridge-for-activitypub' ); ?></h2>
 					<!---->
 					<!---->
 					<div>
 						<div lang="fr" dir="auto" class="mt-4 prose md:prose-lg lg:prose-xl dark:prose-invert prose-h1:text-xl prose-h1:font-semibold prose-h2:text-lg prose-h3:text-base md:prose-h1:text-2xl md:prose-h1:font-semibold md:prose-h2:text-xl md:prose-h3:text-lg lg:prose-h1:text-2xl lg:prose-h1:font-semibold lg:prose-h2:text-xl lg:prose-h3:text-lg">
-						<p>Due di Coppe naît de l’envie commune de Florian Vella et Marco Carollo de renouer avec leurs racines italiennes. Du Piémont à la Sicile, les deux musiciens tissent un fil fait de chansons populaires d’osteria, de poésie, de travail, ou d’amour... </p>
-						<p>Due di Coppe plonge les spectateurs dans l’ambiance décontractée et chaleureuse de la musique populaire italienne, en proposant des arrangements originaux forts de leurs nombreuses influences, mais aussi des histoires et des anecdotes de ce Pays contrasté et haut en couleurs.</p>
+							<?php echo wp_kses( $object->get_content(), ACTIVITYPUB_MASTODON_HTML_SANITIZER ); ?>
 						</div>
 					</div>
 					</section>
 					<section class="my-4"></section>
 					<section class="bg-white dark:bg-zinc-700 px-3 pt-1 pb-3 rounded my-4">
 					<a href="#comments">
-						<h2 class="text-2xl" id="comments">Comments</h2>
+						<h2 class="text-2xl" id="comments"><?php \esc_html_e( 'Comments', 'event-bridge-for-activitypub' ); ?></h2>
 					</a>
 					<div data-v-0aad39c9="">
 						<!---->
@@ -1719,7 +1434,7 @@ if ( $transformer instanceof Event ) {
 							</span>
 							</span>
 							<h2 class="mb-3">
-							<span data-v-0aad39c9="">No comments yet</span>
+							<span data-v-0aad39c9=""><?php \esc_html_e( 'No comments yet', 'event-bridge-for-activitypub' ); ?></span>
 							</h2>
 							<p class="" style="display: none;"></p>
 						</div>
@@ -1750,12 +1465,12 @@ if ( $transformer instanceof Event ) {
 	</body>
 	<script>
 		function openPreviewForApplication(applicationName) {
-		var i;
-		var x = document.getElementsByClassName("application-preview");
-		for (i = 0; i < x.length; i++) {
-			x[i].style.display = "none";
-		}
-		document.getElementById(applicationName).style.display = "block";
+			var i;
+			var x = document.getElementsByClassName("application-preview");
+			for (i = 0; i < x.length; i++) {
+				x[i].style.display = "none";
+			}
+			document.getElementById(applicationName).style.display = "block";
 		}
 	</script>
 </html>
