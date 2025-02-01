@@ -27,7 +27,7 @@ define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_VERSION', current( get_file_data( __FILE__, array( 'Version' ), 'plugin' ) ) );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_DOMAIN', 'event-bridge-for-activitypub' );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION', '3.2.2' );
-define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY', "<ul>\n  <li>[ap_start_time]</li>\n  <li>[ap_end_time]</li>\n  <li>[ap_location]</li>\n</ul>\n[ap_content]\n[ap_hashcats] [ap_hashtags]" );
+define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY', "[ap_start_time]\n[ap_end_time]\n[ap_location]\n\n[ap_content]" );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_DEFAULT_SUMMARY_TYPE', 'preset' );
 
 // Include and register the autoloader class for automatic loading of plugin classes.
