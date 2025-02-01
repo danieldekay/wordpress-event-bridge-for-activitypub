@@ -181,8 +181,14 @@ class Event_Source extends Actor {
 		if ( Event_Sources::POST_TYPE !== $post->post_type ) {
 			return null;
 		}
+
 		$actor_json = get_post_meta( $post->ID, 'activitypub_actor_json', true );
 		$object     = static::init_from_json( $actor_json );
+
+		if ( \is_wp_error( $object ) ) {
+			return null;
+		}
+
 		$object->set__id( $post->ID );
 		$object->set_id( $post->guid );
 		$object->set_name( $post->post_title );

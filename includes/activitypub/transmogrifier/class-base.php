@@ -40,7 +40,7 @@ abstract class Base {
 	 * @param array $activitypub_event    The ActivityPub event as associative array.
 	 * @param int   $event_source_post_id The Post ID of the Event Source that owns the outbox.
 	 */
-	public static function save( $activitypub_event, $event_source_post_id ): void {
+	final public static function save( $activitypub_event, $event_source_post_id ): void {
 		// Sanitize the incoming event and set only the properties used by the transmogrifier classes.
 		$activitypub_event = Sanitizer::init_and_sanitize_event_object_from_array( $activitypub_event );
 
