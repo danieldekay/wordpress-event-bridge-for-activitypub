@@ -16,7 +16,7 @@ parameters:
 
 	ignoreErrors:
 		-
-			message: '#Call to an undefined method Activitypub\\Activity\\[a-zA-Z0-9\\_]+::(?:get|set)_[a-z\_]#'
+			message: '#Call to an undefined method Activitypub\\Activity\\[a-zA-Z0-9_]+(?:\|WP_Error)?::(?:get|set)_[a-z_]+\(\)#'
 			identifier: method.notFound
 
 	parallel:

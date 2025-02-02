@@ -17,11 +17,15 @@ use Activitypub\Transformer\Post;
 /**
  * Class for the ActivityPub transformer of the venues of The Events Calendar to `as:Place`.
  *
+ * @method array|string get_address()
+ *
  * @since 1.0.0
  */
 abstract class Place extends Post {
 	/**
 	 * Set the type of the object.
+	 *
+	 * @return string
 	 */
 	public function get_type(): string {
 		return 'Place';
@@ -29,6 +33,8 @@ abstract class Place extends Post {
 
 	/**
 	 * Set the type of the object.
+	 *
+	 * @return ?array
 	 */
 	public function get_replies() {
 		return null;
@@ -36,6 +42,8 @@ abstract class Place extends Post {
 
 	/**
 	 * Set the type of the object.
+	 *
+	 * @return ?string
 	 */
 	public function get_sensitive() {
 		return null;
@@ -43,6 +51,8 @@ abstract class Place extends Post {
 
 	/**
 	 * Null content to prevent registering and unregistering ActivityPub shortcodes in parent function.
+	 *
+	 * @return ?string
 	 */
 	public function get_content() {
 		return null;
@@ -50,6 +60,8 @@ abstract class Place extends Post {
 
 	/**
 	 * Completely remove attachments.
+	 *
+	 * @return ?array
 	 */
 	public function get_attachment() {
 		return null;
@@ -57,6 +69,8 @@ abstract class Place extends Post {
 
 	/**
 	 * Completely remove summary.
+	 *
+	 * @return ?string
 	 */
 	public function get_summary() {
 		return null;
@@ -64,6 +78,8 @@ abstract class Place extends Post {
 
 	/**
 	 * Completely remove tag.
+	 *
+	 * @return ?array
 	 */
 	public function get_tag() {
 		return null;
@@ -72,6 +88,8 @@ abstract class Place extends Post {
 
 	/**
 	 * Completely media type.
+	 *
+	 * @return ?string
 	 */
 	public function get_media_type() {
 		return null;
@@ -81,11 +99,15 @@ abstract class Place extends Post {
 	 * Generic function that converts an WordPress location object to an ActivityPub-Place object.
 	 *
 	 * @param bool $full_object bool Return an object with all properties set, or a minimal one as used within an `as:Event`s location.
-	 * @return ?Place_Object
+	 * @return Place_Object|\WP_Error
 	 */
-	public function to_object( $full_object = true ): ?Place_Object {
+	public function to_object( $full_object = true ) {
 		$activitypub_object = new Place_Object();
 		$activitypub_object = $this->transform_object_properties( $activitypub_object );
+
+		if ( \is_wp_error( $activitypub_object ) ) {
+			return $activitypub_object;
+		}
 
 		if ( ! empty( $activitypub_object->get_content() ) ) {
 			$activitypub_object->set_content_map(
@@ -118,6 +140,7 @@ abstract class Place extends Post {
 			$activitypub_object->set_address( $address );
 		}
 
+		// @phpstan-ignore-next-line
 		return $activitypub_object;
 	}
 }

@@ -579,11 +579,15 @@ abstract class Event extends Post {
 	/**
 	 * Generic function that converts an WP-Event object to an ActivityPub-Event object.
 	 *
-	 * @return Event_Object
+	 * @return Event_object|\WP_Error
 	 */
-	public function to_object(): Event_Object {
+	public function to_object() {
 		$activitypub_object = new Event_Object();
 		$activitypub_object = $this->transform_object_properties( $activitypub_object );
+
+		if ( \is_wp_error( $activitypub_object ) ) {
+			return $activitypub_object;
+		}
 
 		// maybe move the following logic (till end of the function) into getter functions.
 
@@ -610,6 +614,7 @@ abstract class Event extends Post {
 			)
 		);
 
+		// @phpstan-ignore-next-line
 		return $activitypub_object;
 	}
 }
