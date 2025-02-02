@@ -6,13 +6,13 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event as Event_Transformer;
 use DateTime;
 
 /**
@@ -29,7 +29,7 @@ final class WP_Event_Manager extends Event_Transformer {
 	 * @return bool
 	 */
 	protected function get_is_online(): bool {
-		$is_online_text = get_post_meta( $this->wp_object->ID, '_event_online', true );
+		$is_online_text = get_post_meta( $this->item->ID, '_event_online', true );
 		$is_online      = false;
 		// Radio buttons.
 		if ( 'yes' === $is_online_text ) {
@@ -48,7 +48,7 @@ final class WP_Event_Manager extends Event_Transformer {
 	 * @return ?Place The Place.
 	 */
 	public function get_location(): ?Place {
-		$location_name = get_post_meta( $this->wp_object->ID, '_event_location', true );
+		$location_name = get_post_meta( $this->item->ID, '_event_location', true );
 
 		if ( $location_name ) {
 			$location = new Place();
@@ -67,7 +67,7 @@ final class WP_Event_Manager extends Event_Transformer {
 	 * @return ?string The events end-datetime if is set, null otherwise.
 	 */
 	public function get_end_time(): ?string {
-		$end_date = get_post_meta( $this->wp_object->ID, '_event_end_date', true );
+		$end_date = get_post_meta( $this->item->ID, '_event_end_date', true );
 		if ( $end_date ) {
 			$end_datetime = new DateTime( $end_date );
 			return \gmdate( 'Y-m-d\TH:i:s\Z', $end_datetime->getTimestamp() );
@@ -79,7 +79,7 @@ final class WP_Event_Manager extends Event_Transformer {
 	 * Get the end time from the events metadata.
 	 */
 	public function get_start_time(): string {
-		$start_date = get_post_meta( $this->wp_object->ID, '_event_start_date', true );
+		$start_date = get_post_meta( $this->item->ID, '_event_start_date', true );
 		if ( ! is_numeric( $start_date ) ) {
 			$start_datetime  = new DateTime( $start_date );
 			$start_timestamp = $start_datetime->getTimestamp();
@@ -96,7 +96,7 @@ final class WP_Event_Manager extends Event_Transformer {
 	 * @return ?array
 	 */
 	private function get_event_link_attachment(): ?array {
-		$event_link_url = get_post_meta( $this->wp_object->ID, '_event_video_url', true );
+		$event_link_url = get_post_meta( $this->item->ID, '_event_video_url', true );
 
 		if ( str_starts_with( $event_link_url, 'http' ) ) {
 			return array(
@@ -135,6 +135,6 @@ final class WP_Event_Manager extends Event_Transformer {
 	 * @return string
 	 */
 	protected function get_name(): string {
-		return $this->wp_object->post_title;
+		return $this->item->post_title;
 	}
 }

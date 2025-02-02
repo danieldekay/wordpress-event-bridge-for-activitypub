@@ -11,17 +11,19 @@
 
 namespace Event_Bridge_For_ActivityPub;
 
+use Activitypub\Activity\Base_Object;
+
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Activity;
-use Activitypub\Activity_Dispatcher;
 use Activitypub\Transformer\Factory as Transformer_Factory;
 use Event_Bridge_For_ActivityPub\Setup;
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event as Event_Transformer;
 use DateTime;
 use WP_Post;
 
+use function ActivityPub\add_to_outbox;
 use function Activitypub\is_user_disabled;
 use function Activitypub\safe_remote_post;
 
@@ -172,7 +174,7 @@ class Reminder {
 	 *
 	 * @param int $post_id The WordPress post ID of the event post.
 	 */
-	public static function send_event_reminder( $post_id ): void {
+	public static function send_event_reminder( $post_id ) {
 		$post = \get_post( $post_id );
 
 		$transformer = Transformer_Factory::get_transformer( $post );
@@ -181,41 +183,14 @@ class Reminder {
 			return;
 		}
 
-		$actor      = $transformer->get_actor_object();
-		$wp_user_id = $actor->get__id();
+		$actor   = $transformer->get_actor_object();
+		$user_id = $actor->get__id();
 
-		if ( $wp_user_id > 0 && is_user_disabled( $wp_user_id ) ) {
+		if ( $user_id > 0 && is_user_disabled( $user_id ) ) {
 			return;
 		}
 
-		// Compose `Announce` activity.
-		$activity = new Activity();
-		$activity->set_type( 'Announce' );
-		$activity->set_actor( $actor->get_id() );
-		$activity->set_object( $transformer->get_id() );
-		$activity->set_sensitive( null );
-
-		self::send_activity_to_followers( $activity, $wp_user_id );
-	}
-
-	/**
-	 * Send an Activity to all followers.
-	 *
-	 * @param Activity $activity  The ActivityPub Activity.
-	 * @param int      $user_id   The user ID.
-	 */
-	public static function send_activity_to_followers( $activity, $user_id ) {
-		$inboxes = Activity_Dispatcher::add_inboxes_of_follower( array(), $user_id );
-		$inboxes = array_unique( $inboxes );
-
-		if ( empty( $inboxes ) ) {
-			return;
-		}
-
-		$json = $activity->to_json();
-
-		foreach ( $inboxes as $inbox ) {
-			safe_remote_post( $inbox, $json, $user_id );
-		}
+		// Add announce of the event to outbox.
+		add_to_outbox( $transformer->to_object(), 'Announce', $user_id );
 	}
 }

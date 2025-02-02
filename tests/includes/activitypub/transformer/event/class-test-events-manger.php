@@ -1,14 +1,16 @@
 <?php
 /**
- * Class SampleTest
+ * Test class for the transformation of the events of the WordPress event plugin Events Manager.
  *
  * @package Event_Bridge_For_ActivityPub
  */
 
-namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer\Event;
 
 /**
- * Sample test case.
+ * Test class for the transformation of the events of the WordPress event plugin Events Manager.
+ *
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event_Manager
  */
 class Test_Events_Manager extends \WP_UnitTestCase {
 	/**
@@ -63,7 +65,7 @@ class Test_Events_Manager extends \WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Events_Manager::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Events_Manager::class, $transformer );
 	}
 
 	/**

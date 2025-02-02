@@ -15,7 +15,7 @@ namespace Event_Bridge_For_ActivityPub\Integrations;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\WP_Event_Manager as WP_Event_Manager_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\WP_Event_Manager as WP_Event_Manager_Transformer;
 
 /**
  * Interface for a supported event plugin.
