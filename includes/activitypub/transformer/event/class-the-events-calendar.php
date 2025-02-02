@@ -13,7 +13,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Location\The_Events_Calendar as The_Events_Calendar_Location;
+use ActivityPub_Event_Bridge\Activitypub\Transformer\Place\The_Events_Calendar as The_Events_Calendar_Location;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event;
 use WP_Post;
 
