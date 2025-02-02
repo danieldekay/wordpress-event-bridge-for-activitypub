@@ -12,7 +12,7 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event as Base_Event_Transformer;
 use WP_Post;
 
 /**
@@ -20,7 +20,7 @@ use WP_Post;
  *
  * @since 1.0.0
  */
-final class Event_Organiser extends Event {
+final class Event_Organiser extends Base_Event_Transformer {
 	/**
 	 * Extended constructor.
 	 *

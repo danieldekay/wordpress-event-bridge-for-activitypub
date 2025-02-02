@@ -1,16 +1,18 @@
 <?php
 /**
- * Test class for the integration of the Event Organiser.
+ * Test class for the transformation of the events of the WordPress event plugin Event Organiser.
  *
  * @package Event_Bridge_For_ActivityPub
  */
 
-namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer\Event;
 
 use DateTime;
 
 /**
- * Sample test case.
+ * Test class for the transformation of the events of the WordPress event plugin Event Organiser.
+ *
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event_Organiser
  */
 class Test_Event_Organiser extends \WP_UnitTestCase {
 	/**
@@ -66,7 +68,7 @@ class Test_Event_Organiser extends \WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( get_post( $post_id ) );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event_Organiser::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event_Organiser::class, $transformer );
 	}
 
 	/**

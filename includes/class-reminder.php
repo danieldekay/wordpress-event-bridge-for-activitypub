@@ -18,7 +18,7 @@ use Activitypub\Activity\Activity;
 use Activitypub\Activity_Dispatcher;
 use Activitypub\Transformer\Factory as Transformer_Factory;
 use Event_Bridge_For_ActivityPub\Setup;
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event as Event_Transformer;
 use DateTime;
 use WP_Post;
 

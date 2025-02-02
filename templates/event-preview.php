@@ -5,7 +5,8 @@
  * @package Activitypub
  */
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event;
+
 use function Activitypub\object_to_uri;
 
 $post        = \get_post(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited

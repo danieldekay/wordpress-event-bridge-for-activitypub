@@ -1,14 +1,16 @@
 <?php
 /**
- * Tests or Modern Events Calendar Lite
+ * Tests for Modern Events Calendar Lite
  *
  * @package Event_Bridge_For_ActivityPub
  */
 
-namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer\Event;
 
 /**
- * Sample test case.
+ *  Tests for the ActivityPub transformation of Modern Events Calendar Lite
+ *
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Modern_Events_Calendar_Lite
  */
 class Test_Modern_Events_Calendar_Lite extends \WP_UnitTestCase {
 	/**

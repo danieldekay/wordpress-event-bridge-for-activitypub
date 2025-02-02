@@ -1,14 +1,16 @@
 <?php
 /**
- * Tests for WP Event Solution.
+ * Test class for the transformation of the events of the WordPress event plugin WP Event Solution.
  *
  * @package Event_Bridge_For_ActivityPub
  */
 
-namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer\Event;
 
 /**
- * Test cases for WP Event Solution.
+ * Test class for the transformation of the events of the WordPress event plugin WP Event Solution.
+ *
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Eventin
  */
 class Test_Eventin extends \WP_UnitTestCase {
 	/**

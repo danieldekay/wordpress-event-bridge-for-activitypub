@@ -1,14 +1,16 @@
 <?php
 /**
- * Class SampleTest
+ * Test class for the transformation of the events of the WordPress event plugin WP Event Manager.
  *
  * @package Event_Bridge_For_ActivityPub
  */
 
-namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer\Event;
 
 /**
- * Sample test case.
+ * Test class for the transformation of the events of the WordPress event plugin WP Event Manager.
+ *
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\WP_Event_Manager
  */
 class Test_WP_Event_Manager extends \WP_UnitTestCase {
 	/**

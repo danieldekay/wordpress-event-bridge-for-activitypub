@@ -66,7 +66,7 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 		}
 
 		// For tests allow every user to create new events.
-		update_option( 'dbem_events_anonymous_submissions', true );
+		\update_option( 'dbem_events_anonymous_submissions', true );
 
 		// Make sure that ActivityPub support is enabled for Events Manager.
 		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
@@ -75,7 +75,7 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 		\Activitypub\Migration::add_default_settings();
 
 		// Delete all posts afterwards.
-		_delete_all_posts();
+		\_delete_all_posts();
 	}
 
 	/**
@@ -83,7 +83,7 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 	 */
 	public function test_event_reminder_not_being_scheduled_by_default() {
 		// Create a The Events Calendar Event.
-		$wp_object = tribe_events()
+		$wp_object = \tribe_events()
 			->set_args( self::MOCKUP_EVENT )
 			->create();
 
@@ -98,7 +98,7 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 	public function test_event_reminder_scheduled_with_site_wide_option() {
 		\update_option( 'event_bridge_for_activitypub_reminder_time_gap', DAY_IN_SECONDS );
 		// Create a The Events Calendar Event.
-		$wp_object = tribe_events()
+		$wp_object = \tribe_events()
 			->set_args( self::MOCKUP_EVENT )
 			->create();
 
@@ -135,7 +135,7 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 
 		// Now update the option once more to see if the schedule got updated too.
 		$post_id = array_key_first(
-			tribe_events( $wp_object->ID )
+			\tribe_events( $wp_object->ID )
 				->set_args(
 					array( 'event_bridge_for_activitypub_reminder_time_gap' => HOUR_IN_SECONDS ),
 				)
@@ -154,7 +154,7 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 		\update_option( 'event_bridge_for_activitypub_reminder_time_gap', DAY_IN_SECONDS );
 
 		// Create a The Events Calendar Event.
-		$wp_object = tribe_events()
+		$wp_object = \tribe_events()
 			->set_args(
 				array_merge(
 					self::MOCKUP_EVENT,
@@ -171,7 +171,7 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 		$this->assertEquals( 'event_bridge_for_activitypub_send_event_reminder', $scheduled_event->hook );
 
 		// Now delete the event.
-		tribe_events( $wp_object->ID )->delete();
+		\tribe_events( $wp_object->ID )->delete();
 
 		$scheduled_event = \wp_get_scheduled_event( 'event_bridge_for_activitypub_send_event_reminder', array( $wp_object->ID ) );
 		$this->assertEquals( false, $scheduled_event );
@@ -184,7 +184,7 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 		\update_option( 'event_bridge_for_activitypub_reminder_time_gap', DAY_IN_SECONDS );
 
 		// Create a The Events Calendar Event.
-		$wp_object = tribe_events()
+		$wp_object = \tribe_events()
 			->set_args(
 				array_merge(
 					self::MOCKUP_EVENT,
@@ -217,11 +217,11 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 	 * Test the schedule action which sends the event reminder.
 	 */
 	public function test_send_event_reminder() {
-		add_filter( 'pre_get_remote_metadata_by_actor', array( get_called_class(), 'pre_get_remote_metadata_by_actor' ), 10, 2 );
+		\add_filter( 'pre_get_remote_metadata_by_actor', array( get_called_class(), 'pre_get_remote_metadata_by_actor' ), 10, 2 );
 
 		$followers = array( 'https://example.com/author/jon', 'https://example.org/users/username' );
 
-		add_filter(
+		\add_filter(
 			'activitypub_is_user_type_disabled',
 			function ( $value, $type ) {
 				if ( 'blog' === $type ) {
@@ -241,7 +241,7 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 		}
 
 		// Create a The Events Calendar Event.
-		$wp_object = tribe_events()
+		$wp_object = \tribe_events()
 			->set_args(
 				array_merge(
 					self::MOCKUP_EVENT,
@@ -251,7 +251,7 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 			->create();
 
 		$pre_http_request = new \MockAction();
-		add_filter( 'pre_http_request', array( $pre_http_request, 'filter' ), 10, 3 );
+		\add_filter( 'pre_http_request', array( $pre_http_request, 'filter' ), 10, 3 );
 
 		Reminder::send_event_reminder( $wp_object );
 
@@ -268,8 +268,8 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 		$this->assertEquals( 'Announce', $json->type );
 		$this->assertEquals( 'http://example.org/?author=0', $json->actor );
 
-		remove_filter( 'pre_http_request', array( $pre_http_request, 'filter' ), 10 );
-		remove_filter( 'pre_get_remote_metadata_by_actor', array( get_called_class(), 'pre_get_remote_metadata_by_actor' ) );
+		\remove_filter( 'pre_http_request', array( $pre_http_request, 'filter' ), 10 );
+		\remove_filter( 'pre_get_remote_metadata_by_actor', array( get_called_class(), 'pre_get_remote_metadata_by_actor' ) );
 	}
 
 	/**

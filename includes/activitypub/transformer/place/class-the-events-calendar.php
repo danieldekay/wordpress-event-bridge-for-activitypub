@@ -1,22 +1,21 @@
 <?php
 /**
- * ActivityPub Tribe Transformer
+ * Class file for the ActivityPub transformer of the venues of The Events Calendar to `as:Place`.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Activitypub\Transformer\Location;
+namespace Event_Bridge_For_ActivityPub\Activitypub\Transformer\Place;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
 use Activitypub\Transformer\Post;
-use WP_Post;
 
 /**
- * ActivityPub Tribe Transformer
+ * Class for the ActivityPub transformer of the venues of The Events Calendar to `as:Place`.
  *
  * @since 1.0.0
  */
@@ -85,13 +84,13 @@ final class The_Events_Calendar extends Post {
 	 * Generic function that converts an WP-Event object to an ActivityPub-Event object.
 	 *
 	 * @param bool $full_object bool Return an object with all properties set, or a minimal one as used within an `as:Event`s location.
-	 * @return Event_Object
+	 * @return Place
 	 */
 	public function to_object( $full_object = true ): Place {
 		$activitypub_object = new Place();
 		$activitypub_object = $this->transform_object_properties( $activitypub_object );
 
-		if ( ! empty( $activitypub_object->content ) ) {
+		if ( ! empty( $activitypub_object->get_content() ) ) {
 			$activitypub_object->set_content_map(
 				array(
 					$this->get_locale() => $this->get_content(),

@@ -1,14 +1,16 @@
 <?php
 /**
- * Class SampleTest
+ * Test class file for the transformation of the events of the WordPress event plugin VS Event List.
  *
  * @package Event_Bridge_For_ActivityPub
  */
 
-namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer\Event;
 
 /**
- * Sample test case.
+ * Test class for the transformation of the events of the WordPress event plugin VS Event List.
+ *
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\VS_Event_List
  */
 class Test_VS_Event_List extends \WP_UnitTestCase {
 	/**

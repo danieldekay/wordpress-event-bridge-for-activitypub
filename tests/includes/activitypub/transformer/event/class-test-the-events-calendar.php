@@ -5,10 +5,12 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
-namespace Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer\Event;
 
 /**
  * Class containing tests for the ActivityPub transformer of the WordPress plugin The Events Calendar.
+ *
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\The_Events_Calendar
  */
 class Test_The_Events_Calendar extends \WP_UnitTestCase {
 	/**
