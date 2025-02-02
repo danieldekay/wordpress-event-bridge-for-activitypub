@@ -41,12 +41,12 @@ final class Events_Manager extends Event_Transformer {
 	 * This is a special class object form The Events Calendar which
 	 * has a lot of useful functions, we make use of our getter functions.
 	 *
-	 * @param \WP_Post $wp_object The WordPress object.
+	 * @param \WP_Post $item The WordPress object.
 	 * @param string   $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function __construct( $wp_object, $wp_taxonomy ) {
-		parent::__construct( $wp_object, $wp_taxonomy );
-		$this->em_event = new EM_Event( $this->wp_object->ID, 'post_id' );
+	public function __construct( $item, $wp_taxonomy ) {
+		parent::__construct( $item, $wp_taxonomy );
+		$this->em_event = new EM_Event( $this->item->ID, 'post_id' );
 	}
 
 	/**
@@ -196,7 +196,7 @@ final class Events_Manager extends Event_Transformer {
 		// The parent tag function also fetches the mentions.
 		$tags = parent::get_tag();
 
-		$post_tags = \wp_get_post_terms( $this->wp_object->ID, 'event-tags' );
+		$post_tags = \wp_get_post_terms( $this->item->ID, 'event-tags' );
 
 		if ( $post_tags ) {
 			foreach ( $post_tags as $post_tag ) {

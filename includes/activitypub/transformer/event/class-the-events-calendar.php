@@ -44,12 +44,12 @@ final class The_Events_Calendar extends Event {
 	 * This is a special class object form The Events Calendar which
 	 * has a lot of useful functions, we make use of our getter functions.
 	 *
-	 * @param WP_Post $wp_object The WordPress object.
+	 * @param WP_Post $item The WordPress object.
 	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function __construct( $wp_object, $wp_taxonomy ) {
-		parent::__construct( $wp_object, $wp_taxonomy );
-		$this->tribe_event = \tribe_get_event( $wp_object );
+	public function __construct( $item, $wp_taxonomy ) {
+		parent::__construct( $item, $wp_taxonomy );
+		$this->tribe_event = \tribe_get_event( $item );
 	}
 
 	/**
@@ -133,23 +133,18 @@ final class The_Events_Calendar extends Event {
 	public function get_location(): ?Place {
 		// Get short handle for the venues.
 
-		// @phpstan-ignore-next-line
-		$venues = $this->tribe_event->venues;
-
-		// Get first venue. We currently only support a single venue.
-		if ( $venues instanceof \Tribe\Events\Collections\Lazy_Post_Collection ) {
-			$venue = $venues->first();
-		} elseif ( empty( $this->wp_object->venues ) || ! empty( $this->wp_object->venues[0] ) ) {
-			return null;
-		} else {
-			$venue = $venues[0];
-		}
-
-		if ( ! $venue ) {
+		if ( ! \tribe_has_venue( $this->tribe_event->ID ) ) {
 			return null;
 		}
 
-		$location_transformer = new The_Events_Calendar_Location( $venue );
+		$venue_id = \tribe_get_venue_id( $this->tribe_event->ID );
+		$post     = \get_post( $venue_id );
+
+		if ( ! $post ) {
+			return null;
+		}
+
+		$location_transformer = new The_Events_Calendar_Location( $post );
 		$full_location_object = false;
 		$location             = $location_transformer->to_object( $full_location_object );
 		return $location;

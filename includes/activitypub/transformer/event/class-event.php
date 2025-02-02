@@ -31,7 +31,6 @@ use WP_Post;
  * [ ] do add Cancelled reason in the content.
  */
 abstract class Event extends Post {
-
 	/**
 	 * The WordPress event taxonomy.
 	 *
@@ -54,7 +53,7 @@ abstract class Event extends Post {
 	 * Get a sane default for whether comments are enabled.
 	 */
 	protected function get_comments_enabled(): ?bool {
-		return comments_open( $this->wp_object );
+		return comments_open( $this->item );
 	}
 
 	/**
@@ -70,11 +69,11 @@ abstract class Event extends Post {
 	/**
 	 * Extend the construction of the Post Transformer to also set the according taxonomy of the event post type.
 	 *
-	 * @param \WP_Post $wp_object The WordPress post object (event).
+	 * @param \WP_Post $item The WordPress post object (event).
 	 * @param string   $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function __construct( $wp_object, $wp_taxonomy = 'category' ) {
-		parent::__construct( $wp_object );
+	public function __construct( $item, $wp_taxonomy = 'category' ) {
+		parent::__construct( $item );
 		$this->wp_taxonomy = $wp_taxonomy;
 	}
 
@@ -111,7 +110,7 @@ abstract class Event extends Post {
 			return null;
 		}
 		$current_category_mapping = \get_option( 'event_bridge_for_activitypub_event_category_mappings', array() );
-		$terms                    = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
+		$terms                    = \get_the_terms( $this->item, $this->wp_taxonomy );
 
 		// Check if the event has a category set and if that category has a specific mapping return that one.
 		if ( ! is_wp_error( $terms ) && $terms && array_key_exists( $terms[0]->slug, $current_category_mapping ) ) {
@@ -128,8 +127,8 @@ abstract class Event extends Post {
 	 * @return ?string
 	 */
 	protected function retrieve_excerpt(): ?string {
-		if ( $this->wp_object->post_excerpt ) {
-			return $this->wp_object->post_excerpt;
+		if ( $this->item->post_excerpt ) {
+			return $this->item->post_excerpt;
 		} else {
 			return null;
 		}
@@ -369,7 +368,7 @@ abstract class Event extends Post {
 		}
 
 		// Add all category terms.
-		$terms = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
+		$terms = \get_the_terms( $this->item, $this->wp_taxonomy );
 		if ( $terms && ! is_wp_error( $terms ) ) {
 			foreach ( $terms as $term ) {
 				$categories[] = $term->name;
@@ -386,10 +385,9 @@ abstract class Event extends Post {
 	 * Register the shortcodes.
 	 */
 	public function register_shortcodes() {
-		foreach ( get_class_methods( self::class ) as $function ) {
-			if ( 'shortcode_' === substr( $function, 0, 10 ) ) {
-				add_shortcode( 'ap_' . substr( $function, 10, strlen( $function ) ), array( $this, $function ) );
-			}
+		Shortcodes::register();
+		foreach ( array( 'location', 'start_time', 'end_time' ) as $shortcode ) {
+			\add_shortcode( 'ap_' . $shortcode, array( $this, 'shortcode_' . $shortcode ) );
 		}
 	}
 
@@ -397,10 +395,9 @@ abstract class Event extends Post {
 	 * Register the shortcodes.
 	 */
 	public function unregister_shortcodes() {
-		foreach ( get_class_methods( self::class ) as $function ) {
-			if ( 'shortcode_' === substr( $function, 0, 10 ) ) {
-				remove_shortcode( 'ap_' . substr( $function, 10, strlen( $function ) ) );
-			}
+		Shortcodes::unregister();
+		foreach ( array( 'location', 'start_time', 'end_time' ) as $shortcode ) {
+			\remove_shortcode( 'ap_' . $shortcode );
 		}
 	}
 
@@ -413,7 +410,7 @@ abstract class Event extends Post {
 		}
 
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		$post    = $this->wp_object;
+		$post    = $this->item;
 		$summary = $this->get_event_summary_template();
 
 		// It seems that shortcodes are only applied to published posts.
@@ -423,11 +420,11 @@ abstract class Event extends Post {
 
 		// Register our shortcodes just in time.
 
-		Shortcodes::register();
 		$this->register_shortcodes();
 
 		// Fill in the shortcodes.
 		\setup_postdata( $post );
+		Shortcodes::register();
 		$summary = \do_shortcode( $summary );
 		\wp_reset_postdata();
 
@@ -438,7 +435,6 @@ abstract class Event extends Post {
 		$summary = \apply_filters( 'event_bridge_for_activitypub_the_summary', $summary, $post );
 
 		// Unregister the shortcodes.
-		Shortcodes::unregister();
 		$this->unregister_shortcodes();
 
 		return $summary;
@@ -545,7 +541,7 @@ abstract class Event extends Post {
 		$summary  = \get_option( 'event_bridge_for_activitypub_custom_summary', EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY );
 		$template = $summary ?? EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY;
 
-		return apply_filters( 'event_bridge_for_activitypub_summary_template', $template, $this->wp_object );
+		return apply_filters( 'event_bridge_for_activitypub_summary_template', $template, $this->item );
 	}
 
 	/**
@@ -566,13 +562,13 @@ abstract class Event extends Post {
 	 * used when converting a object, where the URL is usually appended anyway.
 	 *
 	 * @param string             $template The template string.
-	 * @param WP_Post|WP_Comment $wp_object The wp_object which was used to select the template.
+	 * @param WP_Post|WP_Comment $item The item which was used to select the template.
 	 */
-	public static function remove_ap_permalink_from_template( $template, $wp_object ) {
+	public static function remove_ap_permalink_from_template( $template, $item ) {
 
 		// we could override the template here, to get out custom template from an option.
 
-		if ( 'event' === $wp_object->post_type ) {
+		if ( 'event' === $item->post_type ) {
 			$template = str_replace( '[ap_permalink]', '', $template );
 			$template = str_replace( '[ap_permalink type="html"]', '', $template );
 		}
@@ -591,11 +587,11 @@ abstract class Event extends Post {
 
 		// maybe move the following logic (till end of the function) into getter functions.
 
-		$published = \strtotime( $this->wp_object->post_date_gmt );
+		$published = \strtotime( $this->item->post_date_gmt );
 
 		$activitypub_object->set_published( \gmdate( 'Y-m-d\TH:i:s\Z', $published ) );
 
-		$updated = \strtotime( $this->wp_object->post_modified_gmt );
+		$updated = \strtotime( $this->item->post_modified_gmt );
 
 		if ( $updated > $published ) {
 			$activitypub_object->set_updated( \gmdate( 'Y-m-d\TH:i:s\Z', $updated ) );

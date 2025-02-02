@@ -254,7 +254,7 @@ install_activitypub_plugin() {
 		return;
 	fi
 
-	PLUGIN_VERSION="4.6.0"
+	PLUGIN_VERSION="trunk"
 
     URL="https://github.com/Automattic/wordpress-activitypub"
 

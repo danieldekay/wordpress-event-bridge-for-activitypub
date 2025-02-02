@@ -44,20 +44,20 @@ final class Modern_Events_Calendar_Lite extends Event {
 	 * This is a special class object form The Events Calendar which
 	 * has a lot of useful functions, we make use of our getter functions.
 	 *
-	 * @param \WP_Post $wp_object The WordPress object.
+	 * @param \WP_Post $item The WordPress object.
 	 * @param string   $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function __construct( $wp_object, $wp_taxonomy ) {
-		parent::__construct( $wp_object, $wp_taxonomy );
+	public function __construct( $item, $wp_taxonomy ) {
+		parent::__construct( $item, $wp_taxonomy );
 		$this->mec_main  = MEC::getInstance( 'app.libraries.main' );
-		$this->mec_event = new MEC_Event( $wp_object );
+		$this->mec_event = new MEC_Event( $item );
 	}
 
 	/**
 	 * Retrieves the content without the plugins rendered shortcodes.
 	 */
 	public function get_content(): string {
-		$content = wpautop( $this->wp_object->post_content );
+		$content = wpautop( $this->item->post_content );
 		return $content;
 	}
 
@@ -116,7 +116,7 @@ final class Modern_Events_Calendar_Lite extends Event {
 	 * Get the location.
 	 */
 	public function get_timezone(): string {
-		$timezone = get_post_meta( $this->wp_object->ID, 'mec_timezone', true );
+		$timezone = get_post_meta( $this->item->ID, 'mec_timezone', true );
 
 		if ( 'global' === $timezone ) {
 			return parent::get_timezone();

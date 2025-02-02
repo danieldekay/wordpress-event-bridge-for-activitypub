@@ -209,7 +209,6 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$this->assertEquals( 'Place', $event_array['location']['type'] );
 		$this->assertEquals( 'PostalAddress', $event_array['location']['address']['type'] );
 		$this->assertEquals( self::MOCKUP_VENUS['complex_venue']['venue'], $event_array['location']['name'] );
-		$this->assertEquals( self::MOCKUP_VENUS['complex_venue']['venue'], $event_array['location']['address']['name'] );
 		$this->assertEquals( self::MOCKUP_VENUS['complex_venue']['province'], $event_array['location']['address']['addressRegion'] );
 		$this->assertEquals( self::MOCKUP_VENUS['complex_venue']['address'], $event_array['location']['address']['streetAddress'] );
 		$this->assertEquals( self::MOCKUP_VENUS['complex_venue']['city'], $event_array['location']['address']['addressLocality'] );

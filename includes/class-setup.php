@@ -307,7 +307,7 @@ class Setup {
 		Debug::init();
 
 		// Lastly but most importantly: register the ActivityPub transformers for events to the ActivityPub plugin.
-		\add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
+		\add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_transformer' ), 10, 3 );
 
 		// Apply custom ActivityPub previews for events.
 		\add_action( 'init', array( Preview::class, 'init' ) );
@@ -383,24 +383,30 @@ class Setup {
 	}
 
 	/**
-	 * Add the custom transformers for the events of several WordPress event plugins.
+	 * Add the custom transformers for the events and locations of several WordPress event plugins.
 	 *
 	 * @param \Activitypub\Transformer\Base $transformer  The transformer to use.
-	 * @param mixed                         $wp_object    The WordPress object to transform.
+	 * @param mixed                         $data         The data to transform.
 	 * @param string                        $object_class The class of the object to transform.
 	 *
 	 * @return \Activitypub\Transformer\Base|null
 	 */
-	public function register_activitypub_event_transformer( $transformer, $wp_object, $object_class ): ?\Activitypub\Transformer\Base {
+	public function register_activitypub_transformer( $transformer, $data, $object_class ): ?\Activitypub\Transformer\Base {
 		// If the current WordPress object is not a post (e.g., a WP_Comment), don't change the transformer.
 		if ( 'WP_Post' !== $object_class ) {
 			return $transformer;
 		}
 
-		// Get the transformer for a specific event plugins event-post type.
+		// Get the transformer for a specific event plugins event or location post type.
 		foreach ( $this->active_event_plugins as $event_plugin ) {
-			if ( $wp_object->post_type === $event_plugin->get_post_type() ) {
-				return $event_plugin::get_activitypub_event_transformer( $wp_object );
+			// Check if we have an event.
+			if ( $data->post_type === $event_plugin->get_post_type() ) {
+				return $event_plugin::get_activitypub_event_transformer( $data );
+			}
+
+			// Check if we have a location.
+			if ( $data->post_type === $event_plugin->get_place_post_type() ) {
+				return $event_plugin::get_activitypub_place_transformer( $data );
 			}
 		}
 

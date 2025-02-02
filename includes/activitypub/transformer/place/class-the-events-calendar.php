@@ -12,14 +12,14 @@ namespace Event_Bridge_For_ActivityPub\Activitypub\Transformer\Place;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use Activitypub\Transformer\Post;
+use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Place\Place as Place_Base_Transformer;
 
 /**
  * Class for the ActivityPub transformer of the venues of The Events Calendar to `as:Place`.
  *
  * @since 1.0.0
  */
-final class The_Events_Calendar extends Post {
+final class The_Events_Calendar extends Place_Base_Transformer {
 	/**
 	 * Set the type of the object.
 	 */
@@ -42,83 +42,53 @@ final class The_Events_Calendar extends Post {
 	}
 
 	/**
-	 * Get the event location.
+	 * Null content to prevent registering and unregistering ActivityPub shortcodes in parent function.
 	 *
-	 * @return array|string|null The place/venue if one is set.
+	 * @return null
 	 */
-	public function get_address() {
-		$address = array();
-
-		if ( ! empty( $this->wp_object->country ) ) {
-			$address['addressCountry'] = $this->wp_object->country;
-		}
-
-		if ( ! empty( $this->wp_object->city ) ) {
-			$address['addressLocality'] = $this->wp_object->city;
-		}
-
-		if ( ! empty( $this->wp_object->province ) ) {
-			$address['addressRegion'] = $this->wp_object->province;
-		}
-
-		if ( ! empty( $this->wp_object->zip ) ) {
-			$address['postalCode'] = $this->wp_object->zip;
-		}
-
-		if ( ! empty( $this->wp_object->address ) ) {
-			$address['streetAddress'] = $this->wp_object->address;
-		}
-		if ( ! empty( $this->wp_object->post_title ) ) {
-			$address['name'] = $this->wp_object->post_title;
-		}
-		$address['type'] = 'PostalAddress';
-
-		if ( count( $address ) > 1 ) {
-			return $address;
-		} else {
-			return $this->get_name();
-		}
+	public function get_content() {
+		return null;
 	}
 
 	/**
-	 * Generic function that converts an WP-Event object to an ActivityPub-Event object.
+	 * Get the event location.
 	 *
-	 * @param bool $full_object bool Return an object with all properties set, or a minimal one as used within an `as:Event`s location.
-	 * @return Place
+	 * @return ?array The place/venue if one is set.
 	 */
-	public function to_object( $full_object = true ): Place {
-		$activitypub_object = new Place();
-		$activitypub_object = $this->transform_object_properties( $activitypub_object );
+	public function get_address(): ?array {
+		$postal_address = array();
 
-		if ( ! empty( $activitypub_object->get_content() ) ) {
-			$activitypub_object->set_content_map(
-				array(
-					$this->get_locale() => $this->get_content(),
-				)
-			);
+		$country = \tribe_get_country( $this->item->ID );
+		if ( $country ) {
+			$postal_address['addressCountry'] = $country;
 		}
 
-		if ( $full_object ) {
-			$published = \strtotime( $this->wp_object->post_date_gmt );
-
-			$activitypub_object->set_published( \gmdate( 'Y-m-d\TH:i:s\Z', $published ) );
-
-			$updated = \strtotime( $this->wp_object->post_modified_gmt );
-
-			if ( $updated > $published ) {
-				$activitypub_object->set_updated( \gmdate( 'Y-m-d\TH:i:s\Z', $updated ) );
-			}
-
-			$activitypub_object->set_to(
-				array(
-					'https://www.w3.org/ns/activitystreams#Public',
-					$this->get_actor_object()->get_followers(),
-				)
-			);
+		$city = \tribe_get_city( $this->item->ID );
+		if ( $city ) {
+			$postal_address['addressLocality'] = $city;
 		}
 
-		$activitypub_object->set_address( $this->get_address() );
+		$province = \tribe_get_province( $this->item->ID );
+		if ( $province ) {
+			$postal_address['addressRegion'] = $province;
+		}
 
-		return $activitypub_object;
+		$zip = \tribe_get_zip( $this->item->ID );
+		if ( $zip ) {
+			$postal_address['postalCode'] = $zip;
+		}
+
+		$address = \tribe_get_address( $this->item->ID );
+		if ( $city ) {
+			$postal_address['streetAddress'] = $address;
+		}
+
+		if ( empty( $postal_address ) ) {
+			return null;
+		}
+
+		$postal_address = array_merge( array( 'type' => 'PostalAddress' ), $postal_address );
+
+		return $postal_address;
 	}
 }
