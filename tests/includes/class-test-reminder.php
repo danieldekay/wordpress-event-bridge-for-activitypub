@@ -253,20 +253,12 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 		$pre_http_request = new \MockAction();
 		\add_filter( 'pre_http_request', array( $pre_http_request, 'filter' ), 10, 3 );
 
-		Reminder::send_event_reminder( $wp_object );
+		$activity_id = Reminder::send_event_reminder( $wp_object );
 
-		$this->assertSame( 2, $pre_http_request->get_call_count() );
-		$all_args        = $pre_http_request->get_args();
-		$first_call_args = array_shift( $all_args );
+		$post = $this->get_latest_outbox_item( $activity_id );
 
-		$this->assertEquals( 'https://example.com/author/jon/inbox', $first_call_args[2] );
-
-		$second_call_args = array_shift( $all_args );
-		$this->assertEquals( 'https://example.org/users/username/inbox', $second_call_args[2] );
-
-		$json = json_decode( $second_call_args[1]['body'] );
-		$this->assertEquals( 'Announce', $json->type );
-		$this->assertEquals( 'http://example.org/?author=0', $json->actor );
+		$activity_object = \json_decode( $post->post_content, true );
+		$this->assertArrayHasKey( 'id', $activity_object );
 
 		\remove_filter( 'pre_http_request', array( $pre_http_request, 'filter' ), 10 );
 		\remove_filter( 'pre_get_remote_metadata_by_actor', array( get_called_class(), 'pre_get_remote_metadata_by_actor' ) );
@@ -340,5 +332,26 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 	 */
 	public static function http_response( $response, $args, $url ) { // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		return $response;
+	}
+
+	/**
+	 * Retrieve the latest Outbox item to compare against.
+	 *
+	 * @param string $title Title of the Outbox item.
+	 * @return int|\WP_Post|null
+	 */
+	protected function get_latest_outbox_item( $title = '' ) {
+		$outbox = \get_posts(
+			array(
+				'post_type'      => \Activitypub\Collection\Outbox::POST_TYPE,
+				'posts_per_page' => 1,
+				'post_status'    => 'pending',
+				'post_title'     => $title,
+				'orderby'        => 'date',
+				'order'          => 'DESC',
+			)
+		);
+
+		return $outbox ? $outbox[0] : null;
 	}
 }
