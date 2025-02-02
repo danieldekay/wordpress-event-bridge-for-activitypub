@@ -253,12 +253,15 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 		$pre_http_request = new \MockAction();
 		\add_filter( 'pre_http_request', array( $pre_http_request, 'filter' ), 10, 3 );
 
-		$activity_id = Reminder::send_event_reminder( $wp_object );
+		Reminder::send_event_reminder( $wp_object );
 
-		$post = $this->get_latest_outbox_item( $activity_id );
+		$post              = $this->get_latest_outbox_item();
+		$event_transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		$activity_object = \json_decode( $post->post_content, true );
 		$this->assertArrayHasKey( 'id', $activity_object );
+		$this->assertEquals( $event_transformer->get_id(), $activity_object['id'] );
+		$this->assertEquals( 'Announce', \get_post_meta( $post->ID, '_activitypub_activity_type', true ) );
 
 		\remove_filter( 'pre_http_request', array( $pre_http_request, 'filter' ), 10 );
 		\remove_filter( 'pre_get_remote_metadata_by_actor', array( get_called_class(), 'pre_get_remote_metadata_by_actor' ) );

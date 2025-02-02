@@ -62,7 +62,7 @@
         ],
         "test-debug": [
             "@prepare-test",
-            "@test-general"
+            "@test-event-organiser"
         ],
         "test-features": "phpunit --filter=reminder",
         "test-vs-event-list": "phpunit --filter=vs_event_list",

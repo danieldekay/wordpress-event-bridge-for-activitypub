@@ -6,13 +6,13 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\Activitypub\Transformer\Place;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Place\Place as Place_Base_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\Place as Place_Base_Transformer;
 
 /**
  * Class for the ActivityPub transformer of the venues of The Events Calendar to `as:Place`.
@@ -43,8 +43,6 @@ final class The_Events_Calendar extends Place_Base_Transformer {
 
 	/**
 	 * Null content to prevent registering and unregistering ActivityPub shortcodes in parent function.
-	 *
-	 * @return null
 	 */
 	public function get_content() {
 		return null;

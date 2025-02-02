@@ -173,7 +173,6 @@ class Reminder {
 	 * This currently sends an Announce activity.
 	 *
 	 * @param int $post_id The WordPress post ID of the event post.
-	 * @return bool|int
 	 */
 	public static function send_event_reminder( $post_id ) {
 		$post = \get_post( $post_id );
@@ -192,6 +191,6 @@ class Reminder {
 		}
 
 		// Add announce of the event to outbox.
-		return add_to_outbox( $transformer->to_object(), 'Announce', $user_id );
+		add_to_outbox( $transformer->to_object(), 'Announce', $user_id );
 	}
 }
