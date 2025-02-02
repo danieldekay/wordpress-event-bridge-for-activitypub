@@ -22,6 +22,13 @@ use WP_Post;
  */
 final class Event_Organiser extends Base_Event_Transformer {
 	/**
+	 * The events occurances.
+	 *
+	 * @var ?array
+	 */
+	protected $schedule;
+
+	/**
 	 * Extended constructor.
 	 *
 	 * The item is overridden with a the item with filters. This object
@@ -33,29 +40,21 @@ final class Event_Organiser extends Base_Event_Transformer {
 	 */
 	public function __construct( $item, $wp_taxonomy ) {
 		parent::__construct( $item, $wp_taxonomy );
-		$this->item = get_posts(
-			array(
-				'ID'               => $item->ID,
-				'post_type'        => 'event',
-				'suppress_filters' => false,
-			)
-		)[0];
+		$this->schedule = eo_get_event_schedule( $item->ID );
 	}
 
 	/**
 	 * Get the end time from the event object.
 	 */
 	public function get_end_time(): string {
-		// @phpstan-ignore-next-line
-		return eo_get_the_end( 'Y-m-d\TH:i:s\Z', $this->item->ID, $this->item->occurrence_id );
+		return $this->schedule['end']->format( 'Y-m-d\TH:i:sP' );
 	}
 
 	/**
-	 * Get the end time from the event object.
+	 * Get the start time from the event object.
 	 */
 	public function get_start_time(): string {
-		// @phpstan-ignore-next-line
-		return eo_get_the_start( 'Y-m-d\TH:i:s\Z', $this->item->ID, $this->item->occurrence_id );
+		return $this->schedule['start']->format( 'Y-m-d\TH:i:sP' );
 	}
 
 	/**
