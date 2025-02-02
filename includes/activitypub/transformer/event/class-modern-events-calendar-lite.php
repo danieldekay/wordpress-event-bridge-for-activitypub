@@ -2,17 +2,18 @@
 /**
  * ActivityPub Tribe Transformer
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
  */
 
-namespace ActivityPub_Event_Bridge\Activitypub\Transformer\Event;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use ActivityPub_Event_Bridge\Activitypub\Transformer\Event\Event;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event;
+
 use MEC;
 use MEC\Events\Event as MEC_Event;
 use MEC_main;
@@ -37,15 +38,14 @@ final class Modern_Events_Calendar_Lite extends Event {
 	 */
 	protected $mec_main;
 
-
 	/**
 	 * Extend the constructor, to also set the tribe object.
 	 *
 	 * This is a special class object form The Events Calendar which
 	 * has a lot of useful functions, we make use of our getter functions.
 	 *
-	 * @param WP_Post $wp_object The WordPress object.
-	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
+	 * @param \WP_Post $wp_object The WordPress object.
+	 * @param string   $wp_taxonomy The taxonomy slug of the event post type.
 	 */
 	public function __construct( $wp_object, $wp_taxonomy ) {
 		parent::__construct( $wp_object, $wp_taxonomy );
@@ -63,6 +63,8 @@ final class Modern_Events_Calendar_Lite extends Event {
 
 	/**
 	 * Get the end time from the event object.
+	 *
+	 * @return string
 	 */
 	public function get_start_time(): string {
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $this->mec_event->get_datetime()['start']['timestamp'] );
@@ -70,13 +72,17 @@ final class Modern_Events_Calendar_Lite extends Event {
 
 	/**
 	 * Get the end time from the event object.
+	 *
+	 * @return string
 	 */
-	public function get_end_time(): ?string {
+	public function get_end_time(): string {
 		return \gmdate( 'Y-m-d\TH:i:s\Z', $this->mec_event->get_datetime()['end']['timestamp'] );
 	}
 
 	/**
 	 * Get the location.
+	 *
+	 * @return ?Place
 	 */
 	public function get_location(): ?Place {
 		$location_id = $this->mec_main->get_master_location_id( $this->mec_event->ID );

@@ -3,3 +3,5 @@ composer.lock
 .phpunit.result.cache
 node_modules/
 package-lock.json
+.phpdoc
+phpstan.neon

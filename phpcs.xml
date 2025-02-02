@@ -26,6 +26,12 @@
 	<!-- Exclude the Node Modules directory. -->
 	<exclude-pattern>/node_modules/*</exclude-pattern>
 
+	<!-- Exclude Javascript files. -->
+	<exclude-pattern>*.js</exclude-pattern>
+
+	<!-- Exclude build assets from js blocks. -->
+	<exclude-pattern>/build/*/*asset.php</exclude-pattern>
+
 	<!-- Exclude minified Javascript files. -->
 	<exclude-pattern>*.min.js</exclude-pattern>
 
@@ -37,7 +43,6 @@
 
 	<!-- Check up to 8 files simultaneously. -->
 	<arg name="parallel" value="8"/>
-
 
 	<!--
 	#############################################################################
@@ -108,8 +113,7 @@
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
-				<element value="activitypub-event-bridge"/>
-				<element value="activitypub"/>
+				<element value="event-bridge-for-activitypub"/>
 			</property>
 		</properties>
 	</rule>
@@ -117,7 +121,7 @@
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
 		<properties>
 			<property name="prefixes" type="array">
-				<element value="ACTIVITYPUB_EVENT_BRIDGE"/>
+				<element value="EVENT_BRIDGE_FOR_ACTIVITYPUB"/>
 			</property>
 		</properties>
 	</rule>
@@ -155,6 +159,9 @@
 	</rule>
 	<rule ref="WordPress.Files.FileName">
 		<exclude-pattern>tests/*.php</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.AlternativeFunctions">
+    	<exclude-pattern>/tests/includes/activitypub/transmogrifier/class-helper.php</exclude-pattern>
 	</rule>
 
 </ruleset>

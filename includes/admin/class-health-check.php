@@ -2,14 +2,18 @@
 /**
  * Health_Check class.
  *
- * @package Activitypub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  */
 
-namespace ActivityPub_Event_Bridge\Admin;
+namespace Event_Bridge_For_ActivityPub\Admin;
+
+// Exit if accessed directly.
+defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Transformer\Factory as Transformer_Factory;
-use ActivityPub_Event_Bridge\Plugins\Event_Plugin;
-use ActivityPub_Event_Bridge\Setup;
+use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration;
+use Event_Bridge_For_ActivityPub\Setup;
+use WP_Post;
 use WP_Query;
 
 /**
@@ -31,9 +35,9 @@ class Health_Check {
 	 *
 	 * @return array The filtered test array.
 	 */
-	public static function add_tests( $tests ) {
-		$tests['direct']['activitypub_event_bridge_test'] = array(
-			'label' => __( 'ActivityPub Event Transformer Test', 'activitypub-event-bridge' ),
+	public static function add_tests( $tests ): array {
+		$tests['direct']['event_bridge_for_activitypub_test'] = array(
+			'label' => __( 'ActivityPub Event Transformer Test', 'event-bridge-for-activitypub' ),
 			'test'  => array( self::class, 'test_event_transformation' ),
 		);
 
@@ -45,17 +49,17 @@ class Health_Check {
 	 *
 	 * @return array
 	 */
-	public static function test_event_transformation() {
+	public static function test_event_transformation(): array {
 		$result = array(
-			'label'       => \__( 'Transformation of Events to a valid ActivityStreams representation.', 'activitypub-event-bridge' ),
+			'label'       => \__( 'Transformation of Events to a valid ActivityStreams representation.', 'event-bridge-for-activitypub' ),
 			'status'      => 'good',
 			'badge'       => array(
-				'label' => \__( 'ActivityPub Event Bridge', 'activitypub-event-bridge' ),
+				'label' => \__( 'Event Bridge for ActivityPub', 'event-bridge-for-activitypub' ),
 				'color' => 'green',
 			),
 			'description' => \sprintf(
 				'<p>%s</p>',
-				\__( 'The transformation of your most recent events was successful.', 'activitypub-event-bridge' )
+				\__( 'The transformation to ActivityPub of your most recent events was successful.', 'event-bridge-for-activitypub' )
 			),
 			'actions'     => '',
 			'test'        => 'test_event_transformation',
@@ -68,11 +72,11 @@ class Health_Check {
 		}
 
 		$result['status']         = 'critical';
-		$result['label']          = \__( 'One or more of your most recent events failed to transform to ActivityPub', 'activitypub-event-bridge' );
+		$result['label']          = \__( 'One or more of your most recent events failed to transform to ActivityPub', 'event-bridge-for-activitypub' );
 		$result['badge']['color'] = 'red';
 		$result['description']    = \sprintf(
 			'<p>%s</p>',
-			$check->get_error_message()
+			\__( 'The transformation to ActivityPub of your most recent events was not successful.', 'event-bridge-for-activitypub' )
 		);
 
 		return $result;
@@ -81,23 +85,27 @@ class Health_Check {
 	/**
 	 * Test if right transformer gets applied.
 	 *
-	 * @param Event_Plugin $event_plugin  The event plugin definition.
+	 * @param Event_Plugin_Integration $event_plugin  The event plugin definition.
 	 *
 	 * @return bool True if the check passed.
 	 */
-	public static function test_if_event_transformer_is_used( $event_plugin ) {
+	public static function test_if_event_transformer_is_used( $event_plugin ): bool {
+		if ( ! Setup::get_instance()->is_activitypub_plugin_active() ) {
+			return false;
+		}
+
 		// Get a (random) event post.
 		$event_posts = self::get_most_recent_event_posts( $event_plugin->get_post_type(), 1 );
 
 		// If no post is found, we can not do this test.
-		if ( ! $event_posts || is_wp_error( $event_posts ) || empty( $event_posts ) ) {
+		if ( isset( $event_posts[0] ) ) {
 			return true;
 		}
 
 		// Call the transformer Factory.
-		$transformer = Transformer_Factory::get_transformer( $event_posts[0] );
+		$transformer = Transformer_Factory::get_transformer( \get_post( $event_posts[0] ) );
 		// Check that we got the right transformer.
-		$desired_transformer_class = $event_plugin::get_activitypub_event_transformer_class();
+		$desired_transformer_class = $event_plugin::get_activitypub_event_transformer( $event_posts[0] );
 		if ( $transformer instanceof $desired_transformer_class ) {
 			return true;
 		}
@@ -110,11 +118,20 @@ class Health_Check {
 	 * @param ?string $event_post_type  The post type of the events.
 	 * @param ?int    $number_of_posts  The maximum number of events to return.
 	 *
-	 * @return WP_Post[]|false         Array of event posts, or false if none are found.
+	 * @return \WP_Post[] Array of event posts, or false if none are found.
 	 */
-	public static function get_most_recent_event_posts( $event_post_type = null, $number_of_posts = 5 ) {
+	public static function get_most_recent_event_posts( $event_post_type = null, $number_of_posts = 5 ): array {
+		if ( ! Setup::get_instance()->is_activitypub_plugin_active() ) {
+			return array();
+		}
+
 		if ( ! $event_post_type ) {
-			$event_post_type = Setup::get_instance()->get_active_event_plugins()[0]->get_post_type();
+			$active_event_plugins = Setup::get_instance()->get_active_event_plugins();
+			$active_event_plugin  = reset( $active_event_plugins );
+			if ( ! $active_event_plugin ) {
+				return array();
+			}
+			$event_post_type = $active_event_plugin->get_post_type();
 		}
 
 		$args = array(
@@ -137,28 +154,27 @@ class Health_Check {
 	/**
 	 * Transform the most recent event posts.
 	 */
-	public static function transform_most_recent_event_posts() {
+	public static function transform_most_recent_event_posts(): bool {
 		return true;
 	}
 
 	/**
 	 * Retrieves information like name and version from active event plugins.
 	 */
-	private static function get_info_about_active_event_plugins() {
+	private static function get_info_about_active_event_plugins(): array {
 		$active_event_plugins = Setup::get_instance()->get_active_event_plugins();
 		$info                 = array();
 		foreach ( $active_event_plugins as $active_event_plugin ) {
-			$event_plugin_file    = $active_event_plugin->get_plugin_file();
-			$event_plugin_data    = \get_plugin_data( $event_plugin_file );
-			$event_plugin_name    = isset( $event_plugin_data['Plugin Name'] ) ? $event_plugin_data['Plugin Name'] : 'Name not found';
-			$event_plugin_version = isset( $event_plugin_version['Plugin Version'] ) ? $event_plugin_version['Plugin Version'] : 'Version not found';
+			$event_plugin_file = $active_event_plugin->get_relative_plugin_file();
+			$event_plugin_data = \get_plugin_data( $event_plugin_file );
 
 			$info[] = array(
-				'event_plugin_name'    => $event_plugin_name,
-				'event_plugin_version' => $event_plugin_version,
+				'event_plugin_name'    => $event_plugin_data['Name'],
+				'event_plugin_version' => $event_plugin_data['Version'],
 				'event_plugin_file'    => $event_plugin_file,
 			);
 		}
+		return $info;
 	}
 
 	/**
@@ -167,13 +183,13 @@ class Health_Check {
 	 * @param  array $info  The debug information to be added to the core information page.
 	 * @return array        The extended information.
 	 */
-	public static function add_debug_information( $info ) {
-		$info['activitypub_event_bridge'] = array(
-			'label'  => __( 'ActivityPub Event Bridge', 'activitypub-event-bridge' ),
+	public static function add_debug_information( $info ): array {
+		$info['event_bridge_for_activitypub'] = array(
+			'label'  => __( 'Event Bridge for ActivityPub', 'event-bridge-for-activitypub' ),
 			'fields' => array(
 				'plugin_version'       => array(
-					'label'   => __( 'Plugin Version', 'activitypub-event-bridge' ),
-					'value'   => ACTIVITYPUB_EVENT_BRIDGE_PLUGIN_VERSION,
+					'label'   => __( 'Plugin Version', 'event-bridge-for-activitypub' ),
+					'value'   => EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_VERSION,
 					'private' => true,
 				),
 				'active_event_plugins' => self::get_info_about_active_event_plugins(),

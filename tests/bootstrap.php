@@ -2,8 +2,13 @@
 /**
  * PHPUnit bootstrap file.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  */
+
+// Defined here because setting them in .wp-env.json doesn't work for some reason.
+\defined( 'WP_TESTS_DOMAIN' ) ?? \define( 'WP_TESTS_DOMAIN', 'example.org' );
+\defined( 'WP_SITEURL' ) ?? \define( 'WP_SITEURL', 'http://example.org' );
+\defined( 'WP_HOME' ) ?? \define( 'WP_HOME', 'http://example.org' );
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
 
@@ -26,6 +31,21 @@ if ( ! file_exists( "{$_tests_dir}/includes/functions.php" ) ) {
 require_once "{$_tests_dir}/includes/functions.php";
 
 /**
+ * Function to manually load an event plugin.
+ *
+ * @param string $plugin_file  The main plugin file of the event plugin.
+ */
+function _manually_load_event_plugin( $plugin_file ) {
+	$plugin_dir = ABSPATH . '/wp-content/plugins/';
+	require_once $plugin_dir . $plugin_file;
+	update_option( 'purchase_history_table_structure_migration_done', true );
+	$current   = get_option( 'active_plugins', array() );
+	$current[] = $plugin_file;
+	sort( $current );
+	update_option( 'active_plugins', $current );
+}
+
+/**
  * Manually load the plugin being tested and its integrations.
  */
 function _manually_load_plugin() {
@@ -35,10 +55,10 @@ function _manually_load_plugin() {
 	require_once $plugin_dir . 'activitypub/activitypub.php';
 
 	// Capture the --filter argument.
-	$activitypub_event_extension_integration_filter = null;
+	$event_bridge_for_activitypub_integration_filter = null;
 	foreach ( $_SERVER['argv'] as $arg ) {
 		if ( strpos( $arg, '--filter=' ) === 0 ) {
-			$activitypub_event_extension_integration_filter = substr( $arg, strlen( '--filter=' ) );
+			$event_bridge_for_activitypub_integration_filter = substr( $arg, strlen( '--filter=' ) );
 			break;
 		}
 	}
@@ -49,12 +69,24 @@ function _manually_load_plugin() {
 
 	$plugin_file = null;
 	// See if we want to run integration tests for a specific event-plugin.
-	switch ( $activitypub_event_extension_integration_filter ) {
+	switch ( $event_bridge_for_activitypub_integration_filter ) {
 		case 'the_events_calendar':
 			$plugin_file = 'the-events-calendar/the-events-calendar.php';
+			\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+			\update_option(
+				'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+				\Event_Bridge_For_ActivityPub\Integrations\The_Events_Calendar::class
+			);
+			\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 			break;
 		case 'vs_event_list':
 			$plugin_file = 'very-simple-event-list/vsel.php';
+			\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+			\update_option(
+				'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+				\Event_Bridge_For_ActivityPub\Integrations\VS_Event_List::class
+			);
+			\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 			break;
 		case 'events_manager':
 			$plugin_file = 'events-manager/events-manager.php';
@@ -67,41 +99,122 @@ function _manually_load_plugin() {
 			break;
 		case 'gatherpress':
 			$plugin_file = 'gatherpress/gatherpress.php';
+			\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+			\update_option(
+				'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+				\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class
+			);
+			\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
 			break;
 		case 'wp_event_manager':
 			$plugin_file = 'wp-event-manager/wp-event-manager.php';
 			break;
+		case 'eventprime':
+			$plugin_file = 'eventprime-event-calendar-management/event-prime.php';
+			break;
+		case 'event_organiser':
+			$plugin_file = 'event-organiser/event-organiser.php';
+			break;
 	}
 
 	if ( $plugin_file ) {
-		// Manually load the event plugin.
-		require_once $plugin_dir . $plugin_file;
-		update_option( 'purchase_history_table_structure_migration_done', true );
-		$current   = get_option( 'active_plugins', array() );
-		$current[] = $plugin_file;
-		sort( $current );
-		update_option( 'active_plugins', $current );
+		_manually_load_event_plugin( $plugin_file );
+	} else {
+		// For all other tests we mainly use the Events Calendar and GatherPress as reference.
+		\update_option( 'event_bridge_for_activitypub_event_sources_active', true );
+		\update_option(
+			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+			\Event_Bridge_For_ActivityPub\Integrations\GatherPress::class
+		);
+		\update_option( 'activitypub_actor_mode', ACTIVITYPUB_BLOG_MODE );
+		_manually_load_event_plugin( 'the-events-calendar/the-events-calendar.php' );
+		_manually_load_event_plugin( 'gatherpress/gatherpress.php' );
 	}
 
 	// Hot fix that allows using Events Manager within unit tests, because the em_init() is later not run as admin.
-	if ( 'events_manager' === $activitypub_event_extension_integration_filter ) {
+	if ( 'events_manager' === $event_bridge_for_activitypub_integration_filter ) {
 		require_once $plugin_dir . 'events-manager/em-install.php';
 		em_create_events_table();
 		em_create_events_meta_table();
 		em_create_locations_table();
 	}
 
-	if ( 'modern_events_calendar_lite' === $activitypub_event_extension_integration_filter ) {
+	if ( 'modern_events_calendar_lite' === $event_bridge_for_activitypub_integration_filter ) {
 		require_once $plugin_dir . 'modern-events-calendar-lite/app/libraries/factory.php';
 		$mec_factory = new MEC_factory();
 		$mec_factory->install();
 	}
 
 	// At last manually load our WordPress plugin.
-	require dirname( __DIR__ ) . '/activitypub-event-bridge.php';
+	require dirname( __DIR__ ) . '/event-bridge-for-activitypub.php';
+
+	// Always manually load the ActivityPub plugin.
+	require_once $plugin_dir . 'activitypub/activitypub.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+
+/**
+ * Disable HTTP requests.
+ *
+ * @param mixed  $response The value to return instead of making a HTTP request.
+ * @param array  $args     Request arguments.
+ * @param string $url      The request URL.
+ * @return mixed|false|WP_Error
+ */
+function http_disable_request( $response, $args, $url ) {
+	if ( false !== $response ) {
+		// Another filter has already overridden this request.
+		return $response;
+	}
+
+	/**
+	 * Allow HTTP requests to be made.
+	 *
+	 * @param bool  $allow Whether to allow the HTTP request.
+	 * @param array $args  Request arguments.
+	 * @param string $url  The request URL.
+	 */
+	if ( apply_filters( 'tests_allow_http_request', false, $args, $url ) ) {
+		// This request has been specifically permitted.
+		return false;
+	}
+
+	$backtrace = array_reverse( debug_backtrace() ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_debug_backtrace,PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection
+	$trace_str = '';
+	foreach ( $backtrace as $frame ) {
+		if (
+			( isset( $frame['file'] ) && strpos( $frame['file'], 'phpunit.php' ) !== false ) ||
+			( isset( $frame['file'] ) && strpos( $frame['file'], 'wp-includes/http.php' ) !== false ) ||
+			( isset( $frame['file'] ) && strpos( $frame['file'], 'wp-includes/class-wp-hook.php' ) !== false ) ||
+			( isset( $frame['function'] ) && __FUNCTION__ === $frame['function'] ) ||
+			( isset( $frame['function'] ) && 'apply_filters' === $frame['function'] )
+		) {
+			continue;
+		}
+
+		if ( $trace_str ) {
+			$trace_str .= ', ';
+		}
+
+		if ( ! empty( $frame['file'] ) && ! empty( $frame['line'] ) ) {
+			$trace_str .= basename( $frame['file'] ) . ':' . $frame['line'];
+			if ( ! empty( $frame['function'] ) ) {
+				$trace_str .= ' ';
+			}
+		}
+
+		if ( ! empty( $frame['function'] ) ) {
+			if ( ! empty( $frame['class'] ) ) {
+				$trace_str .= $frame['class'] . '::';
+			}
+			$trace_str .= $frame['function'] . '()';
+		}
+	}
+
+	return new WP_Error( 'cancelled', 'Live HTTP request cancelled by bootstrap.php' );
+}
+\tests_add_filter( 'pre_http_request', 'http_disable_request', 99, 3 );
 
 // Start up the WP testing environment.
 require "{$_tests_dir}/includes/bootstrap.php";

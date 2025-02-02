@@ -3,18 +3,18 @@
  * General settings class.
  *
  * This file contains the General class definition, which handles the "General" settings
- * page for the Activitypub Event Bridge Plugin, providing options for configuring various general settings.
+ * page for the Event Bridge for ActivityPub Plugin, providing options for configuring various general settings.
  *
- * @package ActivityPub_Event_Bridge
+ * @package Event_Bridge_For_ActivityPub
  * @since 1.0.0
  */
 
-namespace ActivityPub_Event_Bridge;
+namespace Event_Bridge_For_ActivityPub;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Activitypub\Activity\Extended_Object\Event;
+use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
 
 /**
  * Class responsible for the ActivityPui Event Extension related Settings.
@@ -24,7 +24,7 @@ use Activitypub\Activity\Extended_Object\Event;
  * @since 1.0.0
  */
 class Settings {
-	const SETTINGS_SLUG = 'activitypub-event-bridge';
+	const SETTINGS_SLUG = 'event-bridge-for-activitypub';
 
 	/**
 	 * The default ActivityPub event category.
@@ -34,17 +34,17 @@ class Settings {
 	const DEFAULT_EVENT_CATEGORY = 'MEETING';
 
 	/**
-	 * Register the settings for the ActivityPub Event Bridge plugin.
+	 * Register the settings for the Event Bridge for ActivityPub plugin.
 	 *
 	 * @return void
 	 */
 	public static function register_settings(): void {
 		\register_setting(
-			'activitypub-event-bridge',
-			'activitypub_event_bridge_default_event_category',
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_default_event_category',
 			array(
 				'type'              => 'string',
-				'description'       => \__( 'Define your own custom post template', 'activitypub-event-bridge' ),
+				'description'       => \__( 'Default standardized federated event category.', 'event-bridge-for-activitypub' ),
 				'show_in_rest'      => true,
 				'default'           => self::DEFAULT_EVENT_CATEGORY,
 				'sanitize_callback' => array( self::class, 'sanitize_mapped_event_category' ),
@@ -52,25 +52,128 @@ class Settings {
 		);
 
 		\register_setting(
-			'activitypub-event-bridge',
-			'activitypub_event_bridge_event_category_mappings',
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_event_category_mappings',
 			array(
 				'type'              => 'array',
-				'description'       => \__( 'Define your own custom post template', 'activitypub-event-bridge' ),
+				'description'       => \__( 'Define your own custom post template', 'event-bridge-for-activitypub' ),
 				'default'           => array(),
 				'sanitize_callback' => array( self::class, 'sanitize_event_category_mappings' ),
 			)
 		);
 
 		\register_setting(
-			'activitypub-event-bridge',
-			'activitypub_event_bridge_initially_activated',
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_reminder_time_gap',
+			array(
+				'type'              => 'array',
+				'description'       => \__( 'Time gap in seconds when a reminder is triggered that the event is about to start.', 'event-bridge-for-activitypub' ),
+				'default'           => 0, // Zero leads to this feature being deactivated.
+				'sanitize_callback' => 'absint',
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_initially_activated',
 			array(
 				'type'        => 'boolean',
-				'description' => \__( 'Whether the plugin just got activated for the first time.', 'activitypub-event-bridge' ),
+				'description' => \__( 'Whether the plugin just got activated for the first time.', 'event-bridge-for-activitypub' ),
 				'default'     => 1,
 			)
 		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_summary_type',
+			array(
+				'type'         => 'string',
+				'description'  => \__( 'Summary type to use for ActivityStreams', 'event-bridge-for-activitypub' ),
+				'show_in_rest' => true,
+				'default'      => 'preset',
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_custom_summary',
+			array(
+				'type'         => 'string',
+				'description'  => \__( 'Define your own custom summary template for events', 'event-bridge-for-activitypub' ),
+				'show_in_rest' => true,
+				'default'      => EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY,
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_event_sources_active',
+			array(
+				'type'         => 'boolean',
+				'show_in_rest' => true,
+				'description'  => \__( 'Whether the event sources feature is activated.', 'event-bridge-for-activitypub' ),
+				'default'      => 0,
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_event_source_cache_retention',
+			array(
+				'type'              => 'integer',
+				'show_in_rest'      => true,
+				'description'       => \__( 'The cache retention period for external event sources.', 'event-bridge-for-activitypub' ),
+				'default'           => WEEK_IN_SECONDS,
+				'sanitize_callback' => 'absint',
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
+			array(
+				'type'              => 'string',
+				'description'       => \__( 'Define which plugin/integration is used for the event sources feature', 'event-bridge-for-activitypub' ),
+				'default'           => array(),
+				'sanitize_callback' => array( self::class, 'sanitize_event_plugin_integration_used_for_event_sources' ),
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub-event-sources',
+			'event_bridge_for_activitypub_event_sources',
+			array(
+				'type'              => 'array',
+				'description'       => \__( 'Dummy setting', 'event-bridge-for-activitypub' ),
+				'default'           => array(),
+				'sanitize_callback' => 'is_array',
+			)
+		);
+	}
+
+	/**
+	 * Sanitize the option which event plugin.
+	 *
+	 * @param mixed $event_plugin_integration The setting.
+	 * @return string
+	 */
+	public static function sanitize_event_plugin_integration_used_for_event_sources( $event_plugin_integration ): string {
+		if ( ! is_string( $event_plugin_integration ) ) {
+			return '';
+		}
+		$setup                = Setup::get_instance();
+		$active_event_plugins = $setup->get_active_event_plugins();
+
+		$valid_options = array();
+		foreach ( $active_event_plugins as $active_event_plugin ) {
+			if ( $active_event_plugin instanceof Feature_Event_Sources ) {
+				$valid_options[] = get_class( $active_event_plugin );
+			}
+		}
+		if ( in_array( $event_plugin_integration, $valid_options, true ) ) {
+			return $event_plugin_integration;
+		}
+		return Setup::get_default_integration_class_name_used_for_event_sources_feature();
 	}
 
 	/**
@@ -111,7 +214,8 @@ class Settings {
 	 * @return bool True if allowed, false otherwise.
 	 */
 	private static function is_allowed_event_category( $event_category ): bool {
-		$allowed_event_categories = Event::DEFAULT_EVENT_CATEGORIES;
+		require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . '/includes/event-categories.php';
+		$allowed_event_categories = array_keys( EVENT_BRIDGE_FOR_ACTIVITYPUB_EVENT_CATEGORIES );
 		return in_array( $event_category, $allowed_event_categories, true );
 	}
 }
