@@ -15,7 +15,7 @@ namespace Event_Bridge_For_ActivityPub\Integrations;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Events_Manager as Events_Manager_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Events\Events_Manager as Events_Manager_Transformer;
 
 /**
  * Events Manager.

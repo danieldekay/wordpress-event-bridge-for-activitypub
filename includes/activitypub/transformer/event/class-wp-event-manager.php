@@ -8,7 +8,6 @@
 
 namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
 
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 

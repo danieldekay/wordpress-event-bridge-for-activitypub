@@ -6,7 +6,7 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
