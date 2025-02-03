@@ -15,7 +15,7 @@ namespace Event_Bridge_For_ActivityPub\Integrations;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\GatherPress as GatherPress_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\GatherPress as GatherPress_Transformer;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\GatherPress as GatherPress_Transmogrifier;
 
 /**

@@ -15,7 +15,8 @@ namespace Event_Bridge_For_ActivityPub\Integrations;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\The_Events_Calendar as The_Events_Calendar_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\The_Events_Calendar as The_Events_Calendar_Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\The_Events_Calendar as The_Events_Calendar_Place_Transformer;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\The_Events_Calendar as The_Events_Calendar_Transmogrifier;
 
 /**
@@ -58,10 +59,10 @@ final class The_Events_Calendar extends Event_Plugin_Integration implements Feat
 	 * Returns the ActivityPub transformer for a The_Events_Calendar event post.
 	 *
 	 * @param \WP_Post $post The WordPress post object of the Event.
-	 * @return The_Events_Calendar_Transformer
+	 * @return The_Events_Calendar_Event_Transformer
 	 */
-	public static function get_activitypub_event_transformer( $post ): The_Events_Calendar_Transformer {
-		return new The_Events_Calendar_Transformer( $post, self::get_event_category_taxonomy() );
+	public static function get_activitypub_event_transformer( $post ): The_Events_Calendar_Event_Transformer {
+		return new The_Events_Calendar_Event_Transformer( $post, self::get_event_category_taxonomy() );
 	}
 
 	/**
@@ -69,7 +70,7 @@ final class The_Events_Calendar extends Event_Plugin_Integration implements Feat
 	 *
 	 * @return string
 	 */
-	public static function get_location_post_type(): string {
+	public static function get_place_post_type(): string {
 		return class_exists( '\Tribe__Events__Venue' ) ? \Tribe__Events__Venue::POSTTYPE : 'tribe_venue';
 	}
 
@@ -80,6 +81,16 @@ final class The_Events_Calendar extends Event_Plugin_Integration implements Feat
 	 */
 	public static function get_organizer_post_type(): string {
 		return class_exists( '\Tribe__Events__Organizer' ) ? \Tribe__Events__Organizer::POSTTYPE : 'tribe_organizer';
+	}
+
+	/**
+	 * Returns the ActivityPub transformer for a The_Events_Calendar venue post.
+	 *
+	 * @param \WP_Post $post The WordPress post object of the venue.
+	 * @return The_Events_Calendar_Place_Transformer
+	 */
+	public static function get_activitypub_place_transformer( $post ): The_Events_Calendar_Place_Transformer {
+		return new The_Events_Calendar_Place_Transformer( $post );
 	}
 
 	/**

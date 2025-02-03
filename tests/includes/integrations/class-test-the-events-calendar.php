@@ -9,7 +9,7 @@
 
 namespace Event_Bridge_For_ActivityPub\Tests\Integrations;
 
-use Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer\Test_The_Events_Calendar as TRIBE_Transformer_Test;
+use Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer\Event\Test_The_Events_Calendar as TRIBE_Transformer_Test;
 use Event_Bridge_For_ActivityPub\Integrations\The_Events_Calendar;
 
 use WP_REST_Request;
