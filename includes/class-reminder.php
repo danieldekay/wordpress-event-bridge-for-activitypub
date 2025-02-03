@@ -191,6 +191,6 @@ class Reminder {
 		}
 
 		// Add announce of the event to outbox.
-		add_to_outbox( $transformer->to_object(), 'Announce', $user_id );
+		add_to_outbox( $post, 'Announce', $user_id );
 	}
 }
