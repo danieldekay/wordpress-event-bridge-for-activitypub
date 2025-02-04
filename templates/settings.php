@@ -58,7 +58,11 @@ $reminder_time_gap_choices = array(
 	DAY_IN_SECONDS      => __( '1 day', 'event-bridge-for-activitypub' ),
 	DAY_IN_SECONDS * 3  => __( '3 days', 'event-bridge-for-activitypub' ),
 	WEEK_IN_SECONDS     => __( '1 week', 'event-bridge-for-activitypub' ),
-)
+);
+
+if ( \get_option( 'event_bridge_for_activitypub_initially_activated' ) ) {
+	\update_option( 'event_bridge_for_activitypub_initially_activated', '' );
+}
 ?>
 
 <div class="event-bridge-for-activitypub-settings event-bridge-for-activitypub-settings-page hide-if-no-js">
@@ -193,7 +197,7 @@ $reminder_time_gap_choices = array(
 				<?php
 			} elseif ( ! \Activitypub\is_user_type_disabled( 'blog' ) ) {
 				?>
-				<p><?php echo '<p class="notice notice-warning">' . esc_html__( 'You do not have an Event Plugin installed that supports this feature.', 'event-bridge-for-activitypub' ) . '</p>'; ?></p>
+				<div class="notice-warning"><p><?php esc_html_e( 'You do not have an Event Plugin installed that supports this feature.', 'event-bridge-for-activitypub' ); ?></p></div>
 				<p><?php esc_html_e( 'The following Event Plugins are supported:', 'event-bridge-for-activitypub' ); ?></p>
 				<?php
 				$plugins_supporting_event_sources = Setup::detect_event_plugins_supporting_event_sources();
