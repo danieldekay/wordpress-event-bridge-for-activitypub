@@ -16,6 +16,7 @@ namespace Event_Bridge_For_ActivityPub;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
+use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Join as Join_Handler;
 use Event_Bridge_For_ActivityPub\Admin\Event_Plugin_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\Health_Check;
@@ -298,6 +299,9 @@ class Setup {
 
 		// Register the event reminders.
 		\add_action( 'init', array( Reminder::class, 'init' ) );
+
+		// Initialize the handling of "Join" activities.
+		Join_Handler::init();
 
 		// If the Event-Sources feature is enabled and all requirements are met, initialize it.
 		if ( ! is_user_type_disabled( 'blog' ) && \get_option( 'event_bridge_for_activitypub_event_sources_active' ) ) {
