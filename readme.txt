@@ -117,6 +117,7 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 
 = Unreleased =
 
+* Changed: Now depends on ActivityPub plugin version greater than 5.0.0
 * Added: Event self-announce feature at configurable time before event starts
 * Added: Blueprint (Preview via WordPress Playground)
 * Added: Event Sources feature: cache and list events from remote ActivityPub profiles on your site
