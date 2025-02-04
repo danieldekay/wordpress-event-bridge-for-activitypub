@@ -215,7 +215,7 @@ class Event_Sources {
 			return $template;
 		}
 
-		global $post;
+		$post = \get_post( \get_queried_object_id() );
 
 		if ( self::is_cached_external_post( $post ) ) {
 			\wp_safe_redirect( $post->guid, 301 );
