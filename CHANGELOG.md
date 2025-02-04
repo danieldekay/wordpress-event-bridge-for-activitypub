@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Support for the EventPrime event plugin
 * Event self-announce feature at configurable time before event starts
 * Blueprint (Preview via WordPress Playground)
 * Event Sources feature: cache and list events from remote ActivityPub profiles on your site

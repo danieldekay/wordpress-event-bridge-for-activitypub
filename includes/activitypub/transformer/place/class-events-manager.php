@@ -11,14 +11,14 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\Place as Place_Base_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\Base_Post_Place;
 
 /**
  * Class for the ActivityPub transformer of the venues of The Events Calendar to `as:Place`.
  *
  * @since 1.0.0
  */
-final class Events_Manager extends Place_Base_Transformer {
+final class Events_Manager extends Base_Post_Place {
 	/**
 	 * The EM Location object.
 	 *

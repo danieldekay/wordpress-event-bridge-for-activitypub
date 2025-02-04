@@ -50,30 +50,21 @@ abstract class Base_Term_Place extends Base {
 	}
 
 	/**
-	 * Returns the ID of the Post.
+	 * Returns the most unique, resolvable "ID" there currently is for a WordPress term.
 	 *
-	 * @return string The Posts ID.
+	 * @return string The "ID"
 	 */
 	public function get_id() {
 		return \add_query_arg( $this->item->taxonomy, $this->item->slug, \trailingslashit( \home_url() ) );
 	}
 
 	/**
-	 * Don't set sensitive per default.
+	 * Use Term description as ActivityPub content.
 	 *
-	 * @return null
-	 */
-	public function get_sensitive() {
-		return null;
-	}
-
-	/**
-	 * Don't set sensitive per default.
-	 *
-	 * @return null
+	 * @return mixed|string
 	 */
 	public function get_content() {
-		return null;
+		return $this->item->description;
 	}
 
 	/**
@@ -104,7 +95,9 @@ abstract class Base_Term_Place extends Base {
 		$activitypub_object->set_type( $this->get_type() );
 		$activitypub_object->set_id( $this->get_id() );
 		$activitypub_object->set_name( $this->get_name() );
+		$activitypub_object->set_url( $this->get_url() );
 		$activitypub_object->set_content( $this->get_content() );
+		$activitypub_object->set_sensitive( $this->get_sensitive() );
 
 		$address = $this->get_address();
 
@@ -122,6 +115,15 @@ abstract class Base_Term_Place extends Base {
 	 * @phpstan-ignore-next-line
 	 */
 	public function get_media_type() {
+		return null;
+	}
+
+	/**
+	 * Don't set sensitive per default.
+	 *
+	 * @return null
+	 */
+	public function get_sensitive() {
 		return null;
 	}
 

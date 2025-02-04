@@ -74,6 +74,7 @@ Basic support (outgoing events):
 * [Eventin](https://de.wordpress.org/plugins/wp-event-solution/)
 * [Modern Events Calendar Lite](https://webnus.net/modern-events-calendar/)
 * [Event Organiser](https://wordpress.org/plugins/event-organiser/)
+* [EventPrime – Events Calendar, Bookings and Tickets](https://wordpress.org/plugins/eventprime-event-calendar-management/)
 
 = Configuration =
 
@@ -117,11 +118,12 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 
 = Unreleased =
 
-* Changed: Now depends on ActivityPub plugin version greater than 5.0.0
+* Added: Support for the EventPrime event plugin
 * Added: Event self-announce feature at configurable time before event starts
 * Added: Blueprint (Preview via WordPress Playground)
 * Added: Event Sources feature: cache and list events from remote ActivityPub profiles on your site
 * Added: Custom ActivityPub preview
+* Changed: Now depends on ActivityPub plugin version greater than 5.0.0
 * Fixed: The Events Calendar date times when using the Gutenberg editor.
 
 = [0.3.5] - 2025-01-03 =

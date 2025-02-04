@@ -175,6 +175,7 @@ class Setup {
 		\Event_Bridge_For_ActivityPub\Integrations\Eventin::class,
 		\Event_Bridge_For_ActivityPub\Integrations\Modern_Events_Calendar_Lite::class,
 		\Event_Bridge_For_ActivityPub\Integrations\Event_Organiser::class,
+		\Event_Bridge_For_ActivityPub\Integrations\EventPrime::class,
 	);
 
 	/**
@@ -187,6 +188,7 @@ class Setup {
 			return;
 		}
 		\delete_transient( 'event_bridge_for_activitypub_active_event_plugins' );
+
 		$this->detect_active_event_plugins();
 	}
 
@@ -311,6 +313,8 @@ class Setup {
 		// Initialize writing of debug logs.
 		Debug::init();
 
+		$this->register_plugin_specific_hooks();
+
 		// Lastly but most importantly: register the ActivityPub transformers for events to the ActivityPub plugin.
 		\add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_transformer' ), 10, 3 );
 
@@ -319,11 +323,22 @@ class Setup {
 	}
 
 	/**
+	 * Temporary hack to register custom actions and hooks, only needed by exceptional event plugins.
+	 *
+	 * @return void
+	 */
+	private function register_plugin_specific_hooks(): void {
+		if ( array_key_exists( \Event_Bridge_For_ActivityPub\Integrations\EventPrime::get_relative_plugin_file(), $this->active_event_plugins ) ) {
+			\Event_Bridge_For_ActivityPub\Integrations\EventPrime::init();
+		}
+	}
+
+	/**
 	 * Shut down the plugin.
 	 *
 	 * @return void
 	 */
-	public static function shut_down() {
+	public static function shut_down(): void {
 		// Delete all transients.
 		Event_Sources_Collection::delete_event_source_transients();
 		\delete_transient( 'event_bridge_for_activitypub_active_event_plugins' );
@@ -432,7 +447,7 @@ class Setup {
 	}
 
 	/**
-	 * Check if a post that federation is managed by this plugin is disabled for ActivityPub.
+	 * Check if a post of a post type that is managed by this plugin is disabled for ActivityPub.
 	 *
 	 * This function checks the visibility of the post and whether it is private or has a password.
 	 *
@@ -440,7 +455,7 @@ class Setup {
 	 *
 	 * @return boolean True if the post is disabled, false otherwise.
 	 */
-	private static function is_post_disabled( $post ) {
+	private static function is_post_disabled( $post ): bool {
 		$post     = \get_post( $post );
 		$disabled = false;
 

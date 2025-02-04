@@ -131,6 +131,11 @@ jobs:
         env:
           PHP_VERSION: ${{ matrix.php-version }}
 
+      - name: Run Integration tests for EventPrime
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=eventprime
+        env:
+          PHP_VERSION: ${{ matrix.php-version }}
+
       - name: Run Integration tests for Event Organiser
         run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=event_organiser
         env:

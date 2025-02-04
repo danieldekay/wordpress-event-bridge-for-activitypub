@@ -21,7 +21,7 @@ use Activitypub\Transformer\Post;
  *
  * @since 1.0.0
  */
-abstract class Place extends Post {
+abstract class Base_Post_Place extends Post {
 	/**
 	 * Set the type of the object.
 	 *

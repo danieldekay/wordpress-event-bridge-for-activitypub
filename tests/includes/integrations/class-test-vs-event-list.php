@@ -1,6 +1,6 @@
 <?php
 /**
- * Test file for the Transmogrifier (import of ActivityPub Event objects) of GatherPress.
+ * Test file for the main Integration of VS Events List.
  *
  * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
@@ -15,9 +15,9 @@ use WP_REST_Request;
 use WP_REST_Server;
 
 /**
- * Test class for the Transmogrifier (import of ActivityPub Event objects) of GatherPress.
+ * Test class for the main Integration of VS Events List.
  *
- * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\The_Events_Calendar
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\Integration\VS_Event_List
  */
 class Test_VS_Event_List extends \WP_UnitTestCase {
 	const FOLLOWED_ACTOR = array(

@@ -15,9 +15,8 @@ namespace Event_Bridge_For_ActivityPub\Integrations;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event as ActivityPub_Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\Base_Post_Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\Base_Term_Place;
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\Place as ActivityPub_Place_Transformer;
-
 use WP_Post;
 
 require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'includes/integrations/interface-feature-event-sources.php';
@@ -81,7 +80,7 @@ abstract class Event_Plugin_Integration {
 	 * Returns the Activitypub transformer for places of the event plugins location post type.
 	 *
 	 * @param WP_Post $post           The WordPress post object of the Event.
-	 * @return ActivityPub_Place_Transformer|Base_Term_Place|null
+	 * @return Base_Post_Place|Base_Term_Place|null
 	 */
 	public static function get_activitypub_place_transformer( $post ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
 		return null;
