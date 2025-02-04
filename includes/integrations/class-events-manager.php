@@ -15,7 +15,9 @@ namespace Event_Bridge_For_ActivityPub\Integrations;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Events_Manager as Events_Manager_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Events_Manager as Events_Manager_Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\Events_Manager as Events_Manager_Place_Transformer;
+
 
 /**
  * Events Manager.
@@ -45,6 +47,25 @@ final class Events_Manager extends Event_Plugin_Integration {
 	}
 
 	/**
+	 * Returns the place post type of the plugin.
+	 *
+	 * @return string
+	 */
+	public static function get_place_post_type(): string {
+		return defined( 'EM_POST_TYPE_LOCATION' ) ? constant( 'EM_POST_TYPE_LOCATION' ) : 'location';
+	}
+
+	/**
+	 * Returns the Activitypub transformer for places of the event plugins location post type.
+	 *
+	 * @param \WP_Post $post           The WordPress post object of the Event.
+	 * @return Events_Manager_Place_Transformer
+	 */
+	public static function get_activitypub_place_transformer( $post ): Events_Manager_Place_Transformer {
+		return new Events_Manager_Place_Transformer( $post );
+	}
+
+	/**
 	 * Returns the IDs of the admin pages of the plugin.
 	 *
 	 * @return array The settings page urls.
@@ -66,9 +87,9 @@ final class Events_Manager extends Event_Plugin_Integration {
 	 * Returns the ActivityPub transformer for a Events_Manager event post.
 	 *
 	 * @param \WP_Post $post The WordPress post object of the Event.
-	 * @return Events_Manager_Transformer
+	 * @return Events_Manager_Event_Transformer
 	 */
-	public static function get_activitypub_event_transformer( $post ): Events_Manager_Transformer {
-		return new Events_Manager_Transformer( $post, self::get_event_category_taxonomy() );
+	public static function get_activitypub_event_transformer( $post ): Events_Manager_Event_Transformer {
+		return new Events_Manager_Event_Transformer( $post, self::get_event_category_taxonomy() );
 	}
 }

@@ -13,6 +13,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\Events_Manager as Events_Manager_Place_Transformer;
 use DateTime;
 use DateTimeZone;
 use EM_Event;
@@ -54,42 +55,50 @@ final class Events_Manager extends Event_Transformer {
 	 *
 	 * @return bool
 	 */
-	protected function get_is_online(): bool {
-		return 'url' === $this->em_event->event_location_type;
+	protected function is_online(): bool {
+		return \EM_Event_Locations\Event_Locations::is_enabled( 'url' ) && 'url' === $this->em_event->event_location_type;
 	}
 
 	/**
 	 * Get the event location.
 	 *
-	 * @return ?Place The Place.
+	 * @return array|Place|null The Place.
 	 */
-	public function get_location(): ?Place {
-		if ( 'url' === $this->em_event->event_location_type ) {
+	public function get_location() {
+		if ( $this->is_online() ) {
+			if ( property_exists( $this->em_event->event_location, 'data' ) ) {
+				$event_location = $this->em_event->event_location->data;
+			} else {
+				$event_location = array();
+			}
+
+			$event_link_url  = isset( $event_location['url'] ) ? $event_location['url'] : null;
+			$event_link_text = isset( $event_location['text'] ) ? $event_location['text'] : esc_html__( 'Link', 'event-bridge-for-activitypub' );
+
+			if ( empty( $event_link_url ) ) {
+				return null;
+			}
+
+			return array(
+				'type' => 'VirtualLocation',
+				'url'  => \esc_url( $event_link_url ),
+				'name' => \esc_html( $event_link_text ),
+			);
+		}
+
+		if ( ! \EM_Locations::is_enabled() ) {
 			return null;
 		}
 
 		$em_location = $this->em_event->get_location();
 
-		if ( '' === $em_location->location_id ) {
+		if ( ! isset( $em_location->post_id ) || ! $em_location->post_id ) {
 			return null;
 		}
 
-		$location = new Place();
-		$location->set_name( $em_location->location_name );
-
-		$address = array(
-			'type'            => 'PostalAddress',
-			'addressCountry'  => $em_location->location_country,
-			'addressLocality' => $em_location->location_town,
-			'streetAddress'   => $em_location->location_address,
-			'postalCode'      => $em_location->location_postcode,
-			'name'            => $em_location->location_name,
-		);
-		if ( $em_location->location_state ) {
-			$address['addressRegion'] = $em_location->location_state;
-		}
-
-		$location->set_address( $address );
+		$location_transformer = new Events_Manager_Place_Transformer( get_post( $em_location->post_id ) );
+		$full_location_object = false;
+		$location             = $location_transformer->to_object( $full_location_object );
 		return $location;
 	}
 
@@ -157,17 +166,32 @@ final class Events_Manager extends Event_Transformer {
 	/**
 	 * Get the event link as an ActivityPub Link object, but as an associative array.
 	 *
-	 * @return array
+	 * @return array|null
 	 */
-	private function get_event_link_attachment(): array {
-		$event_link_url  = $this->em_event->event_location->data['url'];
-		$event_link_text = $this->em_event->event_location->data['text'];
-		return array(
-			'type'      => 'Link',
-			'name'      => $event_link_text ?? 'Website',
-			'href'      => \esc_url( $event_link_url ),
-			'mediaType' => 'text/html',
-		);
+	private function get_event_link_attachment(): ?array {
+		if ( $this->is_online() ) {
+			if ( property_exists( $this->em_event->event_location, 'data' ) ) {
+				$event_location = $this->em_event->event_location->data;
+			} else {
+				$event_location = array();
+			}
+
+			$event_link_url  = isset( $event_location['url'] ) ? $event_location['url'] : null;
+			$event_link_text = isset( $event_location['text'] ) ? $event_location['text'] : __( 'Link', 'event-bridge-for-activitypub' );
+
+			if ( empty( $event_link_url ) ) {
+				return null;
+			}
+
+			return array(
+				'type'      => 'Link',
+				'name'      => \esc_html( $event_link_text ),
+				'href'      => \esc_url( $event_link_url ),
+				'mediaType' => 'text/html',
+			);
+		}
+
+		return null;
 	}
 
 	/**
@@ -183,8 +207,10 @@ final class Events_Manager extends Event_Transformer {
 			$attachments[0]['name'] = 'Banner';
 		}
 
-		if ( 'url' === $this->em_event->event_location_type ) {
-			$attachments[] = $this->get_event_link_attachment();
+		$event_link_attachment = $this->get_event_link_attachment();
+
+		if ( $event_link_attachment ) {
+			$attachments[] = $event_link_attachment;
 		}
 		return $attachments;
 	}

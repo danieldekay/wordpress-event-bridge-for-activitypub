@@ -11,12 +11,9 @@
 
 namespace Event_Bridge_For_ActivityPub;
 
-use Activitypub\Activity\Base_Object;
-
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Activitypub\Activity\Activity;
 use Activitypub\Transformer\Factory as Transformer_Factory;
 use Event_Bridge_For_ActivityPub\Setup;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event as Event_Transformer;
@@ -25,7 +22,6 @@ use WP_Post;
 
 use function ActivityPub\add_to_outbox;
 use function Activitypub\is_user_disabled;
-use function Activitypub\safe_remote_post;
 
 /**
  * Adds automatic announcing or sending of reminders before the events start time.

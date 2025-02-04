@@ -154,8 +154,10 @@ abstract class Event extends Post {
 	 * Get a default for the location.
 	 *
 	 * This should be overridden in the actual event transformer.
+	 *
+	 * @return array|Place|null
 	 */
-	public function get_location(): ?Place {
+	public function get_location() {
 		return null;
 	}
 
@@ -292,12 +294,21 @@ abstract class Event extends Post {
 
 		$output = array();
 
-		if ( $args['icon'] ) {
-			$output[] = '📍';
-		}
+		if ( is_array( $location ) && isset( $location['type'] ) && 'VirtualLocation' === $location['type'] ) {
+			if ( $args['icon'] ) {
+				$output[] = '🔗';
+			}
+			if ( $args['label'] && isset( $location['name'] ) ) {
+				$output[] = $location['name'] . ':';
+			}
+		} else {
+			if ( $args['icon'] ) {
+				$output[] = '📍';
+			}
 
-		if ( $args['label'] ) {
-			$output[] = esc_html__( 'Location', 'event-bridge-for-activitypub' ) . ':';
+			if ( $args['label'] ) {
+				$output[] = esc_html__( 'Location', 'event-bridge-for-activitypub' ) . ':';
+			}
 		}
 
 		$output[] = $this->get_formatted_address( true, $args );
@@ -451,7 +462,7 @@ abstract class Event extends Post {
 	public function get_formatted_address( $include_location_name = false, $args = array() ) {
 		$location = $this->get_location();
 
-		if ( $location ) {
+		if ( $location instanceof Place ) {
 			$location_name    = $location->get_name();
 			$foramted_address = self::format_address( $location->get_address(), $args );
 
@@ -467,6 +478,10 @@ abstract class Event extends Post {
 
 			if ( ! empty( $location_parts ) ) {
 				return implode( ', ', $location_parts );
+			}
+		} elseif ( is_array( $location ) && isset( $location['type'] ) && 'VirtualLocation' === $location['type'] ) {
+			if ( isset( $location['url'] ) ) {
+				return $location['url'];
 			}
 		}
 
@@ -493,7 +508,6 @@ abstract class Event extends Post {
 		$category   = $this->format_categories();
 		$start_time = $this->get_start_time();
 		$end_time   = $this->get_end_time();
-		$location   = $this->get_location();
 
 		$address = $this->get_formatted_address( true );
 
