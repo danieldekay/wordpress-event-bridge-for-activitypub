@@ -24,14 +24,21 @@ class Test_Events_Manager extends \WP_UnitTestCase {
 		}
 
 		// For tests allow every user to create new events.
-		update_option( 'dbem_events_anonymous_submissions', true );
+		\update_option( 'dbem_events_anonymous_submissions', true );
+		\update_option(
+			'dbem_location_types',
+			array(
+				'url'      => 1,
+				'location' => 1,
+			)
+		);
 
 		// Make sure that ActivityPub support is enabled for Events Manager.
 		$aec = \Event_Bridge_For_ActivityPub\Setup::get_instance();
 		$aec->activate_activitypub_support_for_active_event_plugins();
 
 		// Delete all posts afterwards.
-		_delete_all_posts();
+		\_delete_all_posts();
 	}
 
 	/**
@@ -102,7 +109,7 @@ class Test_Events_Manager extends \WP_UnitTestCase {
 	/**
 	 * Test the transformation of a event with full location.
 	 */
-	public function test_transform_of__full_event_with_location() {
+	public function test_transform_of_full_event_with_location() {
 		// Create a mockup location.
 		$location                    = new \EM_Location();
 		$location->location_name     = 'Test location';
@@ -184,5 +191,43 @@ class Test_Events_Manager extends \WP_UnitTestCase {
 		$this->assertEquals( 'MEETING', $event_array['category'] );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( 'Name only location', $event_array['location']['name'] );
+	}
+	/**
+	 * Test transform event with online location.
+	 */
+	public function test_transform_of_event_with_online_location() {
+		// Create mockup event.
+		$event                      = new \EM_Event();
+		$event->event_name          = 'Events Manager Test event';
+		$event->post_content        = 'Event description';
+		$event->event_start_date    = \gmdate( 'Y-m-d', \strtotime( '+10 days 15:00:00' ) );
+		$event->event_end_date      = \gmdate( 'Y-m-d', \strtotime( '+10 days 16:00:00' ) );
+		$event->event_start_time    = '15:00:00';
+		$event->event_end_time      = '16:00:00';
+		$event->event_location_type = 'url';
+		$event->start               = \strtotime( $event->event_start_date . ' ' . $event->event_start_time );
+		$event->end                 = \strtotime( $event->event_end_date . ' ' . $event->event_end_time );
+		$event->force_status        = 'publish';
+		$event->event_rsvp          = false;
+		$this->assertTrue( $event->save() );
+
+		// Create a mockup location.
+		$location       = new \EM_Event_Locations\URL( $event );
+		$location->type = 'url';
+		$location->data = array(
+			'url'  => 'https://jitsi.event-federation.eu',
+			'text' => 'Event Federation Online Meeting Room',
+		);
+		$this->assertTrue( $location->save() );
+
+		// Call the transformer Factory.
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( get_post( $event->post_id ) )->to_object()->to_array();
+
+		// Check that the VirtualLocation is present.
+		$this->assertEquals( 'Event', $event_array['type'] );
+		$this->assertArrayHasKey( 'location', $event_array );
+		$this->assertEquals( 'Event Federation Online Meeting Room', $event_array['location']['name'] );
+		$this->assertEquals( 'VirtualLocation', $event_array['location']['type'] );
+		$this->assertEquals( 'https://jitsi.event-federation.eu', $event_array['location']['url'] );
 	}
 }

@@ -66,7 +66,7 @@ class Event_Sources {
 		\add_action( 'init', array( self::class, 'register_post_meta' ) );
 
 		// Register filters that prevent cached remote events from being federated again.
-		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'is_post_disabled_for_activitypub' ), 10, 2 );
+		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'is_post_disabled_for_activitypub' ), 99, 2 );
 		\add_filter( 'template_include', array( self::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
 
 		// Register daily schedule to cleanup cached remote events that have ended.
@@ -174,7 +174,7 @@ class Event_Sources {
 	 * @return bool False if the post is not disabled for federation via ActivityPub.
 	 */
 	public static function is_post_disabled_for_activitypub( $disabled, $post = null ): bool {
-		if ( $disabled || ! $post ) {
+		if ( $disabled ) {
 			return $disabled;
 		}
 		return self::is_cached_external_post( $post );
