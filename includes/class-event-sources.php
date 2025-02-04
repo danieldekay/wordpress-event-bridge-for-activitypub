@@ -18,13 +18,11 @@ use DateTimeZone;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 use Event_Bridge_For_ActivityPub\Admin\User_Interface;
-use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration;
 use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
 use WP_Error;
 use WP_Post;
 use WP_REST_Request;
 
-use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\is_activitypub_request;
 use function Activitypub\sanitize_url;
 
@@ -101,7 +99,7 @@ class Event_Sources {
 			$post_type = $event_plugin_integration::get_post_type();
 			self::register_post_meta_event_bridge_for_activitypub_event_source( $post_type );
 
-			$post_type = $event_plugin_integration::get_location_post_type();
+			$post_type = $event_plugin_integration::get_place_post_type();
 			if ( $post_type ) {
 				self::register_post_meta_event_bridge_for_activitypub_event_source( $post_type );
 			}

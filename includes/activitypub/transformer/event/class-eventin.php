@@ -8,13 +8,13 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event;
 use Etn\Core\Event\Event_Model;
 
 use function Activitypub\esc_hashtag;
@@ -39,12 +39,12 @@ final class Eventin extends Event {
 	 * This is a special class object form The Events Calendar which
 	 * has a lot of useful functions, we make use of our getter functions.
 	 *
-	 * @param \WP_Post $wp_object The WordPress object.
+	 * @param \WP_Post $item The WordPress object.
 	 * @param string   $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function __construct( $wp_object, $wp_taxonomy ) {
-		parent::__construct( $wp_object, $wp_taxonomy );
-		$this->event_model = new Event_Model( $this->wp_object->ID );
+	public function __construct( $item, $wp_taxonomy ) {
+		parent::__construct( $item, $wp_taxonomy );
+		$this->event_model = new Event_Model( $this->item->ID );
 	}
 
 	/**
@@ -107,8 +107,8 @@ final class Eventin extends Event {
 		// The parent tag function also fetches the mentions.
 		$tags = parent::get_tag();
 
-		$post_tags       = \wp_get_post_terms( $this->wp_object->ID, 'etn_tags' );
-		$post_categories = \wp_get_post_terms( $this->wp_object->ID, 'etn_category' );
+		$post_tags       = \wp_get_post_terms( $this->item->ID, 'etn_tags' );
+		$post_categories = \wp_get_post_terms( $this->item->ID, 'etn_category' );
 
 		if ( ! is_wp_error( $post_tags ) && $post_tags ) {
 			foreach ( $post_tags as $term ) {

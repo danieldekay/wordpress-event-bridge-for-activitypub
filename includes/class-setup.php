@@ -109,7 +109,7 @@ class Setup {
 	}
 
 	/**
-	 * LooksUp the current version of the ActivityPub.
+	 * Get the current version of the ActivityPub plugin.
 	 *
 	 * @return string The semantic Version.
 	 */
@@ -130,7 +130,7 @@ class Setup {
 	}
 
 	/**
-	 * Getter function for the active event plugins post types.
+	 * Getter function for the active event plugins event post types.
 	 *
 	 * @return array List of event post types of the active event plugins.
 	 */
@@ -159,7 +159,6 @@ class Setup {
 
 		return false;
 	}
-
 
 	/**
 	 * Holds all the full class names for the supported event plugins.
@@ -201,7 +200,7 @@ class Setup {
 			return array();
 		}
 
-		$active_event_plugins = get_transient( 'event_bridge_for_activitypub_active_event_plugins' );
+		$active_event_plugins = \get_transient( 'event_bridge_for_activitypub_active_event_plugins' );
 
 		if ( $active_event_plugins ) {
 			$this->active_event_plugins = $active_event_plugins;
@@ -213,7 +212,7 @@ class Setup {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
 
-		$all_plugins = array_merge( get_plugins(), get_mu_plugins() );
+		$all_plugins = array_merge( \get_plugins(), \get_mu_plugins() );
 
 		$active_event_plugins = array();
 		foreach ( self::EVENT_PLUGIN_INTEGRATIONS as $event_plugin_integration ) {
@@ -297,7 +296,7 @@ class Setup {
 		}
 
 		// Register the event reminders.
-		add_action( 'init', array( Reminder::class, 'init' ) );
+		\add_action( 'init', array( Reminder::class, 'init' ) );
 
 		// If the Event-Sources feature is enabled and all requirements are met, initialize it.
 		if ( ! is_user_type_disabled( 'blog' ) && \get_option( 'event_bridge_for_activitypub_event_sources_active' ) ) {
@@ -308,7 +307,10 @@ class Setup {
 		Debug::init();
 
 		// Lastly but most importantly: register the ActivityPub transformers for events to the ActivityPub plugin.
-		\add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_event_transformer' ), 10, 3 );
+		\add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_transformer' ), 10, 3 );
+
+		// Apply custom ActivityPub previews for events.
+		\add_action( 'init', array( Preview::class, 'init' ) );
 	}
 
 	/**
@@ -322,7 +324,7 @@ class Setup {
 		\delete_transient( 'event_bridge_for_activitypub_active_event_plugins' );
 
 		// Unschedule all crons.
-		wp_unschedule_hook( 'event_bridge_for_activitypub_event_sources_clear_cache' );
+		\wp_unschedule_hook( 'event_bridge_for_activitypub_event_sources_clear_cache' );
 	}
 
 	/**
@@ -334,7 +336,7 @@ class Setup {
 	 */
 	public static function enqueue_styles( $hook_suffix ): void {
 		if ( false !== strpos( $hook_suffix, 'event-bridge-for-activitypub' ) ) {
-			wp_enqueue_style(
+			\wp_enqueue_style(
 				'event-bridge-for-activitypub-admin-styles',
 				plugins_url(
 					'assets/css/event-bridge-for-activitypub-admin.css',
@@ -343,7 +345,7 @@ class Setup {
 				array(),
 				EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_VERSION
 			);
-			wp_enqueue_script(
+			\wp_enqueue_script(
 				'event-bridge-for-activitypub-admin-script',
 				plugins_url(
 					'assets/js/event-bridge-for-activitypub-admin.js',
@@ -366,39 +368,45 @@ class Setup {
 		// Check if any general admin notices are needed and add actions to insert the needed admin notices.
 		if ( ! $this->activitypub_plugin_is_active ) {
 			// The ActivityPub plugin is not active.
-			add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_not_enabled' ), 10, 1 );
+			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_not_enabled' ), 10, 1 );
 			return;
 		}
 		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
 			// The ActivityPub plugin is too old.
-			add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_version_too_old' ), 10, 1 );
+			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_version_too_old' ), 10, 1 );
 			return;
 		}
 		if ( empty( $this->active_event_plugins ) ) {
 			// No supported Event Plugin is active.
-			add_action( 'admin_notices', array( General_Admin_Notices::class, 'no_supported_event_plugin_active' ), 10, 1 );
+			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'no_supported_event_plugin_active' ), 10, 1 );
 		}
 	}
 
 	/**
-	 * Add the custom transformers for the events of several WordPress event plugins.
+	 * Add the custom transformers for the events and locations of several WordPress event plugins.
 	 *
 	 * @param \Activitypub\Transformer\Base $transformer  The transformer to use.
-	 * @param mixed                         $wp_object    The WordPress object to transform.
+	 * @param mixed                         $data         The data to transform.
 	 * @param string                        $object_class The class of the object to transform.
 	 *
 	 * @return \Activitypub\Transformer\Base|null
 	 */
-	public function register_activitypub_event_transformer( $transformer, $wp_object, $object_class ): ?\Activitypub\Transformer\Base {
+	public function register_activitypub_transformer( $transformer, $data, $object_class ): ?\Activitypub\Transformer\Base {
 		// If the current WordPress object is not a post (e.g., a WP_Comment), don't change the transformer.
 		if ( 'WP_Post' !== $object_class ) {
 			return $transformer;
 		}
 
-		// Get the transformer for a specific event plugins event-post type.
+		// Get the transformer for a specific event plugins event or location post type.
 		foreach ( $this->active_event_plugins as $event_plugin ) {
-			if ( $wp_object->post_type === $event_plugin->get_post_type() ) {
-				return $event_plugin::get_activitypub_event_transformer( $wp_object );
+			// Check if we have an event.
+			if ( $data->post_type === $event_plugin->get_post_type() ) {
+				return $event_plugin::get_activitypub_event_transformer( $data );
+			}
+
+			// Check if we have a location.
+			if ( $data->post_type === $event_plugin->get_place_post_type() ) {
+				return $event_plugin::get_activitypub_place_transformer( $data );
 			}
 		}
 
@@ -422,7 +430,7 @@ class Setup {
 				add_post_type_support( $event_plugin->get_post_type(), 'activitypub' );
 			}
 		}
-		update_option( 'activitypub_support_post_types', $activitypub_supported_post_types );
+		\update_option( 'activitypub_support_post_types', $activitypub_supported_post_types );
 	}
 
 	/**
@@ -438,9 +446,9 @@ class Setup {
 		$this->redetect_active_event_plugins();
 		// Don't allow plugin activation, when the ActivityPub plugin is not activated yet.
 		if ( ! $this->activitypub_plugin_is_active ) {
-			deactivate_plugins( plugin_basename( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE ) );
+			\deactivate_plugins( plugin_basename( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE ) );
 			$notice = General_Admin_Notices::get_admin_notice_activitypub_plugin_not_enabled();
-			wp_die(
+			\wp_die(
 				// @phpstan-ignore-next-line
 				wp_kses( $notice, General_Admin_Notices::ALLOWED_HTML ),
 				'Plugin dependency check',
@@ -449,9 +457,9 @@ class Setup {
 		}
 
 		if ( empty( $this->active_event_plugins ) ) {
-			deactivate_plugins( plugin_basename( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE ) );
+			\deactivate_plugins( plugin_basename( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE ) );
 			$notice = General_Admin_Notices::get_admin_notice_no_supported_event_plugin_active();
-			wp_die(
+			\wp_die(
 				// @phpstan-ignore-next-line
 				wp_kses( $notice, General_Admin_Notices::ALLOWED_HTML ),
 				'Plugin dependency check',

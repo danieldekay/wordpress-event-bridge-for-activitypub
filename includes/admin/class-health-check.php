@@ -98,7 +98,7 @@ class Health_Check {
 		$event_posts = self::get_most_recent_event_posts( $event_plugin->get_post_type(), 1 );
 
 		// If no post is found, we can not do this test.
-		if ( isset( $event_posts[0] ) ) {
+		if ( isset( $event_posts[0] ) || empty( $event_posts ) ) {
 			return true;
 		}
 
