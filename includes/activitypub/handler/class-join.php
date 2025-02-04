@@ -13,7 +13,7 @@ use Activitypub\Collection\Actors;
 use Activitypub\Activity\Actor;
 use Activitypub\Http;
 use Activitypub\Transformer\Factory;
-use Event_Bridge_For_ActivityPub\Activitypub\Transformer\Event as Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event as Event_Transformer;
 
 use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\object_to_uri;
@@ -35,7 +35,7 @@ class Join {
 			'event_bridge_for_activitypub_ignore_join',
 			array( self::class, 'send_ignore_response' ),
 			10,
-			4
+			3
 		);
 	}
 
@@ -58,7 +58,7 @@ class Join {
 		$actor = get_remote_metadata_by_actor( object_to_uri( $activity['actor'] ) );
 
 		// If we cannot fetch the actor, we cannot continue.
-		if ( ! is_array( $actor ) ) {
+		if ( \is_wp_error( $actor ) ) {
 			return;
 		}
 
@@ -68,7 +68,7 @@ class Join {
 		}
 
 		// Get the WordPress Post ID, via the ActivityPub ID.
-		$post_id = self::get_post_id_by_activitypub_id( object_to_uri( $activity['object'] ) );
+		$post_id = self::get_post_id_by_activitypub_id( \sanitize_url( object_to_uri( $activity['object'] ) ) );
 
 		if ( ! $post_id ) {
 			// No post is found for this URL/ID.
@@ -86,7 +86,7 @@ class Join {
 		// Pass over to Event plugin specific handler if implemented here. Until then just send an ignore.
 		do_action(
 			'event_bridge_for_activitypub_ignore_join',
-			$transformer->get_actor_object()->get_id(), // Gets the WordPress user that "ows" the object by ActivityPub means.
+			$transformer->get_actor_object()->get_id(), // Gets the WordPress user that "owns" the object by ActivityPub means.
 			$activity['id'],
 			Actor::init_from_array( $actor )
 		);
@@ -95,9 +95,9 @@ class Join {
 	/**
 	 * Send "Ignore" response.
 	 *
-	 * @param string $actor   The actors ActivityPub ID which sends the response.
-	 * @param string $ignored The ID of the Activity that gets ignored.
-	 * @param Actor  $to      The target actor.
+	 * @param string      $actor   The actors ActivityPub ID which sends the response.
+	 * @param string      $ignored The ID of the Activity that gets ignored.
+	 * @param Actor|mixed $to      The target actor.
 	 */
 	public static function send_ignore_response( $actor, $ignored, $to ) {
 		// Get actor object that owns the object that was targeted by the ignored activity.
@@ -117,12 +117,13 @@ class Join {
 		// Send "Ignore" activity.
 		$activity = new Activity();
 		$activity->set_type( 'Ignore' );
-		$activity->set_object( $ignored );
+		$activity->set_object( \esc_url_raw( $ignored ) );
 		$activity->set_actor( $actor->get_id() );
 		$activity->set_to( $to->get_id() );
 		$activity->set_id( $actor->get_id() . '#ignore-' . \preg_replace( '~^https?://~', '', $ignored ) );
 		$activity->set_sensitive( null );
 
+		// @phpstan-ignore-next-line
 		Http::post( $inbox, $activity->to_json(), $actor->get__id() );
 	}
 
@@ -139,7 +140,7 @@ class Join {
 
 		// Ensure the base URL matches the home URL.
 		if ( \trailingslashit( "{$parsed_url['scheme']}://{$parsed_url['host']}" ) !== $home_url ) {
-			return null;
+			return 0;
 		}
 
 		// Check for a valid query string and parse it.
