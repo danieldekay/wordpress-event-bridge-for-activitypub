@@ -9,7 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* Event self-announce feature at configurable time before event starts
 * Blueprint (Preview via WordPress Playground)
+* Event Sources feature: cache and list events from remote ActivityPub profiles on your site
+* Custom ActivityPub preview
+
+### Fixed
+
+* The Events Calendar date times when using the Gutenberg editor.
 
 ## [0.3.5] - 2025-01-03
 

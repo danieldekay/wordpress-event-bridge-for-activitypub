@@ -8,19 +8,11 @@ on:
 
 jobs:
   phpcs:
+    name: PHP Code Checker
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mariadb
-        env:
-          MYSQL_ROOT_PASSWORD: root
     strategy:
       matrix:
         php-versions: ['8.1']
-    name: PHP Code Checker
-    env:
-      extensions: mysql
-      key: cache-v1
     steps:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
@@ -31,20 +23,39 @@ jobs:
         with:
           path: |
             ./vendor/
-          key: cache-composer-phpcs-1
+          key: cache-composer-3
+
+      - name: Setup cache environment for PHP Extensions
+        id: php-extensions-cache
+        uses: https://github.com/shivammathur/cache-extensions@v1
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: dom, iconv, json, libxml, zip
+          key: php-extensions-cache-v1
+
+      - name: Cache PHP extensions
+        uses: https://code.forgejo.org/actions/cache@v4
+        with:
+          path: ${{ steps.php-extensions-cache.outputs.dir }}
+          key: ${{ steps.php-extensions-cache.outputs.key }}
+          restore-keys: ${{ steps.php-extensions-cache.outputs.key }}
 
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
+          extensions: dom, iconv, json, libxml, zip
           coverage: none
-          tools: composer
+          tools: composer, cs2pr
         env:
           runner: self-hosted
+          GITHUB_TOKEN: ${{ env.COMPOSER_TOKEN }}
 
       - name: Install Composer dependencies for PHP
         if: steps.cache-composer.outputs.cache-hit != 'true'
         uses: ramsey/composer-install@v3
+        env:
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.COMPOSER_TOKEN }}"}}'
 
       - name: Run PHP_CodeSniffer
         run: ./vendor/bin/phpcs

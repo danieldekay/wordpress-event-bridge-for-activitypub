@@ -6,14 +6,14 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event;
 use GatherPress\Core\Event as GatherPress_Event;
 
 /**
@@ -31,9 +31,9 @@ final class GatherPress extends Event {
 	protected $gp_event;
 
 	/**
-	 * The current GatherPress Venue object.
+	 * The current GatherPress Venue.
 	 *
-	 * @var Event
+	 * @var array
 	 */
 	protected $gp_venue;
 
@@ -43,19 +43,19 @@ final class GatherPress extends Event {
 	 * This is a special class object form The Events Calendar which
 	 * has a lot of useful functions, we make use of our getter functions.
 	 *
-	 * @param WP_Post $wp_object The WordPress object.
-	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
+	 * @param \WP_Post $item The WordPress object.
+	 * @param string   $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function __construct( $wp_object, $wp_taxonomy ) {
-		parent::__construct( $wp_object, $wp_taxonomy );
-		$this->gp_event = new GatherPress_Event( $this->wp_object->ID );
+	public function __construct( $item, $wp_taxonomy ) {
+		parent::__construct( $item, $wp_taxonomy );
+		$this->gp_event = new GatherPress_Event( $item->ID );
 		$this->gp_venue = $this->gp_event->get_venue_information();
 	}
 
 	/**
 	 * Get the event location.
 	 *
-	 * @return Place|null The place objector null if not place set.
+	 * @return ?Place The place objector null if not place set.
 	 */
 	public function get_location(): ?Place {
 		$address = $this->gp_venue['full_address'];
@@ -73,7 +73,7 @@ final class GatherPress extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	public function get_end_time(): ?string {
+	public function get_end_time(): string {
 		return $this->gp_event->get_datetime_end( 'Y-m-d\TH:i:s\Z' );
 	}
 
@@ -87,9 +87,9 @@ final class GatherPress extends Event {
 	/**
 	 * Get the event link from the events metadata.
 	 */
-	private function get_event_link() {
+	private function get_event_link(): array {
 
-		$event_link = get_post_meta( $this->wp_object->ID, 'event-link', true );
+		$event_link = get_post_meta( $this->item->ID, 'event-link', true );
 		if ( $event_link ) {
 			return array(
 				'type'      => 'Link',
@@ -98,6 +98,8 @@ final class GatherPress extends Event {
 				'mediaType' => 'text/html',
 			);
 		}
+
+		return array();
 	}
 
 	/**

@@ -6,7 +6,7 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
@@ -15,8 +15,9 @@ use Activitypub\Activity\Extended_Object\Event as Event_Object;
 use Activitypub\Activity\Extended_Object\Place;
 use Activitypub\Shortcodes;
 use Activitypub\Transformer\Post;
-
 use DateTime;
+use WP_Comment;
+use WP_Post;
 
 /**
  * Base transformer for WordPress event post types to ActivityPub events.
@@ -30,11 +31,10 @@ use DateTime;
  * [ ] do add Cancelled reason in the content.
  */
 abstract class Event extends Post {
-
 	/**
 	 * The WordPress event taxonomy.
 	 *
-	 * @var string
+	 * @var ?string
 	 */
 	protected $wp_taxonomy;
 
@@ -53,7 +53,7 @@ abstract class Event extends Post {
 	 * Get a sane default for whether comments are enabled.
 	 */
 	protected function get_comments_enabled(): ?bool {
-		return comments_open( $this->wp_object );
+		return comments_open( $this->item );
 	}
 
 	/**
@@ -67,24 +67,13 @@ abstract class Event extends Post {
 	}
 
 	/**
-	 * Returns the title of the event.
-	 *
-	 * @see https://www.w3.org/TR/activitystreams-vocabulary/#dfn-name
-	 *
-	 * @return string The name.
-	 */
-	protected function get_name(): string {
-		return $this->wp_object->post_title;
-	}
-
-	/**
 	 * Extend the construction of the Post Transformer to also set the according taxonomy of the event post type.
 	 *
-	 * @param WP_Post $wp_object The WordPress post object (event).
-	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
+	 * @param \WP_Post $item The WordPress post object (event).
+	 * @param string   $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function __construct( $wp_object, $wp_taxonomy = 'category' ) {
-		parent::__construct( $wp_object );
+	public function __construct( $item, $wp_taxonomy = 'category' ) {
+		parent::__construct( $item );
 		$this->wp_taxonomy = $wp_taxonomy;
 	}
 
@@ -121,7 +110,7 @@ abstract class Event extends Post {
 			return null;
 		}
 		$current_category_mapping = \get_option( 'event_bridge_for_activitypub_event_category_mappings', array() );
-		$terms                    = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
+		$terms                    = \get_the_terms( $this->item, $this->wp_taxonomy );
 
 		// Check if the event has a category set and if that category has a specific mapping return that one.
 		if ( ! is_wp_error( $terms ) && $terms && array_key_exists( $terms[0]->slug, $current_category_mapping ) ) {
@@ -138,8 +127,8 @@ abstract class Event extends Post {
 	 * @return ?string
 	 */
 	protected function retrieve_excerpt(): ?string {
-		if ( $this->wp_object->post_excerpt ) {
-			return $this->wp_object->post_excerpt;
+		if ( $this->item->post_excerpt ) {
+			return $this->item->post_excerpt;
 		} else {
 			return null;
 		}
@@ -203,7 +192,7 @@ abstract class Event extends Post {
 		$start_datetime  = new DateTime( $time );
 		$start_timestamp = $start_datetime->getTimestamp();
 		$datetime_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
-		return wp_date( $datetime_format, $start_timestamp );
+		return \wp_date( $datetime_format, $start_timestamp );
 	}
 
 	/**
@@ -231,13 +220,13 @@ abstract class Event extends Post {
 	/**
 	 * Generates the formatted time output for a shortcode.
 	 *
-	 * @param int|null $timestamp  The timestamp for the event time.
-	 * @param array    $atts       The shortcode attributes.
-	 * @param string   $icon       The icon to display.
-	 * @param string   $label      The label to display (e.g., 'Start', 'End').
+	 * @param string|null $timestamp  The timestamp for the event time.
+	 * @param array       $atts       The shortcode attributes.
+	 * @param string      $icon       The icon to display.
+	 * @param string      $label      The label to display (e.g., 'Start', 'End').
 	 * @return string The formatted date and time, or an empty string if the timestamp is invalid.
 	 */
-	private function generate_time_output( $timestamp, $atts, $icon, $label ) {
+	private function generate_time_output( $timestamp, $atts, $icon, $label ): string {
 		if ( ! $timestamp ) {
 			return '';
 		}
@@ -283,7 +272,6 @@ abstract class Event extends Post {
 				'zip'     => 'true',
 				'city'    => 'true',
 				'street'  => 'true',
-				'name'    => 'true',
 			),
 			$atts,
 			'ap_location'
@@ -303,14 +291,16 @@ abstract class Event extends Post {
 		}
 
 		$output = array();
+
 		if ( $args['icon'] ) {
 			$output[] = '📍';
 		}
+
 		if ( $args['label'] ) {
 			$output[] = esc_html__( 'Location', 'event-bridge-for-activitypub' ) . ':';
 		}
 
-		$output[] = self::format_address( $location->get_address(), $args );
+		$output[] = $this->get_formatted_address( true, $args );
 
 		// Join output array into a single string with spaces and return.
 		return implode( ' ', array_filter( $output ) );
@@ -323,12 +313,12 @@ abstract class Event extends Post {
 	 * @param array $args    The arguments for which components to include.
 	 * @return string The formatted address.
 	 */
-	protected static function format_address( $address, $args = null ) {
+	protected static function format_address( $address, $args = array() ) {
 		if ( is_string( $address ) ) {
 			return esc_html( $address );
 		}
 
-		if ( is_null( $args ) ) {
+		if ( empty( $args ) ) {
 			$args = array(
 				'icon'    => 'true',
 				'title'   => 'true',
@@ -336,7 +326,6 @@ abstract class Event extends Post {
 				'zip'     => 'true',
 				'city'    => 'true',
 				'street'  => 'true',
-				'name'    => 'true',
 			);
 		}
 
@@ -344,7 +333,6 @@ abstract class Event extends Post {
 			$address_parts = array();
 
 			$components = array(
-				'name'    => 'name',
 				'street'  => 'streetAddress',
 				'zip'     => 'postalCode',
 				'city'    => 'addressLocality',
@@ -380,7 +368,7 @@ abstract class Event extends Post {
 		}
 
 		// Add all category terms.
-		$terms = \get_the_terms( $this->wp_object, $this->wp_taxonomy );
+		$terms = \get_the_terms( $this->item, $this->wp_taxonomy );
 		if ( $terms && ! is_wp_error( $terms ) ) {
 			foreach ( $terms as $term ) {
 				$categories[] = $term->name;
@@ -397,10 +385,9 @@ abstract class Event extends Post {
 	 * Register the shortcodes.
 	 */
 	public function register_shortcodes() {
-		foreach ( get_class_methods( self::class ) as $function ) {
-			if ( 'shortcode_' === substr( $function, 0, 10 ) ) {
-				add_shortcode( 'ap_' . substr( $function, 10, strlen( $function ) ), array( $this, $function ) );
-			}
+		Shortcodes::register();
+		foreach ( array( 'location', 'start_time', 'end_time' ) as $shortcode ) {
+			\add_shortcode( 'ap_' . $shortcode, array( $this, 'shortcode_' . $shortcode ) );
 		}
 	}
 
@@ -408,10 +395,9 @@ abstract class Event extends Post {
 	 * Register the shortcodes.
 	 */
 	public function unregister_shortcodes() {
-		foreach ( get_class_methods( self::class ) as $function ) {
-			if ( 'shortcode_' === substr( $function, 0, 10 ) ) {
-				remove_shortcode( 'ap_' . substr( $function, 10, strlen( $function ) ), array( $this, $function ) );
-			}
+		Shortcodes::unregister();
+		foreach ( array( 'location', 'start_time', 'end_time' ) as $shortcode ) {
+			\remove_shortcode( 'ap_' . $shortcode );
 		}
 	}
 
@@ -424,7 +410,7 @@ abstract class Event extends Post {
 		}
 
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		$post    = $this->wp_object;
+		$post    = $this->item;
 		$summary = $this->get_event_summary_template();
 
 		// It seems that shortcodes are only applied to published posts.
@@ -434,11 +420,11 @@ abstract class Event extends Post {
 
 		// Register our shortcodes just in time.
 
-		Shortcodes::register();
 		$this->register_shortcodes();
 
 		// Fill in the shortcodes.
 		\setup_postdata( $post );
+		Shortcodes::register();
 		$summary = \do_shortcode( $summary );
 		\wp_reset_postdata();
 
@@ -449,10 +435,42 @@ abstract class Event extends Post {
 		$summary = \apply_filters( 'event_bridge_for_activitypub_the_summary', $summary, $post );
 
 		// Unregister the shortcodes.
-		Shortcodes::unregister();
 		$this->unregister_shortcodes();
 
 		return $summary;
+	}
+
+	/**
+	 * Get the address as a string.
+	 *
+	 * @param bool  $include_location_name  Whether to include the locations name.
+	 * @param array $args                   The arguments forwarded to format_address.
+	 *
+	 * @return string
+	 */
+	public function get_formatted_address( $include_location_name = false, $args = array() ) {
+		$location = $this->get_location();
+
+		if ( $location ) {
+			$location_name    = $location->get_name();
+			$foramted_address = self::format_address( $location->get_address(), $args );
+
+			$loaction_parts = array();
+
+			if ( $location_name ) {
+				$location_parts[] = $location_name;
+			}
+
+			if ( $foramted_address ) {
+				$location_parts[] = $foramted_address;
+			}
+
+			if ( ! empty( $location_parts ) ) {
+				return implode( ', ', $location_parts );
+			}
+		}
+
+		return '';
 	}
 
 	/**
@@ -466,9 +484,8 @@ abstract class Event extends Post {
 	public function format_preset_summary(): ?string {
 		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2, 2 );
 		$excerpt = $this->retrieve_excerpt();
-		// BeforeFirstRelease: decide whether this should be a admin setting.
-		$fallback_to_content = false;
-		if ( is_null( $excerpt ) && $fallback_to_content ) {
+
+		if ( is_null( $excerpt ) ) {
 			$excerpt = $this->get_content();
 		}
 		remove_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ) );
@@ -476,8 +493,11 @@ abstract class Event extends Post {
 		$category   = $this->format_categories();
 		$start_time = $this->get_start_time();
 		$end_time   = $this->get_end_time();
-		$address    = $this->format_address( $this->get_location() );
-		$time_atts  = array(
+		$location   = $this->get_location();
+
+		$address = $this->get_formatted_address( true );
+
+		$time_atts = array(
 			'icon'  => true,
 			'label' => true,
 		);
@@ -521,7 +541,7 @@ abstract class Event extends Post {
 		$summary  = \get_option( 'event_bridge_for_activitypub_custom_summary', EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY );
 		$template = $summary ?? EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY;
 
-		return apply_filters( 'event_bridge_for_activitypub_summary_template', $template, $this->wp_object );
+		return apply_filters( 'event_bridge_for_activitypub_summary_template', $template, $this->item );
 	}
 
 	/**
@@ -542,13 +562,13 @@ abstract class Event extends Post {
 	 * used when converting a object, where the URL is usually appended anyway.
 	 *
 	 * @param string             $template The template string.
-	 * @param WP_Post|WP_Comment $wp_object The wp_object which was used to select the template.
+	 * @param WP_Post|WP_Comment $item The item which was used to select the template.
 	 */
-	public static function remove_ap_permalink_from_template( $template, $wp_object ) {
+	public static function remove_ap_permalink_from_template( $template, $item ) {
 
 		// we could override the template here, to get out custom template from an option.
 
-		if ( 'event' === $wp_object->post_type ) {
+		if ( 'event' === $item->post_type ) {
 			$template = str_replace( '[ap_permalink]', '', $template );
 			$template = str_replace( '[ap_permalink type="html"]', '', $template );
 		}
@@ -559,19 +579,23 @@ abstract class Event extends Post {
 	/**
 	 * Generic function that converts an WP-Event object to an ActivityPub-Event object.
 	 *
-	 * @return Event_Object
+	 * @return Event_object|\WP_Error
 	 */
-	public function to_object(): Event_Object {
+	public function to_object() {
 		$activitypub_object = new Event_Object();
 		$activitypub_object = $this->transform_object_properties( $activitypub_object );
 
+		if ( \is_wp_error( $activitypub_object ) ) {
+			return $activitypub_object;
+		}
+
 		// maybe move the following logic (till end of the function) into getter functions.
 
-		$published = \strtotime( $this->wp_object->post_date_gmt );
+		$published = \strtotime( $this->item->post_date_gmt );
 
 		$activitypub_object->set_published( \gmdate( 'Y-m-d\TH:i:s\Z', $published ) );
 
-		$updated = \strtotime( $this->wp_object->post_modified_gmt );
+		$updated = \strtotime( $this->item->post_modified_gmt );
 
 		if ( $updated > $published ) {
 			$activitypub_object->set_updated( \gmdate( 'Y-m-d\TH:i:s\Z', $updated ) );
@@ -586,10 +610,11 @@ abstract class Event extends Post {
 		$activitypub_object->set_to(
 			array(
 				'https://www.w3.org/ns/activitystreams#Public',
-				$this->get_actor_object()->get_followers(), // this fails on my machine.
+				$this->get_actor_object()->get_followers(),
 			)
 		);
 
+		// @phpstan-ignore-next-line
 		return $activitypub_object;
 	}
 }

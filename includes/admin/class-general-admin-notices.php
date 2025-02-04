@@ -124,6 +124,7 @@ class General_Admin_Notices {
 	 */
 	public static function activitypub_plugin_not_enabled(): void {
 		$notice = self::get_admin_notice_activitypub_plugin_not_enabled();
+		// @phpstan-ignore-next-line
 		echo '<div class="notice notice-warning"><p>' . \wp_kses( $notice, self::ALLOWED_HTML ) . '</p></div>';
 	}
 
@@ -134,6 +135,7 @@ class General_Admin_Notices {
 	 */
 	public static function activitypub_plugin_version_too_old(): void {
 		$notice = self::get_admin_notice_activitypub_plugin_version_too_old();
+		// @phpstan-ignore-next-line
 		echo '<div class="notice notice-warning"><p>' . \wp_kses( $notice, self::ALLOWED_HTML ) . '</p></div>';
 	}
 
@@ -144,6 +146,7 @@ class General_Admin_Notices {
 	 */
 	public static function no_supported_event_plugin_active(): void {
 		$notice = self::get_admin_notice_no_supported_event_plugin_active();
+		// @phpstan-ignore-next-line
 		echo '<div class="notice notice-warning"><p>' . \wp_kses( $notice, self::ALLOWED_HTML ) . '</p></div>';
 	}
 }

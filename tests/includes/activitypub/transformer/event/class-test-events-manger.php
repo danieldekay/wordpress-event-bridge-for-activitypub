@@ -1,14 +1,16 @@
 <?php
 /**
- * Class SampleTest
+ * Test class for the transformation of the events of the WordPress event plugin Events Manager.
  *
  * @package Event_Bridge_For_ActivityPub
  */
 
-namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer\Event;
 
 /**
- * Sample test case.
+ * Test class for the transformation of the events of the WordPress event plugin Events Manager.
+ *
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event_Manager
  */
 class Test_Events_Manager extends \WP_UnitTestCase {
 	/**
@@ -18,7 +20,7 @@ class Test_Events_Manager extends \WP_UnitTestCase {
 		parent::set_up();
 
 		if ( ! class_exists( 'EM_Events' ) ) {
-			self::markTestSkipped( 'VS Event List plugin is not active.' );
+			self::markTestSkipped( 'Events Manager plugin is not active.' );
 		}
 
 		// For tests allow every user to create new events.
@@ -63,7 +65,7 @@ class Test_Events_Manager extends \WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Events_Manager::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Events_Manager::class, $transformer );
 	}
 
 	/**
@@ -139,7 +141,7 @@ class Test_Events_Manager extends \WP_UnitTestCase {
 		$this->assertEquals( 'MEETING', $event_array['category'] );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( 'Test location', $event_array['location']['name'] );
-		$this->assertEquals( 'Test Address', $event_array['location']['address']['postalAddress'] );
+		$this->assertEquals( 'Test Address', $event_array['location']['address']['streetAddress'] );
 		$this->assertEquals( 'Test Town', $event_array['location']['address']['addressLocality'] );
 		$this->assertEquals( 'Test state', $event_array['location']['address']['addressRegion'] );
 		$this->assertEquals( '1337', $event_array['location']['address']['postalCode'] );

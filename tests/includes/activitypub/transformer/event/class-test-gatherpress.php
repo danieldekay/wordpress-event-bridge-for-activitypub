@@ -1,14 +1,16 @@
 <?php
 /**
- * Class SampleTest
+ * Test class file for the transformation of the events of the WordPress event plugin GatherPress.
  *
  * @package Event_Bridge_For_ActivityPub
  */
 
-namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer\Event;
 
 /**
- * Sample test case.
+ * Test class for the transformation of the events of the WordPress event plugin GatherPress
+ *
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\GatherPress
  */
 class Test_GatherPress extends \WP_UnitTestCase {
 	/**
@@ -74,7 +76,7 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $event->event );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\GatherPress::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\GatherPress::class, $transformer );
 	}
 
 	/**

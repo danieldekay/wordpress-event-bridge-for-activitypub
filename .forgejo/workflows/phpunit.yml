@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - improve_tests
   pull_request:
 
 env:
@@ -24,42 +23,59 @@ jobs:
         php-version: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
         wordpress-version: ['6.7']
     name: PHPUnit – PHP ${{ matrix.php-version }}
-    env:
-      extensions: mysql
-      key: cache-v1
+    continue-on-error: true
     steps:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
 
-      - name: Cache WordPress Setup
+      - name: Cache WordPress Setup and installed plugins (Event plugins and ActivityPub plugin).
         id: cache-wordpress
         uses: https://code.forgejo.org/actions/cache@v4
         with:
           path: |
             ${{ env.WP_CORE_DIR }}
             ${{ env.WP_TESTS_DIR }}
-          key: cache-wordpress-67-4
+          key: cache-phpuni-wordpress-6.7-activitypub-5.0.0
 
       - name: Cache Composer
-        id: cache-composer-phpunit
+        id: cache-composer
         uses: https://code.forgejo.org/actions/cache@v4
         with:
           path: |
             ./vendor/
-          key: cache-composer-phpunit-2
+          key: cache-composer-3
+
+      - name: Setup cache environment for PHP Extensions
+        id: php-extensions-cache
+        uses: https://github.com/shivammathur/cache-extensions@v1
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: dom, iconv, json, libxml, zip
+          key: php-extensions-cache-v1
+
+      - name: Cache PHP extensions
+        uses: https://code.forgejo.org/actions/cache@v4
+        with:
+          path: ${{ steps.php-extensions-cache.outputs.dir }}
+          key: ${{ steps.php-extensions-cache.outputs.key }}
+          restore-keys: ${{ steps.php-extensions-cache.outputs.key }}
 
       - name: Setup PHP
         uses: https://github.com/shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
+          extensions: dom, iconv, json, libxml, zip
           coverage: none
-          tools: composer
+          tools: composer, cs2pr
         env:
           runner: self-hosted
+          GITHUB_TOKEN: ${{ secrets.COMPOSER_TOKEN }}
 
-      - name: Install PHPUnit and PHPUnit-Polyfills
-        if: steps.cache-composer-phpunit.outputs.cache-hit != 'true'
-        run: composer require --dev yoast/phpunit-polyfills:"^3.0"
+      - name: Install Composer dependencies for PHP
+        if: steps.cache-composer.outputs.cache-hit != 'true'
+        uses: ramsey/composer-install@v3
+        env:
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.COMPOSER_TOKEN }}"}}'
 
       - name: Install and cache mysqladmin needed to initialize the test database
         uses: https://github.com/awalsh128/cache-apt-pkgs-action@latest

@@ -44,7 +44,7 @@ class Settings {
 			'event_bridge_for_activitypub_default_event_category',
 			array(
 				'type'              => 'string',
-				'description'       => \__( 'Define your own custom post template', 'event-bridge-for-activitypub' ),
+				'description'       => \__( 'Default standardized federated event category.', 'event-bridge-for-activitypub' ),
 				'show_in_rest'      => true,
 				'default'           => self::DEFAULT_EVENT_CATEGORY,
 				'sanitize_callback' => array( self::class, 'sanitize_mapped_event_category' ),
@@ -59,6 +59,17 @@ class Settings {
 				'description'       => \__( 'Define your own custom post template', 'event-bridge-for-activitypub' ),
 				'default'           => array(),
 				'sanitize_callback' => array( self::class, 'sanitize_event_category_mappings' ),
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_reminder_time_gap',
+			array(
+				'type'              => 'array',
+				'description'       => \__( 'Time gap in seconds when a reminder is triggered that the event is about to start.', 'event-bridge-for-activitypub' ),
+				'default'           => 0, // Zero leads to this feature being deactivated.
+				'sanitize_callback' => 'absint',
 			)
 		);
 
@@ -143,10 +154,10 @@ class Settings {
 	/**
 	 * Sanitize the option which event plugin.
 	 *
-	 * @param string $event_plugin_integration The setting.
+	 * @param mixed $event_plugin_integration The setting.
 	 * @return string
 	 */
-	public static function sanitize_event_plugin_integration_used_for_event_sources( $event_plugin_integration ) {
+	public static function sanitize_event_plugin_integration_used_for_event_sources( $event_plugin_integration ): string {
 		if ( ! is_string( $event_plugin_integration ) ) {
 			return '';
 		}

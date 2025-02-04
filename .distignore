@@ -21,3 +21,6 @@ README.md
 src
 tests
 vendor
+phpstan.neon
+phpstan.neon.dist
+phpstan.stubs

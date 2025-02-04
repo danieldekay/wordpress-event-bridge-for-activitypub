@@ -26,6 +26,12 @@
 	<!-- Exclude the Node Modules directory. -->
 	<exclude-pattern>/node_modules/*</exclude-pattern>
 
+	<!-- Exclude Javascript files. -->
+	<exclude-pattern>*.js</exclude-pattern>
+
+	<!-- Exclude build assets from js blocks. -->
+	<exclude-pattern>/build/*/*asset.php</exclude-pattern>
+
 	<!-- Exclude minified Javascript files. -->
 	<exclude-pattern>*.min.js</exclude-pattern>
 
@@ -37,7 +43,6 @@
 
 	<!-- Check up to 8 files simultaneously. -->
 	<arg name="parallel" value="8"/>
-
 
 	<!--
 	#############################################################################
@@ -154,6 +159,9 @@
 	</rule>
 	<rule ref="WordPress.Files.FileName">
 		<exclude-pattern>tests/*.php</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.AlternativeFunctions">
+    	<exclude-pattern>/tests/includes/activitypub/transmogrifier/class-helper.php</exclude-pattern>
 	</rule>
 
 </ruleset>

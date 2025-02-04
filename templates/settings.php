@@ -50,6 +50,19 @@ require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . '/includes/event-categori
 
 $selected_default_event_category = \get_option( 'event_bridge_for_activitypub_default_event_category', 'MEETING' );
 $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_event_category_mappings', array() );
+$reminder_time_gap               = \get_option( 'event_bridge_for_activitypub_reminder_time_gap', 0 );
+
+$reminder_time_gap_choices = array(
+	0                   => __( 'Disabled', 'event-bridge-for-activitypub' ),
+	HOUR_IN_SECONDS * 6 => __( '6 hours', 'event-bridge-for-activitypub' ),
+	DAY_IN_SECONDS      => __( '1 day', 'event-bridge-for-activitypub' ),
+	DAY_IN_SECONDS * 3  => __( '3 days', 'event-bridge-for-activitypub' ),
+	WEEK_IN_SECONDS     => __( '1 week', 'event-bridge-for-activitypub' ),
+);
+
+if ( \get_option( 'event_bridge_for_activitypub_initially_activated' ) ) {
+	\update_option( 'event_bridge_for_activitypub_initially_activated', '' );
+}
 ?>
 
 <div class="event-bridge-for-activitypub-settings event-bridge-for-activitypub-settings-page hide-if-no-js">
@@ -184,16 +197,15 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 				<?php
 			} elseif ( ! \Activitypub\is_user_type_disabled( 'blog' ) ) {
 				?>
-				<p><?php esc_html_e( 'You do not have an Event Plugin installed that supports this feature', 'event-bridge-for-activitypub' ); ?></p>
+				<div class="notice-warning"><p><?php esc_html_e( 'You do not have an Event Plugin installed that supports this feature.', 'event-bridge-for-activitypub' ); ?></p></div>
 				<p><?php esc_html_e( 'The following Event Plugins are supported:', 'event-bridge-for-activitypub' ); ?></p>
 				<?php
-				$plugins_supporting_event_sources = \Event_Bridge_For_ActivityPub\Setup::detect_event_plugins_supporting_event_sources();
+				$plugins_supporting_event_sources = Setup::detect_event_plugins_supporting_event_sources();
 				echo '<ul class="event_bridge_for_activitypub-list">';
 				foreach ( $plugins_supporting_event_sources as $event_plugin ) {
 					echo '<li>' . esc_attr( $event_plugin->get_plugin_name() ) . '</li>';
 				}
 				echo '</ul>';
-				return;
 			} else {
 				$activitypub_plugin_data = get_plugin_data( ACTIVITYPUB_PLUGIN_FILE );
 
@@ -273,6 +285,28 @@ $current_category_mapping        = \get_option( 'event_bridge_for_activitypub_ev
 				<?php } ?>
 			</table>
 			<?php endif; ?>
+		</div>
+		<div class="box">
+			<h2> <?php esc_html_e( 'Send reminder before event starts', 'event-bridge-for-activitypub' ); ?> </h2>
+			<p> <?php esc_html_e( 'Specify a time interval before the event starts to trigger a reminder. This reminder automatically boosts the event, making it reappear in users\' timelines at the defined time before the event to increase visibility just before the event begins.', 'event-bridge-for-activitypub' ); ?> </p>
+			<table class="form-table">
+				<tr>
+					<label for="event_bridge_for_activitypub_reminder_time_gap">
+						<th scope="row"> <?php esc_html_e( 'Default Time Gap for Reminders', 'event-bridge-for-activitypub' ); ?> </th>
+					</label>
+					<td>
+					<select id="event_bridge_for_activitypub_reminder_time_gap" name="event_bridge_for_activitypub_reminder_time_gap">';
+						<?php
+						foreach ( $reminder_time_gap_choices as $value => $label ) {
+							echo '<option value="' . esc_attr( $value ) . '" ' . selected( $reminder_time_gap, $value, false ) . '>' . esc_html( $label ) . '</option>';
+						}
+						?>
+					</select>
+					<br><br>
+					<?php esc_html_e( 'This default value can be overridden for each event. Note that override is only available in the User Interface if you use the Gutenberg editor.', 'event-bridge-for-activitypub' ); ?>
+					</td>
+				</tr>
+			</table>
 		</div>
 		<!-- This disables the setup wizard. -->
 		<div class="hidden" aria-hidden="true">

@@ -18,13 +18,13 @@ use DateTimeZone;
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler;
 use Event_Bridge_For_ActivityPub\Admin\User_Interface;
-use Event_Bridge_For_ActivityPub\Integrations\Event_Plugin_Integration;
 use Event_Bridge_For_ActivityPub\Integrations\Feature_Event_Sources;
-use Exception;
 use WP_Error;
+use WP_Post;
+use WP_REST_Request;
 
-use function Activitypub\get_remote_metadata_by_actor;
 use function Activitypub\is_activitypub_request;
+use function Activitypub\sanitize_url;
 
 /**
  * Class for handling and saving the ActivityPub event sources (i.e. follows).
@@ -66,7 +66,7 @@ class Event_Sources {
 		\add_action( 'init', array( self::class, 'register_post_meta' ) );
 
 		// Register filters that prevent cached remote events from being federated again.
-		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'is_cached_external_post' ), 10, 2 );
+		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'is_post_disabled_for_activitypub' ), 10, 2 );
 		\add_filter( 'template_include', array( self::class, 'redirect_activitypub_requests_for_cached_external_events' ), 100 );
 
 		// Register daily schedule to cleanup cached remote events that have ended.
@@ -85,58 +85,48 @@ class Event_Sources {
 
 	/**
 	 * Register post meta.
+	 *
+	 * @return void
 	 */
 	public static function register_post_meta() {
 		$setup = Setup::get_instance();
 
 		foreach ( $setup->get_active_event_plugins() as $event_plugin_integration ) {
-			if ( ! $event_plugin_integration instanceof Feature_Event_Sources && $event_plugin_integration instanceof Event_Plugin_Integration ) {
+			if ( ! is_a( $event_plugin_integration, Feature_Event_Sources::class ) ) {
 				continue;
 			}
 
-			\register_post_meta(
-				$event_plugin_integration::get_post_type(),
-				'_event_bridge_for_activitypub_event_source',
-				array(
-					'type'              => 'integer',
-					'single'            => true,
-					'sanitize_callback' => 'absint',
-				)
-			);
+			$post_type = $event_plugin_integration::get_post_type();
+			self::register_post_meta_event_bridge_for_activitypub_event_source( $post_type );
 
-			$location_post_type = $event_plugin_integration::get_location_post_type();
-			if ( $location_post_type ) {
-				\register_post_meta(
-					$location_post_type,
-					'_event_bridge_for_activitypub_event_source',
-					array(
-						'type'              => 'string',
-						'single'            => false,
-						'sanitize_callback' => function ( $value ) {
-							return sanitize_url( $value );
-						},
-					)
-				);
+			$post_type = $event_plugin_integration::get_place_post_type();
+			if ( $post_type ) {
+				self::register_post_meta_event_bridge_for_activitypub_event_source( $post_type );
+			}
+
+			$post_type = $event_plugin_integration::get_organizer_post_type();
+			if ( $post_type ) {
+				self::register_post_meta_event_bridge_for_activitypub_event_source( $post_type );
 			}
 		}
 	}
 
 	/**
-	 * Get metadata of ActivityPub Actor by ID/URL.
+	 * Register post meta _event_bridge_for_activitypub_event_source for a given post type.
 	 *
-	 * @param string $url The URL or ID of the ActivityPub actor.
+	 * @param string $post_type The post type to register the meta for.
+	 * @return void
 	 */
-	public static function get_metadata( $url ) {
-		if ( ! is_string( $url ) ) {
-			return array();
-		}
-
-		if ( false !== strpos( $url, '@' ) ) {
-			if ( false === strpos( $url, '/' ) && preg_match( '#^https?://#', $url, $m ) ) {
-				$url = substr( $url, strlen( $m[0] ) );
-			}
-		}
-		return get_remote_metadata_by_actor( $url );
+	private static function register_post_meta_event_bridge_for_activitypub_event_source( $post_type ) {
+		\register_post_meta(
+			$post_type,
+			'_event_bridge_for_activitypub_event_source',
+			array(
+				'type'              => 'integer',
+				'single'            => true,
+				'sanitize_callback' => 'absint',
+			)
+		);
 	}
 
 	/**
@@ -181,23 +171,25 @@ class Event_Sources {
 	 *
 	 * @param bool    $disabled If it is disabled already by others (the upstream ActivityPub plugin).
 	 * @param WP_Post $post The WordPress post object.
-	 * @return bool True if the post can be federated via ActivityPub.
+	 * @return bool False if the post is not disabled for federation via ActivityPub.
 	 */
-	public static function is_cached_external_post( $disabled, $post = null ): bool {
+	public static function is_post_disabled_for_activitypub( $disabled, $post = null ): bool {
 		if ( $disabled || ! $post ) {
 			return $disabled;
 		}
-		return ! self::is_cached_external_event_post( $post );
+		return self::is_cached_external_post( $post );
 	}
 
 	/**
 	 * Determine whether a WP post is a cached external event.
 	 *
-	 * @param WP_Post $post The WordPress post object.
+	 * @param WP_Post|int $post The WordPress post object or post ID.
 	 * @return bool
 	 */
-	public static function is_cached_external_event_post( $post ): bool {
-		if ( get_post_meta( $post->ID, '_event_bridge_for_activitypub_event_source', true ) ) {
+	public static function is_cached_external_post( $post ): bool {
+		$post_id = $post instanceof WP_Post ? $post->ID : $post;
+
+		if ( \get_post_meta( $post_id, '_event_bridge_for_activitypub_event_source', true ) ) {
 			return true;
 		}
 
@@ -225,7 +217,7 @@ class Event_Sources {
 
 		global $post;
 
-		if ( self::is_cached_external_event_post( $post ) ) {
+		if ( self::is_cached_external_post( $post ) ) {
 			\wp_safe_redirect( $post->guid, 301 );
 			exit;
 		}
@@ -263,21 +255,17 @@ class Event_Sources {
 	 * Add the Blog Authors to the following list of the Blog Actor
 	 * if Blog not in single mode.
 	 *
-	 * @param array                   $follow_list The array of following urls.
-	 * @param \Activitypub\Model\User $user        The user object.
+	 * @param array $follow_list The array of following urls.
+	 * @param mixed $user        The user object, a subtype of \Activitypub\Model\User.
 	 *
 	 * @return array The array of following urls.
 	 */
-	public static function add_event_sources_to_follow_collection( $follow_list, $user ) {
+	public static function add_event_sources_to_follow_collection( $follow_list, $user ): array {
 		if ( ! $user instanceof Blog ) {
 			return $follow_list;
 		}
 
 		$event_sources_activitypub_ids = array_values( Event_Sources_Collection::get_event_sources() );
-
-		if ( ! is_array( $event_sources_activitypub_ids ) ) {
-			return $follow_list;
-		}
 
 		return array_merge( $follow_list, $event_sources_activitypub_ids );
 	}
@@ -325,9 +313,9 @@ class Event_Sources {
 	/**
 	 * Mark incoming accept activities as valid.
 	 *
-	 * @param bool             $valid   The validation state.
-	 * @param string           $param   The object parameter.
-	 * @param \WP_REST_Request $request The request object.
+	 * @param bool            $valid   The validation state.
+	 * @param string          $param   The object parameter.
+	 * @param WP_REST_Request $request The request object.
 	 *
 	 * @return bool|WP_Error The validation state: true if valid, false if not.
 	 */
@@ -347,9 +335,9 @@ class Event_Sources {
 	/**
 	 * Validate the event object.
 	 *
-	 * @param bool             $valid   The validation state.
-	 * @param string           $param   The object parameter.
-	 * @param \WP_REST_Request $request The request object.
+	 * @param bool            $valid   The validation state.
+	 * @param string          $param   The object parameter.
+	 * @param WP_REST_Request $request The request object.
 	 *
 	 * @return bool|WP_Error The validation state: true if valid, false if not.
 	 */
@@ -371,20 +359,61 @@ class Event_Sources {
 			return false;
 		}
 
-		if ( ! in_array( $json_params['type'], array( 'Create', 'Update', 'Delete', 'Announce' ), true ) || is_wp_error( $request ) ) {
+		if ( ! in_array( $json_params['type'], array( 'Create', 'Update', 'Delete', 'Announce' ), true ) ) {
 			return $valid;
 		}
 
-		return self::is_valid_activitypub_event_object( $json_params['object'] );
+		if ( ! self::is_valid_activitypub_event_object( $json_params['object'] ) ) {
+			return false;
+		}
+
+		if ( ! self::same_host( $json_params['actor'], $json_params['id'], $json_params['object']['id'] ) ) {
+			return false;
+		}
+
+		return true;
 	}
+
+	/**
+	 * Checks if all provided URLs belong to the same origin (host).
+	 *
+	 * @param string ...$urls List of URLs to compare.
+	 * @return bool True if all URLs have the same host, false otherwise.
+	 */
+	public static function same_host( ...$urls ) {
+		if ( empty( $urls ) ) {
+			return false; // No URLs given, can't compare hosts.
+		}
+
+		$first = \wp_parse_url( array_shift( $urls ) );
+		if ( ! isset( $first['host'] ) ) {
+			return false;
+		}
+
+		$first_host = $first['host'];
+
+		foreach ( $urls as $url ) {
+			$result = \wp_parse_url( $url );
+			if ( ! isset( $result['host'] ) ) {
+				return false;
+			}
+
+			if ( $result['host'] !== $first_host ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Check if the object is a valid ActivityPub event.
 	 *
-	 * @param array $event_object The (event) object as an associative array.
-	 * @return bool|WP_Error True if the object is an valid ActivityPub Event, false or WP_Error if not.
+	 * @param mixed $event_object The (event) object as an associative array.
+	 * @return bool True if the object is an valid ActivityPub Event, false if not.
 	 */
-	public static function is_valid_activitypub_event_object( $event_object ) {
+	public static function is_valid_activitypub_event_object( $event_object ): bool {
 		if ( ! is_array( $event_object ) ) {
 			return false;
 		}
@@ -396,44 +425,43 @@ class Event_Sources {
 		);
 
 		if ( array_intersect( $required, array_keys( $event_object ) ) !== $required ) {
-			return new WP_Error(
-				'event_bridge_for_activitypub_invalid_event_object',
-				__( 'The Event object is missing a required attribute.', 'event-bridge-for-activitypub' )
-			);
+			return false;
 		}
 
 		if ( ! self::is_valid_activitypub_time_string( $event_object['startTime'] ) ) {
-			return new WP_Error(
-				'event_bridge_for_activitypub_event_object_is_not_in_the_future',
-				__( 'Ignoring event that has already started.', 'event-bridge-for-activitypub' )
-			);
+			return false;
+		}
+
+		if ( ! self::is_valid_activitypub_id( $event_object['id'] ) ) {
+			return false;
 		}
 
 		return true;
 	}
 
 	/**
-	 * Validate a time string if it is according to the ActivityPub specification.
+	 * Validate an ActivityPub ID.
 	 *
-	 * @param string $time_string The time string.
+	 * @link https://www.w3.org/TR/activitypub/#obj-id
+	 *
+	 * @param string $id The ID to validate.
 	 * @return bool
 	 */
-	public static function is_valid_activitypub_time_string( $time_string ) {
-		// Try to create a DateTime object from the input string.
-		try {
-			$date = new DateTime( $time_string );
-		} catch ( Exception $e ) {
-			// If parsing fails, it's not valid.
-			return false;
-		}
+	public static function is_valid_activitypub_id( $id ) {
+		return sanitize_url( $id ) ? true : false;
+	}
 
-		// Ensure the timezone is correctly formatted (e.g., 'Z' or a valid offset).
-		$timezone           = $date->getTimezone();
-		$formatted_timezone = $timezone->getName();
-
-		// Return true only if the time string includes 'Z' or a valid timezone offset.
-		$valid = 'Z' === $formatted_timezone || preg_match( '/^[+-]\d{2}:\d{2}$/ ', $formatted_timezone );
-		return $valid;
+	/**
+	 * Validate a time string if it is according to the ActivityPub specification.
+	 *
+	 * @link https://www.w3.org/TR/activitystreams-core/#dates
+	 *
+	 * @param string $time_string The xsd:datetime string.
+	 * @return bool
+	 */
+	public static function is_valid_activitypub_time_string( string $time_string ): bool {
+		// Regular expression based on AS2 rules.
+		return 1 === preg_match( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:\d{2})$/', $time_string );
 	}
 
 	/**

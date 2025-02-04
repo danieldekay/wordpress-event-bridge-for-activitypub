@@ -246,13 +246,29 @@ install_wp_plugin_mec() {
 	git clone $URL "$WP_CORE_DIR/wp-content/plugins/modern-events-calendar-lite"
 }
 
+install_activitypub_plugin() {
+	# We also need it's test classes, therefore we use the git repository.
+	mkdir -p "$WP_CORE_DIR/wp-content/plugins/"
+
+	if [ -d "$WP_CORE_DIR/wp-content/plugins/activitypub" ]; then
+		return;
+	fi
+
+	PLUGIN_VERSION="trunk"
+
+    URL="https://github.com/Automattic/wordpress-activitypub"
+
+	git clone $URL "$WP_CORE_DIR/wp-content/plugins/activitypub"
+	git -C "$WP_CORE_DIR/wp-content/plugins/activitypub" checkout $PLUGIN_VERSION
+}
+
 install_wp_plugins() {
 	if [ "$SKIP_PLUGINS_INSTALL" = "true" ]; then
         echo "Skipping WordPress plugin installation."
         return 0
     fi
 	# Install the one and only ActivityPub plugin (greetings @pfefferle).
-	install_wp_plugin activitypub
+	install_activitypub_plugin
 	# Install (not-activate) all supported event plugins.
 	install_wp_plugin the-events-calendar "6.8.1"
 	install_wp_plugin very-simple-event-list
