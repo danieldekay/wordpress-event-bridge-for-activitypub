@@ -15,7 +15,7 @@ use WP_REST_Server;
 /**
  * Test class for the Event Sources Feature.
  *
- * @coversDefaultClass \Event_Bridge_For_ActivityPub\Event_Sources
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Handler\Join
  */
 class Test_Join extends \WP_UnitTestCase {
 	/**
