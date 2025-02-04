@@ -9,12 +9,11 @@
 
 namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transmogrifier;
 
-use Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source;
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\VS_Event_List as TransformerVS_Event_List;
-use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\VS_Event_List;
 use Event_Bridge_For_ActivityPub\Integrations\VS_Event_List as IntegrationsVS_Event_List;
 use WP_REST_Request;
 use WP_REST_Server;
+
+require_once EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . '/tests/includes/activitypub/transmogrifier/class-helper.php';
 
 /**
  * Test class for the Transmogrifier (import of ActivityPub Event objects) in VS Event List.
@@ -152,5 +151,39 @@ class Test_VS_Event_List extends \WP_UnitTestCase {
 		$this->assertCount( 0, $events );
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
+	}
+
+	/**
+	 * Test incoming Gancio style event.
+	 */
+	public function test_incoming_gancio_event() {
+		\add_filter( 'activitypub_defer_signature_verification', '__return_true' );
+
+		$activity = array(
+			'id'     => 'https://remote.example/@organizer/events/new-year-party#create',
+			'type'   => 'Create',
+			'actor'  => 'https://remote.example/@organizer',
+			'object' => Helper::get_gancio_event(),
+		);
+
+		$request = new WP_REST_Request( 'POST', '/activitypub/1.0/users/0/inbox' );
+		$request->set_header( 'Content-Type', 'application/activity+json' );
+		$request->set_body( \wp_json_encode( $activity ) );
+
+		// Dispatch the request.
+		$response = \rest_do_request( $request );
+		$this->assertEquals( 202, $response->get_status() );
+
+		$events = get_posts( array( 'post_type' => IntegrationsVS_Event_List::get_post_type() ) );
+		$this->assertCount( 1, $events );
+		$event = $events[0];
+
+		$this->assertEquals( $activity['object']['name'], $event->post_title );
+		$this->assertEquals( strtotime( $activity['object']['startTime'] ), get_post_meta( $event->ID, 'event-start-date', true ) );
+		$this->assertEquals( strtotime( $activity['object']['endTime'] ), get_post_meta( $event->ID, 'event-date', true ) );
+		$this->assertEquals( strtotime( $activity['object']['published'] ), strtotime( $event->post_date_gmt ) );
+		$this->assertStringStartsWith( $activity['object']['location']['name'], get_post_meta( $event->ID, 'event-location', true ) );
+		$this->assertEquals( $activity['object']['id'], $event->guid );
+		$this->assertStringContainsString( $activity['object']['location']['address'], get_post_meta( $event->ID, 'event-location', true ) );
 	}
 }

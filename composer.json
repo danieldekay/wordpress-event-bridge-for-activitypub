@@ -8,7 +8,7 @@
         "composer/installers": "^2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^5.7.21 || ^6.5 || ^7.5 || ^8",
+        "phpunit/phpunit": "*",
         "phpcompatibility/php-compatibility": "*",
         "phpcompatibility/phpcompatibility-wp": "*",
         "squizlabs/php_codesniffer": "3.*",
@@ -17,7 +17,8 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
         "sirbrillig/phpcs-variable-analysis": "^2.11",
         "phpcsstandards/phpcsextra": "^1.1.0",
-        "dms/phpunit-arraysubset-asserts": "^0.5.0"
+        "dms/phpunit-arraysubset-asserts": "^0.5.0",
+        "szepeviktor/phpstan-wordpress": "^2.0"
     },
     "config": {
         "allow-plugins": true
@@ -75,6 +76,7 @@
         "test-event-organiser": "phpunit --filter=event_organiser",
         "test-event-bridge-for-activitypub-shortcodes": "phpunit --filter=shortcodes",
         "test-event-sources": "phpunit --filter=event_sources",
-        "test-general": "phpunit"
+        "test-general": "phpunit",
+        "test:phpstan": "@php ./vendor/bin/phpstan analyze -vv --memory-limit=2G"
     }
 }

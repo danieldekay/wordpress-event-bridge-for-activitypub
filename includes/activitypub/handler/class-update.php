@@ -24,7 +24,7 @@ class Update {
 	/**
 	 * Initialize the class, registering the handler for incoming `Update` activities to the ActivityPub plugin.
 	 */
-	public static function init() {
+	public static function init(): void {
 		\add_action(
 			'activitypub_inbox_update',
 			array( self::class, 'handle_update' ),
@@ -39,7 +39,7 @@ class Update {
 	 * @param array $activity The activity-object.
 	 * @param int   $user_id  The id of the local blog-user.
 	 */
-	public static function handle_update( $activity, $user_id ) {
+	public static function handle_update( $activity, $user_id ): void {
 		// We only process activities that are target to the application user.
 		if ( Actors::BLOG_USER_ID !== $user_id ) {
 			return;
@@ -71,6 +71,6 @@ class Update {
 			return;
 		}
 
-		$transmogrifier->save( $activity['object'], $event_source_post_id );
+		$transmogrifier::save( $activity['object'], $event_source_post_id );
 	}
 }

@@ -119,6 +119,9 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 
 * Added: Event self-announce feature at configurable time before event starts
 * Added: Blueprint (Preview via WordPress Playground)
+* Added: Event Sources feature: cache and list events from remote ActivityPub profiles on your site
+* Added: Custom ActivityPub preview
+* Fixed: The Events Calendar date times when using the Gutenberg editor.
 
 = [0.3.5] - 2025-01-03 =
 

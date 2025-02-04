@@ -24,7 +24,7 @@ class Create {
 	/**
 	 * Initialize the class, registering the handler for incoming `Create` activities to the ActivityPub plugin.
 	 */
-	public static function init() {
+	public static function init(): void {
 		\add_action(
 			'activitypub_inbox_create',
 			array( self::class, 'handle_create' ),
@@ -39,7 +39,7 @@ class Create {
 	 * @param array $activity The activity-object.
 	 * @param int   $user_id  The id of the local blog-user.
 	 */
-	public static function handle_create( $activity, $user_id ) {
+	public static function handle_create( $activity, $user_id ): void {
 		// We only process activities that are target to the blog actor.
 		if ( Actors::BLOG_USER_ID !== $user_id ) {
 			return;
@@ -62,11 +62,7 @@ class Create {
 		}
 
 		if ( Event_Sources::is_time_passed( $activity['object']['startTime'] ) ) {
-			return new \WP_Error(
-				'event_bridge_for_activitypub_not_accepting_events_from_the_past',
-				__( 'We do not accept this event because it took place in the past.', 'event-bridge-for-activitypub' ),
-				array( 'status' => 403 )
-			);
+			return;
 		}
 
 		$transmogrifier = Setup::get_transmogrifier();
@@ -75,6 +71,6 @@ class Create {
 			return;
 		}
 
-		$transmogrifier->save( $activity['object'], $event_source_post_id );
+		$transmogrifier::save( $activity['object'], $event_source_post_id );
 	}
 }

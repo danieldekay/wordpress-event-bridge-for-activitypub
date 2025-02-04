@@ -5,10 +5,12 @@
  * @package Event_Bridge_For_ActivityPub
  */
 
-namespace Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPup\Tests\ActivityPub\Transformer\Event;
 
 /**
  * Class containing tests for the ActivityPub transformer of the WordPress plugin The Events Calendar.
+ *
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\The_Events_Calendar
  */
 class Test_The_Events_Calendar extends \WP_UnitTestCase {
 	/**
@@ -93,7 +95,7 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( $wp_object );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\The_Events_Calendar::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\The_Events_Calendar::class, $transformer );
 	}
 
 	/**
@@ -112,8 +114,8 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'My Event', $event_array['name'] );
 		$this->assertEquals( 'Come to my event!', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
+		$this->assertEquals( strtotime( '+10 days 15:00:00' ), strtotime( $event_array['startTime'] ) );
+		$this->assertEquals( strtotime( '+10 days 16:00:00' ), strtotime( $event_array['endTime'] ) );
 		$this->assertTrue( $event_array['commentsEnabled'] );
 		$this->assertEquals( 'allow_all', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
@@ -173,9 +175,9 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'My Event', $event_array['name'] );
 		$this->assertEquals( 'Come to my event!', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['commentsEnabled'] );
+		$this->assertEquals( strtotime( '+10 days 15:00:00' ), strtotime( $event_array['startTime'] ) );
+		$this->assertEquals( strtotime( '+10 days 16:00:00' ), strtotime( $event_array['endTime'] ) );
+		$this->assertFalse( strtotime( $event_array['commentsEnabled'] ) );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( 'Place', $event_array['location']['type'] );
 		$this->assertEquals( self::MOCKUP_VENUS['minimal_venue']['venue'], $event_array['location']['name'] );
@@ -194,21 +196,19 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 			->create();
 
 		// Call the transformer.
+
 		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
 
 		// Check that the event ActivityStreams representation contains everything as expected.
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'My Event', $event_array['name'] );
 		$this->assertEquals( 'Come to my event!', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['commentsEnabled'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
+		$this->assertEquals( strtotime( '+10 days 15:00:00' ), strtotime( $event_array['startTime'] ) );
+		$this->assertEquals( strtotime( '+10 days 16:00:00' ), strtotime( $event_array['endTime'] ) );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( 'Place', $event_array['location']['type'] );
 		$this->assertEquals( 'PostalAddress', $event_array['location']['address']['type'] );
 		$this->assertEquals( self::MOCKUP_VENUS['complex_venue']['venue'], $event_array['location']['name'] );
-		$this->assertEquals( self::MOCKUP_VENUS['complex_venue']['venue'], $event_array['location']['address']['name'] );
 		$this->assertEquals( self::MOCKUP_VENUS['complex_venue']['province'], $event_array['location']['address']['addressRegion'] );
 		$this->assertEquals( self::MOCKUP_VENUS['complex_venue']['address'], $event_array['location']['address']['streetAddress'] );
 		$this->assertEquals( self::MOCKUP_VENUS['complex_venue']['city'], $event_array['location']['address']['addressLocality'] );

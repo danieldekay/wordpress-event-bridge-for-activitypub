@@ -6,60 +6,62 @@
  * @license AGPL-3.0-or-later
  */
 
-namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
 
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
-use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event as Base_Event_Transformer;
+use WP_Post;
 
 /**
  * ActivityPub Transformer for Event Organiser.
  *
  * @since 1.0.0
  */
-final class Event_Organiser extends Event {
+final class Event_Organiser extends Base_Event_Transformer {
+	/**
+	 * The events occurances.
+	 *
+	 * @var ?array
+	 */
+	protected $schedule;
+
 	/**
 	 * Extended constructor.
 	 *
-	 * The wp_object is overridden with a the wp_object with filters. This object
+	 * The item is overridden with a the item with filters. This object
 	 * also contains attributes specific to the Event organiser plugin like the
 	 * occurrence id.
 	 *
-	 * @param WP_Post $wp_object The WordPress object.
+	 * @param WP_Post $item The WordPress object.
 	 * @param string  $wp_taxonomy The taxonomy slug of the event post type.
 	 */
-	public function __construct( $wp_object, $wp_taxonomy ) {
-		parent::__construct( $wp_object, $wp_taxonomy );
-		$this->wp_object = get_posts(
-			array(
-				'ID'               => $wp_object->ID,
-				'post_type'        => 'event',
-				'suppress_filters' => false,
-			)
-		)[0];
+	public function __construct( $item, $wp_taxonomy ) {
+		parent::__construct( $item, $wp_taxonomy );
+		$this->schedule = eo_get_event_schedule( $item->ID );
 	}
 
 	/**
 	 * Get the end time from the event object.
 	 */
-	public function get_end_time(): ?string {
-		return eo_get_the_end( 'Y-m-d\TH:i:s\Z', $this->wp_object->ID, $this->wp_object->occurrence_id );
+	public function get_end_time(): string {
+		return $this->schedule['end']->format( 'Y-m-d\TH:i:sP' );
 	}
 
 	/**
-	 * Get the end time from the event object.
+	 * Get the start time from the event object.
 	 */
 	public function get_start_time(): string {
-		return eo_get_the_start( 'Y-m-d\TH:i:s\Z', $this->wp_object->ID, $this->wp_object->occurrence_id );
+		return $this->schedule['start']->format( 'Y-m-d\TH:i:sP' );
 	}
 
 	/**
 	 * Get location from the event object.
 	 */
 	public function get_location(): ?Place {
-		$venue_id = eo_get_venue( $this->wp_object->ID );
+		$venue_id = eo_get_venue( $this->item->ID );
 
 		if ( ! $venue_id ) {
 			return null;
@@ -86,10 +88,17 @@ final class Event_Organiser extends Event {
 
 		$address['type'] = 'PostalAddress';
 
+		$longitude = eo_get_venue_lng( $this->item->ID );
+		$latitude  = eo_get_venue_lat( $this->item->ID );
+
 		$location = new Place();
-		$location->set_name( eo_get_venue_name( $this->wp_object->ID ) );
-		$location->set_latitude( eo_get_venue_lat( $this->wp_object->ID ) ?? null );
-		$location->set_longitude( eo_get_venue_lng( $this->wp_object->ID ) ?? null );
+		$location->set_name( eo_get_venue_name( $this->item->ID ) );
+		if ( 0.0 !== $latitude ) {
+			$location->set_latitude( $latitude );
+		}
+		if ( 0.0 !== $longitude ) {
+			$location->set_longitude( $longitude );
+		}
 		$location->set_address( $address );
 		$location->set_name( $venue_name );
 		$location->set_content( eo_get_venue_description( $venue_id ) );

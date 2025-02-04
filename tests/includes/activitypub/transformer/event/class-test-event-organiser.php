@@ -1,16 +1,18 @@
 <?php
 /**
- * Test class for the integration of the Event Organiser.
+ * Test class for the transformation of the events of the WordPress event plugin Event Organiser.
  *
  * @package Event_Bridge_For_ActivityPub
  */
 
-namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer;
+namespace Event_Bridge_For_ActivityPub\Tests\ActivityPub\Transformer\Event;
 
 use DateTime;
 
 /**
- * Sample test case.
+ * Test class for the transformation of the events of the WordPress event plugin Event Organiser.
+ *
+ * @coversDefaultClass \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event_Organiser
  */
 class Test_Event_Organiser extends \WP_UnitTestCase {
 	/**
@@ -66,17 +68,19 @@ class Test_Event_Organiser extends \WP_UnitTestCase {
 		$transformer = \Activitypub\Transformer\Factory::get_transformer( get_post( $post_id ) );
 
 		// Check that we got the right transformer.
-		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event_Organiser::class, $transformer );
+		$this->assertInstanceOf( \Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event_Organiser::class, $transformer );
 	}
 
 	/**
 	 * Test transformation to ActivityPub for basic event.
 	 */
 	public function test_transform_of_basic_event() {
+		$start = new DateTime( '+10 days 15:00:00', eo_get_blog_timezone() );
+		$end   = new DateTime( '+10 days 16:00:00', eo_get_blog_timezone() );
 		// Mock Event.
 		$event_data = array(
-			'start'    => new DateTime( '+10 days 15:00:00', eo_get_blog_timezone() ),
-			'end'      => new DateTime( '+10 days 16:00:00', eo_get_blog_timezone() ),
+			'start'    => $start,
+			'end'      => $end,
 			'all_day'  => 0,
 			'schedule' => 'once',
 		);
@@ -96,8 +100,8 @@ class Test_Event_Organiser extends \WP_UnitTestCase {
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Unit Test Event', $event_array['name'] );
 		$this->assertEquals( 'Unit Test description.', \wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
+		$this->assertEquals( $start->getTimestamp(), strtotime( $event_array['startTime'] ), 'Start time did not match' );
+		$this->assertEquals( $end->getTimestamp(), strtotime( $event_array['endTime'] ), 'End time did not match' );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertArrayNotHasKey( 'location', $event_array );
 	}
@@ -142,8 +146,6 @@ class Test_Event_Organiser extends \WP_UnitTestCase {
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Unit Test Event', $event_array['name'] );
 		$this->assertEquals( 'Unit Test description.', \wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( \gmdate( 'Y-m-d', \strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( $venue_args['description'], \wp_strip_all_tags( $event_array['location']['content'] ) );
