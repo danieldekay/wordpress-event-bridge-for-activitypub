@@ -5,12 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [Unreleased]
 
 ### Changed
 
 * Changed: Now depends on ActivityPub plugin version greater than 5.0.0
-*
+
 ### Added
 
 * Event self-announce feature at configurable time before event starts
@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * The Events Calendar date times when using the Gutenberg editor.
+* Improved admin UI for event-category mapping
 
 ## [0.3.5] - 2025-01-03
 
