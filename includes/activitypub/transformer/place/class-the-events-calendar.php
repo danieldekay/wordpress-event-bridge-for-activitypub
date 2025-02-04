@@ -11,7 +11,6 @@ namespace Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place;
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
-use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\Place as Place_Base_Transformer;
 
 /**
@@ -20,34 +19,6 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\Place as Place_Ba
  * @since 1.0.0
  */
 final class The_Events_Calendar extends Place_Base_Transformer {
-	/**
-	 * Set the type of the object.
-	 */
-	public function get_type(): string {
-		return 'Place';
-	}
-
-	/**
-	 * Set the type of the object.
-	 */
-	public function get_replies() {
-		return null;
-	}
-
-	/**
-	 * Set the type of the object.
-	 */
-	public function get_sensitive() {
-		return null;
-	}
-
-	/**
-	 * Null content to prevent registering and unregistering ActivityPub shortcodes in parent function.
-	 */
-	public function get_content() {
-		return null;
-	}
-
 	/**
 	 * Get the event location.
 	 *

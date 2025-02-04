@@ -13,6 +13,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event as Base_Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\Event_Organiser as Event_Organiser_Location_Transformer;
 use WP_Post;
 
 /**
@@ -40,7 +41,7 @@ final class Event_Organiser extends Base_Event_Transformer {
 	 */
 	public function __construct( $item, $wp_taxonomy ) {
 		parent::__construct( $item, $wp_taxonomy );
-		$this->schedule = eo_get_event_schedule( $item->ID );
+		$this->schedule = \eo_get_event_schedule( $item->ID );
 	}
 
 	/**
@@ -61,47 +62,16 @@ final class Event_Organiser extends Base_Event_Transformer {
 	 * Get location from the event object.
 	 */
 	public function get_location(): ?Place {
-		$venue_id = eo_get_venue( $this->item->ID );
+		$venue = \get_the_terms( $this->item->ID, 'event-venue' );
 
-		if ( ! $venue_id ) {
+		if ( empty( $venue ) || is_wp_error( $venue ) ) {
 			return null;
 		}
 
-		$address = eo_get_venue_address( $venue_id );
+		$venue = array_pop( $venue );
 
-		$venue_name = eo_get_venue_name( $venue_id );
-
-		$address['streetAddress'] = $address['address'];
-		unset( $address['address'] );
-
-		$address['postalCode'] = $address['postcode'];
-		unset( $address['postcode'] );
-
-		$address['addressRegion'] = $address['state'];
-		unset( $address['state'] );
-
-		$address['addressLocality'] = $address['city'];
-		unset( $address['city'] );
-
-		$address['addressCountry'] = $address['country'];
-		unset( $address['country'] );
-
-		$address['type'] = 'PostalAddress';
-
-		$longitude = eo_get_venue_lng( $this->item->ID );
-		$latitude  = eo_get_venue_lat( $this->item->ID );
-
-		$location = new Place();
-		$location->set_name( eo_get_venue_name( $this->item->ID ) );
-		if ( 0.0 !== $latitude ) {
-			$location->set_latitude( $latitude );
-		}
-		if ( 0.0 !== $longitude ) {
-			$location->set_longitude( $longitude );
-		}
-		$location->set_address( $address );
-		$location->set_name( $venue_name );
-		$location->set_content( eo_get_venue_description( $venue_id ) );
+		$location_transformer = new Event_Organiser_Location_Transformer( $venue );
+		$location             = $location_transformer->to_object();
 
 		return $location;
 	}

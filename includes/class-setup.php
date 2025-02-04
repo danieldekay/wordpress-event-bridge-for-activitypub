@@ -292,7 +292,8 @@ class Setup {
 		\add_action( 'init', array( Health_Check::class, 'init' ) );
 
 		// Check if the minimum required version of the ActivityPub plugin is installed, if not abort.
-		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
+
+		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION, '>=' ) ) {
 			return;
 		}
 
@@ -375,7 +376,7 @@ class Setup {
 			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_not_enabled' ), 10, 1 );
 			return;
 		}
-		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION ) ) {
+		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION, '>=' ) ) {
 			// The ActivityPub plugin is too old.
 			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_version_too_old' ), 10, 1 );
 			return;
@@ -393,29 +394,72 @@ class Setup {
 	 * @param mixed                         $data         The data to transform.
 	 * @param string                        $object_class The class of the object to transform.
 	 *
-	 * @return \Activitypub\Transformer\Base|null
+	 * @return \Activitypub\Transformer\Base|null|\WP_Error
 	 */
-	public function register_activitypub_transformer( $transformer, $data, $object_class ): ?\Activitypub\Transformer\Base {
+	public function register_activitypub_transformer( $transformer, $data, $object_class ) {
 		// If the current WordPress object is not a post (e.g., a WP_Comment), don't change the transformer.
-		if ( 'WP_Post' !== $object_class ) {
-			return $transformer;
-		}
+		if ( 'WP_Post' === $object_class ) {
+			// Get the transformer for a specific event plugins event or location post type.
+			foreach ( $this->active_event_plugins as $event_plugin ) {
+				// Check if we have an event.
+				if ( $data->post_type === $event_plugin->get_post_type() ) {
+					if ( ! self::is_post_disabled( $data ) ) {
+						return $event_plugin::get_activitypub_event_transformer( $data );
+					} else {
+						return new \WP_Error( 'invalid_object', __( 'Invalid object', 'event-bridge-for-activitypub' ) );
+					}
+				}
 
-		// Get the transformer for a specific event plugins event or location post type.
-		foreach ( $this->active_event_plugins as $event_plugin ) {
-			// Check if we have an event.
-			if ( $data->post_type === $event_plugin->get_post_type() ) {
-				return $event_plugin::get_activitypub_event_transformer( $data );
+				// Check if we have a location.
+				if ( $data->post_type === $event_plugin->get_place_post_type() ) {
+					if ( ! self::is_post_disabled( $data ) ) {
+						return $event_plugin::get_activitypub_place_transformer( $data );
+					} else {
+						return new \WP_Error( 'invalid_object', __( 'Invalid object', 'event-bridge-for-activitypub' ) );
+					}
+				}
 			}
-
-			// Check if we have a location.
-			if ( $data->post_type === $event_plugin->get_place_post_type() ) {
-				return $event_plugin::get_activitypub_place_transformer( $data );
+		} elseif ( 'WP_Term' === $object_class ) {
+			foreach ( $this->active_event_plugins as $event_plugin ) {
+				if ( $data->taxonomy === $event_plugin->get_place_taxonomy() ) {
+					return $event_plugin::get_activitypub_place_transformer( $data );
+				}
 			}
 		}
 
 		// Return the default transformer.
 		return $transformer;
+	}
+
+	/**
+	 * Check if a post that federation is managed by this plugin is disabled for ActivityPub.
+	 *
+	 * This function checks the visibility of the post and whether it is private or has a password.
+	 *
+	 * @param mixed $post The post object or ID.
+	 *
+	 * @return boolean True if the post is disabled, false otherwise.
+	 */
+	private static function is_post_disabled( $post ) {
+		$post     = \get_post( $post );
+		$disabled = false;
+
+		if ( ! $post ) {
+			return true;
+		}
+
+		$visibility = \get_post_meta( $post->ID, 'activitypub_content_visibility', true );
+
+		if (
+			ACTIVITYPUB_CONTENT_VISIBILITY_LOCAL === $visibility ||
+			ACTIVITYPUB_CONTENT_VISIBILITY_PRIVATE === $visibility ||
+			'private' === $post->post_status ||
+			! empty( $post->post_password )
+		) {
+			$disabled = true;
+		}
+
+		return $disabled;
 	}
 
 	/**
