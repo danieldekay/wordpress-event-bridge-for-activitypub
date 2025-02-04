@@ -193,16 +193,15 @@ $reminder_time_gap_choices = array(
 				<?php
 			} elseif ( ! \Activitypub\is_user_type_disabled( 'blog' ) ) {
 				?>
-				<p><?php esc_html_e( 'You do not have an Event Plugin installed that supports this feature', 'event-bridge-for-activitypub' ); ?></p>
+				<p><?php echo '<p class="notice notice-warning">' . esc_html__( 'You do not have an Event Plugin installed that supports this feature.', 'event-bridge-for-activitypub' ) . '</p>'; ?></p>
 				<p><?php esc_html_e( 'The following Event Plugins are supported:', 'event-bridge-for-activitypub' ); ?></p>
 				<?php
-				$plugins_supporting_event_sources = \Event_Bridge_For_ActivityPub\Setup::detect_event_plugins_supporting_event_sources();
+				$plugins_supporting_event_sources = Setup::detect_event_plugins_supporting_event_sources();
 				echo '<ul class="event_bridge_for_activitypub-list">';
 				foreach ( $plugins_supporting_event_sources as $event_plugin ) {
 					echo '<li>' . esc_attr( $event_plugin->get_plugin_name() ) . '</li>';
 				}
 				echo '</ul>';
-				return;
 			} else {
 				$activitypub_plugin_data = get_plugin_data( ACTIVITYPUB_PLUGIN_FILE );
 
