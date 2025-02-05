@@ -417,16 +417,14 @@ abstract class Event extends Post {
 	 */
 	public function get_summary(): ?string {
 		if ( 'preset' === get_option( 'event_bridge_for_activitypub_summary_type', 'preset' ) ) {
-			return $this->format_preset_summary();
+			$summary = EVENT_BRIDGE_FOR_ACTIVITYPUB_SUMMARY_TEMPLATE;
+		} else {
+			$summary = $this->get_event_summary_template();
 		}
-
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		$post    = $this->item;
-		$summary = $this->get_event_summary_template();
 
 		// It seems that shortcodes are only applied to published posts.
 		if ( is_preview() ) {
-			$post->post_status = 'publish';
+			$this->item->post_status = 'publish';
 		}
 
 		// Register our shortcodes just in time.
@@ -434,7 +432,7 @@ abstract class Event extends Post {
 		$this->register_shortcodes();
 
 		// Fill in the shortcodes.
-		\setup_postdata( $post );
+		\setup_postdata( $this->item );
 		Shortcodes::register();
 		$summary = \do_shortcode( $summary );
 		\wp_reset_postdata();
@@ -443,7 +441,7 @@ abstract class Event extends Post {
 		$summary = \preg_replace( '/[\n\r\t]/', '', $summary );
 		$summary = \trim( $summary );
 
-		$summary = \apply_filters( 'event_bridge_for_activitypub_the_summary', $summary, $post );
+		$summary = \apply_filters( 'event_bridge_for_activitypub_the_summary', $summary, $this->item );
 
 		// Unregister the shortcodes.
 		$this->unregister_shortcodes();
@@ -489,71 +487,13 @@ abstract class Event extends Post {
 	}
 
 	/**
-	 * Create a custom summary.
-	 *
-	 * It contains also the most important meta-information. The summary is often used when the
-	 * ActivityPub object type 'Event' is not supported, e.g. in Mastodon.
-	 *
-	 * @return string $summary The custom event summary.
-	 */
-	public function format_preset_summary(): ?string {
-		add_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ), 2, 2 );
-		$excerpt = $this->retrieve_excerpt();
-
-		if ( is_null( $excerpt ) ) {
-			$excerpt = $this->get_content();
-		}
-		remove_filter( 'activitypub_object_content_template', array( self::class, 'remove_ap_permalink_from_template' ) );
-
-		$category   = $this->format_categories();
-		$start_time = $this->get_start_time();
-		$end_time   = $this->get_end_time();
-
-		$address = $this->get_formatted_address( true );
-
-		$time_atts = array(
-			'icon'  => true,
-			'label' => true,
-		);
-
-		$formatted_items = array();
-		if ( ! empty( $category ) ) {
-			$formatted_items[] = '🏷️ ' . __( 'Category', 'event-bridge-for-activitypub' ) . ': ' . $category;
-		}
-
-		if ( ! empty( $start_time ) ) {
-			$formatted_items[] = $this->generate_time_output( $start_time, $time_atts, '🗓️', __( 'Start', 'event-bridge-for-activitypub' ) );
-		}
-
-		if ( ! empty( $end_time ) ) {
-			$formatted_items[] = $this->generate_time_output( $end_time, $time_atts, '⏳', __( 'End', 'event-bridge-for-activitypub' ) );
-		}
-
-		if ( ! empty( $address ) ) {
-			$formatted_items[] = '📍 ' . __( 'Address', 'event-bridge-for-activitypub' ) . ': ' . $address;
-		}
-
-		// Compose the summary based on the number of meta items.
-		if ( count( $formatted_items ) > 1 ) {
-			$summary = '<ul><li>' . implode( '</li><li>', $formatted_items ) . '</li></ul>';
-		} elseif ( 1 === count( $formatted_items ) ) {
-			$summary = $formatted_items[0]; // Just the one item without <ul><li>.
-		} else {
-			$summary = ''; // No items, so no output.
-		}
-
-		$summary .= $excerpt;
-		return $summary;
-	}
-
-	/**
 	 * Gets the template to use to generate the summary of the ActivityStreams representation of an event post.
 	 *
 	 * @return string The Template.
 	 */
 	protected function get_event_summary_template() {
-		$summary  = \get_option( 'event_bridge_for_activitypub_custom_summary', EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY );
-		$template = $summary ?? EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY;
+		$summary  = \get_option( 'event_bridge_for_activitypub_custom_summary', EVENT_BRIDGE_FOR_ACTIVITYPUB_SUMMARY_TEMPLATE );
+		$template = $summary ?? EVENT_BRIDGE_FOR_ACTIVITYPUB_SUMMARY_TEMPLATE;
 
 		return apply_filters( 'event_bridge_for_activitypub_summary_template', $template, $this->item );
 	}

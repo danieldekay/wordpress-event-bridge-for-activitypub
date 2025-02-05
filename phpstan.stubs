@@ -10,7 +10,7 @@ namespace {
     define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE', './event-bridge-for-activitypub.php' );
     define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_BASENAME', './event-bridge-for-activitypub.php' );
     define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_VERSION', '0.3.5' );
-    define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY', '' );
+    define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_SUMMARY_TEMPLATE', '' );
     define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION', '4.7.0' );
     define( 'ACTIVITYPUB_PLUGIN_DIR', './../activitypub' );
 }

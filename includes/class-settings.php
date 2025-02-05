@@ -101,7 +101,7 @@ class Settings {
 				'type'         => 'string',
 				'description'  => \__( 'Define your own custom summary template for events', 'event-bridge-for-activitypub' ),
 				'show_in_rest' => true,
-				'default'      => EVENT_BRIDGE_FOR_ACTIVITYPUB_CUSTOM_SUMMARY,
+				'default'      => EVENT_BRIDGE_FOR_ACTIVITYPUB_SUMMARY_TEMPLATE,
 			)
 		);
 
