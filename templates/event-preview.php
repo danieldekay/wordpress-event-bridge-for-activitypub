@@ -9,6 +9,7 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event;
 
 use function Activitypub\object_to_uri;
 
+
 $post        = \get_post(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 $transformer = \Activitypub\Transformer\Factory::get_transformer( $post );
 
@@ -35,6 +36,8 @@ if ( $transformer instanceof Event ) {
 		404
 	);
 }
+
+$first_image_attachment = null;
 
 ?>
 <DOCTYPE html>
@@ -1026,7 +1029,12 @@ if ( $transformer instanceof Event ) {
 					<div class="attachments">
 						<?php foreach ( $object->get_attachment() as $attachment ) : ?>
 							<?php if ( 'Image' === $attachment['type'] ) : ?>
-								<img src="<?php echo \esc_url( $attachment['url'] ); ?>" alt="<?php echo \esc_attr( $attachment['name'] ?? '' ); ?>" />
+								<?php
+								if ( isset( $attachment['url'] ) ) {
+									$first_image_attachment = $attachment;
+								}
+								?>
+								<img src="<?php echo \esc_url( $attachment['url'] ); ?>" alt="<?php echo \esc_attr( isset( $attachment['name'] ) ? $attachment['name'] : '' ); ?>" />
 							<?php endif; ?>
 						<?php endforeach; ?>
 					</div>
@@ -1093,9 +1101,9 @@ if ( $transformer instanceof Event ) {
 				</div>
 				<div class="row">
 					<div class="col-12 col-md-8 pr-sm-2 pr-md-0 col">
-						<?php if ( $attachment ) { ?>
+						<?php if ( $first_image_attachment ) { ?>
 						<div class="img">
-							<img alt="<?php echo \esc_attr( $attachment['name'] ) ?? ''; ?>" loading="eager" src="<?php echo \esc_url( $attachment['url'] ); ?>" itemprop="image" height="826" width="826" class="u-featured" style="object-position:50% 50%;">
+							<img alt="<?php echo \esc_attr( isset( $first_image_attachment['name'] ) ? $first_image_attachment['name'] : '' ); ?>" loading="eager" src="<?php echo \esc_url( $first_image_attachment['url'] ); ?>" itemprop="image" height="826" width="826" class="u-featured" style="object-position:50% 50%;">
 						</div>
 						<?php } ?>
 						<div itemprop="description" class="p-description text-body-1 pa-3 rounded">
@@ -1198,7 +1206,7 @@ if ( $transformer instanceof Event ) {
 				<div class="flex justify-center max-h-80">
 					<div class="flex-1">
 						<div class="h-full w-full max-w-100 min-h-[10rem]">
-						<img style="display: block" class="transition-opacity duration-500 rounded-lg object-cover mx-auto h-full opacity-100" alt="<?php echo \esc_attr( $attachment['name'] ) ?? ''; ?>" loading="eager" src="<?php echo \esc_url( $attachment['url'] ); ?>" loading="lazy">
+						<img style="display: block" class="transition-opacity duration-500 rounded-lg object-cover mx-auto h-full opacity-100" alt="<?php echo \esc_attr( isset( $first_image_attachment['name'] ) ? $first_image_attachment['name'] : '' ); ?>" loading="eager" src="<?php echo \esc_url( $first_image_attachment['url'] ); ?>" loading="lazy">
 						</div>
 					</div>
 				</div>
