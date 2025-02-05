@@ -1103,7 +1103,7 @@ $first_image_attachment = null;
 					<div class="col-12 col-md-8 pr-sm-2 pr-md-0 col">
 						<?php if ( $first_image_attachment ) { ?>
 						<div class="img">
-							<img alt="<?php echo \esc_attr( isset( $first_image_attachment['name'] ) ? $first_image_attachment['name'] : ''); ?>" loading="eager" src="<?php echo \esc_url( $first_image_attachment['url'] ); ?>" itemprop="image" height="826" width="826" class="u-featured" style="object-position:50% 50%;">
+							<img alt="<?php echo \esc_attr( isset( $first_image_attachment['name'] ) ? $first_image_attachment['name'] : '' ); ?>" loading="eager" src="<?php echo \esc_url( $first_image_attachment['url'] ); ?>" itemprop="image" height="826" width="826" class="u-featured" style="object-position:50% 50%;">
 						</div>
 						<?php } ?>
 						<div itemprop="description" class="p-description text-body-1 pa-3 rounded">
@@ -1206,7 +1206,7 @@ $first_image_attachment = null;
 				<div class="flex justify-center max-h-80">
 					<div class="flex-1">
 						<div class="h-full w-full max-w-100 min-h-[10rem]">
-						<img style="display: block" class="transition-opacity duration-500 rounded-lg object-cover mx-auto h-full opacity-100" alt="<?php echo \esc_attr( isset( $first_image_attachment['name'] ) ? $first_image_attachment['name'] : ''); ?>" loading="eager" src="<?php echo \esc_url( $first_image_attachment['url'] ); ?>" loading="lazy">
+						<img style="display: block" class="transition-opacity duration-500 rounded-lg object-cover mx-auto h-full opacity-100" alt="<?php echo \esc_attr( isset( $first_image_attachment['name'] ) ? $first_image_attachment['name'] : '' ); ?>" loading="eager" src="<?php echo \esc_url( $first_image_attachment['url'] ); ?>" loading="lazy">
 						</div>
 					</div>
 				</div>
