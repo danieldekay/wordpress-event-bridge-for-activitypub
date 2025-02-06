@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Changed: Now depends on ActivityPub plugin version greater than 5.0.0
+* This plugin now depends on ActivityPub plugin version greater than 5.1.0
 
 ### Added
 
@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Blueprint (Preview via WordPress Playground)
 * Event Sources feature: cache and list events from remote ActivityPub profiles on your site
 * Custom ActivityPub preview
+* Admin setting to enfore sending summary of events as plain text
 
 ### Fixed
 
