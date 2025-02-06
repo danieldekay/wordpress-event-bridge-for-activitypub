@@ -11,7 +11,7 @@
  * License URI:  https://www.gnu.org/licenses/agpl-3.0.html
  * Requires PHP: 7.4
  *
- * Requires at least ActivityPub plugin with version >= 5.0.0. ActivityPub plugin tested up to: 5.0.0.
+ * Requires at least ActivityPub plugin with version >= 5.1.0. ActivityPub plugin tested up to: 5.1.0.
  *
  * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
