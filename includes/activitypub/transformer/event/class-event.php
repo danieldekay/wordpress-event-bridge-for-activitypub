@@ -446,6 +446,10 @@ abstract class Event extends Post {
 		// Unregister the shortcodes.
 		$this->unregister_shortcodes();
 
+		if ( 'plain' === get_option( 'event_bridge_for_activitypub_summary_format', 'html' ) ) {
+			$summary = \wpautop( $summary );
+		}
+
 		return $summary;
 	}
 

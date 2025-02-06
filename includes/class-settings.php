@@ -96,6 +96,17 @@ class Settings {
 
 		\register_setting(
 			'event-bridge-for-activitypub',
+			'event_bridge_for_activitypub_summary_format',
+			array(
+				'type'         => 'string',
+				'description'  => \__( 'Summary format to use for ActivityStreams', 'event-bridge-for-activitypub' ),
+				'show_in_rest' => true,
+				'default'      => 'html',
+			)
+		);
+
+		\register_setting(
+			'event-bridge-for-activitypub',
 			'event_bridge_for_activitypub_custom_summary',
 			array(
 				'type'         => 'string',
