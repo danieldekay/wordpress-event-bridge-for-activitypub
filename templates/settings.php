@@ -97,11 +97,11 @@ if ( \get_option( 'event_bridge_for_activitypub_initially_activated' ) ) {
 					<summary><?php esc_html_e( 'See a list Template Tags available for the summary.', 'event-bridge-for-activitypub' ); ?></summary>
 					<div class="description">
 						<dl>
-							<dt><code>[ap_start_time]</code><dt>
+							<dt><code>[ap_start_time icon="true" label="true"]</code><dt>
 							<dd><?php \esc_html_e( 'The events title.', 'event-bridge-for-activitypub' ); ?></dd>
-							<dt><code>[ap_end_time]</code><dt>
+							<dt><code>[ap_end_time icon="true" label="true"]</code><dt>
 							<dd><?php \esc_html_e( 'The events content.', 'event-bridge-for-activitypub' ); ?></dd>
-							<dt><code>[ap_location]</code><dt>
+							<dt><code>[ap_location icon="true" label="true"]</code><dt>
 							<dd><?php \esc_html_e( 'The events location.', 'event-bridge-for-activitypub' ); ?></dd>
 							<dt><code>[ap_hashtags]</code><dt>
 							<dd><?php \esc_html_e( 'The events tags as hashtags.', 'event-bridge-for-activitypub' ); ?></dd>
