@@ -92,7 +92,7 @@ if ( \get_option( 'event_bridge_for_activitypub_initially_activated' ) ) {
 				</label>
 			</p>
 			<div id="event_bridge_for_activitypub_summary_type_custom-details">
-				<textarea name="event_bridge_for_activitypub_custom_summary" id="event_bridge_for_activitypub_custom_summary" rows="10" cols="50" class="large-text" placeholder="<?php echo wp_kses( EVENT_BRIDGE_FOR_ACTIVITYPUB_SUMMARY_TEMPLATE, 'post' ); ?>"><?php echo esc_textarea( wp_kses( \get_option( 'event_bridge_for_activitypub_custom_summary', EVENT_BRIDGE_FOR_ACTIVITYPUB_SUMMARY_TEMPLATE ), 'post' ) ); ?></textarea>
+				<textarea name="event_bridge_for_activitypub_custom_summary" id="event_bridge_for_activitypub_custom_summary" rows="10" cols="50" class="large-text"><?php echo esc_textarea( wp_kses( \get_option( 'event_bridge_for_activitypub_custom_summary', EVENT_BRIDGE_FOR_ACTIVITYPUB_SUMMARY_TEMPLATE ), 'post' ) ); ?></textarea>
 				<details>
 					<summary><?php esc_html_e( 'See a list Template Tags available for the summary.', 'event-bridge-for-activitypub' ); ?></summary>
 					<div class="description">
@@ -113,6 +113,26 @@ if ( \get_option( 'event_bridge_for_activitypub_initially_activated' ) ) {
 					</div>
 				</details>
 			</div>
+			<table class="form-table">
+				<tr>
+					<th scope="row">
+						<label for="event_bridge_for_activitypub_summary_format"> <?php esc_html_e( 'Enforce plain text in summary', 'event-bridge-for-activitypub' ); ?></label>
+					</th>
+					<td>
+						<p>
+							<input type="checkbox" aria-describedby="event_bridge_for_activitypub_summary_format_description" name="event_bridge_for_activitypub_summary_format" id="event_bridge_for_activitypub_summary_format" value="plain" <?php echo \checked( 'plain', \get_option( 'event_bridge_for_activitypub_summary_type', EVENT_BRIDGE_FOR_ACTIVITYPUB_DEFAULT_SUMMARY_TYPE ) ); ?> />
+							<span id="event_bridge_for_activitypub_summary_format_description">
+								<?php
+								$allowed_html = array(
+									'code' => array(),
+								);
+								echo \wp_kses( __( 'Many Fediverse applications, including Mastodon before version 4.3.0, do not render summaries as HTML. Enable this option to send the summary as plain text for better compatibility (e.g., <code>&lt;ul&gt;&lt;li&gt;Item 1&lt;/li&gt;&lt;/ul&gt;</code> will be sent as \'Item 1\' without formatting).', 'event-bridge-for-activitypub' ), $allowed_html );
+								?>
+							</span>
+						</p>
+					</td>
+				</tr>
+			</table>
 		</div>
 
 		<?php if ( $activitypub_plugin_is_active ) { ?>
@@ -128,6 +148,7 @@ if ( \get_option( 'event_bridge_for_activitypub_initially_activated' ) ) {
 							<label for="event_bridge_for_activitypub_event_sources_active"><?php \esc_html_e( 'Enable External Event Sources', 'event-bridge-for-activitypub' ); ?></label>
 						</th>
 						<td>
+							<p>
 							<input
 								type="checkbox"
 								name="event_bridge_for_activitypub_event_sources_active"
@@ -136,7 +157,8 @@ if ( \get_option( 'event_bridge_for_activitypub_initially_activated' ) ) {
 								value="1"
 								<?php echo \checked( $event_sources_active ); ?>
 							>
-							<p id="event-sources-description"><?php esc_html_e( 'Activate this feature to allow your WordPress site to fetch events from external sources via ActivityPub. Once enabled, you can add any ActivityPub account as a source of events. These events will be cached on your site and seamlessly integrated into your existing event calendar, creating a unified view of events from both internal and external sources.', 'event-bridge-for-activitypub' ); ?></p>
+							<span id="event-sources-description"><?php esc_html_e( 'Activate this feature to allow your WordPress site to fetch events from external sources via ActivityPub. Once enabled, you can add any ActivityPub account as a source of events. These events will be cached on your site and seamlessly integrated into your existing event calendar, creating a unified view of events from both internal and external sources.', 'event-bridge-for-activitypub' ); ?></span>
+							</p>
 						</td>
 					</tr>
 				<?php
