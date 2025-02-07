@@ -12,6 +12,8 @@
 
 namespace Event_Bridge_For_ActivityPub;
 
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Upcoming_Events;
+
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
@@ -301,6 +303,9 @@ class Setup {
 
 		// Register the event reminders.
 		\add_action( 'init', array( Reminder::class, 'init' ) );
+
+		// Add upcomingEvents collection to actors.
+		Upcoming_Events::init();
 
 		// Initialize the handling of "Join" activities.
 		Join_Handler::init();

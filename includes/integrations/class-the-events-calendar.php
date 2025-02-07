@@ -152,4 +152,16 @@ final class The_Events_Calendar extends Event_Plugin_Integration implements Feat
 		);
 		return $schema_entry;
 	}
+
+	/**
+	 * Get upcoming events.
+	 */
+	public static function upcoming_events() {
+		$events = \tribe_get_events( array( 'ends_after' => 'now' ) );
+
+		$event_objects = array();
+		foreach ( $events as $event ) {
+			$event_objects[] = The_Events_Calendar_Event_Transformer::transform( $event )->to_object()->to_array( false );
+		}
+	}
 }
