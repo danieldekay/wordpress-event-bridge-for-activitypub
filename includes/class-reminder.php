@@ -76,10 +76,10 @@ class Reminder {
 		}
 		$asset_data = include EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'build/reminder/plugin.asset.php';
 		$plugin_url = plugins_url( 'build/reminder/plugin.js', EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE );
-		wp_enqueue_script( 'event-bridge-for-activitypub-reminder', $plugin_url, $asset_data['dependencies'], $asset_data['version'], true );
+		\wp_enqueue_script( 'event-bridge-for-activitypub-reminder', $plugin_url, $asset_data['dependencies'], $asset_data['version'], true );
 
 		// Pass the the default site wide time gap option to the settings block on the events edit page.
-		wp_localize_script(
+		\wp_localize_script(
 			'event-bridge-for-activitypub-reminder',
 			'activityPubEventBridge',
 			array(
@@ -109,7 +109,7 @@ class Reminder {
 		}
 
 		// Only schedule an reminder for event post types.
-		if ( ! Setup::get_instance()->is_post_type_event_of_active_event_plugin( $post->post_type ) ) {
+		if ( ! Setup::get_instance()->is_event_post_type_of_active_event_plugin( $post->post_type ) ) {
 			return;
 		}
 

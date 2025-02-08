@@ -17,6 +17,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources as Event_Sources_Collection;
 use Event_Bridge_For_ActivityPub\ActivityPub\Handler\Join as Join_Handler;
+use Event_Bridge_For_ActivityPub\ActivityPub\Scheduler\Event as Event_Scheduler;
 use Event_Bridge_For_ActivityPub\Admin\Event_Plugin_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\General_Admin_Notices;
 use Event_Bridge_For_ActivityPub\Admin\Health_Check;
@@ -151,7 +152,7 @@ class Setup {
 	 *
 	 * @return bool True if it is an event post type.
 	 */
-	public function is_post_type_event_of_active_event_plugin( $post_type ): bool {
+	public function is_event_post_type_of_active_event_plugin( $post_type ): bool {
 		foreach ( $this->active_event_plugins as $event_plugin ) {
 			if ( $post_type === $event_plugin->get_post_type() ) {
 				return true;
@@ -299,6 +300,12 @@ class Setup {
 
 		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION, '>=' ) ) {
 			return;
+		}
+
+		// Register our own deplayed event scheduler because of upstream race-condition bug.
+		// See https://github.com/Automattic/wordpress-activitypub/issues/1269 for more information.
+		if ( version_compare( $this->activitypub_plugin_version, '7.0.0', '<' ) ) {
+			Event_Scheduler::init();
 		}
 
 		// Register the event reminders.
@@ -463,7 +470,7 @@ class Setup {
 	 *
 	 * @return boolean True if the post is disabled, false otherwise.
 	 */
-	private static function is_post_disabled( $post ): bool {
+	public static function is_post_disabled( $post ): bool {
 		$post     = \get_post( $post );
 		$disabled = false;
 
