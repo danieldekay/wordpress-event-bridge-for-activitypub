@@ -362,7 +362,7 @@ class Setup {
 		}
 
 		// Check if we're on your custom tab.
-		$current_tab = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'welcome';
+		$current_tab = isset( $_GET['tab'] ) ? \sanitize_key( $_GET['tab'] ) : 'welcome'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 		if ( 'event-bridge-for-activitypub' === $current_tab ) {
 			\wp_enqueue_style(
 				'event-bridge-for-activitypub-admin-styles',
