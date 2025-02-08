@@ -504,13 +504,13 @@ class Event_Sources {
 		$activity->set_type( 'Undo' );
 		$activity->set_to( null );
 		$activity->set_cc( null );
-		$activity->set_actor( $from_actor );
+		$activity->set_actor( $from_actor->get_id() );
 		$activity->set_object(
 			array(
 				'type'   => 'Follow',
 				'actor'  => $actor,
 				'object' => $to,
-				'id'     => $to,
+				'id'     => self::compose_follow_id( $from_actor->get_id(), $to ),
 			)
 		);
 		$activity->set_id( $from_actor->get_id() . '#unfollow-' . \preg_replace( '~^https?://~', '', $to ) );

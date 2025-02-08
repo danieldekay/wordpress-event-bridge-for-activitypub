@@ -36,7 +36,7 @@ class Event_Sources extends WP_List_Table {
 			array(
 				'singular' => \__( 'Event Source', 'event-bridge-for-activitypub' ),
 				'plural'   => \__( 'Event Sources', 'event-bridge-for-activitypub' ),
-				'ajax'     => false,
+				'ajax'     => true,
 			)
 		);
 	}
@@ -230,12 +230,13 @@ class Event_Sources extends WP_List_Table {
 
 		$event_sources = $_REQUEST['event_sources']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 
+		if ( ! is_array( $event_sources ) ) {
+			return;
+		}
+
 		if ( 'delete' === $this->current_action() ) {
-			if ( ! is_array( $event_sources ) ) {
-				$event_sources = array( $event_sources );
-			}
 			foreach ( $event_sources as $event_source ) {
-				Event_Sources_Collection::remove_event_source( (int) $event_source );
+				Event_Sources_Collection::remove_event_source( absint( $event_source ) );
 			}
 		}
 	}

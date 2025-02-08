@@ -277,8 +277,10 @@ class Setup {
 		// Add hook that loads CSS and JavaScript files for the Admin UI.
 		\add_action( 'admin_enqueue_scripts', array( self::class, 'enqueue_styles' ) );
 
-		// Register the settings page(s) of this plugin to the WordPress admin menu.
-		\add_action( 'admin_menu', array( Settings_Page::class, 'admin_menu' ) );
+		// Register the settings page of this plugin as a Tab in the ActivityPub plugins settings.
+		Settings_Page::init();
+
+		// Add settings link in the Plugin overview Page.
 		\add_filter(
 			'plugin_action_links_' . EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_BASENAME,
 			array( Settings_Page::class, 'settings_link' )
@@ -355,7 +357,13 @@ class Setup {
 	 * @return void
 	 */
 	public static function enqueue_styles( $hook_suffix ): void {
-		if ( false !== strpos( $hook_suffix, 'event-bridge-for-activitypub' ) ) {
+		if ( 'settings_page_activitypub' !== $hook_suffix ) {
+			return;
+		}
+
+		// Check if we're on your custom tab.
+		$current_tab = isset( $_GET['tab'] ) ? \sanitize_key( $_GET['tab'] ) : 'welcome'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( 'event-bridge-for-activitypub' === $current_tab ) {
 			\wp_enqueue_style(
 				'event-bridge-for-activitypub-admin-styles',
 				plugins_url(
@@ -388,17 +396,17 @@ class Setup {
 		// Check if any general admin notices are needed and add actions to insert the needed admin notices.
 		if ( ! $this->activitypub_plugin_is_active ) {
 			// The ActivityPub plugin is not active.
-			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_not_enabled' ), 10, 1 );
+			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_not_enabled' ), 10, 0 );
 			return;
 		}
 		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION, '>=' ) ) {
 			// The ActivityPub plugin is too old.
-			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_version_too_old' ), 10, 1 );
+			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_version_too_old' ), 10, 0 );
 			return;
 		}
 		if ( empty( $this->active_event_plugins ) ) {
 			// No supported Event Plugin is active.
-			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'no_supported_event_plugin_active' ), 10, 1 );
+			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'no_supported_event_plugin_active' ), 10, 0 );
 		}
 	}
 

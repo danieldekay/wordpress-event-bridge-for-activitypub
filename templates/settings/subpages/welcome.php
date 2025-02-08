@@ -16,7 +16,7 @@ use Event_Bridge_For_ActivityPub\Admin\Settings_Page;
 use Event_Bridge_For_ActivityPub\Admin\Health_Check;
 
 \load_template(
-	__DIR__ . '/admin-header.php',
+	__DIR__ . '/../menu.php',
 	true,
 	array(
 		'welcome' => 'active',
@@ -41,7 +41,7 @@ WP_Filesystem();
 
 ?>
 
-<div class="event-bridge-for-activitypub-settings event-bridge-for-activitypub-settings-page hide-if-no-js">
+<div class="activitypub-settings event-bridge-for-activitypub-settings event-bridge-for-activitypub-settings-page hide-if-no-js">
 	<div class="box">
 		<h2><?php \esc_html_e( 'Status', 'event-bridge-for-activitypub' ); ?></h2>
 		<p><?php \esc_html_e( 'The Event Bridge for ActivityPub detected the following (activated) event plugins:', 'event-bridge-for-activitypub' ); ?></p>
