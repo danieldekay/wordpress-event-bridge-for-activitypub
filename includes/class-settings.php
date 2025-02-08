@@ -11,6 +11,8 @@
 
 namespace Event_Bridge_For_ActivityPub;
 
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
+
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
@@ -117,18 +119,19 @@ class Settings {
 		);
 
 		\register_setting(
-			'event-bridge-for-activitypub',
+			'event-bridge-for-activitypub_event-sources',
 			'event_bridge_for_activitypub_event_sources_active',
 			array(
-				'type'         => 'boolean',
-				'show_in_rest' => true,
-				'description'  => \__( 'Whether the event sources feature is activated.', 'event-bridge-for-activitypub' ),
-				'default'      => 0,
+				'type'              => 'boolean',
+				'show_in_rest'      => true,
+				'description'       => \__( 'Whether the event sources feature is activated.', 'event-bridge-for-activitypub' ),
+				'default'           => 0,
+				'sanitize_callback' => array( self::class, 'sanitize_event_sources_feature_active' ),
 			)
 		);
 
 		\register_setting(
-			'event-bridge-for-activitypub',
+			'event-bridge-for-activitypub_event-sources',
 			'event_bridge_for_activitypub_event_source_cache_retention',
 			array(
 				'type'              => 'integer',
@@ -140,7 +143,7 @@ class Settings {
 		);
 
 		\register_setting(
-			'event-bridge-for-activitypub',
+			'event-bridge-for-activitypub_event-sources',
 			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
 			array(
 				'type'              => 'string',
@@ -151,15 +154,41 @@ class Settings {
 		);
 
 		\register_setting(
-			'event-bridge-for-activitypub-event-sources',
-			'event_bridge_for_activitypub_event_sources',
+			'event-bridge-for-activitypub_add-event-source',
+			'event_bridge_for_activitypub_add_event_source',
 			array(
 				'type'              => 'array',
-				'description'       => \__( 'Dummy setting', 'event-bridge-for-activitypub' ),
-				'default'           => array(),
-				'sanitize_callback' => 'is_array',
+				'description'       => \__( 'Dummy setting for adding event sources', 'event-bridge-for-activitypub' ),
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
 			)
 		);
+	}
+
+	/**
+	 * Do not allow the event sources feature to get deactivated, when event sources are still followed.
+	 *
+	 * @param mixed $value The optios value.
+	 */
+	public static function sanitize_event_sources_feature_active( $value ) {
+		$count = count( Event_Sources::get_event_sources() );
+
+		$value = (bool) $value;
+
+		if ( 0 === $count ) {
+			return $value;
+		}
+
+		if ( ! $value ) {
+			\add_settings_error(
+				'event-bridge-for-activitypub_event-sources',
+				'event_bridge_for_activitypub_cannot_disable_event_sources',
+				__( 'It is not possible to disable the Event Sources feature while you are still having active followed Event Sources.', 'event-bridge-for-activitypub' ),
+				'error'
+			);
+		}
+
+		return true;
 	}
 
 	/**
