@@ -34,23 +34,33 @@ class Settings_Page {
 	const STATIC = 'Event_Bridge_For_ActivityPub\Admin\Settings_Page';
 
 	const SETTINGS_SLUG = 'event-bridge-for-activitypub';
+
 	/**
-	 * Warning if the plugin is Active and the ActivityPub plugin is not.
+	 * Init settings pages.
 	 *
 	 * @return void
 	 */
-	public static function admin_menu(): void {
+	public static function init() {
+		\add_action( 'activitypub_admin_settings_tabs', callback: array( self::class, 'add_settings_tab' ) );
 		\add_action(
 			'admin_init',
-			array( self::STATIC, 'maybe_add_event_source' ),
+			array( self::class, 'maybe_add_event_source' ),
 		);
-		\add_options_page(
-			'Event Bridge for ActivityPub',
-			__( 'Event Bridge for ActivityPub', 'event-bridge-for-activitypub' ),
-			'manage_options',
-			self::SETTINGS_SLUG,
-			array( self::STATIC, 'settings_page' ),
+	}
+
+	/**
+	 * Adds a custom tab to the ActivityPub settings.
+	 *
+	 * @param  array $tabs The existing tabs array.
+	 * @return array The modified tabs array.
+	 */
+	public static function add_settings_tab( $tabs ): array {
+		$tabs['event-bridge-for-activitypub'] = array(
+			'label'    => __( 'Event Bridge', 'event-bridge-for-activitypub' ),
+			'template' => EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/settings/tab.php',
 		);
+
+		return $tabs;
 	}
 
 	/**
@@ -59,12 +69,12 @@ class Settings_Page {
 	 * @return void
 	 */
 	public static function maybe_add_event_source() {
-		if ( ! isset( $_POST['event_bridge_for_activitypub_event_source'] ) ) {
+		if ( ! isset( $_POST['event_bridge_for_activitypub_add_event_source'] ) ) {
 			return;
 		}
 
 		// Check and verify request and check capabilities.
-		if ( ! \wp_verify_nonce( sanitize_key( $_REQUEST['_wpnonce'] ), 'event-bridge-for-activitypub-event-sources-options' ) ) {
+		if ( ! \wp_verify_nonce( sanitize_key( $_REQUEST['_wpnonce'] ), 'event-bridge-for-activitypub_add-event-source-options' ) ) {
 			return;
 		}
 
@@ -72,7 +82,7 @@ class Settings_Page {
 			return;
 		}
 
-		$event_source = \sanitize_text_field( $_POST['event_bridge_for_activitypub_event_source'] );
+		$event_source = \sanitize_text_field( $_POST['event_bridge_for_activitypub_add_event_source'] );
 
 		$actor_url = false;
 
@@ -95,6 +105,11 @@ class Settings_Page {
 		}
 
 		if ( ! $actor_url ) {
+			return;
+		}
+
+		// Don't proceed if on the same host!
+		if ( \wp_parse_url( \home_url(), PHP_URL_HOST ) === \wp_parse_url( $actor_url, PHP_URL_HOST ) ) {
 			return;
 		}
 
@@ -121,12 +136,13 @@ class Settings_Page {
 	 * @return array          Original links but with link to setting page added.
 	 */
 	public static function settings_link( $links ): array {
-		return array_merge(
-			$links,
-			array(
-				'<a href="' . admin_url( 'options-general.php?page=' . self::SETTINGS_SLUG ) . '">Settings</a>',
-			)
+		$links[] = \sprintf(
+			'<a href="%1s">%2s</a>',
+			\add_query_arg( 'tab', 'event-bridge-for-activitypub', \menu_page_url( 'activitypub', false ) ),
+			\__( 'Settings', 'event-bridge-for-activitypub' )
 		);
+
+		return $links;
 	}
 
 	/**
@@ -156,13 +172,13 @@ class Settings_Page {
 	 *
 	 * @return void
 	 */
-	public static function settings_page(): void {
+	public static function do_settings_page(): void {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( empty( $_GET['tab'] ) ) {
+		if ( empty( $_GET['subpage'] ) ) {
 			$tab = 'welcome';
 		} else {
 			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$tab = \sanitize_key( $_GET['tab'] );
+			$tab = \sanitize_key( $_GET['subpage'] );
 		}
 
 		// Fallback to always re-scan active event plugins, when user visits admin area of this plugin.
@@ -178,6 +194,14 @@ class Settings_Page {
 					$event_terms = array_merge( $event_terms, self::get_event_terms( $event_plugin_integration ) );
 				}
 
+				$args = array(
+					'slug'        => self::SETTINGS_SLUG,
+					'event_terms' => $event_terms,
+				);
+
+				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/settings/subpages/settings.php', true, $args );
+				break;
+			case 'event-sources':
 				$supports_event_sources = array();
 
 				foreach ( $event_plugins as $event_plugin_integration ) {
@@ -188,17 +212,12 @@ class Settings_Page {
 				}
 
 				$args = array(
-					'slug'                   => self::SETTINGS_SLUG,
-					'event_terms'            => $event_terms,
 					'supports_event_sources' => $supports_event_sources,
 				);
 
-				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/settings.php', true, $args );
-				break;
-			case 'event-sources':
 				\wp_enqueue_script( 'thickbox' );
 				\wp_enqueue_style( 'thickbox' );
-				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/event-sources.php', true );
+				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/settings/subpages/event-sources.php', true, $args );
 				break;
 			case 'welcome':
 			default:
@@ -206,7 +225,7 @@ class Settings_Page {
 				\add_thickbox();
 				\wp_enqueue_script( 'updates' );
 
-				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/welcome.php', true );
+				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/settings/subpages/welcome.php', true );
 				break;
 		}
 	}

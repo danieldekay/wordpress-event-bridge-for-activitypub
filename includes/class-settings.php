@@ -117,7 +117,7 @@ class Settings {
 		);
 
 		\register_setting(
-			'event-bridge-for-activitypub',
+			'event-bridge-for-activitypub_event-sources',
 			'event_bridge_for_activitypub_event_sources_active',
 			array(
 				'type'         => 'boolean',
@@ -128,7 +128,7 @@ class Settings {
 		);
 
 		\register_setting(
-			'event-bridge-for-activitypub',
+			'event-bridge-for-activitypub_event-sources',
 			'event_bridge_for_activitypub_event_source_cache_retention',
 			array(
 				'type'              => 'integer',
@@ -140,7 +140,7 @@ class Settings {
 		);
 
 		\register_setting(
-			'event-bridge-for-activitypub',
+			'event-bridge-for-activitypub_event-sources',
 			'event_bridge_for_activitypub_integration_used_for_event_sources_feature',
 			array(
 				'type'              => 'string',
@@ -151,13 +151,13 @@ class Settings {
 		);
 
 		\register_setting(
-			'event-bridge-for-activitypub-event-sources',
-			'event_bridge_for_activitypub_event_sources',
+			'event-bridge-for-activitypub_add-event-source',
+			'event_bridge_for_activitypub_add_event_source',
 			array(
 				'type'              => 'array',
-				'description'       => \__( 'Dummy setting', 'event-bridge-for-activitypub' ),
-				'default'           => array(),
-				'sanitize_callback' => 'is_array',
+				'description'       => \__( 'Dummy setting for adding event sources', 'event-bridge-for-activitypub' ),
+				'default'           => '',
+				'sanitize_callback' => 'sanitize_text_field',
 			)
 		);
 	}

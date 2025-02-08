@@ -32,16 +32,9 @@
 	padding-bottom: 20px;
 }
 
-.event-bridge-for-activitypub-settings {
-	max-width: 800px;
-	margin: 0 auto;
-}
-
 .event-bridge-for-activitypub-settings-header {
 	text-align: center;
 	margin: 0 0 1rem;
-	background: #fff;
-	border-bottom: 1px solid #dcdcde;
 }
 
 .event-bridge-for-activitypub-settings-title-section {
@@ -232,4 +225,12 @@ code.event-bridge-for-activitypub-settings-example-url {
 	content: "\21D2";
 	margin-right: 8px;
 	color: inherit;
+}
+
+ul.event-bridge-for-activitypub-syntax-list {
+	list-style: disc;
+}
+
+ul.event-bridge-for-activitypub-syntax-list > li {
+	margin: 6px 6px 6px 20px;
 }
