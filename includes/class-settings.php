@@ -11,6 +11,8 @@
 
 namespace Event_Bridge_For_ActivityPub;
 
+use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
+
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
@@ -120,10 +122,11 @@ class Settings {
 			'event-bridge-for-activitypub_event-sources',
 			'event_bridge_for_activitypub_event_sources_active',
 			array(
-				'type'         => 'boolean',
-				'show_in_rest' => true,
-				'description'  => \__( 'Whether the event sources feature is activated.', 'event-bridge-for-activitypub' ),
-				'default'      => 0,
+				'type'              => 'boolean',
+				'show_in_rest'      => true,
+				'description'       => \__( 'Whether the event sources feature is activated.', 'event-bridge-for-activitypub' ),
+				'default'           => 0,
+				'sanitize_callback' => array( self::class, 'sanitize_event_sources_feature_active' ),
 			)
 		);
 
@@ -160,6 +163,21 @@ class Settings {
 				'sanitize_callback' => 'sanitize_text_field',
 			)
 		);
+	}
+
+	/**
+	 * Do not allow the event sources feature to get deactivated, when event sources are still followed.
+	 *
+	 * @param mixed $value The optios value.
+	 */
+	public static function sanitize_event_sources_feature_active( $value ) {
+		$count = count( Event_Sources::get_event_sources() );
+
+		if ( 0 === $count ) {
+			return (bool) $value;
+		}
+
+		return true;
 	}
 
 	/**

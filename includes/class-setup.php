@@ -396,17 +396,17 @@ class Setup {
 		// Check if any general admin notices are needed and add actions to insert the needed admin notices.
 		if ( ! $this->activitypub_plugin_is_active ) {
 			// The ActivityPub plugin is not active.
-			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_not_enabled' ), 10, 1 );
+			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_not_enabled' ), 10, 0 );
 			return;
 		}
 		if ( ! version_compare( $this->activitypub_plugin_version, EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION, '>=' ) ) {
 			// The ActivityPub plugin is too old.
-			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_version_too_old' ), 10, 1 );
+			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'activitypub_plugin_version_too_old' ), 10, 0 );
 			return;
 		}
 		if ( empty( $this->active_event_plugins ) ) {
 			// No supported Event Plugin is active.
-			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'no_supported_event_plugin_active' ), 10, 1 );
+			\add_action( 'admin_notices', array( General_Admin_Notices::class, 'no_supported_event_plugin_active' ), 10, 0 );
 		}
 	}
 
