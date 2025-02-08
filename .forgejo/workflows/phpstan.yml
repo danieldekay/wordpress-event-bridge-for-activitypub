@@ -28,7 +28,7 @@ jobs:
           path: |
             ${{ env.WP_CORE_DIR }}
             ${{ env.WP_TESTS_DIR }}
-          key: cache-phpstan-wordpress-6.7-activitypub-5324992-1
+          key: cache-phpstan-wordpress-6.7-activitypub-5.1.0-1
 
       - name: Cache Composer
         id: cache-composer
