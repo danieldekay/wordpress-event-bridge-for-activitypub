@@ -173,8 +173,19 @@ class Settings {
 	public static function sanitize_event_sources_feature_active( $value ) {
 		$count = count( Event_Sources::get_event_sources() );
 
+		$value = (bool) $value;
+
 		if ( 0 === $count ) {
-			return (bool) $value;
+			return $value;
+		}
+
+		if ( ! $value ) {
+			\add_settings_error(
+				'event-bridge-for-activitypub_event-sources',
+				'event_bridge_for_activitypub_cannot_disable_event_sources',
+				__( 'It is not possible to disable the Event Sources feature while you are still having active followed Event Sources.', 'event-bridge-for-activitypub' ),
+				'error'
+			);
 		}
 
 		return true;

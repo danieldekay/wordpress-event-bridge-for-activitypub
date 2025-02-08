@@ -88,11 +88,19 @@ class Settings_Page {
 
 		$url = \wp_parse_url( $event_source );
 
+		$error_message = \esc_html__( 'Failed to add Event Source', 'event-bridge-for-activitypub' );
+
 		if ( isset( $url['path'] ) && isset( $url['host'] ) && isset( $url['scheme'] ) ) {
 			$actor_url = \sanitize_url( $event_source );
 		} elseif ( preg_match( '/^@?' . Event_Source::ACTIVITYPUB_USER_HANDLE_REGEXP . '$/i', $event_source ) ) {
 			$actor_url = Webfinger::resolve( $event_source );
 			if ( \is_wp_error( $actor_url ) ) {
+				\add_settings_error(
+					'event-bridge-for-activitypub_add-event-source',
+					'event_bridge_for_activitypub_cannot_follow_actor',
+					$error_message . ': ' . esc_html__( 'Cannot find an ActivityPub actor for this user handle via Webfinger.', 'event-bridge-for-activitypub' ),
+					'error'
+				);
 				return;
 			}
 		} else {
@@ -102,14 +110,35 @@ class Settings_Page {
 			if ( self::is_domain( $event_source ) ) {
 				$actor_url = Event_Sources::get_application_actor( $event_source );
 			}
+			if ( ! $actor_url ) {
+				\add_settings_error(
+					'event-bridge-for-activitypub_add-event-source',
+					'event_bridge_for_activitypub_cannot_follow_actor',
+					$error_message . ': ' . \esc_html__( 'Unable to identify the ActivityPub relay actor to follow for this domain.', 'event-bridge-for-activitypub' ),
+					'error'
+				);
+				return;
+			}
 		}
 
 		if ( ! $actor_url ) {
+			\add_settings_error(
+				'event-bridge-for-activitypub_add-event-source',
+				'event_bridge_for_activitypub_cannot_follow_actor',
+				$error_message . ': ' . \esc_html__( 'ActivityPub actor does not exist.', 'event-bridge-for-activitypub' ),
+				'error'
+			);
 			return;
 		}
 
 		// Don't proceed if on the same host!
 		if ( \wp_parse_url( \home_url(), PHP_URL_HOST ) === \wp_parse_url( $actor_url, PHP_URL_HOST ) ) {
+			\add_settings_error(
+				'event-bridge-for-activitypub_add-event-source',
+				'event_bridge_for_activitypub_cannot_follow_actor',
+				$error_message . ': ' . \esc_html__( 'Cannot follow own actor on own domain.', 'event-bridge-for-activitypub' ),
+				'error'
+			);
 			return;
 		}
 
