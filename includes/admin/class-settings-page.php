@@ -41,7 +41,7 @@ class Settings_Page {
 	 * @return void
 	 */
 	public static function init() {
-		\add_action( 'activitypub_admin_settings_tabs', callback: array( self::class, 'add_settings_tab' ) );
+		\add_filter( 'activitypub_admin_settings_tabs', array( self::class, 'add_settings_tab' ) );
 		\add_action(
 			'admin_init',
 			array( self::class, 'maybe_add_event_source' ),

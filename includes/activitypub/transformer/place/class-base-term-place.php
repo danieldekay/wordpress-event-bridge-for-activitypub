@@ -131,7 +131,6 @@ abstract class Base_Term_Place extends Base {
 	 * Don't support replies for Place per default.
 	 *
 	 * @return null
-	 * @phpstan-ignore-next-line
 	 */
 	public function get_replies() {
 		return null;
