@@ -447,10 +447,38 @@ abstract class Event extends Post {
 		$this->unregister_shortcodes();
 
 		if ( 'plain' === get_option( 'event_bridge_for_activitypub_summary_format', 'html' ) ) {
-			$summary = \wpautop( $summary );
+			$summary = self::strip_html_preserve_linebreaks( $summary );
 		}
 
 		return $summary;
+	}
+
+	/**
+	 * Strip all HTML but preverse some line breaks.
+	 *
+	 * @param mixed $content The HTML input.
+	 * @return string
+	 */
+	private static function strip_html_preserve_linebreaks( $content ): string {
+		// Replace <br> with newlines.
+		$content = preg_replace( '/<br\s*\/?>/i', "\n", $content );
+
+		// Replace closing </p> followed by <p> with double newlines (preserve paragraph breaks).
+		$content = preg_replace( '/<\/p>\s*<p>/', "\n\n", $content );
+
+		// Preserve list structure.
+		$content = preg_replace( '/<\/ul>/i', "\n", $content );
+		$content = preg_replace( '/<li>/i', '- ', $content );
+		$content = preg_replace( '/<\/li>/i', "\n", $content );
+
+		// Remove all remaining HTML tags.
+		$content = wp_strip_all_tags( $content );
+
+		// Normalize excessive newlines (more than 2 in a row to just 2).
+		$content = preg_replace( "/\n{3,}/", "\n\n", $content );
+
+		// Trim trailing newlines.
+		return trim( $content );
 	}
 
 	/**
