@@ -332,6 +332,9 @@ class Setup {
 		\add_action( 'init', array( Preview::class, 'init' ) );
 
 		$this->maybe_register_term_activitypub_ids();
+
+		// HotFix: Make sure status is 200 when ActivityPub query was successful.
+		\add_action( 'activitypub_json_pre', array( self::class, 'ensure_200_status_header' ) );
 	}
 
 	/**
@@ -688,5 +691,14 @@ class Setup {
 			}
 		}
 		return '';
+	}
+
+	/**
+	 * Ensure 200 status header.
+	 *
+	 * @return void
+	 */
+	public static function ensure_200_status_header(): void {
+		\status_header( 200 );
 	}
 }
