@@ -1,6 +1,6 @@
 <?php
 /**
- * ActivityPub Transformer for the plugin Very Simple Event List.
+ * Class file for the ActivityPub Transformer for events the WordPress plugin EventON – Events Calendar.
  *
  * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
@@ -16,7 +16,7 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event as Event_Tr
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Place\EventOn as EventOn_Place_Transformer;
 
 /**
- * ActivityPub Transformer for VS Event.
+ * Class for the ActivityPub Transformer for events the WordPress plugin EventON – Events Calendar.
  *
  * This transformer tries a different principle: The setters are chainable.
  *

@@ -3,7 +3,7 @@
  * EventON – Events Calendar
  *
  * Defines all the necessary meta information for the integration of the WordPress event plugin
- * "Very Simple Events List".
+ * "EventON – Events Calendar".
  *
  * @link    https://wordpress.org/plugins/eventon-lite
  * @package Event_Bridge_For_ActivityPub
