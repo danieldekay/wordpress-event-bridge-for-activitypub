@@ -163,14 +163,15 @@ WP_Filesystem();
 				</button>
 			</h4>
 			<div id="event-bridge-for-activitypub-help-accordion-mobilizon" class="event-bridge-for-activitypub-settings-accordion-panel" hidden="hidden">
-				<ol class="event-bridge-for-activitypub-settings-numbered-list">
+				<div class="notice notice-error inline"><p><?php \esc_html_e( 'The most recent Mobilizon version 5.1 still has some severe interoperability issues.', 'event-bridge-for-activitypub' ); ?></p></div>
+				<!-- <ol class="event-bridge-for-activitypub-settings-numbered-list">
 					<li><?php \esc_html_e( 'Log into your Mobilizon account.', 'event-bridge-for-activitypub' ); ?></li>
 					<li>
 						<?php \esc_html_e( 'In the search bar, type or copy the full URL of one of your event pages. For example:', 'event-bridge-for-activitypub' ); ?>
 						<code class="event-bridge-for-activitypub-settings-example-url"><?php echo \esc_url( $example_event_post ); ?></code>
 					</li>
 					<li><?php \esc_html_e( 'If everything is set up correctly, you\'ll see a full representation of your WordPress event. This will include the event\'s banner image, title, complete description, start and end times, categories, tags, and whether it\'s an online event.', 'event-bridge-for-activitypub' ); ?></li>
-				</ol>
+				</ol> -->
 			</div>
 			<h4 class="event-bridge-for-activitypub-settings-accordion-heading">
 				<button aria-expanded="false" class="event-bridge-for-activitypub-settings-accordion-trigger" aria-controls="event-bridge-for-activitypub-help-accordion-fediverse" type="button">
