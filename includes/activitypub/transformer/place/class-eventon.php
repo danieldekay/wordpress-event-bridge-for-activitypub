@@ -119,13 +119,9 @@ final class EventOn extends Base_Term_Place {
 		);
 
 		if ( isset( $this->tax_meta['location_city'] ) ) {
-			$locality_and_postal_code = $this->parse_city_for_postal_code( $this->tax_meta['location_city'] );
-			if ( isset( $locality_and_postal_code['addressLocality'] ) ) {
-				$postal_address['addressLocality'] = (string) $locality_and_postal_code['addressLocality'];
-			}
-			if ( isset( $locality_and_postal_code['locality'] ) ) {
-				$postal_address['postalCode'] = (string) $locality_and_postal_code['postalCode'];
-			}
+			$locality_and_postal_code          = $this->parse_city_for_postal_code( $this->tax_meta['location_city'] );
+			$postal_address['addressLocality'] = (string) $locality_and_postal_code['addressLocality'];
+			$postal_address['postalCode']      = (string) $locality_and_postal_code['postalCode'];
 		}
 
 		// Filter out empty values.
@@ -167,15 +163,15 @@ final class EventOn extends Base_Term_Place {
 	 * Parse a string whether it contains a postal code and seperates both.
 	 *
 	 * @param string $input The input string of the locality which might contain the postal code too.
-	 * @return array{city: string, zipcode: string}
+	 * @return array{addressLocality: string, postalCode: string}
 	 */
 	private function parse_city_for_postal_code( $input ): array {
 		$input = trim( $input );
 
 		if ( empty( $input ) ) {
 			return array(
-				'locality'   => '',
-				'postalCode' => '',
+				'addressLocality' => '',
+				'postalCode'      => '',
 			);
 		}
 

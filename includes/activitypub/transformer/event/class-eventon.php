@@ -58,7 +58,7 @@ final class EventOn extends Event_Transformer {
 	/**
 	 * Get the event location(s).
 	 *
-	 * @return Place|array|null The Place.
+	 * @return array|null The Place.
 	 */
 	public function get_location() {
 		$location = array();
@@ -91,6 +91,8 @@ final class EventOn extends Event_Transformer {
 		// If we only have one location, send object directy, not in array.
 		if ( 1 === count( $location ) ) {
 			$location = reset( $location );
+		} elseif ( empty( $location ) ) {
+			return null;
 		}
 
 		return $location;
@@ -113,13 +115,14 @@ final class EventOn extends Event_Transformer {
 	/**
 	 * Get timezone
 	 *
-	 * @return string|null
+	 * @return string
 	 */
 	public function get_timezone(): string {
 		$timezone = \get_post_meta( $this->item->ID, '_evo_tz', true );
 
 		return $timezone ?? \wp_timezone_string();
 	}
+
 	/**
 	 * Get the end time from the events metadata.
 	 */

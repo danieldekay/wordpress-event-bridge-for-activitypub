@@ -601,7 +601,7 @@ class Setup {
 			$queried_object = \get_term( $term_id );
 		}
 
-		if ( $queried_object instanceof \WP_term && $this->is_place_taxonomy_of_active_event_plugin( $queried_object->taxonomy ) ) {
+		if ( $queried_object instanceof \WP_Term && $this->is_place_taxonomy_of_active_event_plugin( $queried_object->taxonomy ) ) {
 			return $queried_object;
 		}
 
