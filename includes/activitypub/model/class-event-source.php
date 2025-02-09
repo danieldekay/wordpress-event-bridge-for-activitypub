@@ -295,7 +295,6 @@ class Event_Source extends Actor {
 
 		$args = array(
 			'ID'           => $post_id,
-			// 'guid'         => esc_url_raw( $this->get_id() ),
 			'post_title'   => wp_strip_all_tags( sanitize_text_field( $this->get_name() ) ),
 			'post_author'  => 0,
 			'post_type'    => Event_Sources::POST_TYPE,
