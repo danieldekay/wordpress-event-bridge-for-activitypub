@@ -83,7 +83,7 @@ class Event_Sources {
 
 		\register_post_meta(
 			self::POST_TYPE,
-			'activitypub_actor_id',
+			'_activitypub_actor_id',
 			array(
 				'type'              => 'string',
 				'single'            => true,
@@ -93,7 +93,7 @@ class Event_Sources {
 
 		\register_post_meta(
 			self::POST_TYPE,
-			'activitypub_errors',
+			'_activitypub_errors',
 			array(
 				'type'              => 'string',
 				'single'            => false,
@@ -109,7 +109,7 @@ class Event_Sources {
 
 		\register_post_meta(
 			self::POST_TYPE,
-			'activitypub_actor_json',
+			'_activitypub_actor_json',
 			array(
 				'type'              => 'string',
 				'single'            => true,
@@ -121,7 +121,7 @@ class Event_Sources {
 
 		\register_post_meta(
 			self::POST_TYPE,
-			'activitypub_inbox',
+			'_activitypub_inbox',
 			array(
 				'type'              => 'string',
 				'single'            => true,
@@ -385,7 +385,7 @@ class Event_Sources {
 		$actors = array();
 
 		foreach ( $query->get_posts() as $post ) {
-			$actors[ $post->ID ] = $post->guid;
+			$actors[ $post->ID ] = get_post_meta( $post->ID, '_activitypub_actor_id', true );
 		}
 
 		$event_sources = compact( 'actors', 'total' );

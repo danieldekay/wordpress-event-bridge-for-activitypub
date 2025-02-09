@@ -64,7 +64,7 @@ class User_Interface {
 		$parent = get_post_parent();
 
 		if ( $parent && Event_Sources_Collection::POST_TYPE === $parent->post_type ) {
-			$url = $parent->guid;
+			$url = \get_post_meta( $parent->ID, '_activitypub_actor_id', true );
 		}
 
 		$actions['view_origin'] = sprintf(
