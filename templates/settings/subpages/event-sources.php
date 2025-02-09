@@ -44,7 +44,7 @@ $cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_sourc
 			<?php \settings_fields( 'event-bridge-for-activitypub_event-sources' ); ?>
 			<div class="box">
 				<h2><?php \esc_html_e( 'Event Sources', 'event-bridge-for-activitypub' ); ?></h2>
-				<p id="event-sources-description"><?php esc_html_e( 'This feature to allows your WordPress site to fetch and display events from external sources via ActivityPub. Once enabled, you can add any ActivityPub account as a source of events. These events will be cached on your site and seamlessly integrated into your existing event calendar, creating a unified view of events from both internal and external sources.', 'event-bridge-for-activitypub' ); ?></p>
+				<p id="event-sources-description"><?php esc_html_e( 'This feature allows your WordPress site to retrieve and display events from external sources via ActivityPub. Once enabled, you can add any ActivityPub account as a source of events by following that profile. These events will be cached on your site and seamlessly integrated into your existing event calendar, creating a unified view of events from both internal and external sources.', 'event-bridge-for-activitypub' ); ?></p>
 				<?php
 				if ( ! \Activitypub\is_user_type_disabled( 'blog' ) && count( $event_plugins_supporting_event_sources ) ) {
 					?>
