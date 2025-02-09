@@ -37,6 +37,7 @@ Basic support (outgoing events):
 * [Modern Events Calendar Lite](https://webnus.net/modern-events-calendar/)
 * [Event Organiser](https://wordpress.org/plugins/event-organiser/)
 * [EventPrime – Events Calendar, Bookings and Tickets](https://wordpress.org/plugins/eventprime-event-calendar-management/)
+* [EventON – Events Calendar](https://wordpress.org/plugins/eventon-lite/)
 
 ### How It Works ###
 
