@@ -113,7 +113,7 @@ class Event_Source extends Actor {
 			return $this->outbox;
 		}
 
-		$actor_json = \get_post_meta( $this->get__id(), 'activitypub_actor_json', true );
+		$actor_json = \get_post_meta( $this->get__id(), '_activitypub_actor_json', true );
 
 		if ( ! $actor_json ) {
 			return null;
@@ -181,7 +181,7 @@ class Event_Source extends Actor {
 		if ( Event_Sources::POST_TYPE !== $post->post_type ) {
 			return null;
 		}
-		$actor_json = get_post_meta( $post->ID, 'activitypub_actor_json', true );
+		$actor_json = \get_post_meta( $post->ID, '_activitypub_actor_json', true );
 		$object     = static::init_from_json( $actor_json );
 
 		if ( \is_wp_error( $object ) ) {
@@ -189,18 +189,17 @@ class Event_Source extends Actor {
 		}
 
 		$object->set__id( $post->ID );
-		$object->set_id( $post->guid );
 		$object->set_name( $post->post_title );
 		$object->set_summary( $post->post_excerpt );
 		$object->set_published( gmdate( 'Y-m-d H:i:s', strtotime( $post->post_date ) ) );
 		$object->set_updated( gmdate( 'Y-m-d H:i:s', strtotime( $post->post_modified ) ) );
 		$object->set_status( $post->post_status );
-		$thumbnail_id = get_post_thumbnail_id( $post );
+		$thumbnail_id = \get_post_thumbnail_id( $post );
 		if ( $thumbnail_id ) {
 			$object->set_icon(
 				array(
 					'type' => 'Image',
-					'url'  => wp_get_attachment_image_url( $thumbnail_id, 'thumbnail', true ),
+					'url'  => \wp_get_attachment_image_url( $thumbnail_id, 'thumbnail', true ),
 				)
 			);
 		}
@@ -240,9 +239,10 @@ class Event_Source extends Actor {
 	 * Update the post meta.
 	 */
 	protected function get_post_meta_input() {
-		$meta_input                           = array();
-		$meta_input['activitypub_inbox']      = sanitize_url( $this->get_shared_inbox() );
-		$meta_input['activitypub_actor_json'] = $this->to_json();
+		$meta_input                            = array();
+		$meta_input['_activitypub_inbox']      = sanitize_url( $this->get_shared_inbox() );
+		$meta_input['_activitypub_actor_json'] = $this->to_json();
+		$meta_input['_activitypub_actor_id']   = $this->get_id();
 
 		return $meta_input;
 	}
@@ -280,7 +280,7 @@ class Event_Source extends Actor {
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$post_id = $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT ID FROM $wpdb->posts WHERE guid=%s",
+					"SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_activitypub_actor_id' AND meta_value=%s",
 					esc_sql( $this->get_id() )
 				)
 			);
@@ -295,7 +295,7 @@ class Event_Source extends Actor {
 
 		$args = array(
 			'ID'           => $post_id,
-			'guid'         => esc_url_raw( $this->get_id() ),
+			// 'guid'         => esc_url_raw( $this->get_id() ),
 			'post_title'   => wp_strip_all_tags( sanitize_text_field( $this->get_name() ) ),
 			'post_author'  => 0,
 			'post_type'    => Event_Sources::POST_TYPE,
