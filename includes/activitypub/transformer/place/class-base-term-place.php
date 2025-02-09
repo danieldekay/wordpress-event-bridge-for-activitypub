@@ -55,7 +55,14 @@ abstract class Base_Term_Place extends Base {
 	 * @return string The "ID"
 	 */
 	public function get_id() {
-		return \add_query_arg( $this->item->taxonomy, $this->item->slug, \trailingslashit( \home_url() ) );
+		/**
+		 * The first approach was to use the normal query from WordPress, but it contains the slug, which might be edited.
+		 *
+		 * \add_query_arg( $this->item->taxonomy, $this->item->slug, \trailingslashit( \home_url() ) );
+		 *
+		 * As https://github.com/Automattic/wordpress-activitypub/pull/1272 got merged, now we can definy a real ID.
+		 */
+		return \add_query_arg( 't', $this->item->term_id, \trailingslashit( \home_url() ) );
 	}
 
 	/**

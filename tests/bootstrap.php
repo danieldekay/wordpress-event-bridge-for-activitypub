@@ -115,6 +115,9 @@ function _manually_load_plugin() {
 		case 'event_organiser':
 			$plugin_file = 'event-organiser/event-organiser.php';
 			break;
+		case 'eventon':
+			$plugin_file = 'eventon-lite/eventon.php';
+			break;
 	}
 
 	if ( $plugin_file ) {

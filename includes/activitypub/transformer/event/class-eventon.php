@@ -56,51 +56,44 @@ final class EventOn extends Event_Transformer {
 	}
 
 	/**
-	 * Get the event location.
+	 * Get the event location(s).
 	 *
-	 * @return Place The Place.
+	 * @return Place|array|null The Place.
 	 */
-	public function get_location(): ?Place {
+	public function get_location() {
 		$location = array();
 
 		$terms = \get_the_terms( $this->item->ID, 'event_location' );
 
-		foreach ( $terms as $term ) {
-			if ( isset( $this->tax_meta['event_location'][ $term->term_id ] ) ) {
-				$term_meta = $this->tax_meta['event_location'][ $term->term_id ];
+		// The terms may both contain virtual and physical Locations.
+		if ( ! empty( $terms ) ) {
+			foreach ( $terms as $term ) {
+				$location_transformer = new EventOn_Place_Transformer( $term );
+				$location[]           = $location_transformer->to_object()->to_array( false );
 			}
 		}
 
-		$hide_location = \get_post_meta( $this->item->ID, 'evcal_hide_locname', true );
-
-		if ( $hide_location ) {
-			return null;
-		}
-
+		// Virtual Locations can also be directly int the post meta, not in terms!
 		$virtual_url  = \get_post_meta( $this->item->ID, '_vir_url', true );
 		$virtual_type = \get_post_meta( $this->item->ID, '_vir_type', true );
 
 		if ( $virtual_url ) {
 			$virtual_location = array(
 				'type' => 'VirtualLocation',
-				'url'  => $virtual_url,
+				'url'  => (string) $virtual_url,
 			);
 			if ( $virtual_type ) {
-				$virtual_location['name'] = $virtual_type;
+				$virtual_location['name'] = (string) $virtual_type;
 			}
 			$location[] = $virtual_location;
 		}
 
-		if ( empty( $venue ) || is_wp_error( $venue ) ) {
-			$venue = array_pop( $venue );
-
-			$place_transformer = new EventOn_Place_Transformer( $venue );
-			$place             = $location_transformer->to_object();
-
-			$location[] = $place;
+		// If we only have one location, send object directy, not in array.
+		if ( 1 === count( $location ) ) {
+			$location = reset( $location );
 		}
 
-		return empty( $location ) ? null : $location;
+		return $location;
 	}
 
 	/**

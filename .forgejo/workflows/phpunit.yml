@@ -140,3 +140,8 @@ jobs:
         run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=event_organiser
         env:
           PHP_VERSION: ${{ matrix.php-version }}
+
+      - name: Run Integration tests for EventON – Events Calendar
+        run: cd /workspace/Event-Federation/wordpress-event-bridge-for-activitypub/ && ./vendor/bin/phpunit --filter=eventon
+        env:
+          PHP_VERSION: ${{ matrix.php-version }}
