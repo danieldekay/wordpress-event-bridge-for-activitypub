@@ -5,7 +5,7 @@
  * Defines all the necessary meta information for the integration of the WordPress event plugin
  * "Very Simple Events List".
  *
- * @link    https://de.wordpress.org/plugins/very-simple-event-list/
+ * @link    https://wordpress.org/plugins/very-simple-event-list/
  * @package Event_Bridge_For_ActivityPub
  * @since   1.0.0
  */

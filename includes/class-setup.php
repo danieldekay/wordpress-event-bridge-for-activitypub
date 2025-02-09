@@ -177,6 +177,7 @@ class Setup {
 		\Event_Bridge_For_ActivityPub\Integrations\Modern_Events_Calendar_Lite::class,
 		\Event_Bridge_For_ActivityPub\Integrations\Event_Organiser::class,
 		\Event_Bridge_For_ActivityPub\Integrations\EventPrime::class,
+		\Event_Bridge_For_ActivityPub\Integrations\EventOn::class,
 	);
 
 	/**
@@ -324,11 +325,13 @@ class Setup {
 
 		$this->register_plugin_specific_hooks();
 
-		// Lastly but most importantly: register the ActivityPub transformers for events to the ActivityPub plugin.
+		// Most importantly: register the ActivityPub transformers for events to the ActivityPub plugin.
 		\add_filter( 'activitypub_transformer', array( $this, 'register_activitypub_transformer' ), 10, 3 );
 
 		// Apply custom ActivityPub previews for events.
 		\add_action( 'init', array( Preview::class, 'init' ) );
+
+		$this->maybe_register_term_activitypub_ids();
 	}
 
 	/**
@@ -546,6 +549,79 @@ class Setup {
 		}
 
 		self::activate_activitypub_support_for_active_event_plugins();
+	}
+
+	/**
+	 * Maybe (depending on active event plugins) make it possible to querly event terms by `?t=<term_id>`.
+	 *
+	 * @return void
+	 */
+	private function maybe_register_term_activitypub_ids(): void {
+		$register_term_query_var = false;
+
+		foreach ( $this->active_event_plugins as $event_plugin ) {
+			if ( $event_plugin::get_place_taxonomy() ) {
+				$register_term_query_var = true;
+				break;
+			}
+		}
+
+		if ( $register_term_query_var ) {
+			\add_filter( 'query_vars', array( self::class, 'add_term_query_var' ) );
+			\add_filter( 'activitypub_queried_object', array( $this, 'maybe_detect_event_plugins_location_term' ) );
+		}
+	}
+
+	/**
+	 * Add the 'activitypub' query for term variable so WordPress won't mangle it.
+	 *
+	 * @param array $vars The query variables.
+	 *
+	 * @return array The query variables.
+	 */
+	public static function add_term_query_var( $vars ) {
+		$vars[] = 't';
+
+		return $vars;
+	}
+
+	/**
+	 * Filters the queried object.
+	 *
+	 * @param \WP_Term|\WP_Post_Type|\WP_Post|\WP_User|\WP_Comment|null $queried_object The queried object.
+	 */
+	public function maybe_detect_event_plugins_location_term( $queried_object ) {
+		if ( $queried_object ) {
+			return $queried_object;
+		}
+
+		$term_id = \get_query_var( 't' );
+
+		if ( $term_id ) {
+			$queried_object = \get_term( $term_id );
+		}
+
+		if ( $queried_object instanceof \WP_Term && $this->is_place_taxonomy_of_active_event_plugin( $queried_object->taxonomy ) ) {
+			return $queried_object;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Check whether a taxonomy is an active event plugins location taxonomy.
+	 *
+	 * @param string $taxonomy The taxonomy.
+	 * @return boolean
+	 */
+	private function is_place_taxonomy_of_active_event_plugin( $taxonomy ): bool {
+		foreach ( $this->active_event_plugins as $event_plugin ) {
+			if ( $event_plugin::get_place_taxonomy() === $taxonomy ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**

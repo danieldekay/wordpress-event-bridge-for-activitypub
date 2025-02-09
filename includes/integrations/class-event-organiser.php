@@ -96,6 +96,7 @@ final class Event_Organiser extends Event_Plugin_Integration {
 			if ( file_exists( $class_path ) ) {
 				require_once $class_path;
 
+				// Remove the theme filter which is not needed in ActivityStreams.
 				$eo = \EO_Theme_Compatabilty::get_instance();
 				if ( $eo instanceof \EO_Theme_Compatabilty ) {
 					$eo->remove_filter( 'template_include', PHP_INT_MAX - 1 );
