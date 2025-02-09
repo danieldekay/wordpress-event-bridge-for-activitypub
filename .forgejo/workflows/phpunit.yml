@@ -35,7 +35,7 @@ jobs:
           path: |
             ${{ env.WP_CORE_DIR }}
             ${{ env.WP_TESTS_DIR }}
-          key: cache-phpunit-wordpress-6.7-activitypub-5.1.0-1
+          key: cache-phpunit-wordpress-6.7-activitypub-5.1.0-2
 
       - name: Cache Composer
         id: cache-composer
