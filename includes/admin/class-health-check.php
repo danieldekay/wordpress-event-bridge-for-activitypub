@@ -141,8 +141,18 @@ class Health_Check {
 			'order'            => 'DESC',
 			'include'          => array(),
 			'exclude'          => array(),
-			'meta_key'         => '',
-			'meta_value'       => '',
+			'meta_query'       => array(
+				'relation' => 'OR',
+				array(
+					'key'     => '_event_bridge_for_activitypub_event_source',
+					'compare' => 'NOT EXISTS',
+				),
+				array(
+					'key'     => '_event_bridge_for_activitypub_event_source',
+					'value'   => '',
+					'compare' => '=',
+				),
+			),
 			'post_type'        => $event_post_type,
 			'suppress_filters' => true,
 		);
