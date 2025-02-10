@@ -88,7 +88,7 @@ class Event_Plugin_Admin_Notices {
 			),
 			esc_html( $activitypub_plugin_data['Name'] ),
 			esc_html( $event_plugin_name ),
-			admin_url( 'options-general.php?page=activitypub&tab=settings' )
+			admin_url( 'options-general.php?page=activitypub&tab=event-bridge-for-activitypub&subpage=settings' )
 		);
 		$allowed_html = array(
 			'a' => array(

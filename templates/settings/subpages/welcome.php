@@ -70,7 +70,7 @@ WP_Filesystem();
 							),
 							esc_html( get_plugin_data( ACTIVITYPUB_PLUGIN_FILE )['Name'] ),
 							esc_html( $active_event_plugin->get_plugin_name() ),
-							admin_url( 'options-general.php?page=activitypub&tab=settings' )
+							admin_url( 'options-general.php?page=activitypub&tab=event-bridge-for-activitypub&subpage=settings' )
 						);
 					} else {
 						$event_bridge_for_activitypub_status_ok = false;
@@ -84,7 +84,7 @@ WP_Filesystem();
 							),
 							esc_html( get_plugin_data( ACTIVITYPUB_PLUGIN_FILE )['Name'] ),
 							esc_html( $active_event_plugin->get_plugin_name() ),
-							admin_url( 'options-general.php?page=activitypub&tab=settings' )
+							admin_url( 'options-general.php?page=activitypub&tab=event-bridge-for-activitypub&subpage=settings' )
 						);
 					}
 					$allowed_html = array(

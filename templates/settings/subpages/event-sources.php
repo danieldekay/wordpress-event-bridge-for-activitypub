@@ -142,7 +142,7 @@ $cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_sourc
 							'admin notice',
 							'event-bridge-for-activitypub'
 						),
-						\admin_url( 'options-general.php?page=activitypub&tab=settings' ),
+						\admin_url( 'options-general.php?page=activitypub&tab=event-bridge-for-activitypub&subpage=settings' ),
 						\esc_html( $activitypub_plugin_data['Name'] )
 					);
 
