@@ -708,6 +708,7 @@ class Setup {
 			// Send 200 status header.
 			\status_header( 200 );
 
+			// @phpstan-ignore-next-line
 			if ( ACTIVITYPUB_SEND_VARY_HEADER ) {
 				// Send Vary header for Accept header.
 				\header( 'Vary: Accept' );
