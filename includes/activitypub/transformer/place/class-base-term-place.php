@@ -62,7 +62,7 @@ abstract class Base_Term_Place extends Base {
 		 *
 		 * As https://github.com/Automattic/wordpress-activitypub/pull/1272 got merged, now we can definy a real ID.
 		 */
-		return \add_query_arg( 't', $this->item->term_id, \trailingslashit( \home_url() ) );
+		return \add_query_arg( 'term_id', $this->item->term_id, \trailingslashit( \home_url() ) );
 	}
 
 	/**

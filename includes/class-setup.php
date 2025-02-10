@@ -555,7 +555,7 @@ class Setup {
 	}
 
 	/**
-	 * Maybe (depending on active event plugins) make it possible to querly event terms by `?t=<term_id>`.
+	 * Maybe (depending on active event plugins) make it possible to querly event terms by `?term_id=<term_id>`.
 	 *
 	 * @return void
 	 */
@@ -583,7 +583,7 @@ class Setup {
 	 * @return array The query variables.
 	 */
 	public static function add_term_query_var( $vars ) {
-		$vars[] = 't';
+		$vars[] = 'term_id';
 
 		return $vars;
 	}
@@ -598,7 +598,7 @@ class Setup {
 			return $queried_object;
 		}
 
-		$term_id = \get_query_var( 't' );
+		$term_id = \get_query_var( 'term_id' );
 
 		if ( $term_id ) {
 			$queried_object = \get_term( $term_id );
