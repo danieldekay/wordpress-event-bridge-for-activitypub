@@ -696,9 +696,22 @@ class Setup {
 	/**
 	 * Ensure 200 status header.
 	 *
+	 * Can be removed after https://github.com/Automattic/wordpress-activitypub/pull/1299/ is merged and released.
+	 *
 	 * @return void
 	 */
 	public static function ensure_200_status_header(): void {
-		\status_header( 200 );
+		\set_query_var( 'is_404', false );
+
+		// Check if header already sent.
+		if ( ! \headers_sent() ) {
+			// Send 200 status header.
+			\status_header( 200 );
+
+			if ( ACTIVITYPUB_SEND_VARY_HEADER ) {
+				// Send Vary header for Accept header.
+				\header( 'Vary: Accept' );
+			}
+		}
 	}
 }
