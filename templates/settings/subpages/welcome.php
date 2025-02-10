@@ -143,6 +143,7 @@ WP_Filesystem();
 				</button>
 			</h4>
 			<div id="event-bridge-for-activitypub-help-accordion-mastodon" class="event-bridge-for-activitypub-settings-accordion-panel" hidden="hidden">
+				<div class="notice notice-warning inline"><p>ℹ <?php \esc_html_e( 'Note that Mastodon can receive ActivityPub Event objects but does not yet support updating them. This means that if Mastodon has already received an event, it will always display the first version it encountered.', 'event-bridge-for-activitypub' ); ?> <?php esc_html_e( 'See the related tracking issue:', 'event-bridge-for-activitypub' ); ?> <a href="https://github.com/mastodon/mastodon/issues/31114" target="_blank">https://github.com/mastodon/mastodon/issues/31114</a></p></div>
 				<ol class="event-bridge-for-activitypub-settings-numbered-list">
 					<li><?php \esc_html_e( 'Log into your Mastodon account.', 'event-bridge-for-activitypub' ); ?></li>
 					<li>
@@ -163,7 +164,7 @@ WP_Filesystem();
 				</button>
 			</h4>
 			<div id="event-bridge-for-activitypub-help-accordion-mobilizon" class="event-bridge-for-activitypub-settings-accordion-panel" hidden="hidden">
-				<div class="notice notice-error inline"><p><?php \esc_html_e( 'The most recent Mobilizon version 5.1 still has some severe interoperability issues.', 'event-bridge-for-activitypub' ); ?></p></div>
+				<div class="notice notice-error inline"><p>⚠️ <?php \esc_html_e( 'Note that Mobilizon has significant interoperability issues (at least up to version 5.1).', 'event-bridge-for-activitypub' ); ?> <?php esc_html_e( 'See the related tracking issue:', 'event-bridge-for-activitypub' ); ?> <a href="https://framagit.org/framasoft/mobilizon/-/issues/1669" target="_blank">https://framagit.org/framasoft/mobilizon/-/issues/1669</a></p></div>
 				<!-- <ol class="event-bridge-for-activitypub-settings-numbered-list">
 					<li><?php \esc_html_e( 'Log into your Mobilizon account.', 'event-bridge-for-activitypub' ); ?></li>
 					<li>
