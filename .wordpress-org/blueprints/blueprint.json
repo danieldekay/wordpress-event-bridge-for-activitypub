@@ -4,7 +4,7 @@
     "php": "8.3",
     "wp": "latest"
   },
-  "landingPage": "/wp-admin/options-general.php?page=event-bridge-for-activitypub",
+  "landingPage": "/wp-admin/options-general.php?page=activitypub&tab=event-bridge-for-activitypub",
   "steps": [
     {
       "step": "setSiteOptions",
