@@ -538,7 +538,7 @@ abstract class Event extends Post {
 	 * @return string  The timezone string of the site.
 	 */
 	public function get_timezone(): string {
-		return wp_timezone_string();
+		return \wp_timezone_string();
 	}
 
 	/**
