@@ -79,15 +79,39 @@ final class The_Events_Calendar extends Event {
 	/**
 	 * Get the end time from the event object.
 	 */
-	public function get_end_time(): ?string {
-		return tribe_get_end_date( $this->tribe_event->ID, true, 'Y-m-d\TH:i:sP' );
+	public function get_end_time(): string {
+		$utc_time = get_post_meta( $this->tribe_event->ID, '_EventEndDateUTC', true );
+		$timezone = new \DateTimeZone( $this->get_timezone() );
+		$time     = new \DateTime( $utc_time );
+		$time->setTimezone( $timezone );
+		return $time->format( 'Y-m-d\TH:i:sP' );
 	}
 
 	/**
 	 * Get the end time from the event object.
 	 */
 	public function get_start_time(): string {
-		return tribe_get_start_date( $this->tribe_event->ID, true, 'Y-m-d\TH:i:sP' );
+		$utc_time = get_post_meta( $this->tribe_event->ID, '_EventStartDateUTC', true );
+		$timezone = new \DateTimeZone( $this->get_timezone() );
+		$time     = new \DateTime( $utc_time );
+		$time->setTimezone( $timezone );
+		return $time->format( 'Y-m-d\TH:i:sP' );
+	}
+
+	/**
+	 * Get the timezone of the event.
+	 *
+	 * @return string  The timezone string of the site.
+	 */
+	public function get_timezone(): string {
+		// @phpstan-ignore-next-line
+		$timezone = $this->tribe_event->timezone;
+
+		if ( ! $timezone || ! is_string( $timezone ) ) {
+			return parent::get_timezone();
+		}
+
+		return $timezone;
 	}
 
 	/**
@@ -148,16 +172,6 @@ final class The_Events_Calendar extends Event {
 		$full_location_object = false;
 		$location             = $location_transformer->to_object( $full_location_object );
 		return $location;
-	}
-
-	/**
-	 * Get the timezone of the event.
-	 *
-	 * @return string  The timezone string of the site.
-	 */
-	public function get_timezone(): string {
-		// @phpstan-ignore-next-line
-		return $this->tribe_event->timezone;
 	}
 
 	/**

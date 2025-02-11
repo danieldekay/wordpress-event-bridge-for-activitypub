@@ -215,4 +215,42 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$this->assertEquals( self::MOCKUP_VENUS['complex_venue']['country'], $event_array['location']['address']['addressCountry'] );
 		$this->assertEquals( self::MOCKUP_VENUS['complex_venue']['zip'], $event_array['location']['address']['postalCode'] );
 	}
+
+	/**
+	 * Test transformation of  minimal event with fully filled venue.
+	 */
+	public function test_transform_of__event_with_custom_timezone(): void {
+		$args = self::MOCKUP_EVENTS['minimal_event'];
+
+		$timezone_string   = 'Europe/Vienna';
+		$start_time_string = '+10 days 15:00:00';
+		$end_time_string   = '+10 days 16:00:00';
+
+		$timezone   = new \DateTimeZone( $timezone_string );
+		$start_time = new \DateTime( $start_time_string, $timezone );
+		$end_time   = new \DateTime( $end_time_string, $timezone );
+
+		// Event with timezone information.
+		$args = array(
+			'title'      => 'My Event',
+			'content'    => 'Come to my event!',
+			'start_date' => $start_time,
+			'duration'   => HOUR_IN_SECONDS,
+			'status'     => 'publish',
+			'timezone'   => $timezone_string,
+		);
+
+		// Create a The Events Calendar Event.
+		$wp_object = tribe_events()->set_args( $args )->create();
+
+		// Call the transformer.
+		$event_array = \Activitypub\Transformer\Factory::get_transformer( $wp_object )->to_object()->to_array();
+
+		// Check that the event ActivityStreams representation contains everything as expected.
+		$this->assertEquals( 'Event', $event_array['type'] );
+		$this->assertEquals( 'My Event', $event_array['name'] );
+		$this->assertEquals( $timezone_string, $event_array['timezone'] );
+		$this->assertEquals( $start_time->format( 'Y-m-d\TH:i:sP' ), $event_array['startTime'] );
+		$this->assertEquals( $end_time->format( 'Y-m-d\TH:i:sP' ), $event_array['endTime'] );
+	}
 }
