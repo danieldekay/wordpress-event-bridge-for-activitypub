@@ -14,6 +14,7 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 use Activitypub\Activity\Extended_Object\Place;
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Event as Event_Transformer;
 use DateTime;
+use DateTimeZone;
 
 /**
  * ActivityPub Transformer for events from the WordPress plugin 'Events Manager'
@@ -68,11 +69,31 @@ final class WP_Event_Manager extends Event_Transformer {
 	 */
 	public function get_end_time(): ?string {
 		$end_date = get_post_meta( $this->item->ID, '_event_end_date', true );
-		if ( $end_date ) {
-			$end_datetime = new DateTime( $end_date );
-			return \gmdate( 'Y-m-d\TH:i:s\Z', $end_datetime->getTimestamp() );
+		if ( ! $end_date ) {
+			return null;
 		}
-		return null;
+		$timezone = new DateTimeZone( $this->get_timezone() );
+
+		if ( is_numeric( $end_date ) ) {
+			$end_date = '@' . $end_date;
+		}
+
+		$end_datetime = new DateTime( $end_date, $timezone );
+
+		return $end_datetime->format( 'Y-m-d\TH:i:sP' );
+	}
+
+	/**
+	 * Get timezone.
+	 *
+	 * @return string
+	 */
+	public function get_timezone(): string {
+		$time_zone = get_post_meta( $this->item->ID, '_event_timezone', true );
+		if ( $time_zone ) {
+			return $time_zone;
+		}
+		return parent::get_timezone();
 	}
 
 	/**
@@ -80,14 +101,15 @@ final class WP_Event_Manager extends Event_Transformer {
 	 */
 	public function get_start_time(): string {
 		$start_date = get_post_meta( $this->item->ID, '_event_start_date', true );
-		if ( ! is_numeric( $start_date ) ) {
-			$start_datetime  = new DateTime( $start_date );
-			$start_timestamp = $start_datetime->getTimestamp();
-		} else {
-			$start_timestamp = (int) $start_date;
+		$timezone   = new DateTimeZone( $this->get_timezone() );
+
+		if ( is_numeric( $start_date ) ) {
+			$start_date = '@' . $start_date;
 		}
 
-		return \gmdate( 'Y-m-d\TH:i:s\Z', $start_timestamp );
+		$start_datetime = new DateTime( $start_date, $timezone );
+
+		return $start_datetime->format( 'Y-m-d\TH:i:sP' );
 	}
 
 	/**
