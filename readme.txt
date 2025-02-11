@@ -94,7 +94,7 @@ Your events can be followed on platforms that support ActivityPub like [Mobilizo
 
 = Why does Mastodon not show any updates? ==
 
-Mastodon does not yet handle updates of `Event` objects. See the related tracking issue: https://github.com/mastodon/mastodon/issues/31114](https://github.com/mastodon/mastodon/issues/31114).
+Mastodon does not yet handle updates of `Event` objects. See the related tracking issue [#31114](https://github.com/mastodon/mastodon/issues/31114).
 
 = How much extra work is required to maintain my events across the decentralized Web? =
 

@@ -88,9 +88,9 @@ Yes, this plugin works as an add-on and requires both the ActivityPub plugin and
 
 Your events can be followed on platforms that support ActivityPub like [Mobilizon](https://joinmobilizon.org/), [Gancio](https://gancio.org), [Friendica](https://friendi.ca), [Hubzilla](https://hubzilla.org), and [Pleroma](https://pleroma.social/). Even other applications like [Mastodon](https://joinmastodon.org), which don't fully support events yet, will display all important information about the events.
 
-### Why does Mastodon not show any updates? ==
+### Why does Mastodon not show any updates?
 
-Mastodon does not yet handle updates of `Event` objects. See the related tracking issue: https://github.com/mastodon/mastodon/issues/31114](https://github.com/mastodon/mastodon/issues/31114).
+Mastodon does not yet handle updates of `Event` objects. See the related tracking issue [#31114](https://github.com/mastodon/mastodon/issues/31114).
 
 ### How much extra work is required to maintain my events across the decentralized Web? ###
 
