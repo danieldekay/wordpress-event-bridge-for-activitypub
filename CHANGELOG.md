@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2025-02-11
 
 ### Changed
 
@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Blueprint (Preview via WordPress Playground)
 * Event Sources feature: cache and list events from remote ActivityPub profiles on your site
 * Custom ActivityPub preview
-* Admin setting to enfore sending summary of events as plain text
+* Admin setting to enforce sending summary of events as plain text
 
 ### Fixed
 

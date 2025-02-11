@@ -122,7 +122,7 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 
 == Changelog ==
 
-= Unreleased =
+= [1.0.0] - 2025-02-11 =
 
 * Added: Support for the EventPrime event plugin
 * Added: Event self-announce feature at configurable time before event starts
