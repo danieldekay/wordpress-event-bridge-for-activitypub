@@ -130,7 +130,7 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 * Added: Event Sources feature: cache and list events from remote ActivityPub profiles on your site
 * Added: Custom ActivityPub preview
 * Added: Admin setting to enfore sending summary of events as plain text
-* Changed: Now depends on ActivityPub plugin version greater than 5.0.0
+* Changed: Now depends on ActivityPub plugin version greater than 5.1.0
 * Fixed: The Events Calendar date times when using the Gutenberg editor
 * Fixed: Improved admin UI for event-category mapping
 
