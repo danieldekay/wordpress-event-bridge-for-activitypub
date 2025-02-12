@@ -1,5 +1,6 @@
 vendor/
 composer.lock
+event-bridge-for-activitypub-*.zip
 .phpunit.result.cache
 node_modules/
 package-lock.json
