@@ -19,7 +19,7 @@ class Event {
 	 * Initialize the class, registering WordPress hooks.
 	 */
 	public static function init() {
-		\add_action( 'wp_after_insert_post', array( self::class, 'maybe_schedule_event_post_activity' ), 50, 3 );
+		\add_action( 'wp_after_insert_post', array( self::class, 'maybe_schedule_event_post_activity' ), 50, 4 );
 		\add_action( 'event_bridge_for_activitypub_add_event_post_to_outbox', array( self::class, 'add_event_post_to_outbox' ), 10, 3 );
 		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'is_post_disabled_for_the_activitypub_plugin' ), 50, 2 );
 	}
