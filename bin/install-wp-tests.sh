@@ -241,7 +241,7 @@ install_wp_plugin_mec() {
 
 	PLUGIN_VERSION="v7.15.0"
 
-    URL="https://code.event-federation.eu/Event-Federation/modern-events-calendar-lite"
+    URL="https://codeberg.org/Event-Federation/wordpress-modern-events-calendar-lite"
 
 	git clone $URL "$WP_CORE_DIR/wp-content/plugins/modern-events-calendar-lite"
 }
