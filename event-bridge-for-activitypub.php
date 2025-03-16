@@ -1,15 +1,16 @@
 <?php
 /**
- * Plugin Name:  Event Bridge for ActivityPub
- * Description:  Integrating popular event plugins with the ActivityPub plugin. The development of this plugin was funded through the <strong>NGI0 Entrust Fund</strong>, a fund established by <strong>NLnet</strong>.
- * Plugin URI:   https://event-federation.eu/
- * Version:      1.0.0
- * Author:       André Menrath
- * Author URI:   https://graz.social/@linos
- * Text Domain:  event-bridge-for-activitypub
- * License:      AGPL-3.0-or-later
- * License URI:  https://www.gnu.org/licenses/agpl-3.0.html
- * Requires PHP: 7.4
+ * Plugin Name:      Event Bridge for ActivityPub
+ * Description:      Integrating popular event plugins with the ActivityPub plugin. The development of this plugin was funded through the <strong>NGI0 Entrust Fund</strong>, a fund established by <strong>NLnet</strong>.
+ * Plugin URI:       https://event-federation.eu/
+ * Version:          1.0.0
+ * Author:           André Menrath
+ * Author URI:       https://graz.social/@linos
+ * Text Domain:      event-bridge-for-activitypub
+ * License:          AGPL-3.0-or-later
+ * License URI:      https://www.gnu.org/licenses/agpl-3.0.html
+ * Requires PHP:     7.4
+ * Requires Plugins: activitypub
  *
  * Requires at least ActivityPub plugin with version >= 5.1.0. ActivityPub plugin tested up to: 5.1.0.
  *
