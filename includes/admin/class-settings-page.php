@@ -85,64 +85,83 @@ class Settings_Page {
 		$event_source = \sanitize_text_field( $_POST['event_bridge_for_activitypub_add_event_source'] );
 
 		$actor_url = false;
-
-		$url = \wp_parse_url( $event_source );
+		$url       = \wp_parse_url( $event_source );
 
 		$error_message = \esc_html__( 'Failed to add Event Source', 'event-bridge-for-activitypub' );
 
-		if ( isset( $url['path'] ) && isset( $url['host'] ) && isset( $url['scheme'] ) ) {
-			$actor_url = \sanitize_url( $event_source );
-		} elseif ( preg_match( '/^@?' . Event_Source::ACTIVITYPUB_USER_HANDLE_REGEXP . '$/i', $event_source ) ) {
-			$actor_url = Webfinger::resolve( $event_source );
-			if ( \is_wp_error( $actor_url ) ) {
-				\add_settings_error(
-					'event-bridge-for-activitypub_add-event-source',
-					'event_bridge_for_activitypub_cannot_follow_actor',
-					$error_message . ': ' . esc_html__( 'Cannot find an ActivityPub actor for this user handle via Webfinger.', 'event-bridge-for-activitypub' ),
-					'error'
-				);
-				return;
-			}
+		// Check if URL is a Collection or a single Actor.
+		$maybe_collection = \wp_safe_remote_get( $event_source );
+
+		if ( ! \is_wp_error( $maybe_collection ) ) {
+			$maybe_collection = \json_decode( \wp_remote_retrieve_body( $maybe_collection ), true );
+		}
+
+		$event_sources = array();
+
+		if ( isset( $maybe_collection['type'] ) && in_array( $maybe_collection['type'], array( 'Collection', 'OrderedCollection' ), true ) ) {
+			// Return only the IDs of the items in the collection.
+			$event_sources = \wp_list_pluck( $maybe_collection['items'], 'id' );
 		} else {
-			if ( ! isset( $url['path'] ) && isset( $url['host'] ) ) {
-				$actor_url = Event_Sources::get_application_actor( $url['host'] );
+			$event_sources[] = $event_source;
+		}
+
+		// Iterate over all event sources and add them to the collection.
+		foreach ( $event_sources as $event_source ) {
+			$url = \wp_parse_url( $event_source );
+
+			if ( isset( $url['path'], $url['host'], $url['scheme'] ) ) {
+				$actor_url = \sanitize_url( $event_source );
+			} elseif ( preg_match( '/^@?' . Event_Source::ACTIVITYPUB_USER_HANDLE_REGEXP . '$/i', $event_source ) ) {
+				$actor_url = Webfinger::resolve( $event_source );
+				if ( \is_wp_error( $actor_url ) ) {
+					\add_settings_error(
+						'event-bridge-for-activitypub_add-event-source',
+						'event_bridge_for_activitypub_cannot_follow_actor',
+						$error_message . ': ' . esc_html__( 'Cannot find an ActivityPub actor for this user handle via Webfinger.', 'event-bridge-for-activitypub' ),
+						'error'
+					);
+					continue;
+				}
+			} else {
+				if ( ! isset( $url['path'] ) && isset( $url['host'] ) ) {
+					$actor_url = Event_Sources::get_application_actor( $url['host'] );
+				} elseif ( self::is_domain( $event_source ) ) {
+					$actor_url = Event_Sources::get_application_actor( $event_source );
+				}
+				if ( ! $actor_url ) {
+					\add_settings_error(
+						'event-bridge-for-activitypub_add-event-source',
+						'event_bridge_for_activitypub_cannot_follow_actor',
+						$error_message . ': ' . \esc_html__( 'Unable to identify the ActivityPub relay actor to follow for this domain.', 'event-bridge-for-activitypub' ),
+						'error'
+					);
+					continue;
+				}
 			}
-			if ( self::is_domain( $event_source ) ) {
-				$actor_url = Event_Sources::get_application_actor( $event_source );
-			}
+
 			if ( ! $actor_url ) {
 				\add_settings_error(
 					'event-bridge-for-activitypub_add-event-source',
 					'event_bridge_for_activitypub_cannot_follow_actor',
-					$error_message . ': ' . \esc_html__( 'Unable to identify the ActivityPub relay actor to follow for this domain.', 'event-bridge-for-activitypub' ),
+					$error_message . ': ' . \esc_html__( 'ActivityPub actor does not exist.', 'event-bridge-for-activitypub' ),
 					'error'
 				);
-				return;
+				continue;
 			}
-		}
 
-		if ( ! $actor_url ) {
-			\add_settings_error(
-				'event-bridge-for-activitypub_add-event-source',
-				'event_bridge_for_activitypub_cannot_follow_actor',
-				$error_message . ': ' . \esc_html__( 'ActivityPub actor does not exist.', 'event-bridge-for-activitypub' ),
-				'error'
-			);
-			return;
-		}
+			// Don't proceed if on the same host!
+			if ( \wp_parse_url( \home_url(), PHP_URL_HOST ) === \wp_parse_url( $actor_url, PHP_URL_HOST ) ) {
+				\add_settings_error(
+					'event-bridge-for-activitypub_add-event-source',
+					'event_bridge_for_activitypub_cannot_follow_actor',
+					$error_message . ': ' . \esc_html__( 'Cannot follow own actor on own domain.', 'event-bridge-for-activitypub' ),
+					'error'
+				);
+				continue;
+			}
 
-		// Don't proceed if on the same host!
-		if ( \wp_parse_url( \home_url(), PHP_URL_HOST ) === \wp_parse_url( $actor_url, PHP_URL_HOST ) ) {
-			\add_settings_error(
-				'event-bridge-for-activitypub_add-event-source',
-				'event_bridge_for_activitypub_cannot_follow_actor',
-				$error_message . ': ' . \esc_html__( 'Cannot follow own actor on own domain.', 'event-bridge-for-activitypub' ),
-				'error'
-			);
-			return;
+			Event_Source_Collection::add_event_source( $actor_url );
 		}
-
-		Event_Source_Collection::add_event_source( $actor_url );
 	}
 
 	/**

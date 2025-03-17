@@ -122,6 +122,10 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 
 == Changelog ==
 
+= Unreleased =
+
+* Added: Basic support for Starter Kits
+
 = [1.0.0] - 2025-02-11 =
 
 * Added: Support for the EventPrime event plugin
