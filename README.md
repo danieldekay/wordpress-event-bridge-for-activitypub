@@ -1,5 +1,5 @@
 # Event Bridge for ActivityPub #
-**Contributors:** [andremenrath](https://profiles.wordpress.org/andremenrath/)  
+**Contributors:** [andremenrath](https://profiles.wordpress.org/andremenrath/), [pfefferle](https://profiles.wordpress.org/pfefferle/)  
 **Tags:** events, fediverse, activitypub, calendar  
 **Requires at least:** 6.5  
 **Tested up to:** 6.7  
