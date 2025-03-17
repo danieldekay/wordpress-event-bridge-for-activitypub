@@ -125,6 +125,8 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 = Unreleased =
 
 * Added: Basic support for Starter Kits
+* Fixed: Error in following process (issue #145)
+
 
 = [1.0.0] - 2025-02-11 =
 

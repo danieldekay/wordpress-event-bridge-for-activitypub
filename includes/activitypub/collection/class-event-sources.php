@@ -399,17 +399,17 @@ class Event_Sources {
 	 * @param string $hook The hook name.
 	 * @param array  $args The arguments to pass to the hook.
 	 * @param string $unqueue_hook Optional a hook to unschedule before queuing.
-	 * @return void|bool Whether the hook was queued.
+	 * @return void|bool|WP_Error Whether the hook was queued.
 	 */
 	public static function queue( $hook, $args, $unqueue_hook = null ) {
 		if ( $unqueue_hook ) {
-			$hook_timestamp = wp_next_scheduled( $unqueue_hook, $args );
+			$hook_timestamp = \wp_next_scheduled( $unqueue_hook, $args );
 			if ( $hook_timestamp ) {
-				wp_unschedule_event( $hook_timestamp, $unqueue_hook, $args );
+				\wp_unschedule_event( $hook_timestamp, $unqueue_hook, $args );
 			}
 		}
 
-		if ( wp_next_scheduled( $hook, $args ) ) {
+		if ( \wp_next_scheduled( $hook, $args ) ) {
 			return;
 		}
 
@@ -429,6 +429,15 @@ class Event_Sources {
 			array( $actor ),
 			'event_bridge_for_activitypub_unfollow'
 		);
+
+		if ( \is_wp_error($queued) ) {
+			return false;
+		}
+
+		// Following this actor has already been queued.
+		if ( null === $queued ) {
+			return true;
+		}
 
 		return $queued;
 	}
@@ -466,14 +475,23 @@ class Event_Sources {
 	 *
 	 * @param string $actor  The ActivityPub actor ID.
 	 *
-	 * @return bool Whether the event was queued.
+	 * @return bool|void|WP_Error Whether the event was queued.
 	 */
-	public static function queue_unfollow_actor( $actor ): bool {
+	public static function queue_unfollow_actor( $actor ) {
 		$queued = self::queue(
 			'event_bridge_for_activitypub_unfollow',
 			array( $actor ),
 			'event_bridge_for_activitypub_follow'
 		);
+
+		if ( \is_wp_error($queued) ) {
+			return false;
+		}
+
+		// Following this actor has already been queued.
+		if ( null === $queued ) {
+			return true;
+		}
 
 		return $queued;
 	}
