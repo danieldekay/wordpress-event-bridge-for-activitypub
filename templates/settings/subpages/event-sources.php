@@ -96,7 +96,6 @@ $cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_sourc
 								<select
 									name="event_bridge_for_activitypub_event_source_cache_retention"
 									id="event_bridge_for_activitypub_event_source_cache_retention"
-									value="0"
 									aria-describedby="event_bridge_for_activitypub_event-sources-cache-clear-time-frame"
 								>
 								<?php
@@ -108,7 +107,7 @@ $cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_sourc
 									YEAR_IN_SECONDS  => __( 'One Year', 'event-bridge-for-activitypub' ),
 								);
 								foreach ( $choices as $time => $string ) {
-									echo '<option value="' . \esc_attr( $time ) . '" ' . \selected( $cache_retention_period, $time, true ) . '>' . \esc_attr( $string ) . '</option>';
+									echo '<option value="' . \esc_attr( $time ) . '" ' . \selected( $cache_retention_period, $time, false ) . '>' . \esc_html( $string ) . '</option>';
 								}
 								?>
 								</select>
