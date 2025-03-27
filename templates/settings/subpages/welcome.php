@@ -239,7 +239,7 @@ WP_Filesystem();
 
 	<div class="box">
 		<h2><?php \esc_html_e( 'Acknowledgement', 'event-bridge-for-activitypub' ); ?></h2>
-		<p><a href="https://NLnet.nl"><img src="<?php echo esc_url( plugins_url( '/assets/img/acknowledgement-NLnet.svg', EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE ) ); ?>" alt="Logo NLnet: abstract logo of four people seen from above" class="logo-center"></a> <a href="https://NLnet.nl/NGI0"><img src="<?php echo esc_url( plugins_url( '/assets/img/acknowledgement-NGI0Entrust.svg', EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE ) ); ?>" alt="Logo NGI Zero: letterlogo shaped like a tag" class="logo-center"> </a></p>
+		<p><a href="https://NLnet.nl"><img src="<?php echo esc_url( plugins_url( '/assets/img/acknowledgement-NLnet.svg', EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE ) ); ?>" alt="" class="logo-center"></a> <a href="https://NLnet.nl/NGI0"><img src="<?php echo esc_url( plugins_url( '/assets/img/acknowledgement-NGI0Entrust.svg', EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE ) ); ?>" alt="" class="logo-center"> </a></p>
 		<p>The development of this plugin was funded through the <a href="https://NLnet.nl/entrust">NGI0 Entrust</a> Fund, a fund established by <a href="https://nlnet.nl">NLnet</a> with financial support from the European Commission's <a href="https://ngi.eu">Next Generation Internet</a> programme, under the aegis of <a href="https://commission.europa.eu/about-european-commission/departments-and-executive-agencies/communications-networks-content-and-technology_en">DG Communications Networks, Content and Technology</a> under grant agreement N<sup>o</sup> 101069594.</p>
 	</div>
 	<?php endif; ?>
