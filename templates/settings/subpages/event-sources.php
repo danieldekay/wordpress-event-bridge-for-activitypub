@@ -166,8 +166,8 @@ $cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_sourc
 			<!-- ThickBox content (hidden initially) -->
 			<div id="Event_Bridge_For_ActivityPub_add_new_source" style="display:none;">
 				<h2><?php \esc_html_e( 'Add a Trusted Event Source', 'event-bridge-for-activitypub' ); ?></h2>
+				<p><?php \esc_html_e( 'Use one of the following syntax:', 'event-bridge-for-activitypub' ); ?></p>
 				<ul class="event-bridge-for-activitypub-syntax-list" id="event_bridge_for_activitypub_add_event_source_description">
-					<?php \esc_html_e( 'Use one of the following syntax:', 'event-bridge-for-activitypub' ); ?>
 					<li>
 						<?php \esc_html_e( 'Enter a Fediverse user handle', 'event-bridge-for-activitypub' ); ?> ( <?php esc_html_e( 'e.g.', 'event-bridge-for-activitypub' ); ?> <code>@username@example.social</code>)
 					</li>
