@@ -194,17 +194,18 @@ $cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_sourc
 				</div>
 				<form method="post" action="options.php">
 					<?php \settings_fields( 'event-bridge-for-activitypub_add-event-source' ); ?>
-					<label for="event_bridge_for_activitypub_add_event_source">
-						<p>
+					<p>
+						<label id="event_bridge_for_activitypub_add_event_source_label" for="event_bridge_for_activitypub_add_event_source">
 							<?php \esc_html_e( 'Event Source (handle, URL, or instance)', 'event-bridge-for-activitypub' ); ?>:
-						</p>
-					</label>
+						</label>
+					</p>
 					<input
 						type="text"
 						style="width: 100%"
 						name="event_bridge_for_activitypub_add_event_source"
 						id="event_bridge_for_activitypub_add_event_source"
 						aria-describedby="event_bridge_for_activitypub_add_event_source_description"
+						aria-labelledby="event_bridge_for_activitypub_add_event_source_label"
 						placeholder="@username@example.social or https://example.social/user/username">
 					<?php \submit_button( __( 'Follow Event Source', 'event-bridge-for-activitypub' ) ); ?>
 				</form>
