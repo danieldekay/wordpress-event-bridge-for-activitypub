@@ -22,7 +22,7 @@ jobs:
       matrix:
         php-version: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
         wordpress-version: ['6.7', '6.8']
-    name: PHPUnit - PHP ${{ matrix.php-version }} - WP ${{ matrix.wordpress-version }}
+    name: "PHPUnit: PHP ${{ matrix.php-version }} - WordPress ${{ matrix.wordpress-version }}"
     continue-on-error: true
     steps:
       - name: Checkout
@@ -35,7 +35,7 @@ jobs:
           path: |
             ${{ env.WP_CORE_DIR }}
             ${{ env.WP_TESTS_DIR }}
-          key: cache-phpunit-wordpress-6.7-activitypub-5.1.0-2
+          key: cache-phpunit-wordpress-${{ matrix.wordpress-version }}-activitypub-5.1.0-2
 
       - name: Cache Composer
         id: cache-composer
