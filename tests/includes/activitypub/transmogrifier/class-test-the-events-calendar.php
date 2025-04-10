@@ -80,8 +80,8 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 	/**
 	 * Get the first venue of an Event of The Events Calendar.
 	 *
-	 * @param WP_Post $event The Event Post.
-	 * @return ?WP_Post
+	 * @param \WP_Post $event The Event Post.
+	 * @return ?\WP_Post
 	 */
 	private static function get_first_tribe_venue_of_tribe_event( $event ) {
 		// Get first venue. We currently only support a single venue.
@@ -377,9 +377,7 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$this->assertCount( 1, $organizers );
 
 		// Check that the location is updated.
-		$event = tribe_get_event( $events[0] );
-		$venue = self::get_first_tribe_venue_of_tribe_event( $event );
-		$this->assertEquals( 'New Location Name', $venue->post_title );
+		$this->assertEquals( 'New Location Name', $venues[0]->post_title );
 
 		\remove_filter( 'activitypub_defer_signature_verification', '__return_true' );
 	}
