@@ -118,7 +118,7 @@ class Test_The_Events_Calendar extends \WP_UnitTestCase {
 		$this->assertEquals( strtotime( '+10 days 16:00:00' ), strtotime( $event_array['endTime'] ) );
 		// Disabled because of upstream bug: https://github.com/Automattic/wordpress-activitypub/issues/1565.
 		// To add again: $this->assertTrue( $event_array['commentsEnabled'] );.
-		$this->assertEquals( 'allow_all', $event_array['repliesModerationOption'] );
+		// To add again:  $this->assertEquals( 'allow_all', $event_array['repliesModerationOption'] );.
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertArrayNotHasKey( 'location', $event_array );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
