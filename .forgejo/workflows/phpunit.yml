@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         php-version: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
-        wordpress-version: ['6.7', '6.8-RC2']
+        wordpress-version: ['6.7', '6.8-RC3']
     name: "PHPUnit: PHP ${{ matrix.php-version }} - WordPress ${{ matrix.wordpress-version }}"
     continue-on-error: true
     steps:

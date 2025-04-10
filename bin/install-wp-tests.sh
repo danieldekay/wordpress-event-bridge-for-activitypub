@@ -275,7 +275,7 @@ install_wp_plugins() {
 	install_wp_plugin gatherpress
 	install_wp_plugin eventprime-event-calendar-management
 	install_wp_plugin events-manager "6.6.4.4"
-	install_wp_plugin wp-event-manager "3.1.48"
+	install_wp_plugin wp-event-manager "3.1.47"
 	install_wp_plugin wp-event-solution "4.0.26"
 	install_wp_plugin event-organiser "3.12.8"
 	install_wp_plugin eventon-lite "2.4"
