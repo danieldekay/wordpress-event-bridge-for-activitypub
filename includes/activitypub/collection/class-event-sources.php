@@ -430,7 +430,7 @@ class Event_Sources {
 			'event_bridge_for_activitypub_unfollow'
 		);
 
-		if ( \is_wp_error($queued) ) {
+		if ( \is_wp_error( $queued ) ) {
 			return false;
 		}
 
@@ -484,7 +484,7 @@ class Event_Sources {
 			'event_bridge_for_activitypub_follow'
 		);
 
-		if ( \is_wp_error($queued) ) {
+		if ( \is_wp_error( $queued ) ) {
 			return false;
 		}
 
