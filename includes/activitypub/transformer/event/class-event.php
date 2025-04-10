@@ -571,8 +571,11 @@ abstract class Event extends Post {
 		$activitypub_object = new Event_Object();
 		$activitypub_object = $this->transform_object_properties( $activitypub_object );
 
-		// Manually set comments_enabled because of https://github.com/Automattic/wordpress-activitypub/issues/1565.
+		// Manually set boolean  because of https://github.com/Automattic/wordpress-activitypub/issues/1565.
+		// @phpstan-ignore-next-line
 		$activitypub_object->set_comments_enabled( $this->get_comments_enabled() );
+		// @phpstan-ignore-next-line
+		$activitypub_object->set_is_online( $this->get_is_online() );
 
 		if ( \is_wp_error( $activitypub_object ) ) {
 			return $activitypub_object;
