@@ -20,7 +20,6 @@ use Activitypub\Activity\Extended_Object\Place;
 use WP_Error;
 
 use function Activitypub\object_to_uri;
-use function Activitypub\sanitize_url;
 
 /**
  * Collection of functions that sanitize an incoming event.
@@ -73,11 +72,11 @@ class Sanitizer {
 		}
 
 		if ( isset( $data['id'] ) ) {
-			$event->set_id( sanitize_url( $data['id'] ) );
+			$event->set_id( \sanitize_url( $data['id'] ) );
 		}
 
 		if ( isset( $data['url'] ) ) {
-			$event->set_url( sanitize_url( $data['url'] ) );
+			$event->set_url( \sanitize_url( $data['url'] ) );
 		}
 
 		if ( isset( $data['attributedTo'] ) ) {
@@ -115,7 +114,7 @@ class Sanitizer {
 		$attributed_to = object_to_uri( $data );
 
 		// @phpstan-ignore-next-line
-		return is_string( $attributed_to ) ? sanitize_url( $attributed_to ) : null;
+		return is_string( $attributed_to ) ? \sanitize_url( $attributed_to ) : null;
 	}
 
 	/**
@@ -204,11 +203,11 @@ class Sanitizer {
 		}
 
 		if ( isset( $data['id'] ) ) {
-			$place->set_id( sanitize_url( $data['id'] ) );
+			$place->set_id( \sanitize_url( $data['id'] ) );
 		}
 
 		if ( isset( $data['url'] ) ) {
-			$place->set_url( sanitize_url( $data['url'] ) );
+			$place->set_url( \sanitize_url( $data['url'] ) );
 		}
 
 		if ( isset( $data['address'] ) ) {

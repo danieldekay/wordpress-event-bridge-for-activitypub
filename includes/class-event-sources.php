@@ -24,7 +24,6 @@ use WP_Post;
 use WP_REST_Request;
 
 use function Activitypub\is_activitypub_request;
-use function Activitypub\sanitize_url;
 
 /**
  * Class for handling and saving the ActivityPub event sources (i.e. follows).
@@ -448,7 +447,7 @@ class Event_Sources {
 	 * @return bool
 	 */
 	public static function is_valid_activitypub_id( $id ) {
-		return sanitize_url( $id ) ? true : false;
+		return \sanitize_url( $id ) ? true : false;
 	}
 
 	/**

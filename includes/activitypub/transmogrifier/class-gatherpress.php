@@ -20,8 +20,6 @@ use DateTime;
 use Event_Bridge_For_ActivityPub\Integrations\GatherPress as IntegrationsGatherPress;
 use GatherPress\Core\Event as GatherPress_Event;
 
-use function Activitypub\sanitize_url;
-
 /**
  * ActivityPub Transmogrifier for the GatherPress event plugin.
  *
@@ -93,7 +91,7 @@ class GatherPress extends Base {
 			if ( ! $online_event_link ) {
 				return;
 			}
-			\update_post_meta( $post_id, 'gatherpress_online_event_link', sanitize_url( $online_event_link ) );
+			\update_post_meta( $post_id, 'gatherpress_online_event_link', \sanitize_url( $online_event_link ) );
 			\wp_set_object_terms( $post_id, 'online-event', '_gatherpress_venue', false );
 			return;
 		}
