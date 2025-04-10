@@ -105,16 +105,14 @@ class Sanitizer {
 	 *
 	 * @param mixed $data The object array.
 	 *
-	 * @return ?string
+	 * @return string
 	 */
-	private static function sanitize_attributed_to( $data ): ?string {
+	private static function sanitize_attributed_to( $data ): string {
 		if ( is_array( $data ) && self::array_is_list( $data ) ) {
 			$data = reset( $data );
 		}
-		$attributed_to = object_to_uri( $data );
 
-		// @phpstan-ignore-next-line
-		return is_string( $attributed_to ) ? \sanitize_url( $attributed_to ) : null;
+		return object_to_uri( $data );
 	}
 
 	/**

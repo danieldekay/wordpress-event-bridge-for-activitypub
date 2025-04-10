@@ -53,7 +53,7 @@ abstract class Event extends Post {
 	 * Get a sane default for whether comments are enabled.
 	 */
 	protected function get_comments_enabled(): ?bool {
-		return comments_open( $this->item );
+		return \comments_open( $this->item );
 	}
 
 	/**
