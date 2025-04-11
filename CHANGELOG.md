@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Basic support for Starter Kits
 
+### Fix
+
+* Error in following process (issue #145)
+
 ## [1.0.0] - 2025-02-11
 
 ### Changed
