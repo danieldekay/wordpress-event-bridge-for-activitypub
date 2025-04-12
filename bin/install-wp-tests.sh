@@ -250,7 +250,7 @@ install_activitypub_plugin() {
 	# We also need it's test classes, therefore we use the git repository.
 	mkdir -p "$WP_CORE_DIR/wp-content/plugins/"
 
-	ACTIVITYPUB_PLUGIN_VERSION="5.6.1"
+	ACTIVITYPUB_PLUGIN_VERSION="5.7.0"
 
 	if [ -d "$WP_CORE_DIR/wp-content/plugins/activitypub" ]; then
 	    git -C "$WP_CORE_DIR/wp-content/plugins/activitypub" fetch --tags
