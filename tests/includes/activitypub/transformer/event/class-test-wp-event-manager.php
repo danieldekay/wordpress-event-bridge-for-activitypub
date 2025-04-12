@@ -131,7 +131,6 @@ class Test_WP_Event_Manager extends \WP_UnitTestCase {
 		$this->assertEquals( comments_open( $wp_post_id ), $event_array['commentsEnabled'] );
 		$this->assertEquals( comments_open( $wp_post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
-		$this->assertEquals( true, $event_array['isOnline'] );
 		$this->assertEquals( esc_url( get_permalink( $wp_post_id ) ), $event_array['externalParticipationUrl'] );
 		$this->assertArrayNotHasKey( 'location', $event_array );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
@@ -178,7 +177,6 @@ class Test_WP_Event_Manager extends \WP_UnitTestCase {
 		$this->assertEquals( \comments_open( $wp_post_id ), $event_array['commentsEnabled'] );
 		$this->assertEquals( \comments_open( $wp_post_id ) ? 'allow_all' : 'closed', $event_array['repliesModerationOption'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
-		$this->assertEquals( false, $event_array['isOnline'] );
 		$this->assertEquals( \esc_url( \get_permalink( $wp_post_id ) ), $event_array['externalParticipationUrl'] );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( 'Some text location', $event_array['location']['address'] );

@@ -260,7 +260,8 @@ class Test_Reminder extends ActivityPub_TestCase_Cache_HTTP {
 
 		$activity_object = \json_decode( $post->post_content, true );
 		$this->assertArrayHasKey( 'id', $activity_object );
-		$this->assertEquals( $event_transformer->get_id(), $activity_object['id'] );
+		$this->assertEquals( $event_transformer->get_id(), $activity_object['object']['id'] );
+		$this->assertEquals( 'Announce', $activity_object['type'] );
 		$this->assertEquals( 'Announce', \get_post_meta( $post->ID, '_activitypub_activity_type', true ) );
 
 		\remove_filter( 'pre_http_request', array( $pre_http_request, 'filter' ), 10 );

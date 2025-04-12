@@ -15,7 +15,6 @@ use Activitypub\Collection\Actors;
 use Event_Bridge_For_ActivityPub\Event_Sources;
 
 use function Activitypub\object_to_uri;
-use function Activitypub\sanitize_url;
 
 /**
  * Handle Uno requests.
@@ -50,7 +49,7 @@ class Undo {
 			return;
 		}
 
-		$accept_id = sanitize_url( object_to_uri( $activity['object'] ) );
+		$accept_id = \sanitize_url( object_to_uri( $activity['object'] ) );
 
 		global $wpdb;
 
