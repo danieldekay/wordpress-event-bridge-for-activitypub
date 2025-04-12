@@ -332,9 +332,6 @@ class Setup {
 		\add_action( 'init', array( Preview::class, 'init' ) );
 
 		$this->maybe_register_term_activitypub_ids();
-
-		// HotFix: Make sure status is 200 when ActivityPub query was successful.
-		\add_action( 'activitypub_json_pre', array( self::class, 'ensure_200_status_header' ) );
 	}
 
 	/**
@@ -691,28 +688,5 @@ class Setup {
 			}
 		}
 		return '';
-	}
-
-	/**
-	 * Ensure 200 status header.
-	 *
-	 * Can be removed after https://github.com/Automattic/wordpress-activitypub/pull/1299/ is merged and released.
-	 *
-	 * @return void
-	 */
-	public static function ensure_200_status_header(): void {
-		\set_query_var( 'is_404', false );
-
-		// Check if header already sent.
-		if ( ! \headers_sent() ) {
-			// Send 200 status header.
-			\status_header( 200 );
-
-			// @phpstan-ignore-next-line
-			if ( ACTIVITYPUB_SEND_VARY_HEADER ) {
-				// Send Vary header for Accept header.
-				\header( 'Vary: Accept' );
-			}
-		}
 	}
 }
