@@ -20,8 +20,6 @@ use Event_Bridge_For_ActivityPub\ActivityPub\Collection\Event_Sources;
 use WP_Error;
 use WP_Post;
 
-use function Activitypub\sanitize_url;
-
 /**
  * Event-Source (=ActivityPub Actor that is followed) model.
  *
@@ -240,7 +238,7 @@ class Event_Source extends Actor {
 	 */
 	protected function get_post_meta_input() {
 		$meta_input                            = array();
-		$meta_input['_activitypub_inbox']      = sanitize_url( $this->get_shared_inbox() );
+		$meta_input['_activitypub_inbox']      = \sanitize_url( $this->get_shared_inbox() );
 		$meta_input['_activitypub_actor_json'] = $this->to_json();
 		$meta_input['_activitypub_actor_id']   = $this->get_id();
 

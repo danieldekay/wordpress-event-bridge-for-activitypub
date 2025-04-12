@@ -3,7 +3,7 @@
  * Plugin Name:      Event Bridge for ActivityPub
  * Description:      Integrating popular event plugins with the ActivityPub plugin. The development of this plugin was funded through the <strong>NGI0 Entrust Fund</strong>, a fund established by <strong>NLnet</strong>.
  * Plugin URI:       https://event-federation.eu/
- * Version:          1.0.0
+ * Version:          1.1.0
  * Author:           André Menrath
  * Author URI:       https://graz.social/@linos
  * Text Domain:      event-bridge-for-activitypub
@@ -12,7 +12,7 @@
  * Requires PHP:     7.4
  * Requires Plugins: activitypub
  *
- * Requires at least ActivityPub plugin with version >= 5.1.0. ActivityPub plugin tested up to: 5.1.0.
+ * Requires at least ActivityPub plugin with version >= 5.6.1. ActivityPub plugin tested up to: 5.7.0.
  *
  * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
@@ -27,7 +27,7 @@ define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE', plugin_dir_path( __FILE__ ) 
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_VERSION', current( get_file_data( __FILE__, array( 'Version' ), 'plugin' ) ) );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_DOMAIN', 'event-bridge-for-activitypub' );
-define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION', '5.1.0' );
+define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION', '5.6.1' );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_SUMMARY_TEMPLATE', "[ap_start_time]\n[ap_end_time]\n[ap_location]\n\n[ap_content]" );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_DEFAULT_SUMMARY_TYPE', 'preset' );
 

@@ -1,5 +1,7 @@
 .distignore
+.forgejo
 .git
+.gitattributes
 .gitignore
 .wordpress-org
 .wp-env.json

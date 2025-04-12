@@ -250,16 +250,18 @@ install_activitypub_plugin() {
 	# We also need it's test classes, therefore we use the git repository.
 	mkdir -p "$WP_CORE_DIR/wp-content/plugins/"
 
+	ACTIVITYPUB_PLUGIN_VERSION="5.7.0"
+
 	if [ -d "$WP_CORE_DIR/wp-content/plugins/activitypub" ]; then
+	    git -C "$WP_CORE_DIR/wp-content/plugins/activitypub" fetch --tags
+	    git -C "$WP_CORE_DIR/wp-content/plugins/activitypub" checkout $ACTIVITYPUB_PLUGIN_VERSION
 		return;
 	fi
-
-	PLUGIN_VERSION="5.1.0"
 
     URL="https://github.com/Automattic/wordpress-activitypub"
 
 	git clone $URL "$WP_CORE_DIR/wp-content/plugins/activitypub"
-	git -C "$WP_CORE_DIR/wp-content/plugins/activitypub" checkout $PLUGIN_VERSION
+	git -C "$WP_CORE_DIR/wp-content/plugins/activitypub" checkout $ACTIVITYPUB_PLUGIN_VERSION
 }
 
 install_wp_plugins() {
@@ -270,15 +272,15 @@ install_wp_plugins() {
 	# Install the one and only ActivityPub plugin (greetings @pfefferle).
 	install_activitypub_plugin
 	# Install (not-activate) all supported event plugins.
-	install_wp_plugin the-events-calendar "6.10.0"
-	install_wp_plugin very-simple-event-list
+	install_wp_plugin the-events-calendar "6.11.2"
+	install_wp_plugin very-simple-event-list "18.1"
 	install_wp_plugin gatherpress
 	install_wp_plugin eventprime-event-calendar-management
-	install_wp_plugin events-manager "6.6.3"
-	install_wp_plugin wp-event-manager "3.1.45.1"
-	install_wp_plugin wp-event-solution "4.0.20"
+	install_wp_plugin events-manager "6.6.4.4"
+	install_wp_plugin wp-event-manager "3.1.47"
+	install_wp_plugin wp-event-solution "4.0.26"
 	install_wp_plugin event-organiser "3.12.8"
-	install_wp_plugin eventon-lite "2.3.2"
+	install_wp_plugin eventon-lite "2.4"
 	# Mec is not installable via wordpress.org, we use our own mirror.
 	install_wp_plugin_mec
 }

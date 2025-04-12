@@ -2,8 +2,8 @@
 Contributors: andremenrath, pfefferle
 Tags: events, fediverse, activitypub, calendar
 Requires at least: 6.5
-Tested up to: 6.7
-Stable tag: 1.0.0
+Tested up to: 6.8
+Stable tag: 1.1.0
 Requires PHP: 7.4
 License: AGPL-3.0-or-later
 License URI: https://www.gnu.org/licenses/agpl-3.0.html
@@ -122,9 +122,11 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 
 == Changelog ==
 
-= Unreleased =
+= [1.1.0] - 2025-04-12 =
 
 * Added: Basic support for Starter Kits
+* Fixed: Uncatched error in following process (issue #145)
+* Fixed: Compatibility with ActivityPub plugin version 5.7.0
 
 = [1.0.0] - 2025-02-11 =
 

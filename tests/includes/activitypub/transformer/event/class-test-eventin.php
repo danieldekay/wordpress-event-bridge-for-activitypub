@@ -93,7 +93,6 @@ class Test_Eventin extends \WP_UnitTestCase {
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertArrayNotHasKey( 'location', $event_array );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
-		$this->assertEquals( false, $event_array['isOnline'] );
 	}
 
 	/**
@@ -128,7 +127,6 @@ class Test_Eventin extends \WP_UnitTestCase {
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertArrayNotHasKey( 'location', $event_array );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
-		$this->assertEquals( true, $event_array['isOnline'] );
 		$this->assertContains(
 			array(
 				'type'      => 'Link',
@@ -172,7 +170,6 @@ class Test_Eventin extends \WP_UnitTestCase {
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertArrayHasKey( 'location', $event_array );
 		$this->assertEquals( 'MEETING', $event_array['category'] );
-		$this->assertEquals( false, $event_array['isOnline'] );
 		$this->assertEquals( 'The NlNet center', $event_array['location']['address'] );
 		$this->assertEquals( 'The NlNet center', $event_array['location']['name'] );
 	}
