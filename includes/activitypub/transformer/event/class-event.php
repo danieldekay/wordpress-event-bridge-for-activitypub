@@ -571,6 +571,7 @@ abstract class Event extends Post {
 		$activitypub_object = new Event_Object();
 		$activitypub_object = $this->transform_object_properties( $activitypub_object );
 
+		// @phpstan-ignore-next-line
 		$activitypub_object->set_comments_enabled( $this->get_comments_enabled() );
 
 		if ( \is_wp_error( $activitypub_object ) ) {
