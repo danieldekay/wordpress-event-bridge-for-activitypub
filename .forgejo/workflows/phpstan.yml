@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: ['8.1']
+        php-version: ['7.4','8.1','8.4']
     name: PHPStan for WordPress ${{ matrix.php-version }}
     steps:
       - name: Checkout
