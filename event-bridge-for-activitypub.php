@@ -12,7 +12,7 @@
  * Requires PHP:     7.4
  * Requires Plugins: activitypub
  *
- * Requires at least ActivityPub plugin with version >= 5.6.1. ActivityPub plugin tested up to: 5.7.0.
+ * Requires at least ActivityPub plugin with version >= 5.6.1. ActivityPub plugin tested up to: 5.8.0.
  *
  * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
