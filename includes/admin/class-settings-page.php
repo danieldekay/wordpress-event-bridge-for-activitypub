@@ -96,12 +96,15 @@ class Settings_Page {
 			$maybe_collection = \json_decode( \wp_remote_retrieve_body( $maybe_collection ), true );
 		}
 
-		$event_sources = array();
+		// Check if URL is a Collection or a single Actor.
+		$maybe_collection = \wp_safe_remote_get( $event_source );
 
-		if ( isset( $maybe_collection['type'] ) && in_array( $maybe_collection['type'], array( 'Collection', 'OrderedCollection' ), true ) ) {
+		if ( ! \is_wp_error( $maybe_collection ) && isset( $maybe_collection['type'] ) && in_array( $maybe_collection['type'], array( 'Collection', 'OrderedCollection' ), true ) ) {
+			$maybe_collection = \json_decode( \wp_remote_retrieve_body( $maybe_collection ), true );
 			// Return only the IDs of the items in the collection.
 			$event_sources = \wp_list_pluck( $maybe_collection['items'], 'id' );
 		} else {
+			$event_sources = array();
 			$event_sources[] = $event_source;
 		}
 
