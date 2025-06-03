@@ -48,12 +48,12 @@ class The_Events_Calendar extends Base {
 		$organizer_id = self::add_organizer( $activitypub_event );
 
 		$args = array(
-			'title'      => $activitypub_event->get_name(),
-			'content'    => $activitypub_event->get_content() ?? '',
-			'start_date' => gmdate( 'Y-m-d H:i:s', strtotime( $activitypub_event->get_start_time() ) ),
-			'duration'   => $duration,
-			'status'     => 'publish',
-			'guid'       => $activitypub_event->get_id(),
+			'title'          => $activitypub_event->get_name(),
+			'content'        => $activitypub_event->get_content() ?? '',
+			'start_date_utc' => gmdate( 'Y-m-d H:i:s', strtotime( $activitypub_event->get_start_time() ) ),
+			'duration'       => $duration,
+			'status'         => 'publish',
+			'guid'           => $activitypub_event->get_id(),
 		);
 
 		if ( $venue_id ) {
