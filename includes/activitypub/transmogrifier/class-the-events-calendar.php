@@ -251,6 +251,13 @@ class The_Events_Calendar extends Base {
 		// This might likely change, because of FEP-8a8e.
 		$actor = $activitypub_event->get_attributed_to();
 
+		/**
+		 * Allow filtering of incoming organizer.
+		 *
+		 * @var mixed
+		 */
+		$actor = \apply_filters( 'event_bridge_for_activitypub_organizer', $actor );
+
 		if ( is_null( $actor ) ) {
 			return false;
 		}
