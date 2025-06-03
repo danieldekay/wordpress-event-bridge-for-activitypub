@@ -60,4 +60,22 @@ final class The_Events_Calendar extends Base_Post_Place {
 
 		return $postal_address;
 	}
+
+	/**
+	 * Get the latitude of the place.
+	 *
+	 * @return ?float The latitude if it is known.
+	 */
+	public function get_latitude() {
+		return tribe_get_coordinates( $this->item->ID )['lat'] ?? null;
+	}
+
+	/**
+	 * Get the longitude of the place.
+	 *
+	 * @return ?float The longitude if it is known.
+	 */
+	public function get_longitude() {
+		return tribe_get_coordinates( $this->item->ID )['lng'] ?? null;
+	}
 }

@@ -178,6 +178,17 @@ class Sanitizer {
 	}
 
 	/**
+	 * Sanitize an validate a float.
+	 *
+	 * @param mixed $value The input value.
+	 * @return float|null
+	 */
+	private static function validate_and_sanitize_float( $value ) {
+		$sanitized = filter_var( $value, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION );
+		return is_numeric( $sanitized ) ? (float) $sanitized : null;
+	}
+
+	/**
 	 * Convert input array to an Location.
 	 *
 	 * @param mixed $data The object array.
@@ -202,6 +213,14 @@ class Sanitizer {
 
 		if ( isset( $data['id'] ) ) {
 			$place->set_id( \sanitize_url( $data['id'] ) );
+		}
+
+		if ( isset( $data['latitude'] ) ) {
+			$place->set_latitude( self::validate_and_sanitize_float( $data['latitude'] ) );
+		}
+
+		if ( isset( $data['longitude'] ) ) {
+			$place->set_longitude( self::validate_and_sanitize_float( $data['longitude'] ) );
 		}
 
 		if ( isset( $data['url'] ) ) {

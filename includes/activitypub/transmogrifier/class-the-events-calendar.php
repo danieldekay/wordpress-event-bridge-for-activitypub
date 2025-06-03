@@ -148,6 +148,14 @@ class The_Events_Calendar extends Base {
 			$args['guid'] = $location['id'];
 		}
 
+		if ( isset( $location['latitude'] ) ) {
+			$args['latitude'] = $location['latitude'];
+		}
+
+		if ( isset( $location['longitude'] ) ) {
+			$args['longitude'] = $location['longitude'];
+		}
+
 		return $args;
 	}
 
