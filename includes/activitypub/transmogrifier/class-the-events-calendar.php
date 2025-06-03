@@ -54,6 +54,7 @@ class The_Events_Calendar extends Base {
 			'start_date' => $start_time->format( 'Y-m-d H:i:s' ),
 			'status'     => 'publish',
 			'guid'       => $activitypub_event->get_id(),
+			'duration'   => $duration,
 		);
 
 		if ( $venue_id ) {
