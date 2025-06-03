@@ -49,11 +49,11 @@ class The_Events_Calendar extends Base {
 		$start_time   = new \DateTime( $activitypub_event->get_start_time() );
 
 		$args = array(
-			'title'          => $activitypub_event->get_name(),
-			'content'        => $activitypub_event->get_content() ?? '',
-			'start_date'     => $start_time->format( 'Y-m-d H:i:s' ),
-			'status'         => 'publish',
-			'guid'           => $activitypub_event->get_id(),
+			'title'      => $activitypub_event->get_name(),
+			'content'    => $activitypub_event->get_content() ?? '',
+			'start_date' => $start_time->format( 'Y-m-d H:i:s' ),
+			'status'     => 'publish',
+			'guid'       => $activitypub_event->get_id(),
 		);
 
 		if ( $venue_id ) {
