@@ -200,9 +200,18 @@ class Sanitizer {
 			return null;
 		}
 
-		// If the array is a list, work with the first item.
-		if ( array_key_exists( 0, $data ) ) {
-			$data = $data[0];
+		// If the array is a list, search for the first item with 'type' === 'Place'.
+		if ( self::array_is_list( $data ) ) {
+			foreach ( $data as $item ) {
+				if ( is_array( $item ) && ( 'Place' === $item['type'] ?? null ) ) {
+					$data = $item;
+					break;
+				}
+			}
+		}
+
+		if ( ! isset( $data['type'] ) || 'Place' !== $data['type'] ) {
+			return null;
 		}
 
 		$place = new Place();
