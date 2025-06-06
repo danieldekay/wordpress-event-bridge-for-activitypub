@@ -30,6 +30,30 @@ class The_Events_Calendar_Venue_Repository extends \Tribe__Events__Repositories_
 	);
 
 	/**
+	 * Tribe__Events__Repositories__Venue constructor.
+	 *
+	 * Add aliases for longitude an latitude.
+	 *
+	 * @since 4.9
+	 * @since 6.10.1 Added `show_map` and `show_map_link` aliases.
+	 */
+	public function __construct() {
+		parent::__construct();
+
+		// Add venue specific aliases.
+		$this->update_fields_aliases = array_merge(
+			$this->update_fields_aliases,
+			array(
+				'latitude'  => '_VenueLat',
+				'longitude' => '_VenueLng',
+			)
+		);
+
+		$this->add_simple_meta_schema_entry( 'latitude', '_VenueLat' );
+		$this->add_simple_meta_schema_entry( 'longitude', '_VenueLng' );
+	}
+
+	/**
 	 * Whether the current key can be updated by this repository or not.
 	 *
 	 * @since 4.7.19
