@@ -65,6 +65,11 @@ class Create {
 			return;
 		}
 
+		// Apply custom filters whether an Event should be ignored.
+		if ( \apply_filters( 'event_bridge_for_activitypub_ignore_incoming_event', false, $activity['object'], $event_source_post_id ) ) {
+			return;
+		}
+
 		$transmogrifier = Setup::get_transmogrifier();
 
 		if ( ! $transmogrifier ) {
