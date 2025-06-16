@@ -16,8 +16,11 @@ parameters:
 
 	ignoreErrors:
 		-
-			message: '#Call to an undefined method Activitypub\\Activity\\[a-zA-Z0-9\\_]+::(?:get|set)_[a-z\_]#'
+			message: '#Call to an undefined method Activitypub\\Activity\\[a-zA-Z0-9\\_]+::(?:get|set)_[a-z\_]+#'
 			identifier: method.notFound
+		-
+			message: '#Parameter \#1 \$[a-z\_]+ of method Activitypub\\Activity\\Generic_Object::set_[a-z\_]+\(\) expects [a-z\_|]+, null given.#'
+			identifier: argument.type
 
 	parallel:
 		maximumNumberOfProcesses: 1
@@ -31,4 +34,4 @@ parameters:
 		- includes/
 
 	scanDirectories:
-		- /workspace/wordpress/wp-content/plugins/
+		- ./../
