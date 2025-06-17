@@ -6,15 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [1.1.1] - 2025-04-12
+## [1.1.1] - 2025-06-17
 
-### Fixed
+### Added
 
 * Compatibility with ActivityPub plugin 6.0+
 
 ### Changed
 
 * Improved scheduling of sending event posts
+
+### Fixed
+
+* Datetime timezone offset for incoming events when using The Events Calendar
 
 ## [1.1.0] - 2025-04-12
 
