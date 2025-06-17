@@ -40,7 +40,7 @@ class GatherPress extends Base {
 		$tags_array = $event->get_tag();
 
 		// Ensure the input is valid.
-		if ( empty( $tags_array ) || ! is_array( $tags_array ) || ! $post_id ) {
+		if ( empty( $tags_array ) || ! $post_id ) {
 			return false;
 		}
 

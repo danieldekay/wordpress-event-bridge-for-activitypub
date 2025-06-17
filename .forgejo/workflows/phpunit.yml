@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         php-version: ['7.4', '8.1', '8.3', '8.4']
-        wordpress-version: ['6.7', '6.8-RC3']
+        wordpress-version: ['6.8']
     name: "PHPUnit: PHP ${{ matrix.php-version }} - WordPress ${{ matrix.wordpress-version }}"
     continue-on-error: true
     steps:
@@ -35,7 +35,7 @@ jobs:
           path: |
             ${{ env.WP_CORE_DIR }}
             ${{ env.WP_TESTS_DIR }}
-          key: cache-phpunit-wordpress-${{ matrix.wordpress-version }}-activitypub-5.7.0
+          key: cache-phpunit-wordpress-${{ matrix.wordpress-version }}-activitypub-6.0.2-1
 
       - name: Cache Composer
         id: cache-composer
@@ -43,7 +43,7 @@ jobs:
         with:
           path: |
             ./vendor/
-          key: cache-composer-3
+          key: cache-composer-4
 
       - name: Setup cache environment for PHP Extensions
         id: php-extensions-cache
@@ -51,7 +51,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           extensions: dom, iconv, json, libxml, zip
-          key: php-extensions-cache-v1
+          key: php-extensions-cache-v2
 
       - name: Cache PHP extensions
         uses: https://code.forgejo.org/actions/cache@v4
@@ -69,13 +69,14 @@ jobs:
           tools: composer, cs2pr
         env:
           runner: self-hosted
-          GITHUB_TOKEN: ${{ secrets.COMPOSER_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN_FOR_GITHUB }}
 
       - name: Install Composer dependencies for PHP
         if: steps.cache-composer.outputs.cache-hit != 'true'
         uses: ramsey/composer-install@v3
         env:
-          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.COMPOSER_TOKEN }}"}}'
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.ACCESS_TOKEN_FOR_GITHUB }}"}}'
+          GITHUB_TOKEN: ${{ env.ACCESS_TOKEN_FOR_GITHUB }}
 
       - name: Install and cache mysqladmin needed to initialize the test database
         uses: https://github.com/awalsh128/cache-apt-pkgs-action@latest
