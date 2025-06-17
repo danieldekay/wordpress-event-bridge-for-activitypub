@@ -3,7 +3,7 @@
  * Plugin Name:      Event Bridge for ActivityPub
  * Description:      Integrating popular event plugins with the ActivityPub plugin. The development of this plugin was funded through the <strong>NGI0 Entrust Fund</strong>, a fund established by <strong>NLnet</strong>.
  * Plugin URI:       https://event-federation.eu/
- * Version:          1.1.0
+ * Version:          1.1.1
  * Author:           André Menrath
  * Author URI:       https://graz.social/@linos
  * Text Domain:      event-bridge-for-activitypub
