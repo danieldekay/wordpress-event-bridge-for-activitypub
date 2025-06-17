@@ -21,6 +21,8 @@ parameters:
 		-
 			message: '#Parameter \#1 \$[a-z\_]+ of method Activitypub\\Activity\\Generic_Object::set_[a-z\_]+\(\) expects [a-z\_|]+, null given.#'
 			identifier: argument.type
+		- '#Call to internal function get_terms\(\)#'
+
 
 	parallel:
 		maximumNumberOfProcesses: 1
