@@ -210,7 +210,6 @@ class The_Events_Calendar extends Base {
 			$results = $tribe_venue->search( $location['name'] )->all();
 
 			foreach ( $results as $potential_matching_post_id ) {
-				// @phpstan-ignore-next-line
 				if ( $potential_matching_post_id instanceof \WP_Post ) {
 					$potential_matching_post_id = $potential_matching_post_id->ID;
 				}
@@ -334,7 +333,7 @@ class The_Events_Calendar extends Base {
 		$tags_array = $activitypub_event->get_tag();
 
 		// Ensure the input is valid.
-		if ( empty( $tags_array ) || ! is_array( $tags_array ) || ! $post_id ) {
+		if ( empty( $tags_array ) || ! $post_id ) {
 			return false;
 		}
 

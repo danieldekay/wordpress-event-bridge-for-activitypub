@@ -123,7 +123,6 @@ class Join {
 		$activity->set_id( $actor->get_id() . '#ignore-' . \preg_replace( '~^https?://~', '', $ignored ) );
 		$activity->set_sensitive( null );
 
-		// @phpstan-ignore-next-line
 		Http::post( $inbox, $activity->to_json(), $actor->get__id() );
 	}
 

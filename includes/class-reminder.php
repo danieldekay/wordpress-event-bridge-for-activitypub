@@ -21,7 +21,7 @@ use DateTime;
 use WP_Post;
 
 use function ActivityPub\add_to_outbox;
-use function Activitypub\is_user_disabled;
+use function Activitypub\user_can_activitypub;
 
 /**
  * Adds automatic announcing or sending of reminders before the events start time.
@@ -182,7 +182,7 @@ class Reminder {
 		$actor   = $transformer->get_actor_object();
 		$user_id = $actor->get__id();
 
-		if ( $user_id > 0 && is_user_disabled( $user_id ) ) {
+		if ( $user_id > 0 && ! user_can_activitypub( $user_id ) ) {
 			return;
 		}
 

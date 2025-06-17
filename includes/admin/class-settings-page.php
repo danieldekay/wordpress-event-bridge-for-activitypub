@@ -203,13 +203,13 @@ class Settings_Page {
 	private static function get_event_terms( $event_plugin ): array {
 		$taxonomy = $event_plugin::get_event_category_taxonomy();
 		if ( $taxonomy ) {
-			$event_terms = get_terms(
+			$event_terms = \get_terms(
 				array(
 					'taxonomy'   => $taxonomy,
 					'hide_empty' => true,
 				)
 			);
-			return ! is_wp_error( $event_terms ) ? $event_terms : array();
+			return ! \is_wp_error( $event_terms ) ? $event_terms : array();
 		} else {
 			return array();
 		}

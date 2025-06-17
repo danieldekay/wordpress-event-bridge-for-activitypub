@@ -128,7 +128,7 @@ abstract class Base_Term_Place extends Base {
 	/**
 	 * Don't set sensitive per default.
 	 *
-	 * @return null
+	 * @return null|bool
 	 */
 	public function get_sensitive() {
 		return null;
