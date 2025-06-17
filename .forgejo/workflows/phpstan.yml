@@ -17,6 +17,8 @@ jobs:
       matrix:
         php-version: ['7.4','8.1','8.4']
     name: PHPStan for WordPress ${{ matrix.php-version }}
+    permissions:
+      repository-projects: read
     steps:
       - name: Checkout
         uses: https://code.forgejo.org/actions/checkout@v4
@@ -62,13 +64,14 @@ jobs:
           tools: composer, cs2pr
         env:
           runner: self-hosted
-          GITHUB_TOKEN: ${{ env.COMPOSER_TOKEN }}
+          GITHUB_TOKEN: ${{ env.ACCESS_TOKEN_FOR_GITHUB }}
 
       - name: Install Composer dependencies for PHP
         if: steps.cache-composer.outputs.cache-hit != 'true'
         uses: ramsey/composer-install@v3
         env:
-          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.COMPOSER_TOKEN }}"}}'
+          COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.ACCESS_TOKEN_FOR_GITHUB }}"}}'
+          GITHUB_TOKEN: ${{ env.ACCESS_TOKEN_FOR_GITHUB }}
 
       - name: Log debug information
         run: |
