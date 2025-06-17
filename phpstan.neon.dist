@@ -13,7 +13,7 @@ parameters:
 
 	universalObjectCratesClasses:
 		- Event_Bridge_For_ActivityPub\ActivityPub\Model\Event_Source
-
+^
 	ignoreErrors:
 		-
 			message: '#Call to an undefined method Activitypub\\Activity\\[a-zA-Z0-9\\_]+::(?:get|set)_[a-z\_]+#'
@@ -34,4 +34,4 @@ parameters:
 		- includes/
 
 	scanDirectories:
-		- ./../
+		- /workspace/wordpress/wp-content/plugins/
