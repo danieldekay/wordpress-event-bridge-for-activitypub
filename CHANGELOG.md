@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 * Datetime timezone offset for incoming events when using The Events Calendar
+* Accessibility issues in Admin UI
 
 ## [1.1.0] - 2025-04-12
 

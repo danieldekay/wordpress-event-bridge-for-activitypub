@@ -127,6 +127,7 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 * Added: Compatibility with ActivityPub plugin 6.0+
 * Changed: Improved scheduling of sending event posts
 * Fixed: DateTime timezone offset for incoming events when using The Events Calendar
+* Fixed: Accessibility issues in Admin UI
 
 = [1.1.0] - 2025-04-12 =
 
