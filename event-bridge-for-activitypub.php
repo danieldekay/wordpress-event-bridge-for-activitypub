@@ -12,7 +12,7 @@
  * Requires PHP:     7.4
  * Requires Plugins: activitypub
  *
- * Requires at least ActivityPub plugin with version >= 6.0.2. ActivityPub plugin tested up to: 6.0.2.
+ * Requires at least ActivityPub plugin with version >= 5.7.0. ActivityPub plugin tested up to: 6.0.2.
  *
  * @package Event_Bridge_For_ActivityPub
  * @license AGPL-3.0-or-later
@@ -27,7 +27,7 @@ define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_FILE', plugin_dir_path( __FILE__ ) 
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_VERSION', current( get_file_data( __FILE__, array( 'Version' ), 'plugin' ) ) );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_DOMAIN', 'event-bridge-for-activitypub' );
-define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION', '6.0.2' );
+define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_ACTIVITYPUB_PLUGIN_MIN_VERSION', '5.7.0' );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_SUMMARY_TEMPLATE', "[ap_start_time]\n[ap_end_time]\n[ap_location]\n\n[ap_content]" );
 define( 'EVENT_BRIDGE_FOR_ACTIVITYPUB_DEFAULT_SUMMARY_TYPE', 'preset' );
 
