@@ -35,7 +35,7 @@ jobs:
           path: |
             ${{ env.WP_CORE_DIR }}
             ${{ env.WP_TESTS_DIR }}
-          key: cache-phpunit-wordpress-${{ matrix.wordpress-version }}-activitypub-6.0.2
+          key: cache-phpunit-wordpress-${{ matrix.wordpress-version }}-activitypub-6.0.2-1
 
       - name: Cache Composer
         id: cache-composer
@@ -43,7 +43,7 @@ jobs:
         with:
           path: |
             ./vendor/
-          key: cache-composer-3
+          key: cache-composer-4
 
       - name: Setup cache environment for PHP Extensions
         id: php-extensions-cache
@@ -51,7 +51,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           extensions: dom, iconv, json, libxml, zip
-          key: php-extensions-cache-v1
+          key: php-extensions-cache-v2
 
       - name: Cache PHP extensions
         uses: https://code.forgejo.org/actions/cache@v4

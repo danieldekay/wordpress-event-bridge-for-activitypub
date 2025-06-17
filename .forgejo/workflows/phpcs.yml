@@ -23,7 +23,7 @@ jobs:
         with:
           path: |
             ./vendor/
-          key: cache-composer-3
+          key: cache-composer-4
 
       - name: Setup cache environment for PHP Extensions
         id: php-extensions-cache
@@ -31,7 +31,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: dom, iconv, json, libxml, zip
-          key: php-extensions-cache-v1
+          key: php-extensions-cache-v2
 
       - name: Cache PHP extensions
         uses: https://code.forgejo.org/actions/cache@v4
