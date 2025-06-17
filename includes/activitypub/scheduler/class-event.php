@@ -19,7 +19,7 @@ class Event {
 	 * Initialize the class, registering WordPress hooks.
 	 */
 	public static function init() {
-		\add_action( 'transition_post_status', array( self::class, 'maybe_schedule_event_post_activity' ), 50, 3 );
+		\add_action( 'wp_after_insert_post', array( self::class, 'maybe_schedule_event_post_activity' ), 50, 4 );
 		\add_action( 'event_bridge_for_activitypub_add_event_post_to_outbox', array( self::class, 'add_event_post_to_outbox' ), 10, 3 );
 		\add_filter( 'activitypub_is_post_disabled', array( self::class, 'is_post_disabled_for_the_activitypub_plugin' ), 50, 2 );
 	}
@@ -44,13 +44,14 @@ class Event {
 	}
 
 	/**
-	 * Schedule Activities.
+	 * Handle post updates and determine the appropriate Activity type.
 	 *
-	 * @param string   $new_status New post status.
-	 * @param string   $old_status Old post status.
-	 * @param \WP_Post $post       Post object.
+	 * @param int           $post_id     Post ID.
+	 * @param \WP_Post      $post        Post object.
+	 * @param bool          $update      Whether this is an existing post being updated.
+	 * @param null|\WP_Post $post_before Post object before the update.
 	 */
-	public static function maybe_schedule_event_post_activity( $new_status, $old_status, $post ): void {
+	public static function maybe_schedule_event_post_activity( $post_id, $post, $update, $post_before ) {
 		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
 			return;
 		}
@@ -63,9 +64,17 @@ class Event {
 			return;
 		}
 
+		// Bail on bulk edits, unless post author or post status changed.
+		if ( isset( $_REQUEST['bulk_edit'] ) && -1 === (int) $_REQUEST['post_author'] && -1 === (int) $_REQUEST['_status'] ) { // phpcs:ignore WordPress
+			return;
+		}
+
+		$new_status = get_post_status( $post );
+		$old_status = $post_before ? get_post_status( $post_before ) : null;
+
 		switch ( $new_status ) {
 			case 'publish':
-				$type = ( 'publish' === $old_status ) ? 'Update' : 'Create';
+				$type = $update ? 'Update' : 'Create';
 				break;
 
 			case 'draft':
