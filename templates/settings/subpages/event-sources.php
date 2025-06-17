@@ -96,7 +96,6 @@ $cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_sourc
 								<select
 									name="event_bridge_for_activitypub_event_source_cache_retention"
 									id="event_bridge_for_activitypub_event_source_cache_retention"
-									value="0"
 									aria-describedby="event_bridge_for_activitypub_event-sources-cache-clear-time-frame"
 								>
 								<?php
@@ -108,7 +107,7 @@ $cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_sourc
 									YEAR_IN_SECONDS  => __( 'One Year', 'event-bridge-for-activitypub' ),
 								);
 								foreach ( $choices as $time => $string ) {
-									echo '<option value="' . \esc_attr( $time ) . '" ' . \selected( $cache_retention_period, $time, true ) . '>' . \esc_attr( $string ) . '</option>';
+									echo '<option value="' . \esc_attr( $time ) . '" ' . \selected( $cache_retention_period, $time, false ) . '>' . \esc_html( $string ) . '</option>';
 								}
 								?>
 								</select>
@@ -167,8 +166,8 @@ $cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_sourc
 			<!-- ThickBox content (hidden initially) -->
 			<div id="Event_Bridge_For_ActivityPub_add_new_source" style="display:none;">
 				<h2><?php \esc_html_e( 'Add a Trusted Event Source', 'event-bridge-for-activitypub' ); ?></h2>
+				<p><?php \esc_html_e( 'Use one of the following syntax:', 'event-bridge-for-activitypub' ); ?></p>
 				<ul class="event-bridge-for-activitypub-syntax-list" id="event_bridge_for_activitypub_add_event_source_description">
-					<?php \esc_html_e( 'Use one of the following syntax:', 'event-bridge-for-activitypub' ); ?>
 					<li>
 						<?php \esc_html_e( 'Enter a Fediverse user handle', 'event-bridge-for-activitypub' ); ?> ( <?php esc_html_e( 'e.g.', 'event-bridge-for-activitypub' ); ?> <code>@username@example.social</code>)
 					</li>
@@ -195,17 +194,18 @@ $cache_retention_period = \get_option( 'event_bridge_for_activitypub_event_sourc
 				</div>
 				<form method="post" action="options.php">
 					<?php \settings_fields( 'event-bridge-for-activitypub_add-event-source' ); ?>
-					<label for="event_bridge_for_activitypub_add_event_source">
-						<p>
+					<p>
+						<label id="event_bridge_for_activitypub_add_event_source_label" for="event_bridge_for_activitypub_add_event_source">
 							<?php \esc_html_e( 'Event Source (handle, URL, or instance)', 'event-bridge-for-activitypub' ); ?>:
-						</p>
-					</label>
+						</label>
+					</p>
 					<input
 						type="text"
 						style="width: 100%"
 						name="event_bridge_for_activitypub_add_event_source"
 						id="event_bridge_for_activitypub_add_event_source"
 						aria-describedby="event_bridge_for_activitypub_add_event_source_description"
+						aria-labelledby="event_bridge_for_activitypub_add_event_source_label"
 						placeholder="@username@example.social or https://example.social/user/username">
 					<?php \submit_button( __( 'Follow Event Source', 'event-bridge-for-activitypub' ) ); ?>
 				</form>
