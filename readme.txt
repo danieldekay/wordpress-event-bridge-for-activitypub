@@ -125,6 +125,7 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 = [1.1.1] - 2025-04-12 =
 
 * Fixed: Compatibility with ActivityPub plugin 6.0+
+* Changed: Improved scheduling of sending event posts
 
 = [1.1.0] - 2025-04-12 =
 

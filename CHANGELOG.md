@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Compatibility with ActivityPub plugin 6.0+
 
+### Changed
+
+* Improved scheduling of sending event posts
+
 ## [1.1.0] - 2025-04-12
 
 ### Added
