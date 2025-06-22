@@ -267,6 +267,20 @@ class Settings_Page {
 				\wp_enqueue_style( 'thickbox' );
 				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/settings/subpages/event-sources.php', true, $args );
 				break;
+			case 'generic-plugin':
+				// Get all available post types
+				$post_types = get_post_types( array( 'public' => true ), 'objects' );
+				
+				// Get all available taxonomies
+				$taxonomies = get_taxonomies( array( 'public' => true ), 'objects' );
+				
+				$args = array(
+					'post_types' => $post_types,
+					'taxonomies' => $taxonomies,
+				);
+				
+				\load_template( EVENT_BRIDGE_FOR_ACTIVITYPUB_PLUGIN_DIR . 'templates/settings/subpages/generic-plugin.php', true, $args );
+				break;
 			case 'welcome':
 			default:
 				\wp_enqueue_script( 'plugin-install' );

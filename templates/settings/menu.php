@@ -14,9 +14,10 @@ defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 $args = wp_parse_args(
 	$args,
 	array(
-		'welcome'       => '',
-		'settings'      => '',
-		'event-sources' => '',
+		'welcome'        => '',
+		'settings'       => '',
+		'event-sources'  => '',
+		'generic-plugin' => '',
 	)
 );
 ?>
@@ -37,6 +38,10 @@ $args = wp_parse_args(
 
 		<a href="<?php echo \esc_url( admin_url( 'options-general.php?page=activitypub&tab=event-bridge-for-activitypub&subpage=event-sources' ) ); ?>" class="event-bridge-for-activitypub-settings-tab <?php echo \esc_attr( $args['event-sources'] ); ?>">
 			<?php \esc_html_e( 'Federated Event Sources', 'event-bridge-for-activitypub' ); ?>
+		</a>
+
+		<a href="<?php echo \esc_url( admin_url( 'options-general.php?page=activitypub&tab=event-bridge-for-activitypub&subpage=generic-plugin' ) ); ?>" class="event-bridge-for-activitypub-settings-tab <?php echo \esc_attr( $args['generic-plugin'] ); ?>">
+			<?php \esc_html_e( 'Generic Event Plugin', 'event-bridge-for-activitypub' ); ?>
 		</a>
 	</nav>
 </div>

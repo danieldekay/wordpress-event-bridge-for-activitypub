@@ -178,6 +178,7 @@ class Setup {
 		\Event_Bridge_For_ActivityPub\Integrations\Event_Organiser::class,
 		\Event_Bridge_For_ActivityPub\Integrations\EventPrime::class,
 		\Event_Bridge_For_ActivityPub\Integrations\EventOn::class,
+		\Event_Bridge_For_ActivityPub\Integrations\Generic_Event_Plugin::class,
 	);
 
 	/**
@@ -221,6 +222,14 @@ class Setup {
 
 		$active_event_plugins = array();
 		foreach ( self::EVENT_PLUGIN_INTEGRATIONS as $event_plugin_integration ) {
+			// Handle Generic Event Plugin specially - it's enabled via settings, not plugin detection
+			if ( $event_plugin_integration === \Event_Bridge_For_ActivityPub\Integrations\Generic_Event_Plugin::class ) {
+				if ( \Event_Bridge_For_ActivityPub\Integrations\Generic_Event_Plugin::is_enabled() ) {
+					$active_event_plugins[ 'generic-event-plugin' ] = new $event_plugin_integration();
+				}
+				continue;
+			}
+
 			// Get the filename of the main plugin file of the event plugin (relative to the plugin dir).
 			$event_plugin_file = $event_plugin_integration::get_relative_plugin_file();
 
