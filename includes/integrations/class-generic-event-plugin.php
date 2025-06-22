@@ -16,7 +16,9 @@ namespace Event_Bridge_For_ActivityPub\Integrations;
 defined( 'ABSPATH' ) || exit; // @codeCoverageIgnore
 
 use Event_Bridge_For_ActivityPub\ActivityPub\Transformer\Event\Generic_Event as Generic_Event_Transformer;
+use Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Generic_Event as Generic_Event_Transmogrifier;
 use WP_Post;
+use WP_Query;
 
 /**
  * Generic Event Plugin.
@@ -26,7 +28,7 @@ use WP_Post;
  *
  * @since 1.0.0
  */
-final class Generic_Event_Plugin extends Event_Plugin_Integration {
+final class Generic_Event_Plugin extends Event_Plugin_Integration implements Feature_Event_Sources {
 
 	/**
 	 * Returns the plugin file relative to the plugins dir.
@@ -96,5 +98,60 @@ final class Generic_Event_Plugin extends Event_Plugin_Integration {
 	 */
 	public static function is_enabled(): bool {
 		return (bool) \get_option( 'event_bridge_for_activitypub_generic_enabled', false );
+	}
+
+	/**
+	 * Returns the Transmogrifier for Generic Event Plugin.
+	 *
+	 * @return string
+	 */
+	public static function get_transmogrifier(): string {
+		return Generic_Event_Transmogrifier::class;
+	}
+
+	/**
+	 * Get a list of Post IDs of events that have ended.
+	 *
+	 * @param int $ends_before_time Filter to only get events that ended before that datetime as unix-time.
+	 *
+	 * @return array<int>
+	 */
+	public static function get_cached_remote_events( $ends_before_time ): array {
+		$post_type = self::get_post_type();
+		$field_mappings = \get_option( 'event_bridge_for_activitypub_generic_field_mappings', array() );
+		
+		// If no end time field is configured, we can't filter by end time
+		if ( ! isset( $field_mappings['end_time'] ) ) {
+			return array();
+		}
+
+		$end_time_config = $field_mappings['end_time'];
+		$meta_query_args = array(
+			'relation' => 'AND',
+			array(
+				'key'     => '_event_bridge_for_activitypub_event_source',
+				'compare' => 'EXISTS',
+			),
+		);
+
+		// Add end time filter based on source type
+		if ( $end_time_config['source_type'] === 'meta' && ! empty( $end_time_config['field_name'] ) ) {
+			$meta_query_args[] = array(
+				'key'     => $end_time_config['field_name'],
+				'value'   => $ends_before_time,
+				'type'    => 'NUMERIC',
+				'compare' => '<',
+			);
+		}
+
+		$args = array(
+			'post_type'      => $post_type,
+			'posts_per_page' => -1,
+			'fields'         => 'ids',
+			'meta_query'     => $meta_query_args,
+		);
+
+		$query = new WP_Query( $args );
+		return $query->posts;
 	}
 }

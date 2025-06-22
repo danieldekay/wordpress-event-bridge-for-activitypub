@@ -45,6 +45,3 @@ $args = wp_parse_args(
 		</a>
 	</nav>
 </div>
-
-<?php
-\Event_Bridge_For_ActivityPub\Admin\Settings_Page::do_settings_page();

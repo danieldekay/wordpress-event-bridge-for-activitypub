@@ -140,9 +140,9 @@ final class Generic_Event extends Event_Transformer {
 	/**
 	 * Get the start time from the configured field mapping.
 	 *
-	 * @return string|null
+	 * @return string
 	 */
-	public function get_start_time(): ?string {
+	public function get_start_time(): string {
 		$start_time_value = $this->get_mapped_field_value( 'start_time' );
 		
 		if ( empty( $start_time_value ) ) {

@@ -130,4 +130,59 @@ class Test_Generic_Event_Plugin extends \WP_UnitTestCase {
 		// Clean up
 		wp_delete_post( $post_id, true );
 	}
+
+	/**
+	 * Test transmogrifier class name.
+	 */
+	public function test_get_transmogrifier() {
+		$transmogrifier = Generic_Event_Plugin::get_transmogrifier();
+		$this->assertEquals( 'Event_Bridge_For_ActivityPub\ActivityPub\Transmogrifier\Generic_Event', $transmogrifier );
+	}
+
+	/**
+	 * Test get_cached_remote_events with configured end time field.
+	 */
+	public function test_get_cached_remote_events_with_end_time_mapping() {
+		// Configure field mappings with end time
+		$field_mappings = array(
+			'end_time' => array(
+				'source_type' => 'meta',
+				'field_name' => 'event_end_date',
+			),
+		);
+		update_option( 'event_bridge_for_activitypub_generic_field_mappings', $field_mappings );
+		update_option( 'event_bridge_for_activitypub_generic_post_type', 'event' );
+
+		// Create a test event with end date in the past
+		$past_time = time() - DAY_IN_SECONDS;
+		$post_id = wp_insert_post( array(
+			'post_title' => 'Past Event',
+			'post_status' => 'publish',
+			'post_type' => 'event',
+			'meta_input' => array(
+				'event_end_date' => $past_time,
+				'_event_bridge_for_activitypub_event_source' => 123,
+			),
+		) );
+
+		$cached_events = Generic_Event_Plugin::get_cached_remote_events( time() );
+		$this->assertContains( $post_id, $cached_events );
+
+		// Clean up
+		wp_delete_post( $post_id, true );
+		delete_option( 'event_bridge_for_activitypub_generic_field_mappings' );
+		delete_option( 'event_bridge_for_activitypub_generic_post_type' );
+	}
+
+	/**
+	 * Test get_cached_remote_events without end time mapping.
+	 */
+	public function test_get_cached_remote_events_without_end_time_mapping() {
+		// Clear field mappings
+		delete_option( 'event_bridge_for_activitypub_generic_field_mappings' );
+
+		$cached_events = Generic_Event_Plugin::get_cached_remote_events( time() );
+		$this->assertIsArray( $cached_events );
+		$this->assertEmpty( $cached_events );
+	}
 }
