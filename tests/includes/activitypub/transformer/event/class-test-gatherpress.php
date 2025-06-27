@@ -83,6 +83,14 @@ class Test_GatherPress extends \WP_UnitTestCase {
 	 * Test transformation to ActivityPUb for basic event.
 	 */
 	public function test_transform_of_basic_event() {
+		$timezone_string   = 'Europe/Vienna';
+		$start_time_string = '+10 days 15:00:00';
+		$end_time_string   = '+10 days 16:00:00';
+
+		$timezone   = new \DateTimeZone( $timezone_string );
+		$start_time = new \DateTime( $start_time_string, $timezone );
+		$end_time   = new \DateTime( $end_time_string, $timezone );
+
 		// Mock GatherPress Event.
 		$post_id = wp_insert_post(
 			array(
@@ -94,9 +102,9 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		);
 		$event   = new \GatherPress\Core\Event( $post_id );
 		$params  = array(
-			'datetime_start' => '+10 days 15:00:00',
-			'datetime_end'   => '+10 days 16:00:00',
-			'timezone'       => \wp_timezone_string(),
+			'datetime_start' => $start_time_string,
+			'datetime_end'   => $end_time_string,
+			'timezone'       => $timezone_string,
 		);
 		$event->save_datetimes( $params );
 
@@ -107,8 +115,8 @@ class Test_GatherPress extends \WP_UnitTestCase {
 		$this->assertEquals( 'Event', $event_array['type'] );
 		$this->assertEquals( 'Unit Test Event', $event_array['name'] );
 		$this->assertEquals( 'Unit Test description.', wp_strip_all_tags( $event_array['content'] ) );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 15:00:00' ) ) . 'T15:00:00Z', $event_array['startTime'] );
-		$this->assertEquals( gmdate( 'Y-m-d', strtotime( '+10 days 16:00:00' ) ) . 'T16:00:00Z', $event_array['endTime'] );
+		$this->assertEquals( $start_time->format( 'Y-m-d\TH:i:sP' ), $event_array['startTime'] );
+		$this->assertEquals( $end_time->format( 'Y-m-d\TH:i:sP' ), $event_array['endTime'] );
 		$this->assertEquals( 'external', $event_array['joinMode'] );
 		$this->assertArrayNotHasKey( 'location', $event_array );
 	}
