@@ -122,6 +122,10 @@ The development of this WordPress plugin was funded through the [NGI0 Entrust](h
 
 == Changelog ==
 
+= [Unreleased]
+
+* Fixed: timezone offset for outgoing GatherPress events
+
 = [1.1.1] - 2025-06-17 =
 
 * Added: Compatibility with ActivityPub plugin 6.0+
